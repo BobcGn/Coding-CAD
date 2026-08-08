@@ -1,6 +1,6 @@
 # 当前证据链 / Current Evidence Chain
 
-更新时间 / Updated at: 2026-08-08 22:17 CST (Asia/Shanghai)
+更新时间 / Updated at: 2026-08-08 22:34 CST (Asia/Shanghai)
 
 ## 本轮事件源 / Current Event Sources
 
@@ -12,7 +12,8 @@
 | 测试分层 / Test layering | 用户要求单元、集成、端到端均存在 / User required unit, integration, and end-to-end tests | 新增独立脚本和跨层集成用例 / Added independent scripts and a cross-layer integration case | `package.json`、`turbo.json`、`packages/cli/src/integration.test.ts`、`packages/cli/src/cli.test.ts` |
 | 图完整性 / Graph integrity | 核心逻辑审计发现悬空连接与重复 ID 未诊断 / Core-logic audit found dangling references and duplicate ids were not diagnosed | 新增可解释 Validator 规则 / Added an explainable Validator rule | `packages/architecture-validator/src/rules/graph-integrity-rule.ts` |
 | 依赖边界校正 / Dependency-boundary correction | 线性图与实际 package DAG 不一致 / Linear diagram differed from the actual package DAG | 文档改为真实 DAG / Documentation now shows the actual DAG | `packages/README.md` |
-| CI/CD 门禁 / CI/CD gate | 用户要求参考 PR Skills 仓库 / User asked to reference the PR Skills repository | 建立本地和 GitHub Actions 检查流水线 / Added local and GitHub Actions check pipeline | `docs/ci-cd.md`、`.github/workflows/ci.yml`、`.github/workflows/codeql.yml` |
+| CI/CD 门禁 / CI/CD gate | 用户要求参考 PR Skills 仓库 / User asked to reference the PR Skills repository | 建立本地和 GitHub Actions 检查流水线 / Added local and GitHub Actions check pipeline | `docs/ci-cd.md`、`.github/workflows/ci.yml` |
+| CI 失败修复 / CI failure fix | GitHub Actions run `31261956693` 和 `31261956683` / GitHub Actions runs `31261956693` and `31261956683` | 补充 Node 类型并移除自动 CodeQL workflow / Added Node types and removed the automatic CodeQL workflow | `package.json`、`pnpm-lock.yaml`、`.github/workflows/ci.yml` |
 
 ## 本轮验证记录 / Current Validation Records
 
@@ -33,6 +34,9 @@
 - `ruby -e 'require "yaml"; ...' .github/workflows/*.yml`：通过，workflow YAML 可解析。
 - `git diff --check`：通过。
 - `pnpm security:audit`：通过，No known vulnerabilities found。
+- `gh run view 31261956693 --log-failed`：CI 失败点为 `architecture-ir` typecheck 缺少 Node 类型声明。
+- `gh run view 31261956683 --log-failed`：CodeQL 扫描完成但 SARIF 上传失败，原因是仓库未启用 code scanning。
+- `CI=true pnpm install --frozen-lockfile`：通过，lockfile 可在 CI 模式安装。
 
 - `find logs/modules -maxdepth 3 -type f | sort`: confirms new module log files exist and old `dsl`/`validator` log directories are removed.
 - `rg "@coding-cad/(dsl|validator)|packages/(dsl|validator)|logs/modules/(dsl|validator)"`: no output, confirming old mainline references are cleaned.
@@ -51,6 +55,9 @@
 - `ruby -e 'require "yaml"; ...' .github/workflows/*.yml`: passed, workflow YAML parses successfully.
 - `git diff --check`: passed.
 - `pnpm security:audit`: passed, No known vulnerabilities found.
+- `gh run view 31261956693 --log-failed`: CI failed at `architecture-ir` typecheck because Node type declarations were missing.
+- `gh run view 31261956683 --log-failed`: CodeQL completed scanning but failed SARIF upload because repository code scanning is not enabled.
+- `CI=true pnpm install --frozen-lockfile`: passed, lockfile installs in CI mode.
 
 ## 本轮回退引用 / Rollback References
 

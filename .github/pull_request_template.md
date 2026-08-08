@@ -6,7 +6,6 @@
 
 - [ ] `pnpm ci:verify`
 - [ ] CI workflow passed
-- [ ] CodeQL workflow passed
 
 ## PR Skills Checklist / PR Skills 检查清单
 

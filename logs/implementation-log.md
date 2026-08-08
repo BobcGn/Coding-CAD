@@ -128,14 +128,14 @@ Changes:
 
 - 参考 PR Skills 仓库 `BobcGn/pr-skills` 的五类检查职责，建立本地和 GitHub Actions 门禁。
 - 新增 `pnpm ci:verify`，串联 workspace 结构检查、类型检查、变更记录检查、敏感信息扫描、commit message 检查、单元测试、集成测试、端到端测试和构建。
-- 新增 GitHub Actions CI workflow，覆盖 PR/push 的质量、测试、构建、依赖审查和依赖审计。
-- 新增 CodeQL workflow，覆盖 JavaScript/TypeScript 静态安全分析。
+- 新增 GitHub Actions CI workflow，覆盖 PR/push 的质量、测试、构建和依赖审计。
+- CodeQL 初始作为 workflow 接入，后续因仓库未启用 GitHub code scanning 而从自动门禁移除。
 - 新增 CI/CD 文档和 PR 模板，确保推送前检查可追溯。
 
 - Established local and GitHub Actions gates based on the five check responsibilities from the `BobcGn/pr-skills` repository.
 - Added `pnpm ci:verify`, chaining workspace structure checks, type checks, change-record checks, secret scanning, commit-message checks, unit tests, integration tests, end-to-end tests, and build verification.
-- Added a GitHub Actions CI workflow for PR/push quality, tests, build, dependency review, and dependency audit.
-- Added a CodeQL workflow for JavaScript/TypeScript static security analysis.
+- Added a GitHub Actions CI workflow for PR/push quality, tests, build, and dependency audit.
+- CodeQL was initially added as a workflow, then removed from the automatic gate because GitHub code scanning is not enabled for the repository.
 - Added CI/CD documentation and a PR template so pre-push checks remain traceable.
 
 验证：
@@ -143,11 +143,55 @@ Changes:
 Validation:
 
 - `pnpm ci:verify`：通过。
-- `ruby -e 'require "yaml"; ...' .github/workflows/ci.yml .github/workflows/codeql.yml`：通过。
+- `ruby -e 'require "yaml"; ...' .github/workflows/ci.yml`：通过。
 - `git diff --check`：通过。
 - `pnpm security:audit`：通过，No known vulnerabilities found。
 
 - `pnpm ci:verify`: passed.
-- `ruby -e 'require "yaml"; ...' .github/workflows/ci.yml .github/workflows/codeql.yml`: passed.
+- `ruby -e 'require "yaml"; ...' .github/workflows/ci.yml`: passed.
+
+## 2026-08-08 - CI 失败修复 / CI Failure Fix
+
+状态：已验证。
+
+Status: Verified.
+
+原因：
+
+Cause:
+
+- GitHub Actions run `31261956693` 在 `architecture-ir` typecheck 失败，因为干净 Linux CI 环境没有隐式 Node 类型声明，测试和 CLI 代码使用了 `node:*` API。
+- GitHub Actions run `31261956683` 的 CodeQL 扫描完成，但上传 SARIF 失败，因为仓库没有启用 GitHub code scanning。
+
+- GitHub Actions run `31261956693` failed in `architecture-ir` typecheck because the clean Linux CI environment had no implicit Node type declarations while tests and CLI code use `node:*` APIs.
+- GitHub Actions run `31261956683` completed CodeQL scanning but failed SARIF upload because GitHub code scanning is not enabled for the repository.
+
+修复：
+
+Fix:
+
+- 将 `@types/node` 加入根 devDependency，这是 TypeScript 编译 Node API 所需的开发类型声明。
+- 移除 `pnpm/action-setup` 和 `dependency-review-action`，改用 Corepack 启用 pnpm，并用 `pnpm security:audit` 做依赖安全门禁。
+- 移除自动 CodeQL workflow；等仓库启用 code scanning 后再接入。
+
+- Added `@types/node` as a root devDependency because it is required to compile Node API usage in TypeScript.
+- Removed `pnpm/action-setup` and `dependency-review-action`; Corepack now enables pnpm, and `pnpm security:audit` provides the dependency-security gate.
+- Removed the automatic CodeQL workflow; CodeQL can be added after repository code scanning is enabled.
+
+验证：
+
+Validation:
+
+- `CI=true pnpm install --frozen-lockfile`：通过。
+- `pnpm ci:verify`：通过。
+- `pnpm security:audit`：通过，No known vulnerabilities found。
+- `ruby -e 'require "yaml"; ...' .github/workflows/ci.yml`：通过。
+- `git diff --check`：通过。
+
+- `CI=true pnpm install --frozen-lockfile`: passed.
+- `pnpm ci:verify`: passed.
+- `pnpm security:audit`: passed, No known vulnerabilities found.
+- `ruby -e 'require "yaml"; ...' .github/workflows/ci.yml`: passed.
+- `git diff --check`: passed.
 - `git diff --check`: passed.
 - `pnpm security:audit`: passed, No known vulnerabilities found.
