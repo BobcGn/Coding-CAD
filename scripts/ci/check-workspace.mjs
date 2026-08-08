@@ -10,6 +10,7 @@ const workspaceModules = [
   { workspace: "apps/server", log: "server", requiredScripts: ["build", "typecheck", "test", "clean"] },
   { workspace: "apps/web", log: "web", requiredScripts: ["build", "typecheck", "test", "clean"] },
   { workspace: "packages/agent-runtime", log: "agent-runtime", requiredScripts: ["build", "typecheck", "test", "clean"] },
+  { workspace: "packages/architecture-agent", log: "architecture-agent", requiredScripts: ["build", "typecheck", "test", "test:unit", "clean"] },
   { workspace: "packages/architecture-ir", log: "architecture-ir", requiredScripts: ["build", "typecheck", "test", "test:unit", "clean"] },
   { workspace: "packages/architecture-dsl", log: "architecture-dsl", requiredScripts: ["build", "typecheck", "test", "test:unit", "clean"] },
   { workspace: "packages/component-registry", log: "component-registry", requiredScripts: ["build", "typecheck", "test", "test:unit", "clean"] },

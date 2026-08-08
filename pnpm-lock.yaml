@@ -51,6 +51,25 @@ importers:
         specifier: ^5.9.2
         version: 5.9.3
 
+  packages/architecture-agent:
+    dependencies:
+      '@coding-cad/architecture-dsl':
+        specifier: workspace:*
+        version: link:../architecture-dsl
+      '@coding-cad/architecture-ir':
+        specifier: workspace:*
+        version: link:../architecture-ir
+      '@coding-cad/architecture-validator':
+        specifier: workspace:*
+        version: link:../architecture-validator
+      '@coding-cad/component-registry':
+        specifier: workspace:*
+        version: link:../component-registry
+    devDependencies:
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.3
+
   packages/architecture-dsl:
     dependencies:
       '@coding-cad/architecture-ir':
@@ -85,6 +104,9 @@ importers:
 
   packages/cli:
     dependencies:
+      '@coding-cad/architecture-agent':
+        specifier: workspace:*
+        version: link:../architecture-agent
       '@coding-cad/architecture-dsl':
         specifier: workspace:*
         version: link:../architecture-dsl

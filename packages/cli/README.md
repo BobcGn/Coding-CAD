@@ -1,8 +1,8 @@
 # Coding CAD CLI / 命令行入口
 
-`@coding-cad/cli` 提供 Coding CAD 的命令行入口。它不实现业务逻辑，只组合已有核心能力：Architecture DSL、Architecture IR、Component Registry 和 Architecture Validator。
+`@coding-cad/cli` 提供 Coding CAD 的命令行入口。它不实现业务逻辑，只组合已有核心能力：Architecture DSL、Architecture IR、Component Registry、Architecture Validator 和 Architecture Agent。
 
-`@coding-cad/cli` provides the command-line entry point for Coding CAD. It does not implement business logic; it composes existing core capabilities: Architecture DSL, Architecture IR, Component Registry, and Architecture Validator.
+`@coding-cad/cli` provides the command-line entry point for Coding CAD. It does not implement business logic; it composes existing core capabilities: Architecture DSL, Architecture IR, Component Registry, Architecture Validator, and Architecture Agent.
 
 ## 安装 / Installation
 
@@ -36,6 +36,19 @@ The package exposes a bin:
 ```
 
 ## 命令 / Commands
+
+### design
+
+根据用户需求生成 Architecture IR，并通过 Architecture Agent 自动验证和改进。
+
+Generate Architecture IR from a user requirement, then validate and refine it through Architecture Agent.
+
+```bash
+coding-cad design "设计一个积分系统，100万用户，积分不能丢失，未来支持活动兑换"
+coding-cad design "point system with durable points" --json
+coding-cad design "point system with durable points" --yaml
+coding-cad design "point system with durable points" --format yaml
+```
 
 ### validate
 
@@ -116,13 +129,13 @@ Architecture DSL Error:
 
 ## 设计原则 / Design Principles
 
-- CLI 只是入口，不复制核心业务逻辑。  
+- CLI 只是入口，不复制核心业务逻辑。
   CLI is only an entry point and does not duplicate core business logic.
-- 所有核心能力来自 packages。  
+- 所有核心能力来自 packages。
   All core capabilities come from packages.
-- 默认输出面向人类，`--json` 面向外部系统和未来 Agent。  
-  Default output is human-readable; `--json` is for external systems and future Agents.
-- 保持未来扩展空间，例如 `generate`、`agent`、`deploy`。  
+- 默认输出面向人类，`--json` 面向外部系统，`--yaml` 面向 Architecture DSL 交换。
+  Default output is human-readable; `--json` is for external systems, and `--yaml` is for Architecture DSL exchange.
+- 保持未来扩展空间，例如 `generate`、`agent`、`deploy`。
   Keep room for future commands such as `generate`, `agent`, and `deploy`.
 
 ## 测试 / Tests

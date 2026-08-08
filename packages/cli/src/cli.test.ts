@@ -128,6 +128,22 @@ const jsonResult = runCliProcess(["validate", warningPath, "--json"]);
 assert.equal(jsonResult.status, 0);
 assert.equal(JSON.parse(jsonResult.stdout).issues[0].severity, "WARNING");
 
+const designResult = runCliProcess(["design", "设计一个积分系统，100万用户，积分不能丢失，未来支持活动兑换"]);
+assert.equal(designResult.status, 0);
+assert.equal(designResult.stdout.includes("Coding CAD Architecture Design"), true);
+assert.equal(designResult.stdout.includes("PointService"), true);
+assert.equal(designResult.stdout.includes("PostgreSQL"), true);
+assert.equal(designResult.stdout.includes("Architecture Decisions:"), true);
+
+const designJsonResult = runCliProcess(["design", "积分系统，积分不能丢失", "--json"]);
+assert.equal(designJsonResult.status, 0);
+assert.equal(JSON.parse(designJsonResult.stdout).project.intent.name, "PointSystem");
+
+const designYamlResult = runCliProcess(["design", "积分系统，积分不能丢失", "--yaml"]);
+assert.equal(designYamlResult.status, 0);
+assert.equal(designYamlResult.stdout.includes("version: \"0.1\""), true);
+assert.equal(designYamlResult.stdout.includes("PointService"), true);
+
 console.log("cli tests passed");
 
 function runCliProcess(args: readonly string[]): { readonly status: number | null; readonly stdout: string; readonly stderr: string } {

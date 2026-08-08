@@ -1,8 +1,8 @@
 # Packages 架构 / Packages Architecture
 
-`packages/` 是 Coding CAD 的核心代码层。这里保存稳定的架构模型、DSL 投影、验证规则、组件知识和未来 Agent 编排边界。
+`packages/` 是 Coding CAD 的核心代码层。这里保存稳定的架构模型、DSL 投影、验证规则、组件知识、架构推理助手和未来 Agent 编排边界。
 
-`packages/` is the core code layer of Coding CAD. It contains the stable architecture model, DSL projection, validation rules, component knowledge, and future Agent orchestration boundary.
+`packages/` is the core code layer of Coding CAD. It contains the stable architecture model, DSL projection, validation rules, component knowledge, the architecture reasoning assistant, and the future Agent orchestration boundary.
 
 ## 心智模型 / Mental Model
 
@@ -12,6 +12,10 @@ Human-readable YAML
   -> @coding-cad/architecture-ir
   -> @coding-cad/architecture-validator
   -> @coding-cad/cli
+
+User requirement
+  -> @coding-cad/architecture-agent
+  -> @coding-cad/architecture-ir
 
 @coding-cad/component-registry
   -> can enrich validation and future design suggestions
@@ -29,17 +33,20 @@ component-registry     -> architecture-ir
 architecture-validator -> architecture-ir + component-registry
 cli                    -> architecture-dsl + architecture-ir
                           + architecture-validator + component-registry
+                          + architecture-agent
+architecture-agent     -> architecture-ir + architecture-dsl
+                          + architecture-validator + component-registry
 agent-runtime          -> architecture-ir
 apps/*                 -> public package APIs
 ```
 
-依赖只能从更具体的层指向更基础的层。`architecture-ir` 不应该依赖任何 package；`architecture-dsl` 不应该知道 validator；validator 可以读取 IR 和 Registry，但不应该调用 CLI 或 app。
+依赖只能从更具体的层指向更基础的层。`architecture-ir` 不应该依赖任何 package；`architecture-dsl` 不应该知道 validator；validator 可以读取 IR 和 Registry，但不应该调用 CLI 或 app；CLI 可以组合 Architecture Agent，但不承载推理规则。
 
-Dependencies should point from more specific layers to more foundational layers. `architecture-ir` should not depend on any package; `architecture-dsl` should not know about the validator; the validator may read IR and Registry, but should not call CLI or apps.
+Dependencies should point from more specific layers to more foundational layers. `architecture-ir` should not depend on any package; `architecture-dsl` should not know about the validator; the validator may read IR and Registry, but should not call CLI or apps; the CLI may compose Architecture Agent, but does not own reasoning rules.
 
-图中的箭头表示“依赖于”。DSL 和 Registry 是 IR 之上的并列层；Validator 同时依赖 IR 与 Registry；CLI 只负责组合公开 API。
+图中的箭头表示“依赖于”。DSL 和 Registry 是 IR 之上的并列层；Validator 同时依赖 IR 与 Registry；Architecture Agent 负责需求到 IR 的推理闭环；CLI 只负责组合公开 API。
 
-Arrows in the diagram mean “depends on.” DSL and Registry are peer layers above IR; the Validator depends on both IR and Registry; the CLI only composes public APIs.
+Arrows in the diagram mean “depends on.” DSL and Registry are peer layers above IR; the Validator depends on both IR and Registry; Architecture Agent owns the requirement-to-IR reasoning loop; the CLI only composes public APIs.
 
 ## Package 地图 / Package Map
 
@@ -50,6 +57,7 @@ Arrows in the diagram mean “depends on.” DSL and Registry are peer layers ab
 | `@coding-cad/architecture-validator` | 架构诊断 / Architecture diagnostics | 规则执行、依赖图检查、能力和限制匹配 / Rule execution, dependency graph checks, capability and limitation matching | YAML 解析、组件目录所有权、Agent 执行 / YAML parsing, component catalog ownership, Agent execution |
 | `@coding-cad/component-registry` | 组件能力知识库 / Component capability knowledge base | 技术能力、限制、适用和风险场景 / Technology capabilities, limitations, suitable/risky usage | 项目特定决策 / Project-specific decisions |
 | `@coding-cad/cli` | 命令行入口 / Command-line entry point | 文件读取、命令分发、报告输出 / File reading, command dispatch, report output | DSL、Validator 或 Registry 的业务规则 / DSL, Validator, or Registry business rules |
+| `@coding-cad/architecture-agent` | 架构推理助手 / Architecture reasoning assistant | 需求分析、架构规划、决策解释、Validator 反馈改进 / Requirement analysis, architecture planning, decision explanation, Validator feedback refinement | 业务代码生成、文件修改、部署执行 / Business code generation, file mutation, deployment execution |
 | `@coding-cad/agent-runtime` | Agent 编排边界 / Agent orchestration boundary | 任务和结果契约、未来调度抽象 / Task/result contracts and future dispatch abstraction | 尚未成型的具体 Agent Provider 逻辑 / Concrete Agent provider logic before it exists |
 
 ## 数据流 / Data Flow
@@ -63,12 +71,15 @@ Arrows in the diagram mean “depends on.” DSL and Registry are peer layers ab
 3. `@coding-cad/architecture-validator` 读取 IR 和 Registry 并输出 `ValidationResult`，不会修改 IR。
 
    `@coding-cad/architecture-validator` reads IR and Registry and returns `ValidationResult`; it does not mutate IR.
-4. `@coding-cad/component-registry` 提供通用技术知识，供 validator、UI 或未来 Agent 使用。
+4. `@coding-cad/component-registry` 提供通用技术知识，供 validator、Architecture Agent 或未来 UI 使用。
 
-   `@coding-cad/component-registry` provides general technology knowledge for the validator, UI, or future Agents.
+   `@coding-cad/component-registry` provides general technology knowledge for the validator, Architecture Agent, or future UI.
 5. `@coding-cad/cli` 组合 DSL、IR、Registry 和 Validator，提供可运行入口。
 
    `@coding-cad/cli` composes DSL, IR, Registry, and Validator into a runnable entry point.
+6. `@coding-cad/architecture-agent` 将自然语言需求转换为 Architecture IR，调用 Validator，并根据反馈改进架构。
+
+   `@coding-cad/architecture-agent` turns natural-language requirements into Architecture IR, calls the Validator, and improves the architecture from feedback.
 
 ## 扩展指南 / Extension Guide
 
@@ -112,6 +123,6 @@ The core loop uses three independently executable test layers:
 | 集成 / Integration | DSL -> IR -> Registry -> Validator 的进程内组合 / In-process DSL -> IR -> Registry -> Validator composition | `pnpm test:integration` | `packages/cli/src/integration.test.ts` |
 | 端到端 / End-to-end | 真实 CLI 子进程、文件输入、stdout/stderr 与退出码 / Real CLI subprocess, file input, stdout/stderr, and exit codes | `pnpm test:e2e` | `packages/cli/src/cli.test.ts` |
 
-`pnpm test` 仍是 workspace 总入口。`agent-runtime`、`apps/server` 和 `apps/web` 当前是占位边界，它们的占位脚本不计入五个核心模块的测试覆盖。
+`pnpm test` 仍是 workspace 总入口。`agent-runtime`、`apps/server` 和 `apps/web` 当前是占位边界，它们的占位脚本不计入六个核心模块的测试覆盖。
 
-`pnpm test` remains the workspace-wide entry point. `agent-runtime`, `apps/server`, and `apps/web` are currently placeholder boundaries; their placeholder scripts do not count as test coverage for the five core modules.
+`pnpm test` remains the workspace-wide entry point. `agent-runtime`, `apps/server`, and `apps/web` are currently placeholder boundaries; their placeholder scripts do not count as test coverage for the six core modules.

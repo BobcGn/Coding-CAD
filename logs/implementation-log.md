@@ -193,5 +193,63 @@ Validation:
 - `pnpm security:audit`: passed, No known vulnerabilities found.
 - `ruby -e 'require "yaml"; ...' .github/workflows/ci.yml`: passed.
 - `git diff --check`: passed.
-- `git diff --check`: passed.
-- `pnpm security:audit`: passed, No known vulnerabilities found.
+
+## 2026-08-08 - Architecture Agent 第一阶段 / Architecture Agent Phase One
+
+状态：已验证。
+
+Status: Verified.
+
+变更：
+
+Changes:
+
+- 新增第六个核心模块 `packages/architecture-agent`。
+- 实现 `ArchitectureAgent.design(requirement)` 主入口，返回 `ArchitectureProject`。
+- 新增 Mock LLM Provider、Agent Context、Requirement Analyzer、Architecture Planner、Decision Maker 和 Validator Feedback Refinement Loop。
+- 保持模型无关，不绑定 OpenAI、Claude、Gemini 或本地模型。
+- 保持职责边界：Agent 只设计架构，不写业务代码、不修改文件、不部署系统。
+
+- Added the sixth core module, `packages/architecture-agent`.
+- Implemented the `ArchitectureAgent.design(requirement)` entry point returning `ArchitectureProject`.
+- Added Mock LLM Provider, Agent Context, Requirement Analyzer, Architecture Planner, Decision Maker, and Validator Feedback Refinement Loop.
+- Kept the module model-agnostic without binding OpenAI, Claude, Gemini, or local models.
+- Preserved the responsibility boundary: the Agent designs architecture only, and does not write business code, mutate files, or deploy systems.
+
+验证：
+
+Validation:
+
+- `pnpm --filter @coding-cad/architecture-agent test`：通过。
+
+- `pnpm --filter @coding-cad/architecture-agent test`: passed.
+
+## 2026-08-09 - CLI Design 入口 / CLI Design Entry Point
+
+状态：已验证。
+
+Status: Verified.
+
+变更：
+
+Changes:
+
+- 新增 `coding-cad design <requirement>`，从自然语言需求生成 Architecture IR。
+- 默认输出人类可读架构设计报告，并支持 `--json` 和 `--yaml`。
+- CLI 只作为入口组合 Architecture Agent、Validator 和 DSL，不直接绕过 Architecture IR。
+- 新增真实子进程端到端测试，覆盖人类报告、JSON 和 YAML 输出路径。
+
+- Added `coding-cad design <requirement>` to generate Architecture IR from natural-language requirements.
+- The default output is a human-readable architecture design report, with `--json` and `--yaml` support.
+- The CLI only composes Architecture Agent, Validator, and DSL, and does not bypass Architecture IR.
+- Added real subprocess end-to-end tests for the human report, JSON, and YAML output paths.
+
+验证：
+
+Validation:
+
+- `pnpm --filter @coding-cad/cli typecheck`：通过。
+- `pnpm --filter @coding-cad/cli test:e2e`：通过。
+
+- `pnpm --filter @coding-cad/cli typecheck`: passed.
+- `pnpm --filter @coding-cad/cli test:e2e`: passed.

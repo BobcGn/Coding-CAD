@@ -14,8 +14,9 @@ Core flow:
 
 ```text
 Human visual intent
-  -> Architecture DSL
+  -> Architecture Agent
   -> Architecture IR
+  -> Architecture DSL
   -> Validator and Architecture Agent
   -> Coding Agent / Testing Agent
 ```
@@ -43,15 +44,17 @@ The durable asset is not generated code. The durable asset is a reasoned, valida
 
 ## MVP Scope / MVP 范围
 
-第一版优先建设真正的核心能力。
+第一版优先建设真正的核心能力。当前已完成架构建模、架构交换、架构校验、组件知识库、CLI 入口和第一阶段 Architecture Agent。
 
-The first version focuses on the core moat.
+The first version focuses on the core moat. The current implementation now includes architecture modeling, architecture exchange, architecture validation, component knowledge, the CLI entry point, and the first Architecture Agent phase.
 
 1. Architecture IR 类型定义 / Architecture IR type definitions
 2. YAML DSL 解析与生成 / YAML DSL parser and generator
 3. 基础架构验证器 / Basic architecture validator
 4. 组件能力知识库 / Component capability knowledge base
-5. 面向未来编排的 Agent Runtime 边界 / Agent-runtime boundaries for future orchestration
+5. CLI 架构分析与设计入口 / CLI architecture analysis and design entry point
+6. Architecture Agent 架构推理层 / Architecture Agent reasoning layer
+7. 面向未来编排的 Agent Runtime 边界 / Agent-runtime boundaries for future orchestration
 
 React / React Flow 编辑器会延后，直到 DSL 和 IR 被证明足够有用。UI 应该是模型的视图，而不是模型本身。
 
@@ -73,6 +76,7 @@ packages/
   component-registry/    组件能力知识库 / Component capability knowledge base
   architecture-validator/ 架构诊断和规则检查 / Architecture diagnostics and rule checks
   cli/                   命令行入口 / Command-line entry point
+  architecture-agent/    架构推理助手 / Architecture reasoning assistant
   agent-runtime/         未来 AI Agent 编排边界 / Future AI agent orchestration boundary
   README.md              核心代码架构地图 / Core code architecture map
 docs/
@@ -93,6 +97,8 @@ component-registry     -> architecture-ir
 architecture-validator -> architecture-ir + component-registry
 cli                    -> architecture-dsl + architecture-ir
                           + architecture-validator + component-registry
+architecture-agent     -> architecture-ir + architecture-dsl
+                          + architecture-validator + component-registry
 agent-runtime          -> architecture-ir
 apps/*                 -> public package APIs
 ```
@@ -109,6 +115,17 @@ pnpm ci:verify
 pnpm build
 pnpm typecheck
 pnpm test
+```
+
+CLI 当前支持架构校验、结构检查、格式化，以及从自然语言需求生成 Architecture IR。
+
+The CLI currently supports architecture validation, structure inspection, formatting, and Architecture IR generation from natural-language requirements.
+
+```bash
+pnpm --filter @coding-cad/cli start -- design "设计一个积分系统，100万用户，积分不能丢失"
+pnpm --filter @coding-cad/cli start -- validate architecture.yaml
+pnpm --filter @coding-cad/cli start -- inspect architecture.yaml
+pnpm --filter @coding-cad/cli start -- format architecture.yaml
 ```
 
 推送前门禁和 GitHub Actions 说明见 [`docs/ci-cd.md`](docs/ci-cd.md)。

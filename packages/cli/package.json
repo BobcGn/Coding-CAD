@@ -23,6 +23,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
+    "@coding-cad/architecture-agent": "workspace:*",
     "@coding-cad/architecture-dsl": "workspace:*",
     "@coding-cad/architecture-ir": "workspace:*",
     "@coding-cad/architecture-validator": "workspace:*",

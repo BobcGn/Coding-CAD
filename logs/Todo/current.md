@@ -1,6 +1,6 @@
 # 当前 TODO / Current TODO
 
-更新时间 / Updated at: 2026-08-08 21:56 CST (Asia/Shanghai)
+更新时间 / Updated at: 2026-08-08 22:34 CST (Asia/Shanghai)
 
 本文件是仍有效 TODO 的单一事实源。
 
@@ -17,6 +17,18 @@ This file is the single source of truth for active TODOs.
 - 状态 / Status: 待处理 / Pending
 - 当前处理 / Current handling: 已有 Architecture/Coding/Testing Agent 的最小边界类型。
 - 解除条件 / Exit condition: 定义 Agent 输入输出协议、任务生命周期、人工决策点和可审计 artifact。
+
+## TODO-009: Architecture Agent Real LLM Integration / Architecture Agent 真实 LLM 接入
+
+- 状态 / Status: 待处理 / Pending
+- 当前处理 / Current handling: `packages/architecture-agent` 当前使用 Mock Provider 和确定性启发式流程。
+- 解除条件 / Exit condition: 定义真实 LLM Provider 的超时、错误处理、结构化输出校验、提示版本和审计记录。
+
+## TODO-010: Architecture Agent Planning Generalization / Architecture Agent 规划泛化
+
+- 状态 / Status: 待处理 / Pending
+- 当前处理 / Current handling: 第一阶段覆盖积分系统和强一致账本类需求。
+- 解除条件 / Exit condition: 扩展更多领域规划模板，并让 Planner 系统性利用 Component Registry 和 Validator 反馈生成架构。
 
 ## TODO-005: Web Editor Timing / Web Editor 时机
 

@@ -103,7 +103,7 @@ function namesByType(components: readonly Component[], type: Component["type"]):
     .map((component) => component.name);
 }
 
-function formatList(values: readonly string[]): readonly string[] {
+export function formatList(values: readonly string[]): readonly string[] {
   return values.length === 0 ? ["- none"] : values.map((value) => `- ${value}`);
 }
 

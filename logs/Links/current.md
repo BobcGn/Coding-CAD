@@ -1,6 +1,6 @@
 # 当前证据链 / Current Evidence Chain
 
-更新时间 / Updated at: 2026-08-08 22:34 CST (Asia/Shanghai)
+更新时间 / Updated at: 2026-08-09 00:00 CST (Asia/Shanghai)
 
 ## 本轮事件源 / Current Event Sources
 
@@ -14,6 +14,8 @@
 | 依赖边界校正 / Dependency-boundary correction | 线性图与实际 package DAG 不一致 / Linear diagram differed from the actual package DAG | 文档改为真实 DAG / Documentation now shows the actual DAG | `packages/README.md` |
 | CI/CD 门禁 / CI/CD gate | 用户要求参考 PR Skills 仓库 / User asked to reference the PR Skills repository | 建立本地和 GitHub Actions 检查流水线 / Added local and GitHub Actions check pipeline | `docs/ci-cd.md`、`.github/workflows/ci.yml` |
 | CI 失败修复 / CI failure fix | GitHub Actions run `31261956693` 和 `31261956683` / GitHub Actions runs `31261956693` and `31261956683` | 补充 Node 类型并移除自动 CodeQL workflow / Added Node types and removed the automatic CodeQL workflow | `package.json`、`pnpm-lock.yaml`、`.github/workflows/ci.yml` |
+| Architecture Agent / Architecture Agent | 用户要求实现第六个核心模块 / User requested the sixth core module | 新增架构推理层 / Added the architecture reasoning layer | `packages/architecture-agent`、`logs/modules/architecture-agent` |
+| CLI Design Command / CLI Design Command | 用户要求继续编写下一模块 / User asked to continue with the next module | CLI 接入 Architecture Agent，支持需求到架构蓝图 / CLI now wires Architecture Agent for requirement-to-blueprint design | `packages/cli/src/commands/design.ts`、`packages/cli/src/index.ts`、`packages/cli/src/cli.test.ts` |
 
 ## 本轮验证记录 / Current Validation Records
 
@@ -37,6 +39,9 @@
 - `gh run view 31261956693 --log-failed`：CI 失败点为 `architecture-ir` typecheck 缺少 Node 类型声明。
 - `gh run view 31261956683 --log-failed`：CodeQL 扫描完成但 SARIF 上传失败，原因是仓库未启用 code scanning。
 - `CI=true pnpm install --frozen-lockfile`：通过，lockfile 可在 CI 模式安装。
+- `pnpm --filter @coding-cad/architecture-agent test`：通过。
+- `pnpm --filter @coding-cad/cli typecheck`：通过。
+- `pnpm --filter @coding-cad/cli test:e2e`：通过，覆盖 `design` 人类报告、JSON 和 YAML 输出。
 
 - `find logs/modules -maxdepth 3 -type f | sort`: confirms new module log files exist and old `dsl`/`validator` log directories are removed.
 - `rg "@coding-cad/(dsl|validator)|packages/(dsl|validator)|logs/modules/(dsl|validator)"`: no output, confirming old mainline references are cleaned.
@@ -58,6 +63,9 @@
 - `gh run view 31261956693 --log-failed`: CI failed at `architecture-ir` typecheck because Node type declarations were missing.
 - `gh run view 31261956683 --log-failed`: CodeQL completed scanning but failed SARIF upload because repository code scanning is not enabled.
 - `CI=true pnpm install --frozen-lockfile`: passed, lockfile installs in CI mode.
+- `pnpm --filter @coding-cad/architecture-agent test`: passed.
+- `pnpm --filter @coding-cad/cli typecheck`: passed.
+- `pnpm --filter @coding-cad/cli test:e2e`: passed, covering `design` human report, JSON, and YAML output.
 
 ## 本轮回退引用 / Rollback References
 
