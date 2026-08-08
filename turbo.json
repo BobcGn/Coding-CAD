@@ -13,6 +13,18 @@
       "dependsOn": ["build", "^build"],
       "outputs": []
     },
+    "test:unit": {
+      "dependsOn": ["build", "^build"],
+      "outputs": []
+    },
+    "test:integration": {
+      "dependsOn": ["build", "^build"],
+      "outputs": []
+    },
+    "test:e2e": {
+      "dependsOn": ["build", "^build"],
+      "outputs": []
+    },
     "clean": {
       "cache": false
     }

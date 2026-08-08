@@ -7,8 +7,18 @@
   "type": "module",
   "scripts": {
     "build": "turbo build",
+    "check:changelog": "node scripts/ci/check-change-record.mjs",
+    "ci:verify": "pnpm lint && pnpm check:changelog && pnpm security:secrets && pnpm commitlint && pnpm test:unit && pnpm test:integration && pnpm test:e2e && pnpm build",
+    "commitlint": "node scripts/ci/check-commit-messages.mjs",
+    "lint": "pnpm lint:workspace && pnpm typecheck",
+    "lint:workspace": "node scripts/ci/check-workspace.mjs",
+    "security:audit": "pnpm audit --audit-level high",
+    "security:secrets": "node scripts/ci/check-secrets.mjs",
     "typecheck": "turbo typecheck",
     "test": "turbo test",
+    "test:unit": "turbo test:unit",
+    "test:integration": "turbo test:integration",
+    "test:e2e": "turbo test:e2e",
     "clean": "turbo clean"
   },
   "devDependencies": {
