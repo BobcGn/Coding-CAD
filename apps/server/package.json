@@ -1,0 +1,19 @@
+{
+  "name": "@coding-cad/server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node -e \"console.log('server: no tests yet')\"",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@coding-cad/dsl": "workspace:*",
+    "@coding-cad/validator": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2"
+  }
+}

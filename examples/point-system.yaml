@@ -1,0 +1,135 @@
+schemaVersion: "0.1"
+
+project:
+  name: PointSystem
+  mission: Reward users with auditable, strongly consistent points.
+  scale:
+    users: 100000
+    peak_qps: 1000
+  requirements:
+    consistency: strong
+    latency_ms_p95: 200
+  non_goals:
+    - Generate application code directly from the first architecture model.
+
+domain:
+  entities:
+    PointAccount:
+      fields:
+        userId:
+          type: UserId
+          required: true
+        balance:
+          type: Integer
+          required: true
+      invariants:
+        - balance must not become negative
+    PointTransaction:
+      fields:
+        id:
+          type: TransactionId
+          required: true
+        amount:
+          type: Integer
+          required: true
+        reason:
+          type: String
+          required: true
+
+architecture:
+  components:
+    PointService:
+      type: backend-service
+      purpose: Own point account mutations and transaction history.
+      capabilities:
+        - point-ledger
+        - transactional-command-handling
+      interfaces:
+        PointCommandApi:
+          direction: provided
+          protocol: HTTP
+    Database:
+      type: database
+      technology: PostgreSQL
+      logical_role: transactional-storage
+      capabilities:
+        - relational-storage
+        - strong-transaction
+      limitations:
+        - not-a-cache
+    RedisCache:
+      type: cache
+      technology: Redis
+      logical_role: read-cache
+      capabilities:
+        - cache
+        - high-frequency-access
+      limitations:
+        - no-strong-transaction
+        - not-system-of-record
+  connections:
+    - from: PointService
+      to: Database
+      protocol: SQL
+      mode: sync
+      purpose: Persist account balance and point transaction records.
+    - from: PointService
+      to: RedisCache
+      protocol: Redis
+      mode: sync
+      purpose: Cache read-heavy account summaries.
+
+technology_bindings:
+  - logical_role: transactional-storage
+    technology: PostgreSQL
+    component_id: Database
+    rationale: Point balance updates require a durable strong transaction boundary.
+    alternatives:
+      - MySQL
+      - CockroachDB
+  - logical_role: read-cache
+    technology: Redis
+    component_id: RedisCache
+    rationale: Cache hot account summaries without becoming the system of record.
+
+constraints:
+  - id: C001
+    category: consistency
+    severity: error
+    statement: PointAccount balance updates must be strongly consistent.
+    appliesTo:
+      - PointService
+      - Database
+
+decisions:
+  - id: ADR001
+    title: Use PostgreSQL as initial transaction store
+    status: accepted
+    context: Point balances need correctness before scale-out complexity.
+    decision: Start with PostgreSQL as the system of record.
+    consequences:
+      - Redis may accelerate reads but must not own balance truth.
+
+evolution:
+  phases:
+    - id: Phase1
+      name: PostgreSQL first
+      trigger: MVP launch
+      changes:
+        - type: add
+          target: Database
+          description: Use PostgreSQL for transactionally safe point balances.
+    - id: Phase2
+      name: Add Redis read cache
+      trigger: Read QPS or p95 latency exceeds target.
+      changes:
+        - type: add
+          target: RedisCache
+          description: Cache account summaries while PostgreSQL remains source of truth.
+    - id: Phase3
+      name: Add Kafka integration stream
+      trigger: Downstream systems need replayable point events.
+      changes:
+        - type: add
+          target: PointEventStream
+          description: Publish point transaction events asynchronously.
