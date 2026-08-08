@@ -1,5 +1,5 @@
 {
-  "name": "@coding-cad/architecture-ir",
+  "name": "@coding-cad/architecture-dsl",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -15,8 +15,12 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "pnpm test:unit",
-    "test:unit": "tsc -p tsconfig.json && node dist/architecture-project.test.js",
+    "test:unit": "tsc -p tsconfig.json && node dist/parser.test.js",
     "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@coding-cad/architecture-ir": "workspace:*",
+    "yaml": "^2.8.0"
   },
   "devDependencies": {
     "typescript": "^5.9.2"

@@ -17,12 +17,12 @@ importers:
 
   apps/server:
     dependencies:
-      '@coding-cad/dsl':
+      '@coding-cad/architecture-dsl':
         specifier: workspace:*
-        version: link:../../packages/dsl
-      '@coding-cad/validator':
+        version: link:../../packages/architecture-dsl
+      '@coding-cad/architecture-validator':
         specifier: workspace:*
-        version: link:../../packages/validator
+        version: link:../../packages/architecture-validator
     devDependencies:
       typescript:
         specifier: ^5.9.2
@@ -48,23 +48,7 @@ importers:
         specifier: ^5.9.2
         version: 5.9.3
 
-  packages/architecture-ir:
-    devDependencies:
-      typescript:
-        specifier: ^5.9.2
-        version: 5.9.3
-
-  packages/component-registry:
-    dependencies:
-      '@coding-cad/architecture-ir':
-        specifier: workspace:*
-        version: link:../architecture-ir
-    devDependencies:
-      typescript:
-        specifier: ^5.9.2
-        version: 5.9.3
-
-  packages/dsl:
+  packages/architecture-dsl:
     dependencies:
       '@coding-cad/architecture-ir':
         specifier: workspace:*
@@ -77,7 +61,45 @@ importers:
         specifier: ^5.9.2
         version: 5.9.3
 
-  packages/validator:
+  packages/architecture-ir:
+    devDependencies:
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.3
+
+  packages/architecture-validator:
+    dependencies:
+      '@coding-cad/architecture-ir':
+        specifier: workspace:*
+        version: link:../architecture-ir
+      '@coding-cad/component-registry':
+        specifier: workspace:*
+        version: link:../component-registry
+    devDependencies:
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.3
+
+  packages/cli:
+    dependencies:
+      '@coding-cad/architecture-dsl':
+        specifier: workspace:*
+        version: link:../architecture-dsl
+      '@coding-cad/architecture-ir':
+        specifier: workspace:*
+        version: link:../architecture-ir
+      '@coding-cad/architecture-validator':
+        specifier: workspace:*
+        version: link:../architecture-validator
+      '@coding-cad/component-registry':
+        specifier: workspace:*
+        version: link:../component-registry
+    devDependencies:
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.3
+
+  packages/component-registry:
     dependencies:
       '@coding-cad/architecture-ir':
         specifier: workspace:*

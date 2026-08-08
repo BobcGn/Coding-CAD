@@ -1,12 +1,12 @@
-import { parseArchitectureYaml } from "@coding-cad/dsl";
-import { validateArchitecture } from "@coding-cad/validator";
+import { parseDSL } from "@coding-cad/architecture-dsl";
+import { ArchitectureValidator } from "@coding-cad/architecture-validator";
 
 export function analyzeArchitectureDsl(source: string) {
-  const ir = parseArchitectureYaml(source);
-  const diagnostics = validateArchitecture(ir);
+  const project = parseDSL(source);
+  const validation = new ArchitectureValidator().validate(project);
 
   return {
-    ir,
-    diagnostics
+    project,
+    validation
   };
 }

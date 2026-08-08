@@ -1,0 +1,126 @@
+version: "0.1"
+project:
+  name: PointSystem
+  intent:
+    purpose:
+      - Reward users with auditable points.
+      - Keep point balance changes strongly consistent.
+    scale:
+      users: 100000
+      peakQps: 1000
+    requirements:
+      consistency: strong
+      availability: "99.9%"
+      latencyMs: 200
+domain:
+  entities:
+    - name: User
+      description: Person who earns and spends points.
+      fields:
+        - name: id
+          type: UUID
+          required: true
+        - name: displayName
+          type: String
+    - name: PointAccount
+      description: Owns the current point balance for one user.
+      fields:
+        - name: userId
+          type: UUID
+          required: true
+        - name: balance
+          type: Integer
+          required: true
+    - name: PointTransaction
+      description: Auditable record of one point balance change.
+      fields:
+        - name: id
+          type: UUID
+          required: true
+        - name: amount
+          type: Integer
+          required: true
+        - name: reason
+          type: String
+          required: true
+architecture:
+  components:
+    - id: point-service
+      name: PointService
+      type: service
+      description: Owns point account commands and transaction history.
+      capabilities:
+        - transactional-command-handling
+        - point-ledger
+      contracts:
+        - name: AddPoint
+          protocol: REST
+          inputs:
+            - name: userId
+              type: UUID
+              required: true
+            - name: amount
+              type: Integer
+              required: true
+          outputs:
+            - name: balance
+              type: Integer
+              required: true
+    - id: postgres
+      name: PostgreSQL
+      type: database
+      description: Durable source of truth for point accounts and transactions.
+      capabilities:
+        - transaction
+        - strong-consistency
+        - ledger
+    - id: redis-cache
+      name: Redis Cache
+      type: cache
+      description: Speeds up read-heavy point summaries without owning truth.
+      capabilities:
+        - cache
+        - high-performance-read
+      limitations:
+        - not-primary-storage
+    - id: public-rest-api
+      name: REST API
+      type: external-service
+      description: Public HTTP interface for point commands.
+      capabilities:
+        - service-communication
+        - http-interface
+  connections:
+    - from: public-rest-api
+      to: point-service
+      protocol: REST
+      description: Submit point commands.
+    - from: point-service
+      to: postgres
+      protocol: SQL
+      description: Persist point balances and transaction records.
+    - from: point-service
+      to: redis-cache
+      protocol: Redis
+      description: Cache account summaries for reads.
+constraints:
+  - type: consistency
+    value: strong
+    description: Point balance cannot lose data.
+decisions:
+  - title: Use PostgreSQL
+    context: Point transactions require consistency.
+    decision: Use relational database as the point ledger source of truth.
+    rationale: Transaction support keeps balance updates correct.
+    alternatives:
+      - Redis as primary storage
+evolution:
+  phases:
+    - name: v1
+      description: Launch with PostgreSQL-backed point ledger.
+      changes:
+        - PostgreSQL storage
+    - name: v2
+      description: Add cache after read traffic validates the need.
+      changes:
+        - Add Redis cache

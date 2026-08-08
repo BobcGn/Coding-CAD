@@ -1,13 +1,22 @@
-import type { ComponentKind } from "@coding-cad/architecture-ir";
+export type * from "./capability.js";
+export type * from "./limitation.js";
+export type * from "./recommendation.js";
+export type * from "./component-definition.js";
+export type * from "./registry.js";
+export * from "./registry.js";
+export * from "./loader.js";
+export * from "./builtin/index.js";
+
+import { builtinComponentDefinitions } from "./builtin/index.js";
+import type { ComponentDefinition } from "./component-definition.js";
 
 /**
- * General technology knowledge that can inform validation, UI hints, or Agents.
- * Keep project-specific decisions in ArchitectureIR decisions/constraints rather
- * than encoding them here as universal facts.
+ * Compatibility shape from the first registry prototype.
+ * Prefer ComponentDefinition for new code.
  */
 export interface ComponentKnowledge {
   readonly technology: string;
-  readonly kind: ComponentKind;
+  readonly kind: ComponentDefinition["architectureComponentType"];
   readonly capabilities: readonly string[];
   readonly limitations: readonly string[];
   readonly commonInterfaces: readonly string[];
@@ -15,44 +24,15 @@ export interface ComponentKnowledge {
   readonly riskyFor: readonly string[];
 }
 
-export const componentKnowledgeBase: readonly ComponentKnowledge[] = [
-  {
-    technology: "PostgreSQL",
-    kind: "database",
-    capabilities: ["relational-storage", "strong-transaction", "sql-query", "data-integrity"],
-    limitations: ["horizontal-write-scaling-needs-care", "not-a-cache"],
-    commonInterfaces: ["SQL"],
-    suitableFor: ["transactional-storage", "ledger", "consistent-domain-state"],
-    riskyFor: ["high-frequency-ephemeral-cache", "unbounded-event-stream"]
-  },
-  {
-    technology: "Redis",
-    kind: "cache",
-    capabilities: ["cache", "kv-storage", "high-frequency-access", "ephemeral-state"],
-    limitations: ["no-strong-transaction", "memory-bound", "not-system-of-record"],
-    commonInterfaces: ["CacheRead", "CacheWrite"],
-    suitableFor: ["cache", "rate-limit", "session-cache"],
-    riskyFor: ["transactional-storage", "system-of-record", "financial-ledger"]
-  },
-  {
-    technology: "MongoDB",
-    kind: "database",
-    capabilities: ["document-storage", "flexible-schema", "horizontal-scale"],
-    limitations: ["strong-transaction-boundaries-need-care", "relational-joins-are-limited"],
-    commonInterfaces: ["DocumentRead", "DocumentWrite"],
-    suitableFor: ["content-documents", "flexible-aggregate-storage"],
-    riskyFor: ["financial-ledger", "cross-aggregate-strong-transaction"]
-  },
-  {
-    technology: "Kafka",
-    kind: "message-broker",
-    capabilities: ["event-stream", "durable-log", "async-decoupling", "replay"],
-    limitations: ["operational-complexity", "not-request-response", "eventual-consistency"],
-    commonInterfaces: ["EventPublish", "EventSubscribe"],
-    suitableFor: ["event-driven-integration", "audit-stream", "async-workflow"],
-    riskyFor: ["simple-crud-mvp", "synchronous-transaction-boundary"]
-  }
-];
+export const componentKnowledgeBase: readonly ComponentKnowledge[] = builtinComponentDefinitions.map((component) => ({
+  technology: component.name,
+  kind: component.architectureComponentType,
+  capabilities: component.capabilities.map((capability) => capability.id),
+  limitations: component.limitations.map((limitation) => limitation.id),
+  commonInterfaces: component.interfaces,
+  suitableFor: component.suitableFor,
+  riskyFor: component.unsuitableFor
+}));
 
 export function findComponentKnowledge(technology: string): ComponentKnowledge | undefined {
   return componentKnowledgeBase.find((entry) => entry.technology.toLowerCase() === technology.toLowerCase());
