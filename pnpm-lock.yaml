@@ -134,6 +134,22 @@ importers:
         specifier: ^5.9.2
         version: 5.9.3
 
+  packages/execution-blueprint:
+    dependencies:
+      '@coding-cad/architecture-ir':
+        specifier: workspace:*
+        version: link:../architecture-ir
+      '@coding-cad/architecture-validator':
+        specifier: workspace:*
+        version: link:../architecture-validator
+      '@coding-cad/component-registry':
+        specifier: workspace:*
+        version: link:../component-registry
+    devDependencies:
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.3
+
 packages:
 
   '@turbo/darwin-64@2.10.9':

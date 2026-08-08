@@ -4,9 +4,9 @@ Coding CAD 是 **Software Architecture CAD + AI Engineering Orchestration Layer*
 
 Coding CAD is a **Software Architecture CAD + AI Engineering Orchestration Layer**.
 
-它不是低代码 CRUD 生成器，而是一个架构优先的平台：人类用可视化和结构化方式表达软件设计意图，AI Agent 在生成任何代码之前先理解架构、约束和演进方向。
+它不是低代码 CRUD 生成器，而是一个架构优先的平台：人类用可视化和结构化方式表达软件设计意图，AI Agent 在生成任何代码之前先理解架构、约束、执行蓝图和演进方向。
 
-It is not a low-code CRUD generator. It is an architecture-first platform where humans express software design intent visually and structurally, so AI agents can understand architecture, constraints, and evolution before producing code.
+It is not a low-code CRUD generator. It is an architecture-first platform where humans express software design intent visually and structurally, so AI agents can understand architecture, constraints, execution blueprints, and evolution before producing code.
 
 核心流程：
 
@@ -18,6 +18,7 @@ Human visual intent
   -> Architecture IR
   -> Architecture DSL
   -> Validator and Architecture Agent
+  -> Execution Blueprint
   -> Coding Agent / Testing Agent
 ```
 
@@ -44,9 +45,9 @@ The durable asset is not generated code. The durable asset is a reasoned, valida
 
 ## MVP Scope / MVP 范围
 
-第一版优先建设真正的核心能力。当前已完成架构建模、架构交换、架构校验、组件知识库、CLI 入口和第一阶段 Architecture Agent。
+第一版优先建设真正的核心能力。当前已完成架构建模、架构交换、架构校验、组件知识库、CLI 入口、第一阶段 Architecture Agent 和 Execution Blueprint 协议层。
 
-The first version focuses on the core moat. The current implementation now includes architecture modeling, architecture exchange, architecture validation, component knowledge, the CLI entry point, and the first Architecture Agent phase.
+The first version focuses on the core moat. The current implementation now includes architecture modeling, architecture exchange, architecture validation, component knowledge, the CLI entry point, the first Architecture Agent phase, and the Execution Blueprint protocol layer.
 
 1. Architecture IR 类型定义 / Architecture IR type definitions
 2. YAML DSL 解析与生成 / YAML DSL parser and generator
@@ -54,7 +55,8 @@ The first version focuses on the core moat. The current implementation now inclu
 4. 组件能力知识库 / Component capability knowledge base
 5. CLI 架构分析与设计入口 / CLI architecture analysis and design entry point
 6. Architecture Agent 架构推理层 / Architecture Agent reasoning layer
-7. 面向未来编排的 Agent Runtime 边界 / Agent-runtime boundaries for future orchestration
+7. Execution Blueprint 工程实施协议 / Execution Blueprint implementation protocol
+8. 面向未来编排的 Agent Runtime 边界 / Agent-runtime boundaries for future orchestration
 
 React / React Flow 编辑器会延后，直到 DSL 和 IR 被证明足够有用。UI 应该是模型的视图，而不是模型本身。
 
@@ -99,6 +101,8 @@ cli                    -> architecture-dsl + architecture-ir
                           + architecture-validator + component-registry
 architecture-agent     -> architecture-ir + architecture-dsl
                           + architecture-validator + component-registry
+execution-blueprint    -> architecture-ir + architecture-validator
+                          + component-registry
 agent-runtime          -> architecture-ir
 apps/*                 -> public package APIs
 ```

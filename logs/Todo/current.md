@@ -1,6 +1,6 @@
 # 当前 TODO / Current TODO
 
-更新时间 / Updated at: 2026-08-08 22:34 CST (Asia/Shanghai)
+更新时间 / Updated at: 2026-08-09 00:35 CST (Asia/Shanghai)
 
 本文件是仍有效 TODO 的单一事实源。
 
@@ -29,6 +29,18 @@ This file is the single source of truth for active TODOs.
 - 状态 / Status: 待处理 / Pending
 - 当前处理 / Current handling: 第一阶段覆盖积分系统和强一致账本类需求。
 - 解除条件 / Exit condition: 扩展更多领域规划模板，并让 Planner 系统性利用 Component Registry 和 Validator 反馈生成架构。
+
+## TODO-011: Execution Blueprint Adapter Outputs / Execution Blueprint 适配器输出
+
+- 状态 / Status: 待处理 / Pending
+- 当前处理 / Current handling: `packages/execution-blueprint` 当前只实现内部模型和确定性生成器。
+- 解除条件 / Exit condition: 增加 Codex Prompt Markdown、Claude Code Guide Markdown 和 Generic Agent Instruction JSON 渲染器。
+
+## TODO-012: Execution Blueprint Task Granularity / Execution Blueprint 任务粒度
+
+- 状态 / Status: 待处理 / Pending
+- 当前处理 / Current handling: 当前任务由组件、连接和关键约束确定性生成。
+- 解除条件 / Exit condition: 定义可配置任务粒度，支持单体、模块化单体和多服务实现风格。
 
 ## TODO-005: Web Editor Timing / Web Editor 时机
 

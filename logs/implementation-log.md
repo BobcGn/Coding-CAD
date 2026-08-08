@@ -253,3 +253,35 @@ Validation:
 
 - `pnpm --filter @coding-cad/cli typecheck`: passed.
 - `pnpm --filter @coding-cad/cli test:e2e`: passed.
+
+## 2026-08-09 - Execution Blueprint 第一阶段 / Execution Blueprint Phase One
+
+状态：已验证。
+
+Status: Verified.
+
+变更：
+
+Changes:
+
+- 新增下一核心模块 `packages/execution-blueprint`。
+- 定义 `ExecutionBlueprint`、`ImplementationTask`、`ImplementationConstraint` 和 `AgentGuide`。
+- 实现 `ExecutionBlueprintGenerator`，将 Architecture IR 转换为外部 Coding Agent 可执行的工程实施蓝图。
+- 约束来源覆盖 Architecture Constraints、Architecture Decisions、Validator Results 和 Component Registry limitations。
+- 保持 Coding CAD 与 Coding Agent 的边界：不生成代码、不修改文件、不绑定具体 Agent。
+
+- Added the next core module, `packages/execution-blueprint`.
+- Defined `ExecutionBlueprint`, `ImplementationTask`, `ImplementationConstraint`, and `AgentGuide`.
+- Implemented `ExecutionBlueprintGenerator`, turning Architecture IR into implementation blueprints executable by external Coding Agents.
+- Constraint sources cover Architecture Constraints, Architecture Decisions, Validator Results, and Component Registry limitations.
+- Preserved the boundary between Coding CAD and Coding Agents: no code generation, no file mutation, and no concrete Agent binding.
+
+验证：
+
+Validation:
+
+- `pnpm --filter @coding-cad/execution-blueprint test`：通过。
+- `pnpm ci:verify`：通过，workspace 当前为 10 个模块。
+
+- `pnpm --filter @coding-cad/execution-blueprint test`: passed.
+- `pnpm ci:verify`: passed, with the workspace currently at 10 modules.

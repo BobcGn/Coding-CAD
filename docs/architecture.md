@@ -19,9 +19,9 @@ The Architecture IR describes:
 - 演进计划 / evolution plan
 - 架构决策 / architecture decisions
 
-YAML DSL 只是 IR 的人类可读投影。Architecture Agent 和未来的可视化编辑器也应该读写同一份 IR。
+YAML DSL 是 IR 的人类可读投影；Architecture Agent 读写 IR；Execution Blueprint 从 IR 生成给外部 Coding Agent 的实施协议。未来的可视化编辑器也应该读写同一份 IR。
 
-The YAML DSL is only a human-readable projection of the IR. Architecture Agent and future visual editors should also read and write the same IR.
+The YAML DSL is a human-readable projection of the IR; Architecture Agent reads and writes IR; Execution Blueprint turns IR into an implementation protocol for external Coding Agents. Future visual editors should also read and write the same IR.
 
 ## Dependency Direction / 依赖方向
 
@@ -34,6 +34,8 @@ cli                    -> architecture-dsl + architecture-ir
                           + architecture-agent
 architecture-agent     -> architecture-ir + architecture-dsl
                           + architecture-validator + component-registry
+execution-blueprint    -> architecture-ir + architecture-validator
+                          + component-registry
 agent-runtime          -> architecture-ir
 apps                   -> public package APIs
 ```
