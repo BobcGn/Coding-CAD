@@ -69,9 +69,10 @@ apps/
   server/    DSL 解析、验证和未来 Agent API / DSL parsing, validation, and future agent APIs
 packages/
   architecture-ir/       核心架构中间表示 / Core architecture intermediate representation
-  dsl/                   YAML DSL 解析与生成 / YAML DSL parser and generator
+  architecture-dsl/      YAML 架构描述语言 / YAML architecture description language
   component-registry/    组件能力知识库 / Component capability knowledge base
-  validator/             架构诊断和规则检查 / Architecture diagnostics and rule checks
+  architecture-validator/ 架构诊断和规则检查 / Architecture diagnostics and rule checks
+  cli/                   命令行入口 / Command-line entry point
   agent-runtime/         未来 AI Agent 编排边界 / Future AI agent orchestration boundary
   README.md              核心代码架构地图 / Core code architecture map
 docs/
@@ -87,12 +88,13 @@ docs/
 Core code uses one-way dependencies: the foundational model lives in `architecture-ir`, and other packages parse, validate, enrich, or orchestrate around it.
 
 ```text
-architecture-ir
-  <- dsl
-  <- component-registry
-  <- validator
-  <- agent-runtime
-  <- apps/*
+architecture-dsl       -> architecture-ir
+component-registry     -> architecture-ir
+architecture-validator -> architecture-ir + component-registry
+cli                    -> architecture-dsl + architecture-ir
+                          + architecture-validator + component-registry
+agent-runtime          -> architecture-ir
+apps/*                 -> public package APIs
 ```
 
 详细的 package 边界、数据流和扩展规则见 [`packages/README.md`](packages/README.md)。
@@ -103,10 +105,15 @@ See [`packages/README.md`](packages/README.md) for package boundaries, data flow
 
 ```bash
 pnpm install
+pnpm ci:verify
 pnpm build
 pnpm typecheck
 pnpm test
 ```
+
+推送前门禁和 GitHub Actions 说明见 [`docs/ci-cd.md`](docs/ci-cd.md)。
+
+See [`docs/ci-cd.md`](docs/ci-cd.md) for the pre-push gate and GitHub Actions pipeline.
 
 ## Design Principles / 设计原则
 

@@ -62,10 +62,10 @@ All log documents are project documentation and must remain bilingual in Chinese
 
 ## Git Boundary / Git 边界
 
-The `logs/` directory is a local engineering governance record and is ignored by Git by default.
+`logs/` 是纳入版本控制的工程治理记录，使范围、状态、证据和实施历史能够与代码变更一起审查和追溯。运行时 `*.log` 和构建缓存仍由 `.gitignore` 排除。
 
-`logs/` 目录是本地工程治理记录，默认被 Git 忽略。
+`logs/` is a version-controlled engineering governance record so scope, state, evidence, and implementation history can be reviewed and traced with code changes. Runtime `*.log` files and build caches remain excluded by `.gitignore`.
 
-Public, durable rules about the log system belong in `docs/logging-system.md`; changing current work state belongs in `logs/`.
+公开、长期有效的日志体系规则写入 `docs/logging-system.md`；当前工作状态写入 `logs/`。两者都必须保持中英双语。
 
-公开、长期有效的日志体系规则写入 `docs/logging-system.md`；当前工作状态写入 `logs/`。
+Public, durable rules about the log system belong in `docs/logging-system.md`; changing work state belongs in `logs/`. Both must remain bilingual.

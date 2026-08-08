@@ -4,6 +4,6 @@
 
 This app will expose DSL parsing, architecture validation, and future agent orchestration APIs.
 
-在 MVP 阶段，它只依赖 `@coding-cad/dsl` 和 `@coding-cad/validator`。它不应该成为 Architecture IR 语义的所有者。
+在 MVP 阶段，它只依赖 `@coding-cad/architecture-dsl` 和 `@coding-cad/architecture-validator`。它不应该成为 Architecture IR 语义的所有者。
 
-For the MVP, it depends on `@coding-cad/dsl` and `@coding-cad/validator` only. It should not become the owner of Architecture IR semantics.
+For the MVP, it depends on `@coding-cad/architecture-dsl` and `@coding-cad/architecture-validator` only. It should not become the owner of Architecture IR semantics.

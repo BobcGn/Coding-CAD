@@ -9,8 +9,7 @@ dist/
 coverage/
 *.tsbuildinfo
 
-# Local governance and agent workspace records
-logs/
+# Local agent workspace records
 .agents/
 .codex/
 

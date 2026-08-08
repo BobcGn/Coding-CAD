@@ -26,12 +26,13 @@ The YAML DSL is only a human-readable projection of the IR. Future visual editor
 ## Dependency Direction / 依赖方向
 
 ```text
-architecture-ir
-  <- dsl
-  <- component-registry
-  <- validator
-  <- agent-runtime
-  <- apps
+architecture-dsl       -> architecture-ir
+component-registry     -> architecture-ir
+architecture-validator -> architecture-ir + component-registry
+cli                    -> architecture-dsl + architecture-ir
+                          + architecture-validator + component-registry
+agent-runtime          -> architecture-ir
+apps                   -> public package APIs
 ```
 
 箭头表示“被谁依赖”。高层 package 可以依赖低层 package，但低层 package 不应该知道 app、UI、server 或具体 Agent 的存在。
