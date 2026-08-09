@@ -4,6 +4,6 @@
 
 模块 / Module: `apps/server`
 
-当前范围：作为 DSL 解析、架构验证和未来 Agent API 的薄服务层。
+当前范围：作为 DSL 解析和架构验证 API 的薄服务层；不提供 Agent 执行或编排 API。
 
-Current scope: act as a thin service layer for DSL parsing, architecture validation, and future Agent APIs.
+Current scope: act as a thin service layer for DSL parsing and architecture validation APIs; do not expose Agent execution or orchestration APIs.

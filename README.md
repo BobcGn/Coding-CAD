@@ -1,8 +1,8 @@
 # Coding CAD
 
-Coding CAD 是 **Software Architecture CAD + AI Engineering Orchestration Layer**。
+Coding CAD 是 **Software Architecture CAD + AI Engineering Control Layer**。
 
-Coding CAD is a **Software Architecture CAD + AI Engineering Orchestration Layer**.
+Coding CAD is a **Software Architecture CAD + AI Engineering Control Layer**.
 
 它不是低代码 CRUD 生成器，而是一个架构优先的平台：人类用可视化和结构化方式表达软件设计意图，AI Agent 在生成任何代码之前先理解架构、约束、执行蓝图和演进方向。
 
@@ -16,11 +16,18 @@ Core flow:
 Human visual intent
   -> Architecture Agent
   -> Architecture IR
-  -> Architecture DSL
-  -> Validator and Architecture Agent
+  -> Validator and Component Registry
+  -> Architecture Proposal
+  -> Human Review and Approval
   -> Execution Blueprint
   -> Agent Adapter
   -> External Coding Agent / Testing Agent
+
+Existing source repository
+  -> Implementation Analyzer
+  -> Architecture IR
+  -> Implementation Validator
+  -> Compliance Report and Architecture Review
 ```
 
 ## Why This Exists / 为什么存在
@@ -46,9 +53,9 @@ The durable asset is not generated code. The durable asset is a reasoned, valida
 
 ## MVP Scope / MVP 范围
 
-第一版优先建设真正的核心能力。当前已完成架构建模、架构交换、架构校验、组件知识库、CLI 入口、第一阶段 Architecture Agent、Execution Blueprint 协议层和 Agent Adapter 渲染层。
+第一版优先建设真正的核心能力。当前已完成架构建模、架构交换、架构校验、组件知识库、CLI 入口、Architecture Agent、Workspace 生命周期、Architecture Review、Implementation Analyzer、Implementation Validator、Execution Blueprint 协议层和 Agent Adapter 渲染层。
 
-The first version focuses on the core moat. The current implementation now includes architecture modeling, architecture exchange, architecture validation, component knowledge, the CLI entry point, the first Architecture Agent phase, the Execution Blueprint protocol layer, and the Agent Adapter rendering layer.
+The first version focuses on the core moat. The current implementation now includes architecture modeling, architecture exchange, architecture validation, component knowledge, the CLI entry point, Architecture Agent, Workspace lifecycle, Architecture Review, Implementation Analyzer, Implementation Validator, the Execution Blueprint protocol layer, and the Agent Adapter rendering layer.
 
 1. Architecture IR 类型定义 / Architecture IR type definitions
 2. YAML DSL 解析与生成 / YAML DSL parser and generator
@@ -58,8 +65,10 @@ The first version focuses on the core moat. The current implementation now inclu
 6. Architecture Agent 架构推理层 / Architecture Agent reasoning layer
 7. Execution Blueprint 工程实施协议 / Execution Blueprint implementation protocol
 8. Agent Adapter 外部 Coding Agent 指导文档渲染 / External Coding Agent instruction rendering
-9. 面向未来编排的 Agent Runtime 边界 / Agent-runtime boundaries for future orchestration
-
+9. Workspace 架构生命周期管理 / Workspace architecture lifecycle management
+10. Architecture Review 人工审核与批准门禁 / Human review and approval gate
+11. Implementation Analyzer 已有仓库架构反演 / Existing-repository architecture reverse engineering
+12. Implementation Validator 实现与架构合规验证 / Implementation-to-architecture compliance verification
 React / React Flow 编辑器会延后，直到 DSL 和 IR 被证明足够有用。UI 应该是模型的视图，而不是模型本身。
 
 The React / React Flow editor is intentionally deferred until the DSL and IR prove useful. A UI should be a view over the model, not the model itself.
@@ -73,7 +82,7 @@ This repository uses pnpm workspaces and Turborepo.
 ```text
 apps/
   web/       架构可视化编辑器 shell / Architecture visual editor shell
-  server/    DSL 解析、验证和未来 Agent API / DSL parsing, validation, and future agent APIs
+  server/    DSL 解析与架构验证 API shell / DSL parsing and architecture validation API shell
 packages/
   architecture-ir/       核心架构中间表示 / Core architecture intermediate representation
   architecture-dsl/      YAML 架构描述语言 / YAML architecture description language
@@ -83,7 +92,10 @@ packages/
   architecture-agent/    架构推理助手 / Architecture reasoning assistant
   execution-blueprint/   工程实施蓝图协议 / Implementation handoff blueprint protocol
   agent-adapter/         外部 Agent 指导文档渲染 / External Agent instruction renderer
-  agent-runtime/         未来 AI Agent 编排边界 / Future AI agent orchestration boundary
+  workspace/             架构生命周期管理 / Architecture lifecycle management
+  architecture-review/   人工审核与批准门禁 / Human review and approval gate
+  implementation-analyzer/ 仓库到 Architecture IR 的反演 / Repository-to-Architecture-IR reverse engineering
+  implementation-validator/ 实现与批准架构的合规检查 / Implementation compliance against approved architecture
   README.md              核心代码架构地图 / Core code architecture map
 docs/
   architecture.md
@@ -108,7 +120,13 @@ architecture-agent     -> architecture-ir + architecture-dsl
 execution-blueprint    -> architecture-ir + architecture-validator
                           + component-registry
 agent-adapter          -> execution-blueprint
-agent-runtime          -> architecture-ir
+workspace              -> architecture-ir + architecture-validator
+                          + execution-blueprint
+architecture-review    -> architecture-ir + architecture-validator
+                          + workspace
+implementation-analyzer -> architecture-ir
+implementation-validator -> architecture-ir + execution-blueprint
+                          + implementation-analyzer
 apps/*                 -> public package APIs
 ```
 
@@ -149,6 +167,31 @@ See [`docs/ci-cd.md`](docs/ci-cd.md) for the pre-push gate and GitHub Actions pi
 - 可扩展插件架构 / Extensible plugin architecture
 - 领域驱动设计 / Domain driven design
 - 逻辑架构与具体技术绑定分离 / Logic architecture separated from concrete technology binding
+
+### External Agent Boundary / 外部 Agent 边界
+
+Coding CAD 不提供或编排 Coding Agent。CAD 负责架构建模、推理、验证、审核、规划和实施指导。Coding Agent 由用户自行管理。Coding CAD 通过 Blueprint / Guide 向下传递工程意图，通过 Repository Analyzer / Validator 向上观察实际实现。
+
+Coding CAD does not provide or orchestrate Coding Agents. Coding CAD owns architecture modeling, reasoning, validation, review, planning, and implementation guidance. External Coding Agents are user-managed processes. Coding CAD communicates downward through standardized Blueprints and Guides, and observes implementation upward through repository analysis and validation.
+
+```text
+Architecture Canvas
+  -> Architecture IR
+  -> Architecture Review
+  -> Execution Blueprint
+  -> Agent Adapter
+  -> Prompt / Guide
+  -> Integrated Terminal
+  -> User-managed Coding Agent
+  -> Repository
+  -> Implementation Analyzer
+  -> Implementation Validator
+  -> Architecture Feedback
+```
+
+`agent-adapter` 是纯渲染边界：它不启动、调用或管理 Agent，不修改 Blueprint，也不增加新的架构意图。外部 Agent 的执行不属于 `packages/`。
+
+`agent-adapter` is a pure rendering boundary: it does not start, invoke, or manage an Agent, mutate a Blueprint, or add architectural intent. External Agent execution is outside `packages/`.
 
 ## Documentation Rule / 文档规则
 

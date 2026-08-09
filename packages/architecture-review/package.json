@@ -1,0 +1,31 @@
+{
+  "name": "@coding-cad/architecture-review",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Human-in-the-loop proposal, review, approval, and impact-analysis layer for Architecture IR.",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "pnpm test:unit",
+    "test:unit": "tsc -p tsconfig.json && node dist/architecture-review.test.js",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@coding-cad/architecture-ir": "workspace:*",
+    "@coding-cad/architecture-validator": "workspace:*",
+    "@coding-cad/workspace": "workspace:*"
+  },
+  "devDependencies": {
+    "@coding-cad/execution-blueprint": "workspace:*",
+    "typescript": "^5.9.2"
+  }
+}

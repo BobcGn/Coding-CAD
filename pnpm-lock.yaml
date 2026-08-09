@@ -51,16 +51,6 @@ importers:
         specifier: ^5.9.2
         version: 5.9.3
 
-  packages/agent-runtime:
-    dependencies:
-      '@coding-cad/architecture-ir':
-        specifier: workspace:*
-        version: link:../architecture-ir
-    devDependencies:
-      typescript:
-        specifier: ^5.9.2
-        version: 5.9.3
-
   packages/architecture-agent:
     dependencies:
       '@coding-cad/architecture-dsl':
@@ -95,6 +85,25 @@ importers:
 
   packages/architecture-ir:
     devDependencies:
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.3
+
+  packages/architecture-review:
+    dependencies:
+      '@coding-cad/architecture-ir':
+        specifier: workspace:*
+        version: link:../architecture-ir
+      '@coding-cad/architecture-validator':
+        specifier: workspace:*
+        version: link:../architecture-validator
+      '@coding-cad/workspace':
+        specifier: workspace:*
+        version: link:../workspace
+    devDependencies:
+      '@coding-cad/execution-blueprint':
+        specifier: workspace:*
+        version: link:../execution-blueprint
       typescript:
         specifier: ^5.9.2
         version: 5.9.3
@@ -155,6 +164,48 @@ importers:
       '@coding-cad/component-registry':
         specifier: workspace:*
         version: link:../component-registry
+    devDependencies:
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.3
+
+  packages/implementation-analyzer:
+    dependencies:
+      '@coding-cad/architecture-ir':
+        specifier: workspace:*
+        version: link:../architecture-ir
+    devDependencies:
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.3
+
+  packages/implementation-validator:
+    dependencies:
+      '@coding-cad/architecture-ir':
+        specifier: workspace:*
+        version: link:../architecture-ir
+      '@coding-cad/execution-blueprint':
+        specifier: workspace:*
+        version: link:../execution-blueprint
+      '@coding-cad/implementation-analyzer':
+        specifier: workspace:*
+        version: link:../implementation-analyzer
+    devDependencies:
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.3
+
+  packages/workspace:
+    dependencies:
+      '@coding-cad/architecture-ir':
+        specifier: workspace:*
+        version: link:../architecture-ir
+      '@coding-cad/architecture-validator':
+        specifier: workspace:*
+        version: link:../architecture-validator
+      '@coding-cad/execution-blueprint':
+        specifier: workspace:*
+        version: link:../execution-blueprint
     devDependencies:
       typescript:
         specifier: ^5.9.2

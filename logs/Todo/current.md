@@ -1,6 +1,6 @@
 # 当前 TODO / Current TODO
 
-更新时间 / Updated at: 2026-08-09 00:35 CST (Asia/Shanghai)
+更新时间 / Updated at: 2026-08-09 22:22 CST (Asia/Shanghai)
 
 本文件是仍有效 TODO 的单一事实源。
 
@@ -11,12 +11,6 @@ This file is the single source of truth for active TODOs.
 - 状态 / Status: 待处理 / Pending
 - 当前处理 / Current handling: `ArchitectureProject` 和拆分类型文件已完成，尚未加入运行时 schema 校验。
 - 解除条件 / Exit condition: 为 IR 增加稳定 schemaVersion 策略、运行时校验和错误定位测试。
-
-## TODO-004: Agent Runtime Contract / Agent Runtime 契约
-
-- 状态 / Status: 待处理 / Pending
-- 当前处理 / Current handling: 已有 Architecture/Coding/Testing Agent 的最小边界类型。
-- 解除条件 / Exit condition: 定义 Agent 输入输出协议、任务生命周期、人工决策点和可审计 artifact。
 
 ## TODO-009: Architecture Agent Real LLM Integration / Architecture Agent 真实 LLM 接入
 
@@ -47,6 +41,18 @@ This file is the single source of truth for active TODOs.
 - 状态 / Status: 待处理 / Pending
 - 当前处理 / Current handling: Web app 仍是 IR view shell，没有实现拖拽界面。
 - 解除条件 / Exit condition: 在 DSL/IR/Validator 更稳定后，再设计 React Flow 编辑器的最小可用视图。
+
+## TODO-013: Integrated Terminal Infrastructure / 集成终端基础设施
+
+- 状态 / Status: 待处理 / Pending
+- 当前处理 / Current handling: 仅记录产品宿主路线图；本阶段不实现终端。
+- 解除条件 / Exit condition: 在 `apps/web` 产品宿主中提供 xterm.js 或同类视图、PTY bridge、多会话/标签页、repository cwd 绑定，以及 cwd/pid/status/exit status 生命周期记录。
+- 边界 / Boundary: 终端只管理 OS Process / PTY，允许用户运行 `codex`、`claude`、`opencode` 或任意 shell；不实现 Agent Provider、Agent Runtime、Agent SDK 调用或调度器。
+
+- Status: Pending
+- Current handling: Roadmap only; no terminal is implemented in this phase.
+- Exit condition: Provide an xterm.js or equivalent view, PTY bridge, multiple sessions/tabs, repository cwd binding, and cwd/pid/status/exit-status lifecycle records in the `apps/web` product host.
+- Boundary: The terminal manages only OS Processes / PTYs and lets users run `codex`, `claude`, `opencode`, or arbitrary shells; it does not implement Agent Providers, an Agent Runtime, Agent SDK invocation, or a scheduler.
 
 ## TODO-008: Technology Binding Separation / 技术绑定分层
 

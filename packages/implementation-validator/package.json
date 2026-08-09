@@ -1,0 +1,30 @@
+{
+  "name": "@coding-cad/implementation-validator",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Verify actual implementation evidence against approved Architecture IR and Execution Blueprints.",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "pnpm test:unit",
+    "test:unit": "tsc -p tsconfig.json && node dist/validator.test.js",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@coding-cad/architecture-ir": "workspace:*",
+    "@coding-cad/execution-blueprint": "workspace:*",
+    "@coding-cad/implementation-analyzer": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2"
+  }
+}

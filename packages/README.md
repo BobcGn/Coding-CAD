@@ -1,8 +1,8 @@
 # Packages 架构 / Packages Architecture
 
-`packages/` 是 Coding CAD 的核心代码层。这里保存稳定的架构模型、DSL 投影、验证规则、组件知识、架构推理助手、执行蓝图协议、Agent 指导文档渲染层和未来 Agent 编排边界。
+`packages/` 是 Coding CAD 的核心代码层。这里保存稳定的架构模型、DSL 投影、验证规则、组件知识、架构推理助手、执行蓝图协议、Agent 指导文档渲染层、生命周期管理和实现合规反馈能力。
 
-`packages/` is the core code layer of Coding CAD. It contains the stable architecture model, DSL projection, validation rules, component knowledge, the architecture reasoning assistant, the execution blueprint protocol, the Agent instruction renderer, and the future Agent orchestration boundary.
+`packages/` is the core code layer of Coding CAD. It contains the stable architecture model, DSL projection, validation rules, component knowledge, architecture reasoning, the execution blueprint protocol, Agent instruction rendering, lifecycle management, and implementation compliance feedback.
 
 ## 心智模型 / Mental Model
 
@@ -16,12 +16,23 @@ Human-readable YAML
 User requirement
   -> @coding-cad/architecture-agent
   -> @coding-cad/architecture-ir
+  -> @coding-cad/architecture-validator
+  -> @coding-cad/architecture-review
   -> @coding-cad/execution-blueprint
   -> @coding-cad/agent-adapter
   -> external Coding Agent instructions
+  -> integrated terminal
+  -> user-managed Coding Agent
+  -> source repository
 
 @coding-cad/component-registry
   -> enriches validation, architecture-agent reasoning, and blueprint constraints
+
+Source repository
+  -> @coding-cad/implementation-analyzer
+  -> @coding-cad/architecture-ir
+  -> @coding-cad/implementation-validator
+  -> @coding-cad/architecture-review
 ```
 
 核心原则：IR 是真实模型，YAML、UI 和 Agent 都只是围绕 IR 的不同读写界面。
@@ -42,7 +53,13 @@ architecture-agent     -> architecture-ir + architecture-dsl
 execution-blueprint    -> architecture-ir + architecture-validator
                           + component-registry
 agent-adapter          -> execution-blueprint
-agent-runtime          -> architecture-ir
+workspace              -> architecture-ir + architecture-validator
+                          + execution-blueprint
+architecture-review    -> architecture-ir + architecture-validator
+                          + workspace
+implementation-analyzer -> architecture-ir
+implementation-validator -> architecture-ir + execution-blueprint
+                          + implementation-analyzer
 apps/*                 -> public package APIs
 ```
 
@@ -66,7 +83,24 @@ Arrows in the diagram mean “depends on.” DSL and Registry are peer layers ab
 | `@coding-cad/architecture-agent` | 架构推理助手 / Architecture reasoning assistant | 需求分析、架构规划、决策解释、Validator 反馈改进 / Requirement analysis, architecture planning, decision explanation, Validator feedback refinement | 业务代码生成、文件修改、部署执行 / Business code generation, file mutation, deployment execution |
 | `@coding-cad/execution-blueprint` | 工程实施蓝图协议 / Implementation handoff blueprint protocol | 从 Architecture IR 生成任务、实现约束和外部 Agent 指南 / Generate tasks, implementation constraints, and external Agent guides from Architecture IR | 代码生成、文件修改、具体 Coding Agent 绑定 / Code generation, file mutation, concrete Coding Agent binding |
 | `@coding-cad/agent-adapter` | 外部 Agent 指导文档渲染 / External Agent instruction rendering | 将 Execution Blueprint 纯渲染为 Generic、Codex、Claude Code 指导文档 / Purely render Execution Blueprint into Generic, Codex, and Claude Code instructions | 改写 Blueprint、生成代码、调用外部 Agent SDK / Mutating Blueprints, generating code, calling external Agent SDKs |
-| `@coding-cad/agent-runtime` | Agent 编排边界 / Agent orchestration boundary | 任务和结果契约、未来调度抽象 / Task/result contracts and future dispatch abstraction | 尚未成型的具体 Agent Provider 逻辑 / Concrete Agent provider logic before it exists |
+| `@coding-cad/workspace` | 架构生命周期管理 / Architecture lifecycle management | IR 快照、生命周期版本、ADR、验证与 Blueprint 历史 / IR snapshots, lifecycle versions, ADRs, validation and Blueprint history | Git、代码仓库、Agent 执行、部署 / Git, code repositories, Agent execution, deployment |
+| `@coding-cad/architecture-review` | 人工架构审核 / Human architecture review | Proposal 生命周期、评论、批准门禁、影响分析 / Proposal lifecycle, comments, approval gate, impact analysis | 修改 IR、生成 Blueprint、Agent 执行、UI / IR mutation, Blueprint generation, Agent execution, UI |
+| `@coding-cad/implementation-analyzer` | 已有仓库理解 / Existing-repository understanding | 文件和 manifest 扫描、技术检测、模块与依赖证据、IR 映射 / File and manifest scanning, technology detection, module and dependency evidence, IR mapping | 代码审查、完整 AST、第二套架构模型、自动修改 / Code review, full AST, a second architecture model, automatic mutation |
+| `@coding-cad/implementation-validator` | 实现合规验证 / Implementation compliance verification | Expected/Actual 比较、插件规则、可解释偏离和 Compliance Report / Expected/actual comparison, plugin rules, explainable deviations, and Compliance Report | 源码扫描、AST、自动修复、Agent 调用 / Source scanning, AST, automatic remediation, Agent invocation |
+
+## 外部 Agent 边界 / External Agent Boundary
+
+Coding CAD 拥有 Architecture IR、验证、审核、Blueprint、Guide、Workspace、仓库反演和合规反馈；它不拥有 Coding Agent、模型 Provider、Agent Memory、Tool Calling、MCP、上下文窗口或多 Agent 调度器。
+
+Coding CAD owns Architecture IR, validation, review, Blueprints, Guides, Workspace lifecycle, repository reconstruction, and compliance feedback. It does not own Coding Agents, model providers, Agent memory, tool calling, MCP, context windows, or multi-Agent schedulers.
+
+`@coding-cad/agent-adapter` 只执行 `ExecutionBlueprint -> Agent-specific Guide / Prompt` 的纯渲染。它不能调用、启动或管理 Agent，不能修改 Blueprint，也不能注入新的架构意图。
+
+`@coding-cad/agent-adapter` only performs pure `ExecutionBlueprint -> Agent-specific Guide / Prompt` rendering. It must not invoke, start, or manage an Agent, mutate the Blueprint, or inject new architectural intent.
+
+外部 Coding Agent 是用户在产品宿主提供的集成终端中运行的操作系统进程。终端基础设施属于 `apps/web` 的未来宿主能力，而不是新的 package 或 Agent 执行流水线。
+
+External Coding Agents are user-managed operating-system processes launched in an integrated terminal provided by the product host. Terminal infrastructure is a future `apps/web` host capability, not a new package or Agent execution pipeline.
 
 ## 数据流 / Data Flow
 
@@ -88,12 +122,24 @@ Arrows in the diagram mean “depends on.” DSL and Registry are peer layers ab
 6. `@coding-cad/architecture-agent` 将自然语言需求转换为 Architecture IR，调用 Validator，并根据反馈改进架构。
 
    `@coding-cad/architecture-agent` turns natural-language requirements into Architecture IR, calls the Validator, and improves the architecture from feedback.
-7. `@coding-cad/execution-blueprint` 将 Architecture IR 转换为外部 Coding Agent 可执行的任务、约束和指南。
+7. `@coding-cad/architecture-review` 管理候选 Architecture IR 的 Proposal、人工评论、批准状态和影响分析；只有批准后的 IR 才能继续。
 
-   `@coding-cad/execution-blueprint` turns Architecture IR into tasks, constraints, and guidance that external Coding Agents can execute.
-8. `@coding-cad/agent-adapter` 将 Execution Blueprint 渲染为特定外部 Coding Agent 可执行的指导文档，且不改变 Blueprint。
+   `@coding-cad/architecture-review` manages proposals, human comments, approval status, and impact analysis for candidate Architecture IR; only approved IR can proceed.
+8. `@coding-cad/execution-blueprint` 将批准后的 Architecture IR 转换为外部 Coding Agent 可执行的任务、约束和指南。
+
+   `@coding-cad/execution-blueprint` turns approved Architecture IR into tasks, constraints, and guidance that external Coding Agents can execute.
+9. `@coding-cad/agent-adapter` 将 Execution Blueprint 渲染为特定外部 Coding Agent 可执行的指导文档，且不改变 Blueprint。
 
    `@coding-cad/agent-adapter` renders an Execution Blueprint into instructions for a specific external Coding Agent without changing the Blueprint.
+10. `@coding-cad/workspace` 保存 Architecture IR 的版本化快照，并将 ADR、验证结果和 Blueprint 与快照版本关联。
+
+   `@coding-cad/workspace` stores versioned Architecture IR snapshots and relates ADRs, validation results, and Blueprints to snapshot versions.
+11. `@coding-cad/implementation-analyzer` 扫描已有源代码仓库，将检测证据映射为标准 Architecture IR。
+
+   `@coding-cad/implementation-analyzer` scans an existing source repository and maps detected evidence into standard Architecture IR.
+12. `@coding-cad/implementation-validator` 比较批准的 Architecture IR 与 Analyzer 实际模型，输出可解释 Compliance Report。
+
+   `@coding-cad/implementation-validator` compares approved Architecture IR with the Analyzer implementation model and emits an explainable Compliance Report.
 
 ## 扩展指南 / Extension Guide
 
@@ -133,10 +179,10 @@ The core loop uses three independently executable test layers:
 
 | 层级 / Layer | 范围 / Scope | 命令 / Command | 主要证据 / Primary Evidence |
 | --- | --- | --- | --- |
-| 单元 / Unit | IR 契约、Registry 查询、DSL 往返、Validator 规则、Agent 推理、Blueprint 生成与 Adapter 渲染 / IR contracts, Registry queries, DSL round trip, Validator rules, Agent reasoning, Blueprint generation, and Adapter rendering | `pnpm test:unit` | 各核心 package 的 `src/*.test.ts` / each core package's `src/*.test.ts` |
+| 单元 / Unit | IR、Registry、DSL、设计/实现 Validator、Agent、Review、Blueprint、Adapter、Workspace 与 Analyzer / IR, Registry, DSL, design/implementation Validators, Agent, Review, Blueprint, Adapter, Workspace, and Analyzer | `pnpm test:unit` | 各核心 package 的 `src/*.test.ts` / each core package's `src/*.test.ts` |
 | 集成 / Integration | DSL -> IR -> Registry -> Validator 的进程内组合 / In-process DSL -> IR -> Registry -> Validator composition | `pnpm test:integration` | `packages/cli/src/integration.test.ts` |
 | 端到端 / End-to-end | 真实 CLI 子进程、文件输入、stdout/stderr 与退出码 / Real CLI subprocess, file input, stdout/stderr, and exit codes | `pnpm test:e2e` | `packages/cli/src/cli.test.ts` |
 
-`pnpm test` 仍是 workspace 总入口。`agent-runtime`、`apps/server` 和 `apps/web` 当前是占位边界，它们的占位脚本不计入八个核心模块的测试覆盖。
+`pnpm test` 仍是 workspace 总入口。`apps/server` 和 `apps/web` 当前是占位边界，它们的占位脚本不计入十二个核心模块的测试覆盖。
 
-`pnpm test` remains the workspace-wide entry point. `agent-runtime`, `apps/server`, and `apps/web` are currently placeholder boundaries; their placeholder scripts do not count as test coverage for the eight core modules.
+`pnpm test` remains the workspace-wide entry point. `apps/server` and `apps/web` are currently placeholder boundaries; their placeholder scripts do not count as test coverage for the twelve core modules.

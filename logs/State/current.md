@@ -1,6 +1,6 @@
 # 当前状态 / Current State
 
-更新时间 / Updated at: 2026-08-09 00:35 CST (Asia/Shanghai)
+更新时间 / Updated at: 2026-08-09 22:22 CST (Asia/Shanghai)
 
 ## 总览 / Overview
 
@@ -8,9 +8,9 @@
 
 Status: Verified.
 
-Coding CAD 已完成八个核心能力模块：Architecture IR、Component Registry、Architecture Validator、Architecture DSL、CLI、Architecture Agent、Execution Blueprint 和 Agent Adapter。旧原型目录 `packages/dsl`、`packages/validator` 及其模块日志已按当前主线目录迁移删除。
+Coding CAD 已完成十二个核心能力模块：Architecture IR、Component Registry、Architecture Validator、Architecture DSL、CLI、Architecture Agent、Execution Blueprint、Agent Adapter、Workspace、Architecture Review、Implementation Analyzer 和 Implementation Validator。未实现且职责重复的 `packages/agent-runtime` 已从核心边界移除。
 
-Coding CAD has completed eight core capability modules: Architecture IR, Component Registry, Architecture Validator, Architecture DSL, CLI, Architecture Agent, Execution Blueprint, and Agent Adapter. The old prototype directories `packages/dsl`, `packages/validator`, and their module logs have been migrated away and removed according to the current mainline directories.
+Coding CAD has completed twelve core capability modules: Architecture IR, Component Registry, Architecture Validator, Architecture DSL, CLI, Architecture Agent, Execution Blueprint, Agent Adapter, Workspace, Architecture Review, Implementation Analyzer, and Implementation Validator. The unimplemented and responsibility-duplicating `packages/agent-runtime` boundary has been removed.
 
 ## 已确认事实 / Confirmed Facts
 
@@ -19,20 +19,22 @@ Coding CAD has completed eight core capability modules: Architecture IR, Compone
 - 当前核心闭环是 `requirement` -> `architecture-agent` -> `architecture-ir` -> `architecture-validator` -> refinement -> `execution-blueprint` -> `agent-adapter` -> external Coding Agent，以及 `architecture-dsl` <-> `architecture-ir` -> `cli`。
 - 当前已建立推送前本地门禁 `pnpm ci:verify` 和 GitHub Actions CI workflow。
 - CodeQL 不再作为自动 workflow 启用，因为远端仓库尚未启用 GitHub code scanning。
-- 当前 workspace 模块包括 `apps/web`、`apps/server`、`packages/architecture-ir`、`packages/architecture-dsl`、`packages/component-registry`、`packages/architecture-validator`、`packages/cli`、`packages/architecture-agent`、`packages/execution-blueprint`、`packages/agent-adapter`、`packages/agent-runtime`。
+- 当前 workspace 包括两个 app shell 和十二个已实现的核心 package；不包含 Coding Agent Runtime。
+- Coding CAD 通过 Blueprint / Guide 向下传递意图，通过 Repository Analyzer / Validator 向上观察实现；外部 Coding Agent 是用户管理的进程。
 - `packages/dsl` 和 `packages/validator` 是旧原型目录，已删除。
 - `packages/` 与 `logs/modules/` 中不存在同名重复模块或空目录。
-- 八个核心模块已有明确的测试入口；`agent-adapter` 使用单元测试覆盖三种指导文档渲染与 Blueprint 不变性。
+- 十二个核心模块已有明确的测试入口；`agent-adapter` 使用单元测试覆盖三种指导文档渲染与 Blueprint 不变性。
 
 - The project root is a Git worktree; the core module migration, CI/CD, CI fix, Architecture Agent, Execution Blueprint, and Agent Adapter have been completed in functional batches.
 - The documentation rule requires project Markdown to remain bilingual.
 - The current core loop is `requirement` -> `architecture-agent` -> `architecture-ir` -> `architecture-validator` -> refinement -> `execution-blueprint` -> `agent-adapter` -> external Coding Agent, plus `architecture-dsl` <-> `architecture-ir` -> `cli`.
 - The local pre-push gate `pnpm ci:verify` and GitHub Actions CI workflow are now in place.
 - CodeQL is no longer enabled as an automatic workflow because GitHub code scanning is not enabled for the remote repository yet.
-- Current workspace modules include `apps/web`, `apps/server`, `packages/architecture-ir`, `packages/architecture-dsl`, `packages/component-registry`, `packages/architecture-validator`, `packages/cli`, `packages/architecture-agent`, `packages/execution-blueprint`, `packages/agent-adapter`, and `packages/agent-runtime`.
+- The current workspace contains two app shells and twelve implemented core packages; it does not contain a Coding Agent Runtime.
+- Coding CAD communicates intent downward through Blueprints and Guides, and observes implementation upward through repository analysis and validation; external Coding Agents are user-managed processes.
 - `packages/dsl` and `packages/validator` were old prototype directories and have been removed.
 - No duplicate module names or empty directories exist under `packages/` and `logs/modules/`.
-- The eight core modules have explicit test entry points; `agent-adapter` uses unit tests for three instruction renderers and Blueprint immutability.
+- The twelve core modules have explicit test entry points; `agent-adapter` uses unit tests for three instruction renderers and Blueprint immutability.
 
 ## 当前变更 / Current Changes
 

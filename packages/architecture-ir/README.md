@@ -16,9 +16,9 @@ It is similar in spirit to LLVM IR, Kubernetes Desired State, or Terraform's inf
 
 ## 为什么存在 / Why It Exists
 
-Coding CAD 需要一个稳定的核心模型，让后续 DSL、Graph UI、Validator 和 Agent Runtime 都围绕同一份架构语义工作。
+Coding CAD 需要一个稳定的核心模型，让后续 DSL、Graph UI、Validator、Architecture Agent 和外部 Agent 指导协议都围绕同一份架构语义工作。
 
-Coding CAD needs a stable core model so future DSLs, Graph UI, validators, and Agent runtimes can all work around the same architecture semantics.
+Coding CAD needs a stable core model so DSLs, Graph UI, validators, the Architecture Agent, and external Agent guidance protocols can share the same architecture semantics.
 
 第一版不追求覆盖所有工程场景，而是先稳定八个核心概念：
 

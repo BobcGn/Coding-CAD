@@ -1,0 +1,9 @@
+{
+  "name": "implementation-analyzer-example",
+  "private": true,
+  "dependencies": {
+    "@nestjs/core": "^11.0.0",
+    "pg": "^8.0.0",
+    "redis": "^5.0.0"
+  }
+}

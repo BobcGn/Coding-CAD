@@ -148,6 +148,7 @@ Validation:
 - `pnpm security:audit`：通过，No known vulnerabilities found。
 
 - `pnpm ci:verify`: passed.
+
 - `ruby -e 'require "yaml"; ...' .github/workflows/ci.yml`: passed.
 
 ## 2026-08-08 - CI 失败修复 / CI Failure Fix
@@ -321,3 +322,162 @@ Validation:
 - `CI=true pnpm install --frozen-lockfile`: passed.
 - `pnpm security:audit`: passed, No known vulnerabilities found.
 - `pnpm ci:verify`: passed.
+
+## 2026-08-09 - Workspace 第一阶段 / Workspace Phase One
+
+状态：已验证。
+
+Status: Verified.
+
+变更：
+
+- 新增第九个核心模块 `packages/workspace`。
+- 以 Architecture IR 为事实来源，实现快照、生命周期版本、架构差异、ADR、验证历史与 Blueprint 历史。
+- 使用本地 JSON 文件存储并导出结构化 Workspace 报告。
+- 保持现有执行链路不变；未增加 Agent Adapter、Agent 执行、UI、数据库或云服务。
+
+Changes:
+
+- Added the ninth core module, `packages/workspace`.
+- Implemented snapshots, lifecycle versions, architecture diffs, ADRs, validation history, and Blueprint history around Architecture IR as the source of truth.
+- Added local JSON file storage and structured Workspace report export.
+- Preserved the existing execution pipeline without another Agent Adapter, Agent execution, UI, database, or cloud service.
+
+验证：
+
+- `pnpm --filter @coding-cad/workspace test`：通过。
+- `pnpm ci:verify`：通过，workspace 共 12 个模块。
+
+Validation:
+
+- `pnpm --filter @coding-cad/workspace test`: passed.
+- `pnpm ci:verify`: passed, with 12 workspace modules.
+
+## 2026-08-09 - Architecture Review 第一阶段 / Architecture Review Phase One
+
+状态：已验证。
+
+Status: Verified.
+
+变更：
+
+- 新增第十个核心模块 `packages/architecture-review`。
+- 实现 Proposal、ReviewComment、Approval、ImpactAnalysis 和受控审核状态机。
+- Validator 错误会阻止批准，多人审批必须达到显式阈值。
+- 复用 Workspace diff，并增强其组件修改检测。
+- 只向现有 Execution Blueprint 流程释放批准后的 Architecture IR，不修改 IR、不创建第二条执行链路。
+
+Changes:
+
+- Added the tenth core module, `packages/architecture-review`.
+- Implemented Proposal, ReviewComment, Approval, ImpactAnalysis, and a controlled review state machine.
+- Validator errors block approval, and multi-reviewer approval must reach an explicit threshold.
+- Reused Workspace diff and extended it to detect modified components.
+- Released approved Architecture IR to the existing Execution Blueprint pipeline without mutating IR or creating a second pipeline.
+
+验证：
+
+- `pnpm --filter @coding-cad/architecture-review test`：通过。
+
+Validation:
+
+- `pnpm --filter @coding-cad/architecture-review test`: passed.
+- `pnpm ci:verify`: passed, with 13 workspace modules.
+
+## 2026-08-09 - Implementation Analyzer 第一阶段 / Implementation Analyzer Phase One
+
+状态：已验证。
+
+Status: Verified.
+
+变更：
+
+- 新增第十一个核心模块 `packages/implementation-analyzer`，建立 Brownfield Repository → Architecture IR 路径。
+- 实现 RepositorySnapshot、Scanner、语言/框架/依赖检测、Module Analyzer、Dependency Graph 和 Architecture Mapper。
+- 第一阶段优先支持 Node.js/TypeScript、NestJS、Express、Prisma、TypeORM、PostgreSQL 和 Redis 识别。
+- 中间 inspection 只保存 evidence 和 confidence；ArchitectureProject 仍是唯一架构输出。
+- 未实现附件中的第二阶段 `implementation-validator`，保持理解与合规检查职责分离。
+
+Changes:
+
+- Added the eleventh core module, `packages/implementation-analyzer`, establishing the brownfield Repository-to-Architecture-IR path.
+- Implemented RepositorySnapshot, Scanner, language/framework/dependency detection, Module Analyzer, Dependency Graph, and Architecture Mapper.
+- Phase one prioritizes Node.js/TypeScript, NestJS, Express, Prisma, TypeORM, PostgreSQL, and Redis detection.
+- Intermediate inspection only stores evidence and confidence; ArchitectureProject remains the sole architecture output.
+- Did not implement the attachment's phase-two `implementation-validator`, preserving the understanding/compliance boundary.
+
+验证：
+
+- `pnpm --filter @coding-cad/implementation-analyzer test`：通过。
+
+Validation:
+
+- `pnpm --filter @coding-cad/implementation-analyzer test`: passed.
+- `pnpm ci:verify`: passed, with 14 workspace modules.
+
+## 2026-08-09 - Implementation Validator 第一阶段 / Implementation Validator Phase One
+
+状态：已验证。
+
+Status: Verified.
+
+变更：
+
+- 新增第十二个核心模块 `packages/implementation-validator`，闭合 Architecture Compliance feedback path。
+- 定义 ImplementationModel 为 Analyzer inspection 与实际 ArchitectureProject 的组合，不创建第二套架构词汇。
+- 实现组件存在、技术偏离、组件限制、依赖偏离和 Contract 合规五条插件式规则。
+- 所有 ComplianceIssue 均包含架构期望、实现证据和修复建议。
+- 保持边界：不扫描源码、不执行 AST、不修改代码、不生成 PR、不调用 Agent。
+
+Changes:
+
+- Added the twelfth core module, `packages/implementation-validator`, closing the Architecture Compliance feedback path.
+- Defined ImplementationModel as Analyzer inspection plus actual ArchitectureProject without creating parallel architecture vocabulary.
+- Implemented five plugin rules for component existence, technology deviation, component limitations, dependency drift, and contract compliance.
+- Every ComplianceIssue contains architecture expectation, implementation evidence, and recommendation.
+- Preserved boundaries: no source scanning, AST, code mutation, PR generation, or Agent invocation.
+
+验证：
+
+- `pnpm --filter @coding-cad/implementation-validator test`：通过。
+
+Validation:
+
+- `pnpm --filter @coding-cad/implementation-validator test`: passed.
+- `pnpm ci:verify`: passed, with 15 workspace modules.
+
+## 2026-08-09 - Agent Runtime 架构纠偏 / Agent Runtime Architecture Correction
+
+状态：已验证。
+
+Status: Verified.
+
+变更：
+
+- 审计全仓后确认 `packages/agent-runtime` 只有未使用的类型占位，没有业务 import 或真实执行链依赖。
+- 删除 `packages/agent-runtime`、同名模块日志、workspace 校验映射和锁文件 importer。
+- 将 Coding CAD 边界明确为 Architecture Brain、Architecture Commander 与 Architecture Compliance Layer，不拥有或编排 Coding Agent。
+- 保留 `agent-adapter` 作为 Execution Blueprint 到 Guide / Prompt 的纯渲染边界。
+- 在 `apps/web` 路线图中记录 Integrated Terminal Infrastructure；终端只管理 OS Process / PTY，Coding Agent 由用户自行运行。
+- 未实现终端、Agent Provider、Agent SDK 调用、Agent Runtime 或新的执行流水线。
+
+Changes:
+
+- Audited the repository and confirmed that `packages/agent-runtime` was only an unused type placeholder with no business imports or real execution-path dependency.
+- Removed `packages/agent-runtime`, its module logs, workspace-check mapping, and lockfile importer.
+- Clarified Coding CAD as the Architecture Brain, Architecture Commander, and Architecture Compliance Layer; it does not own or orchestrate Coding Agents.
+- Preserved `agent-adapter` as the pure Execution Blueprint-to-Guide/Prompt rendering boundary.
+- Recorded Integrated Terminal Infrastructure in the `apps/web` roadmap; the terminal manages only OS Processes / PTYs, while users run their own Coding Agents.
+- Did not implement a terminal, Agent Provider, Agent SDK invocation, Agent Runtime, or another execution pipeline.
+
+验证：
+
+- `CI=true pnpm install --frozen-lockfile`：通过，锁文件与 15 个 workspace projects（根项目、两个 app、十二个核心 package）一致。
+- `pnpm ci:verify`：通过，workspace architecture check 确认 14 个实际模块，typecheck、单元、集成、端到端与 build 全部通过。
+- 残留检查确认 package、模块日志、lockfile importer、workspace 映射和 `@coding-cad/agent-runtime` import 均不存在。
+
+Validation:
+
+- `CI=true pnpm install --frozen-lockfile`: passed; the lockfile matches 15 workspace projects (the root, two apps, and twelve core packages).
+- `pnpm ci:verify`: passed; the workspace architecture check confirmed 14 actual modules, with typecheck, unit, integration, end-to-end, and build all passing.
+- Residual checks confirmed that the package, module logs, lockfile importer, workspace mapping, and `@coding-cad/agent-runtime` imports are absent.

@@ -1,0 +1,30 @@
+{
+  "name": "@coding-cad/workspace",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Project-level lifecycle storage for Architecture IR, decisions, validations, and execution blueprints.",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "pnpm test:unit",
+    "test:unit": "tsc -p tsconfig.json && node dist/workspace.test.js",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@coding-cad/architecture-ir": "workspace:*",
+    "@coding-cad/architecture-validator": "workspace:*",
+    "@coding-cad/execution-blueprint": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2"
+  }
+}
