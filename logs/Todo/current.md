@@ -30,11 +30,11 @@ This file is the single source of truth for active TODOs.
 - 当前处理 / Current handling: 第一阶段覆盖积分系统和强一致账本类需求。
 - 解除条件 / Exit condition: 扩展更多领域规划模板，并让 Planner 系统性利用 Component Registry 和 Validator 反馈生成架构。
 
-## TODO-011: Execution Blueprint Adapter Outputs / Execution Blueprint 适配器输出
+## TODO-011: Additional Agent Adapter Outputs / 更多 Agent Adapter 输出
 
-- 状态 / Status: 待处理 / Pending
-- 当前处理 / Current handling: `packages/execution-blueprint` 当前只实现内部模型和确定性生成器。
-- 解除条件 / Exit condition: 增加 Codex Prompt Markdown、Claude Code Guide Markdown 和 Generic Agent Instruction JSON 渲染器。
+- 状态 / Status: 部分完成 / Partially complete
+- 当前处理 / Current handling: `packages/agent-adapter` 已提供 Generic Markdown、Codex Prompt 和 Claude Code Guide 渲染；尚未提供 Generic JSON、Cursor、Devin 或 GitHub Copilot Agent 格式。
+- 解除条件 / Exit condition: 增加受版本化约束的 Generic JSON 与更多外部 Coding Agent Adapter，并保持 Blueprint-only 输入边界。
 
 ## TODO-012: Execution Blueprint Task Granularity / Execution Blueprint 任务粒度
 

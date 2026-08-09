@@ -285,3 +285,39 @@ Validation:
 
 - `pnpm --filter @coding-cad/execution-blueprint test`: passed.
 - `pnpm ci:verify`: passed, with the workspace currently at 10 modules.
+
+## 2026-08-09 - Agent Adapter 第一阶段 / Agent Adapter Phase One
+
+状态：已验证。
+
+Status: Pending verification.
+
+变更：
+
+- 新增第八个核心模块 `packages/agent-adapter`。
+- 定义纯渲染型 `AgentAdapter` 与 `AgentInstruction` 契约。
+- 实现 Generic Markdown、Codex Prompt 和 Claude Code `CLAUDE.md` 风格输出。
+- 保持边界：不修改 Execution Blueprint、不生成代码、不调用外部 Agent SDK。
+
+Changes:
+
+- Added the eighth core module, `packages/agent-adapter`.
+- Defined pure-rendering `AgentAdapter` and `AgentInstruction` contracts.
+- Implemented Generic Markdown, Codex Prompt, and Claude Code `CLAUDE.md`-style output.
+- Preserved boundaries: no Execution Blueprint mutation, code generation, or external Agent SDK calls.
+
+验证：
+
+- `pnpm --filter @coding-cad/agent-adapter test`：通过。
+- `pnpm lint:workspace`：通过，workspace 当前为 11 个模块。
+- `CI=true pnpm install --frozen-lockfile`：通过。
+- `pnpm security:audit`：通过，No known vulnerabilities found。
+- `pnpm ci:verify`：通过。
+
+Validation:
+
+- `pnpm --filter @coding-cad/agent-adapter test`: passed.
+- `pnpm lint:workspace`: passed, with 11 workspace modules.
+- `CI=true pnpm install --frozen-lockfile`: passed.
+- `pnpm security:audit`: passed, No known vulnerabilities found.
+- `pnpm ci:verify`: passed.

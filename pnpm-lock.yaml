@@ -41,6 +41,16 @@ importers:
         specifier: ^5.9.2
         version: 5.9.3
 
+  packages/agent-adapter:
+    dependencies:
+      '@coding-cad/execution-blueprint':
+        specifier: workspace:*
+        version: link:../execution-blueprint
+    devDependencies:
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.3
+
   packages/agent-runtime:
     dependencies:
       '@coding-cad/architecture-ir':

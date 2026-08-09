@@ -19,7 +19,8 @@ Human visual intent
   -> Architecture DSL
   -> Validator and Architecture Agent
   -> Execution Blueprint
-  -> Coding Agent / Testing Agent
+  -> Agent Adapter
+  -> External Coding Agent / Testing Agent
 ```
 
 ## Why This Exists / 为什么存在
@@ -45,9 +46,9 @@ The durable asset is not generated code. The durable asset is a reasoned, valida
 
 ## MVP Scope / MVP 范围
 
-第一版优先建设真正的核心能力。当前已完成架构建模、架构交换、架构校验、组件知识库、CLI 入口、第一阶段 Architecture Agent 和 Execution Blueprint 协议层。
+第一版优先建设真正的核心能力。当前已完成架构建模、架构交换、架构校验、组件知识库、CLI 入口、第一阶段 Architecture Agent、Execution Blueprint 协议层和 Agent Adapter 渲染层。
 
-The first version focuses on the core moat. The current implementation now includes architecture modeling, architecture exchange, architecture validation, component knowledge, the CLI entry point, the first Architecture Agent phase, and the Execution Blueprint protocol layer.
+The first version focuses on the core moat. The current implementation now includes architecture modeling, architecture exchange, architecture validation, component knowledge, the CLI entry point, the first Architecture Agent phase, the Execution Blueprint protocol layer, and the Agent Adapter rendering layer.
 
 1. Architecture IR 类型定义 / Architecture IR type definitions
 2. YAML DSL 解析与生成 / YAML DSL parser and generator
@@ -56,7 +57,8 @@ The first version focuses on the core moat. The current implementation now inclu
 5. CLI 架构分析与设计入口 / CLI architecture analysis and design entry point
 6. Architecture Agent 架构推理层 / Architecture Agent reasoning layer
 7. Execution Blueprint 工程实施协议 / Execution Blueprint implementation protocol
-8. 面向未来编排的 Agent Runtime 边界 / Agent-runtime boundaries for future orchestration
+8. Agent Adapter 外部 Coding Agent 指导文档渲染 / External Coding Agent instruction rendering
+9. 面向未来编排的 Agent Runtime 边界 / Agent-runtime boundaries for future orchestration
 
 React / React Flow 编辑器会延后，直到 DSL 和 IR 被证明足够有用。UI 应该是模型的视图，而不是模型本身。
 
@@ -79,6 +81,8 @@ packages/
   architecture-validator/ 架构诊断和规则检查 / Architecture diagnostics and rule checks
   cli/                   命令行入口 / Command-line entry point
   architecture-agent/    架构推理助手 / Architecture reasoning assistant
+  execution-blueprint/   工程实施蓝图协议 / Implementation handoff blueprint protocol
+  agent-adapter/         外部 Agent 指导文档渲染 / External Agent instruction renderer
   agent-runtime/         未来 AI Agent 编排边界 / Future AI agent orchestration boundary
   README.md              核心代码架构地图 / Core code architecture map
 docs/
@@ -103,6 +107,7 @@ architecture-agent     -> architecture-ir + architecture-dsl
                           + architecture-validator + component-registry
 execution-blueprint    -> architecture-ir + architecture-validator
                           + component-registry
+agent-adapter          -> execution-blueprint
 agent-runtime          -> architecture-ir
 apps/*                 -> public package APIs
 ```

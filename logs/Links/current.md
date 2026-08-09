@@ -17,6 +17,7 @@
 | Architecture Agent / Architecture Agent | 用户要求实现第六个核心模块 / User requested the sixth core module | 新增架构推理层 / Added the architecture reasoning layer | `packages/architecture-agent`、`logs/modules/architecture-agent` |
 | CLI Design Command / CLI Design Command | 用户要求继续编写下一模块 / User asked to continue with the next module | CLI 接入 Architecture Agent，支持需求到架构蓝图 / CLI now wires Architecture Agent for requirement-to-blueprint design | `packages/cli/src/commands/design.ts`、`packages/cli/src/index.ts`、`packages/cli/src/cli.test.ts` |
 | Execution Blueprint / Execution Blueprint | 用户要求实现下一核心模块 / User requested the next core module | 新增架构到外部 Coding Agent 实施蓝图的协议层 / Added the protocol layer from architecture to external Coding Agent implementation blueprints | `packages/execution-blueprint`、`logs/modules/execution-blueprint` |
+| Agent Adapter / Agent Adapter | 用户要求实现下一核心模块 / User requested the next core module | 新增 Execution Blueprint 到 Generic、Codex、Claude Code 指导文档的纯渲染层 / Added pure rendering from Execution Blueprint to Generic, Codex, and Claude Code instructions | `packages/agent-adapter`、`logs/modules/agent-adapter` |
 
 ## 本轮验证记录 / Current Validation Records
 
@@ -77,6 +78,17 @@
 - `CI=true pnpm install --frozen-lockfile`: passed.
 - `pnpm security:audit`: passed, No known vulnerabilities found.
 - `pnpm ci:verify`: passed, including 10 workspace packages.
+- `pnpm --filter @coding-cad/agent-adapter test`：通过。
+- `pnpm lint:workspace`：通过，Workspace architecture check passed (11 modules)。
+- `CI=true pnpm install --frozen-lockfile`：通过。
+- `pnpm security:audit`：通过，No known vulnerabilities found。
+- `pnpm ci:verify`：通过，包含 11 个 workspace package。
+
+- `pnpm --filter @coding-cad/agent-adapter test`: passed.
+- `pnpm lint:workspace`: passed, Workspace architecture check passed (11 modules).
+- `CI=true pnpm install --frozen-lockfile`: passed.
+- `pnpm security:audit`: passed, No known vulnerabilities found.
+- `pnpm ci:verify`: passed, including 11 workspace packages.
 
 ## 本轮回退引用 / Rollback References
 

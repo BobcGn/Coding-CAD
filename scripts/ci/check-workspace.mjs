@@ -12,6 +12,7 @@ const workspaceModules = [
   { workspace: "packages/agent-runtime", log: "agent-runtime", requiredScripts: ["build", "typecheck", "test", "clean"] },
   { workspace: "packages/architecture-agent", log: "architecture-agent", requiredScripts: ["build", "typecheck", "test", "test:unit", "clean"] },
   { workspace: "packages/execution-blueprint", log: "execution-blueprint", requiredScripts: ["build", "typecheck", "test", "test:unit", "clean"] },
+  { workspace: "packages/agent-adapter", log: "agent-adapter", requiredScripts: ["build", "typecheck", "test", "test:unit", "clean"] },
   { workspace: "packages/architecture-ir", log: "architecture-ir", requiredScripts: ["build", "typecheck", "test", "test:unit", "clean"] },
   { workspace: "packages/architecture-dsl", log: "architecture-dsl", requiredScripts: ["build", "typecheck", "test", "test:unit", "clean"] },
   { workspace: "packages/component-registry", log: "component-registry", requiredScripts: ["build", "typecheck", "test", "test:unit", "clean"] },

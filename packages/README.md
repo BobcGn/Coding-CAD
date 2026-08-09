@@ -1,8 +1,8 @@
 # Packages 架构 / Packages Architecture
 
-`packages/` 是 Coding CAD 的核心代码层。这里保存稳定的架构模型、DSL 投影、验证规则、组件知识、架构推理助手、执行蓝图协议和未来 Agent 编排边界。
+`packages/` 是 Coding CAD 的核心代码层。这里保存稳定的架构模型、DSL 投影、验证规则、组件知识、架构推理助手、执行蓝图协议、Agent 指导文档渲染层和未来 Agent 编排边界。
 
-`packages/` is the core code layer of Coding CAD. It contains the stable architecture model, DSL projection, validation rules, component knowledge, the architecture reasoning assistant, the execution blueprint protocol, and the future Agent orchestration boundary.
+`packages/` is the core code layer of Coding CAD. It contains the stable architecture model, DSL projection, validation rules, component knowledge, the architecture reasoning assistant, the execution blueprint protocol, the Agent instruction renderer, and the future Agent orchestration boundary.
 
 ## 心智模型 / Mental Model
 
@@ -17,7 +17,8 @@ User requirement
   -> @coding-cad/architecture-agent
   -> @coding-cad/architecture-ir
   -> @coding-cad/execution-blueprint
-  -> external Coding Agent handoff
+  -> @coding-cad/agent-adapter
+  -> external Coding Agent instructions
 
 @coding-cad/component-registry
   -> enriches validation, architecture-agent reasoning, and blueprint constraints
@@ -40,6 +41,7 @@ architecture-agent     -> architecture-ir + architecture-dsl
                           + architecture-validator + component-registry
 execution-blueprint    -> architecture-ir + architecture-validator
                           + component-registry
+agent-adapter          -> execution-blueprint
 agent-runtime          -> architecture-ir
 apps/*                 -> public package APIs
 ```
@@ -63,6 +65,7 @@ Arrows in the diagram mean “depends on.” DSL and Registry are peer layers ab
 | `@coding-cad/cli` | 命令行入口 / Command-line entry point | 文件读取、命令分发、报告输出 / File reading, command dispatch, report output | DSL、Validator、Registry、Agent 或 Blueprint 的业务规则 / DSL, Validator, Registry, Agent, or Blueprint business rules |
 | `@coding-cad/architecture-agent` | 架构推理助手 / Architecture reasoning assistant | 需求分析、架构规划、决策解释、Validator 反馈改进 / Requirement analysis, architecture planning, decision explanation, Validator feedback refinement | 业务代码生成、文件修改、部署执行 / Business code generation, file mutation, deployment execution |
 | `@coding-cad/execution-blueprint` | 工程实施蓝图协议 / Implementation handoff blueprint protocol | 从 Architecture IR 生成任务、实现约束和外部 Agent 指南 / Generate tasks, implementation constraints, and external Agent guides from Architecture IR | 代码生成、文件修改、具体 Coding Agent 绑定 / Code generation, file mutation, concrete Coding Agent binding |
+| `@coding-cad/agent-adapter` | 外部 Agent 指导文档渲染 / External Agent instruction rendering | 将 Execution Blueprint 纯渲染为 Generic、Codex、Claude Code 指导文档 / Purely render Execution Blueprint into Generic, Codex, and Claude Code instructions | 改写 Blueprint、生成代码、调用外部 Agent SDK / Mutating Blueprints, generating code, calling external Agent SDKs |
 | `@coding-cad/agent-runtime` | Agent 编排边界 / Agent orchestration boundary | 任务和结果契约、未来调度抽象 / Task/result contracts and future dispatch abstraction | 尚未成型的具体 Agent Provider 逻辑 / Concrete Agent provider logic before it exists |
 
 ## 数据流 / Data Flow
@@ -88,6 +91,9 @@ Arrows in the diagram mean “depends on.” DSL and Registry are peer layers ab
 7. `@coding-cad/execution-blueprint` 将 Architecture IR 转换为外部 Coding Agent 可执行的任务、约束和指南。
 
    `@coding-cad/execution-blueprint` turns Architecture IR into tasks, constraints, and guidance that external Coding Agents can execute.
+8. `@coding-cad/agent-adapter` 将 Execution Blueprint 渲染为特定外部 Coding Agent 可执行的指导文档，且不改变 Blueprint。
+
+   `@coding-cad/agent-adapter` renders an Execution Blueprint into instructions for a specific external Coding Agent without changing the Blueprint.
 
 ## 扩展指南 / Extension Guide
 
@@ -101,8 +107,8 @@ Arrows in the diagram mean “depends on.” DSL and Registry are peer layers ab
   When adding a validator rule, diagnostics should explain the risk, not only report the violation.
 - 新增组件知识时，把事实性能力和项目特定选择分开。  
   When adding component knowledge, separate general capabilities from project-specific choices.
-- 新增 Coding Agent 适配能力时，先扩展 Execution Blueprint，再接入具体提示词或运行器。
-  When adding Coding Agent adapter capability, extend Execution Blueprint before wiring concrete prompts or runners.
+- 新增 Coding Agent 适配能力时，通过 `AgentAdapter` 渲染已有 Execution Blueprint，不向适配器注入新的架构意图。
+  When adding Coding Agent adapter capability, render the existing Execution Blueprint through `AgentAdapter` without injecting new architecture intent.
 
 ## 文档与注释 / Documentation and Comments
 
@@ -127,10 +133,10 @@ The core loop uses three independently executable test layers:
 
 | 层级 / Layer | 范围 / Scope | 命令 / Command | 主要证据 / Primary Evidence |
 | --- | --- | --- | --- |
-| 单元 / Unit | IR 契约、Registry 查询、DSL 往返、Validator 规则、Agent 推理、Blueprint 生成 / IR contracts, Registry queries, DSL round trip, Validator rules, Agent reasoning, Blueprint generation | `pnpm test:unit` | 各核心 package 的 `src/*.test.ts` / each core package's `src/*.test.ts` |
+| 单元 / Unit | IR 契约、Registry 查询、DSL 往返、Validator 规则、Agent 推理、Blueprint 生成与 Adapter 渲染 / IR contracts, Registry queries, DSL round trip, Validator rules, Agent reasoning, Blueprint generation, and Adapter rendering | `pnpm test:unit` | 各核心 package 的 `src/*.test.ts` / each core package's `src/*.test.ts` |
 | 集成 / Integration | DSL -> IR -> Registry -> Validator 的进程内组合 / In-process DSL -> IR -> Registry -> Validator composition | `pnpm test:integration` | `packages/cli/src/integration.test.ts` |
 | 端到端 / End-to-end | 真实 CLI 子进程、文件输入、stdout/stderr 与退出码 / Real CLI subprocess, file input, stdout/stderr, and exit codes | `pnpm test:e2e` | `packages/cli/src/cli.test.ts` |
 
-`pnpm test` 仍是 workspace 总入口。`agent-runtime`、`apps/server` 和 `apps/web` 当前是占位边界，它们的占位脚本不计入七个核心模块的测试覆盖。
+`pnpm test` 仍是 workspace 总入口。`agent-runtime`、`apps/server` 和 `apps/web` 当前是占位边界，它们的占位脚本不计入八个核心模块的测试覆盖。
 
-`pnpm test` remains the workspace-wide entry point. `agent-runtime`, `apps/server`, and `apps/web` are currently placeholder boundaries; their placeholder scripts do not count as test coverage for the seven core modules.
+`pnpm test` remains the workspace-wide entry point. `agent-runtime`, `apps/server`, and `apps/web` are currently placeholder boundaries; their placeholder scripts do not count as test coverage for the eight core modules.
