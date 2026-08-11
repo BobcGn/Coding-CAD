@@ -19,9 +19,9 @@ The Architecture IR describes:
 - 演进计划 / evolution plan
 - 架构决策 / architecture decisions
 
-YAML DSL 是 IR 的人类可读投影；Architecture Agent 从需求产生候选 IR；Implementation Analyzer 从已有仓库反演实际 IR；Implementation Validator 比较批准 IR 与实际 IR；Workspace 保存 IR 生命周期；Architecture Review 管理人工审核和批准门禁；Execution Blueprint 只接收批准后的 IR；Agent Adapter 只渲染已有 Blueprint。未来的可视化编辑器也应该读写同一份 IR。
+YAML DSL 是 IR 的人类可读投影；Architecture Agent 从需求产生候选 IR；Implementation Analyzer 从已有仓库反演实际 IR；Implementation Validator 比较批准 IR 与实际 IR；Workspace 保存 IR 生命周期；Architecture Review 管理人工审核和批准门禁；Architecture Layout 将 IR 投影为 renderer-independent LayoutResult；Execution Blueprint 只接收批准后的 IR；Agent Adapter 只渲染已有 Blueprint。未来的可视化编辑器也应该读写同一份 IR。
 
-The YAML DSL is a human-readable projection of the IR; Architecture Agent produces candidate IR from requirements; Implementation Analyzer reverse-engineers actual IR from existing repositories; Implementation Validator compares approved and actual IR; Workspace preserves the IR lifecycle; Architecture Review owns human review and the approval gate; Execution Blueprint receives approved IR; Agent Adapter only renders an existing Blueprint. Future visual editors should also read and write the same IR.
+The YAML DSL is a human-readable projection of the IR; Architecture Agent produces candidate IR from requirements; Implementation Analyzer reverse-engineers actual IR from existing repositories; Implementation Validator compares approved and actual IR; Workspace preserves the IR lifecycle; Architecture Review owns human review and the approval gate; Architecture Layout projects IR into renderer-independent LayoutResult; Execution Blueprint receives approved IR; Agent Adapter only renders an existing Blueprint. Future visual editors should also read and write the same IR.
 
 ## Dependency Direction / 依赖方向
 
@@ -44,12 +44,17 @@ architecture-review    -> architecture-ir + architecture-validator
 implementation-analyzer -> architecture-ir
 implementation-validator -> architecture-ir + execution-blueprint
                           + implementation-analyzer
+architecture-layout    -> architecture-ir
 apps                   -> public package APIs
 ```
 
-箭头表示“被谁依赖”。高层 package 可以依赖低层 package，但低层 package 不应该知道 app、UI、server 或具体 Agent 的存在。
+箭头表示“依赖于”。高层 package 可以依赖低层 package，但低层 package 不应该知道 app、UI、server 或具体 Agent 的存在。
 
-The arrows mean "is depended on by". Packages may depend on lower-level packages, but lower-level packages should not know about apps, UI, servers, or specific agents.
+The arrows mean "depends on." Packages may depend on lower-level packages, but lower-level packages should not know about apps, UI, servers, or specific agents.
+
+`architecture-layout` 必须保持纯 TypeScript 和 renderer-neutral；`apps/web` 中的 adapter 才能把 LayoutResult 转为 Svelte Flow 类型。坐标、尺寸、viewport、collapsed 和 pinned 属于 Workspace/View State，不得进入 Architecture IR 或 DSL。
+
+`architecture-layout` must remain pure TypeScript and renderer-neutral; only an adapter in `apps/web` may convert LayoutResult into Svelte Flow types. Coordinates, dimensions, viewport, collapsed state, and pinned state belong to Workspace/View State and must not enter Architecture IR or the DSL.
 
 ## Agent Execution Boundary / Agent 执行边界
 

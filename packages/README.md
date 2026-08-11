@@ -1,8 +1,8 @@
 # Packages 架构 / Packages Architecture
 
-`packages/` 是 Coding CAD 的核心代码层。这里保存稳定的架构模型、DSL 投影、验证规则、组件知识、架构推理助手、执行蓝图协议、Agent 指导文档渲染层、生命周期管理和实现合规反馈能力。
+`packages/` 是 Coding CAD 的核心代码层。这里保存稳定的架构模型、DSL 投影、验证规则、组件知识、架构推理助手、布局投影边界、执行蓝图协议、Agent 指导文档渲染层、生命周期管理和实现合规反馈能力。
 
-`packages/` is the core code layer of Coding CAD. It contains the stable architecture model, DSL projection, validation rules, component knowledge, architecture reasoning, the execution blueprint protocol, Agent instruction rendering, lifecycle management, and implementation compliance feedback.
+`packages/` is the core code layer of Coding CAD. It contains the stable architecture model, DSL projection, validation rules, component knowledge, architecture reasoning, the layout-projection boundary, the execution blueprint protocol, Agent instruction rendering, lifecycle management, and implementation compliance feedback.
 
 ## 心智模型 / Mental Model
 
@@ -60,6 +60,7 @@ architecture-review    -> architecture-ir + architecture-validator
 implementation-analyzer -> architecture-ir
 implementation-validator -> architecture-ir + execution-blueprint
                           + implementation-analyzer
+architecture-layout    -> architecture-ir (planned; skeleton has no dependency yet)
 apps/*                 -> public package APIs
 ```
 
@@ -76,6 +77,7 @@ Arrows in the diagram mean “depends on.” DSL and Registry are peer layers ab
 | Package | 职责 / Responsibility | 拥有 / Owns | 不应拥有 / Should Not Own |
 | --- | --- | --- | --- |
 | `@coding-cad/architecture-ir` | 核心架构中间表示 / Core architecture intermediate representation | 类型契约、架构词汇、诊断形态 / Type contracts, architecture vocabulary, diagnostic shape | 解析、验证规则、运行时行为 / Parsing, validation rules, runtime behavior |
+| `@coding-cad/architecture-layout` | Architecture IR 到布局结果的纯 TypeScript 投影边界（当前仅骨架） / Pure TypeScript projection boundary from Architecture IR to layout results (skeleton only) | 未来的视觉语义、布局约束、solver adapter 与布局结果 / Future visual semantics, layout constraints, solver adapters, and layout results | Svelte、DOM、CSS、UI 状态或 `apps/web` / Svelte, DOM, CSS, UI state, or `apps/web` |
 | `@coding-cad/architecture-dsl` | YAML 和 ArchitectureProject 的互转 / Convert between YAML and ArchitectureProject | DSL schema、解析、格式化、可读错误 / DSL schema, parsing, formatting, readable errors | 架构正确性判断 / Architecture correctness decisions |
 | `@coding-cad/architecture-validator` | 架构诊断 / Architecture diagnostics | 规则执行、依赖图检查、能力和限制匹配 / Rule execution, dependency graph checks, capability and limitation matching | YAML 解析、组件目录所有权、Agent 执行 / YAML parsing, component catalog ownership, Agent execution |
 | `@coding-cad/component-registry` | 组件能力知识库 / Component capability knowledge base | 技术能力、限制、适用和风险场景 / Technology capabilities, limitations, suitable/risky usage | 项目特定决策 / Project-specific decisions |
