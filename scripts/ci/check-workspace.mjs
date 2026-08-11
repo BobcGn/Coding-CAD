@@ -9,6 +9,7 @@ const root = process.cwd();
 const workspaceModules = [
   { workspace: "apps/server", log: "server", requiredScripts: ["build", "typecheck", "test", "clean"] },
   { workspace: "apps/web", log: "web", requiredScripts: ["build", "typecheck", "test", "clean"] },
+  { workspace: "packages/architecture-layout", log: "architecture-layout", requiredScripts: ["build", "typecheck", "clean"] },
   { workspace: "packages/architecture-agent", log: "architecture-agent", requiredScripts: ["build", "typecheck", "test", "test:unit", "clean"] },
   { workspace: "packages/execution-blueprint", log: "execution-blueprint", requiredScripts: ["build", "typecheck", "test", "test:unit", "clean"] },
   { workspace: "packages/agent-adapter", log: "agent-adapter", requiredScripts: ["build", "typecheck", "test", "test:unit", "clean"] },
