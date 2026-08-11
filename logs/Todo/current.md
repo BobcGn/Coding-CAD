@@ -1,6 +1,6 @@
 # 当前 TODO / Current TODO
 
-更新时间 / Updated at: 2026-08-09 22:22 CST (Asia/Shanghai)
+更新时间 / Updated at: 2026-08-11 19:30 CST (Asia/Shanghai)
 
 本文件是仍有效 TODO 的单一事实源。
 
@@ -39,8 +39,28 @@ This file is the single source of truth for active TODOs.
 ## TODO-005: Web Editor Timing / Web Editor 时机
 
 - 状态 / Status: 待处理 / Pending
-- 当前处理 / Current handling: Web app 仍是 IR view shell，没有实现拖拽界面。
-- 解除条件 / Exit condition: 在 DSL/IR/Validator 更稳定后，再设计 React Flow 编辑器的最小可用视图。
+- 当前处理 / Current handling: UI Architecture 与 Checkpoint 0–10 已文档化；Web app 仍是 TypeScript placeholder，没有实现或安装 UI。
+- 解除条件 / Exit condition: 用户确认 D-009 及 Checkpoint 3 前置决策，并明确授权初始化 SvelteKit/Svelte Flow 阶段。
+
+## TODO-014: Architecture Layout Contracts / Architecture Layout 契约
+
+- 状态 / Status: 待处理 / Pending
+- 当前处理 / Current handling: Master Phase 1 已规划；package 仍只有空模块。canonical D-005 阻塞 Phase 1 起点，D-002/D-010 阻塞 solver/worker segment。
+- 解除条件 / Exit condition: 用户至少确认 D-005、D-002、D-010，并在 solver options 前确认 D-001，之后才可按窄切片开始 Phase 1。
+
+- Status: Pending
+- Current handling: Master Phase 1 is planned and the package still contains only empty modules. Canonical D-005 blocks the Phase 1 start, while D-002/D-010 block the solver/worker segment.
+- Exit condition: The user confirms at least D-005, D-002, and D-010 and confirms D-001 before solver options; only then may Phase 1 start in narrow slices.
+
+## TODO-015: UI / Layout User Decisions / UI / Layout 用户决策
+
+- 状态 / Status: 待用户确认 / Awaiting user decision
+- 当前处理 / Current handling: canonical D-001 至 D-010 均为 `Final Decision: TBD`；已建立附件编号 crosswalk 与 Phase gate matrix。Phase 0 Decision Freeze 未完成。
+- 解除条件 / Exit condition: 用户逐项确认或明确延后；Phase 1 至少需要 D-005、D-002、D-010，并在 solver 前需要 D-001。
+
+- Status: Awaiting user decision
+- Current handling: Canonical D-001 through D-010 remain `Final Decision: TBD`; the attachment crosswalk and Phase gate matrix are documented. Phase 0 Decision Freeze is incomplete.
+- Exit condition: The user confirms or explicitly defers each item; Phase 1 requires at least D-005, D-002, and D-010, with D-001 required before solver work.
 
 ## TODO-013: Integrated Terminal Infrastructure / 集成终端基础设施
 

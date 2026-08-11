@@ -1,6 +1,6 @@
 # 当前证据链 / Current Evidence Chain
 
-更新时间 / Updated at: 2026-08-09 00:35 CST (Asia/Shanghai)
+更新时间 / Updated at: 2026-08-11 19:30 CST (Asia/Shanghai)
 
 ## 本轮事件源 / Current Event Sources
 
@@ -18,8 +18,58 @@
 | CLI Design Command / CLI Design Command | 用户要求继续编写下一模块 / User asked to continue with the next module | CLI 接入 Architecture Agent，支持需求到架构蓝图 / CLI now wires Architecture Agent for requirement-to-blueprint design | `packages/cli/src/commands/design.ts`、`packages/cli/src/index.ts`、`packages/cli/src/cli.test.ts` |
 | Execution Blueprint / Execution Blueprint | 用户要求实现下一核心模块 / User requested the next core module | 新增架构到外部 Coding Agent 实施蓝图的协议层 / Added the protocol layer from architecture to external Coding Agent implementation blueprints | `packages/execution-blueprint`、`logs/modules/execution-blueprint` |
 | Agent Adapter / Agent Adapter | 用户要求实现下一核心模块 / User requested the next core module | 新增 Execution Blueprint 到 Generic、Codex、Claude Code 指导文档的纯渲染层 / Added pure rendering from Execution Blueprint to Generic, Codex, and Claude Code instructions | `packages/agent-adapter`、`logs/modules/agent-adapter` |
+| UI / Architecture Layout 骨架 / UI / Architecture Layout skeleton | 用户要求只建立目录与 package 边界 / User requested directory and package boundaries only | 新增唯一 Layout package 骨架并组织 Web UI 目录，不实现行为 / Added the sole Layout package skeleton and organized Web UI directories without behavior | `packages/architecture-layout`、`apps/web/src/lib`、`logs/modules/architecture-layout` |
+| UI / Architecture Layout Documentation First | 用户要求先统一边界、风险、测试与 Decision / User requested shared boundaries, risks, tests, and Decisions before implementation | 新增四份设计文档、10 个 Decision、11 个 Checkpoint / Added four design documents, 10 Decisions, and 11 Checkpoints | `docs/ui-architecture.md`、`docs/architecture-layout.md`、`docs/architecture-layout-decisions.md`、`docs/ui-mvp-roadmap.md` |
+| Root Coding Agent constraints / 根级 Coding Agent 约束 | 用户要求保留第一铁律并适配新目录 / User requested preserving the First Law while adapting to the new structure | 更新 `AGENTS.md` 的 Layout/UI/Decision/Checkpoint/Terminal 约束 / Updated Layout/UI/Decision/Checkpoint/Terminal constraints in `AGENTS.md` | `AGENTS.md`、`docs/architecture-layout-decisions.md`、`docs/ui-mvp-roadmap.md` |
+| UI V1 Master Planning | 用户要求先规划 Phase 0–7、更新 Decisions/Risks/Roadmap 并跑 baseline / User requested Phase 0–7 planning, Decision/Risk/Roadmap updates, and baseline | 新增 Master Plan、canonical crosswalk、Phase gates 与 readiness 结论 / Added the Master Plan, canonical crosswalk, Phase gates, and readiness result | `docs/ui-v1-execution-plan.md`、`docs/architecture-layout-decisions.md`、`docs/ui-mvp-roadmap.md`、`docs/architecture-layout.md` |
 
 ## 本轮验证记录 / Current Validation Records
+
+- Master Plan 结构脚本：通过，8 Phases，每个 11 个必填栏目。
+- Decision/crosswalk 结构脚本：通过，10 decisions、10 status、10 Final TBD、10 crosswalk。
+- Risk Register 结构脚本：通过，15 entries。
+- `pnpm lint`：通过，23/23 tasks successful。
+- `pnpm build`：通过，15/15 tasks successful。
+- `pnpm test`：通过，29/29 tasks successful。
+- `AGENTS.md` First Law/关键规则脚本：通过，中英文第一铁律完整，9/9 规则存在，双语检查通过。
+- `test ! -e AGENT.md`：通过，未创建重复单数文件。
+- Decision 结构脚本：通过，10 decisions、10 status、10 final TBD、10 blocking、10 deadline。
+- Roadmap 结构脚本：通过，11 checkpoints，每个包含 Goal/Input/Output/Acceptance Criteria/Known Risks/Non-goals。
+- Risk Register 覆盖脚本：通过，12/12 指定风险。
+- 空模块检查：通过，`packages/architecture-layout/src/**/*.ts` 仍全部为 `export {};`。
+- `git diff --check`：通过。
+- `pnpm lint:workspace`：通过，15 modules。
+- `pnpm build`：通过，15/15 tasks successful。
+- `pnpm test`：通过，29/29 tasks successful。
+
+- Master Plan structure script: passed, 8 Phases with 11 required fields each.
+- Decision/crosswalk structure script: passed, 10 decisions, 10 statuses, 10 Final TBD entries, and 10 crosswalk entries.
+- Risk Register structure script: passed, 15 entries.
+- `pnpm lint`: passed, 23/23 tasks successful.
+- `pnpm build`: passed, 15/15 tasks successful.
+- `pnpm test`: passed, 29/29 tasks successful.
+- `AGENTS.md` First Law/key-rule script: passed; both First Law texts are intact, 9/9 rules are present, and the bilingual check passed.
+- `test ! -e AGENT.md`: passed; no duplicate singular file was created.
+- Decision structure script: passed with 10 decisions, 10 statuses, 10 final TBD entries, 10 blocking fields, and 10 deadlines.
+- Roadmap structure script: passed with 11 checkpoints, each containing Goal/Input/Output/Acceptance Criteria/Known Risks/Non-goals.
+- Risk Register coverage script: passed, 12/12 required risks.
+- Empty-module check: passed; every `packages/architecture-layout/src/**/*.ts` file remains `export {};`.
+- `git diff --check`: passed.
+- `pnpm lint:workspace`: passed with 15 modules.
+- `pnpm build`: passed, 15/15 tasks successful.
+- `pnpm test`: passed, 29/29 tasks successful.
+
+- `pnpm list -r --depth -1`：通过，识别 16 个 workspace projects，包括 `@coding-cad/architecture-layout`。
+- `pnpm lint:workspace`：通过，Workspace architecture check passed (15 modules)。
+- `pnpm build`：通过，15/15 tasks successful。
+- `pnpm test`：通过，29/29 tasks successful。
+- `pnpm install --lockfile-only --offline`：通过，downloaded 0、added 0，仅同步 lockfile importer。
+
+- `pnpm list -r --depth -1`: passed; recognized 16 workspace projects including `@coding-cad/architecture-layout`.
+- `pnpm lint:workspace`: passed, Workspace architecture check passed (15 modules).
+- `pnpm build`: passed, 15/15 tasks successful.
+- `pnpm test`: passed, 29/29 tasks successful.
+- `pnpm install --lockfile-only --offline`: passed with 0 downloaded and 0 added; only the lockfile importer was synchronized.
 
 - `find logs/modules -maxdepth 3 -type f | sort`：确认新模块日志文件存在、旧 `dsl`/`validator` 日志目录已移除。
 - `rg "@coding-cad/(dsl|validator)|packages/(dsl|validator)|logs/modules/(dsl|validator)"`：无输出，确认旧主线引用已清理。

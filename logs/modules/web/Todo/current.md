@@ -1,12 +1,12 @@
 # 当前 TODO / Current TODO
 
-更新时间 / Updated at: 2026-08-09 22:22 CST (Asia/Shanghai)
+更新时间 / Updated at: 2026-08-11 19:30 CST (Asia/Shanghai)
 
 ## WEB-001: IR Graph View / IR 图视图
 
 - 状态 / Status: 待处理 / Pending
-- 当前处理 / Current handling: 等待 DSL/IR/Validator 更稳定。
-- 解除条件 / Exit condition: 提供只读 IR graph view，再逐步开放编辑能力。
+- 当前处理 / Current handling: UI Architecture 与 Checkpoint 路线图已完成设计草案；SvelteKit/Svelte Flow 尚未安装。D-009 阻塞 Checkpoint 3。
+- 解除条件 / Exit condition: 用户确认 Checkpoint 3 的 D-003、D-008、D-009，并在 Checkpoint 1–2 验证后授权 UI 实现。
 
 ## WEB-002: Integrated Terminal Infrastructure / 集成终端基础设施
 

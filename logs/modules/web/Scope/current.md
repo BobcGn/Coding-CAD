@@ -1,9 +1,9 @@
 # 当前范围 / Current Scope
 
-更新时间 / Updated at: 2026-08-09 22:22 CST (Asia/Shanghai)
+更新时间 / Updated at: 2026-08-11 19:30 CST (Asia/Shanghai)
 
 模块 / Module: `apps/web`
 
-当前范围：保持 Web app 作为 Architecture IR 的可视化编辑器 shell，并将未来集成终端限定为产品宿主的 OS Process / PTY 基础设施；本阶段不实现 UI 或终端。
+当前范围：文档化未来 SvelteKit Architecture Workspace UI 的状态所有权、产品区域、工作流、测试计划和 Checkpoint；保持 TypeScript placeholder。
 
-Current scope: keep the Web app as the Architecture IR visual editor shell and constrain the future integrated terminal to product-host OS Process / PTY infrastructure; this phase implements neither UI nor terminal.
+Current scope: document state ownership, product areas, workflows, tests, and checkpoints for the future SvelteKit Architecture Workspace UI while preserving the TypeScript placeholder.

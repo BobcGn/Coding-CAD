@@ -1,73 +1,81 @@
 # 当前状态 / Current State
 
-更新时间 / Updated at: 2026-08-09 22:22 CST (Asia/Shanghai)
+更新时间 / Updated at: 2026-08-11 20:30 CST (Asia/Shanghai)
 
 ## 总览 / Overview
 
-状态：已验证。
+状态：已验证，Phase 0 Decision Freeze 阻塞。
 
-Status: Verified.
+Status: Verified, blocked at Phase 0 Decision Freeze.
 
-Coding CAD 已完成十二个核心能力模块：Architecture IR、Component Registry、Architecture Validator、Architecture DSL、CLI、Architecture Agent、Execution Blueprint、Agent Adapter、Workspace、Architecture Review、Implementation Analyzer 和 Implementation Validator。未实现且职责重复的 `packages/agent-runtime` 已从核心边界移除。
+UI V1 Master Execution Plan、Decision crosswalk、Phase gate matrix、Roadmap mapping 与扩展 Risk Register 已验证。Phase 1 因 canonical D-005、D-002、D-010 未决而不能开始；D-001 也必须在 solver options 前确认。
 
-Coding CAD has completed twelve core capability modules: Architecture IR, Component Registry, Architecture Validator, Architecture DSL, CLI, Architecture Agent, Execution Blueprint, Agent Adapter, Workspace, Architecture Review, Implementation Analyzer, and Implementation Validator. The unimplemented and responsibility-duplicating `packages/agent-runtime` boundary has been removed.
-
-## 已确认事实 / Confirmed Facts
-
-- 项目根目录是 Git 工作树，核心模块迁移、CI/CD、CI 修复、Architecture Agent、Execution Blueprint 和 Agent Adapter 已按功能分批完成。
-- 文档规范要求项目 Markdown 始终中英双语。
-- 当前核心闭环是 `requirement` -> `architecture-agent` -> `architecture-ir` -> `architecture-validator` -> refinement -> `execution-blueprint` -> `agent-adapter` -> external Coding Agent，以及 `architecture-dsl` <-> `architecture-ir` -> `cli`。
-- 当前已建立推送前本地门禁 `pnpm ci:verify` 和 GitHub Actions CI workflow。
-- CodeQL 不再作为自动 workflow 启用，因为远端仓库尚未启用 GitHub code scanning。
-- 当前 workspace 包括两个 app shell 和十二个已实现的核心 package；不包含 Coding Agent Runtime。
-- Coding CAD 通过 Blueprint / Guide 向下传递意图，通过 Repository Analyzer / Validator 向上观察实现；外部 Coding Agent 是用户管理的进程。
-- `packages/dsl` 和 `packages/validator` 是旧原型目录，已删除。
-- `packages/` 与 `logs/modules/` 中不存在同名重复模块或空目录。
-- 十二个核心模块已有明确的测试入口；`agent-adapter` 使用单元测试覆盖三种指导文档渲染与 Blueprint 不变性。
-
-- The project root is a Git worktree; the core module migration, CI/CD, CI fix, Architecture Agent, Execution Blueprint, and Agent Adapter have been completed in functional batches.
-- The documentation rule requires project Markdown to remain bilingual.
-- The current core loop is `requirement` -> `architecture-agent` -> `architecture-ir` -> `architecture-validator` -> refinement -> `execution-blueprint` -> `agent-adapter` -> external Coding Agent, plus `architecture-dsl` <-> `architecture-ir` -> `cli`.
-- The local pre-push gate `pnpm ci:verify` and GitHub Actions CI workflow are now in place.
-- CodeQL is no longer enabled as an automatic workflow because GitHub code scanning is not enabled for the remote repository yet.
-- The current workspace contains two app shells and twelve implemented core packages; it does not contain a Coding Agent Runtime.
-- Coding CAD communicates intent downward through Blueprints and Guides, and observes implementation upward through repository analysis and validation; external Coding Agents are user-managed processes.
-- `packages/dsl` and `packages/validator` were old prototype directories and have been removed.
-- No duplicate module names or empty directories exist under `packages/` and `logs/modules/`.
-- The twelve core modules have explicit test entry points; `agent-adapter` uses unit tests for three instruction renderers and Blueprint immutability.
+The UI V1 Master Execution Plan, Decision crosswalk, Phase gate matrix, Roadmap mapping, and expanded Risk Register are verified. Phase 1 cannot begin while canonical D-005, D-002, and D-010 remain undecided; D-001 is also required before solver options.
 
 ## 当前变更 / Current Changes
 
-- 更新核心模块的日志文档，并补齐第六模块 Architecture Agent 的模块日志。
-- 新增 `logs/modules/architecture-dsl`、`logs/modules/architecture-validator`、`logs/modules/cli`。
-- 更新 `logs/modules/architecture-ir` 和 `logs/modules/component-registry`。
-- 删除旧日志目录 `logs/modules/dsl` 和 `logs/modules/validator`。
-- `apps/server` 已迁移到正式 DSL 和 Validator 包。
-- Validator 新增图完整性规则，检查重复组件 ID 和悬空连接端点。
-- Package 文档已按真实依赖 DAG 校正，并记录三层测试架构。
-- 新增 CI/CD 文档、GitHub Actions workflow、PR 模板和本地确定性检查脚本。
-- 修复 CI 干净环境缺少 Node 类型声明的问题，并移除需要仓库 code scanning 支持的自动 CodeQL workflow。
-- 新增 `packages/architecture-agent`，实现 Architecture Reasoning Layer 第一阶段。
-- CLI 新增 `design` 命令，可从自然语言需求生成架构报告、JSON 或 Architecture DSL YAML。
-- 新增 `packages/execution-blueprint`，实现 Architecture IR 到外部 Coding Agent 实施蓝图的协议层。
-- 新增 `packages/agent-adapter`，将 Execution Blueprint 渲染为外部 Coding Agent 指导文档。
+- 新增 `docs/ui-v1-execution-plan.md`，按严格 Phase 0–7 顺序定义每阶段的 11 个必填执行栏目和完成报告格式。
+- 在 Decision 文档建立附件主题编号到 canonical D-001…D-010 的 10/10 crosswalk，以及 Master Phase gate matrix；未重编号、未填写 Final Decision。
+- Roadmap 新增 Master Phase 映射，并明确 Phase 顺序优先于 legacy Checkpoint 时间解释。
+- Risk Register 从 12 项扩展为 15 项，增加 Decision 编号混淆、Phase/Checkpoint 漂移和 Phase 1 过大切片风险。
+- `AGENTS.md` 已把新 Master Plan 加入 UI/Layout 必读文档，并明确 Phase 0→7 是主顺序、Checkpoint 是能力门禁。
+- 根级 `AGENTS.md` 已保留 Coding Agent 第一铁律原文，并按新目录补充 Architecture Source of Truth、依赖方向、Layout/Web 所有权、Ghost/Review、Decision/Checkpoint、Terminal/Agent 和分层测试约束。
+- 明确仓库标准指令文件名保持 `AGENTS.md`，未新增重复的 `AGENT.md`。
+- 新增 `docs/ui-architecture.md`、`docs/architecture-layout.md`、`docs/architecture-layout-decisions.md` 和 `docs/ui-mvp-roadmap.md`。
+- Architecture Layout 文档定义 Semantic、Abstraction、Visual IR、Constraint、Solver、Stability、Incremental 和 Ghost 边界。
+- Decision 文档记录 10 个待用户决策项；所有最终决定保持 `TBD`。
+- Roadmap 定义 Checkpoint 0–10 的输入、输出、验收、风险和非目标。
+- 更新 `packages/architecture-layout/README.md`、`apps/web/README.md` 和 `docs/architecture.md`。
+- 校正 `docs/architecture.md` 中 `A -> B` 的说明为“A 依赖 B”，消除既有文档方向歧义。
+- 没有实现代码或安装依赖。
 
-- Updated core module log documentation and added module logs for the sixth module, Architecture Agent.
-- Added `logs/modules/architecture-dsl`, `logs/modules/architecture-validator`, and `logs/modules/cli`.
-- Updated `logs/modules/architecture-ir` and `logs/modules/component-registry`.
-- Removed old log directories `logs/modules/dsl` and `logs/modules/validator`.
-- `apps/server` has migrated to the formal DSL and Validator packages.
-- The Validator now includes graph-integrity checks for duplicate component ids and dangling connection endpoints.
-- Package documentation now reflects the actual dependency DAG and records the three-layer test architecture.
-- Added CI/CD documentation, a GitHub Actions workflow, a PR template, and deterministic local check scripts.
-- Fixed the missing Node type declarations in clean CI and removed the automatic CodeQL workflow that requires repository code scanning support.
-- Added `packages/architecture-agent`, implementing the first phase of the Architecture Reasoning Layer.
-- Added the CLI `design` command, which generates an architecture report, JSON, or Architecture DSL YAML from natural-language requirements.
-- Added `packages/execution-blueprint`, implementing the protocol layer from Architecture IR to external Coding Agent implementation blueprints.
-- Added `packages/agent-adapter`, rendering Execution Blueprints into external Coding Agent instructions.
+- Added `docs/ui-v1-execution-plan.md`, defining 11 required execution fields and a completion-report format for each strict Phase 0–7 stage.
+- Added a 10/10 crosswalk from attachment topic labels to canonical D-001…D-010 and a Master Phase gate matrix without renumbering or filling Final Decisions.
+- Added Master Phase mapping to the Roadmap and clarified that Phase order governs over legacy Checkpoint timeline interpretation.
+- Expanded the Risk Register from 12 to 15 entries for Decision-number confusion, Phase/Checkpoint drift, and oversized Phase 1 slices.
+- `AGENTS.md` now requires the Master Plan for UI/Layout work and defines Phase 0→7 as the master sequence with Checkpoints as capability gates.
+- The root `AGENTS.md` preserves the original Coding Agent First Law and adds constraints for Architecture Source of Truth, dependency direction, Layout/Web ownership, Ghost/Review, Decisions/Checkpoints, Terminal/Agent boundaries, and layered testing based on the new structure.
+- The standard repository instruction filename remains `AGENTS.md`; no duplicate `AGENT.md` was added.
+- Added `docs/ui-architecture.md`, `docs/architecture-layout.md`, `docs/architecture-layout-decisions.md`, and `docs/ui-mvp-roadmap.md`.
+- The Architecture Layout document defines Semantic, Abstraction, Visual IR, Constraint, Solver, Stability, Incremental, and Ghost boundaries.
+- The Decision document records 10 user decisions; every final decision remains `TBD`.
+- The Roadmap defines inputs, outputs, acceptance, risks, and non-goals for Checkpoints 0–10.
+- Updated `packages/architecture-layout/README.md`, `apps/web/README.md`, and `docs/architecture.md`.
+- Corrected the `A -> B` wording in `docs/architecture.md` to mean “A depends on B,” removing an existing documentation ambiguity.
+- No code was implemented and no dependency was installed.
+
+## 验证结果 / Validation Results
+
+- Master Plan 结构：8/8 Phase，每个 11/11 必填栏目。
+- Decision 同步：10 decisions、10 status、10 Final TBD、10 crosswalk entries。
+- Risk Register：15/15 entries。
+- `pnpm lint`：通过，23/23 tasks successful。
+- `pnpm build`：通过，15/15 tasks successful。
+- `pnpm test`：通过，29/29 tasks successful。
+- First Law 完整性检查：中英文原文均存在，9/9 新关键规则存在，双语检查通过。
+- `AGENT.md` 不存在，只有标准根级 `AGENTS.md`。
+- Decision 结构检查：10 decisions、10 required statuses、10 blocking fields、10 deadlines、10 `Final Decision: TBD`。
+- Roadmap 结构检查：Checkpoint 0–10 共 11 个，每个六项必填字段完整。
+- Risk Register 覆盖检查：原 12/12 指定风险全部保留，当前共 15 项。
+- Architecture Layout 源码检查：所有 TypeScript 文件仍为 `export {};`。
+- `git diff --check`、`pnpm lint:workspace`、`pnpm build`、`pnpm test` 均通过。
+
+- Master Plan structure: 8/8 Phases, each with 11/11 required fields.
+- Decision synchronization: 10 decisions, 10 statuses, 10 Final TBD entries, and 10 crosswalk entries.
+- Risk Register: 15/15 entries.
+- `pnpm lint`: passed, 23/23 tasks successful.
+- `pnpm build`: passed, 15/15 tasks successful.
+- `pnpm test`: passed, 29/29 tasks successful.
+- First Law integrity check: both original English and Chinese texts are present, 9/9 key new rules are present, and the bilingual check passed.
+- No `AGENT.md` exists; only the standard root `AGENTS.md` is used.
+- Decision structure check: 10 decisions, 10 required statuses, 10 blocking fields, 10 deadlines, and 10 `Final Decision: TBD` entries.
+- Roadmap structure check: 11 checkpoints from 0 through 10, each with all six required fields.
+- Risk Register coverage check: all original 12/12 required risks remain covered, with 15 total entries now.
+- Architecture Layout source check: every TypeScript file remains `export {};`.
+- `git diff --check`, `pnpm lint:workspace`, `pnpm build`, and `pnpm test` all passed.
 
 ## 回退点 / Rollback Point
 
-回退应恢复旧 `packages/dsl`、`packages/validator` 及其日志目录，并撤销 server 依赖迁移；不得覆盖来源不明的工作区改动。
+回退本轮应逐文件移除 `docs/ui-v1-execution-plan.md`，恢复 Decision/Roadmap/Risk Register 与对应日志更新；不得回退先前完成的 Documentation First、`AGENTS.md`、package/UI skeleton 或来源不明的改动。
 
-Rollback should restore old `packages/dsl`, `packages/validator`, and their log directories, then undo the server dependency migration; do not overwrite unrelated workspace changes.
+Roll back this slice file by file by removing `docs/ui-v1-execution-plan.md` and restoring Decision/Roadmap/Risk Register and corresponding log updates; do not roll back earlier Documentation First work, `AGENTS.md`, the package/UI skeleton, or unrelated changes.

@@ -481,3 +481,119 @@ Validation:
 - `CI=true pnpm install --frozen-lockfile`: passed; the lockfile matches 15 workspace projects (the root, two apps, and twelve core packages).
 - `pnpm ci:verify`: passed; the workspace architecture check confirmed 14 actual modules, with typecheck, unit, integration, end-to-end, and build all passing.
 - Residual checks confirmed that the package, module logs, lockfile importer, workspace mapping, and `@coding-cad/agent-runtime` imports are absent.
+
+## 2026-08-11 - UI / Architecture Layout 目录骨架 / UI / Architecture Layout Directory Skeleton
+
+状态：已验证。
+
+Status: Verified.
+
+变更：
+
+- 新增唯一 package `packages/architecture-layout`，包含目标目录、合法空 TypeScript 模块、package 元数据与双语边界 README。
+- 在 `apps/web/src/lib` 下建立 Architecture、CAD、Layout UI adapter 与 Terminal TODO 目录边界。
+- 由现有 `packages/*` workspace 通配符识别新 package；仅同步 lockfile importer 和显式 workspace 门禁映射。
+- 未添加 runtime dependency，未实现布局、ELK、Svelte UI、Terminal 或 Ghost Architecture 行为。
+
+Changes:
+
+- Added the sole new package, `packages/architecture-layout`, with target directories, valid empty TypeScript modules, package metadata, and a bilingual boundary README.
+- Established Architecture, CAD, Layout UI adapter, and Terminal TODO boundaries under `apps/web/src/lib`.
+- Used the existing `packages/*` workspace glob for discovery; synchronized only the lockfile importer and explicit workspace-gate mapping.
+- Added no runtime dependency and implemented no layout, ELK, Svelte UI, terminal, or Ghost Architecture behavior.
+
+验证：
+
+- `pnpm list -r --depth -1`：通过，16 个 workspace projects。
+- `pnpm lint:workspace`：通过，15 个实际模块。
+- `pnpm build`：通过，15/15 tasks successful。
+- `pnpm test`：通过，29/29 tasks successful。
+
+Validation:
+
+- `pnpm list -r --depth -1`: passed with 16 workspace projects.
+- `pnpm lint:workspace`: passed with 15 actual modules.
+- `pnpm build`: passed, 15/15 tasks successful.
+- `pnpm test`: passed, 29/29 tasks successful.
+
+## 2026-08-11 - UI / Architecture Layout Documentation First
+
+状态：已验证。
+
+Status: Verified.
+
+变更：
+
+- 新增 UI Architecture、Architecture Layout、Decision Required 和 UI MVP Roadmap 四份双语设计文档。
+- 定义 Architecture IR、Layout compiler、LayoutState、Web adapter、Svelte Flow、Review/Ghost 和 Terminal 的责任边界。
+- 建立包含 12 项指定风险的 Risk Register、10 个统一 Decision 模板和 11 个完整 Checkpoint。
+- 更新 Architecture Layout/Web README 与长期架构说明。
+- 修正长期架构说明中依赖箭头的既有反向文字描述。
+- 所有 `Final Decision` 保持 `TBD`；未编写算法、UI、Terminal 或 Ghost 行为，未安装依赖。
+
+Changes:
+
+- Added four bilingual design documents for UI Architecture, Architecture Layout, Decision Required, and the UI MVP Roadmap.
+- Defined responsibility boundaries among Architecture IR, the Layout compiler, LayoutState, the Web adapter, Svelte Flow, Review/Ghost, and Terminal.
+- Established a Risk Register covering 12 required risks, 10 uniform Decision templates, and 11 complete Checkpoints.
+- Updated Architecture Layout/Web READMEs and long-lived architecture notes.
+- Corrected the pre-existing reversed wording for dependency arrows in the long-lived architecture notes.
+- Kept every `Final Decision` as `TBD`; implemented no algorithm, UI, Terminal, or Ghost behavior and installed no dependency.
+
+验证：10 个 Decision、11 个 Checkpoint 和 12 项 Risk Register 覆盖检查通过；`pnpm lint:workspace`、`pnpm build`、`pnpm test` 与 `git diff --check` 通过。
+
+Validation: checks for 10 Decisions, 11 Checkpoints, and 12 Risk Register entries passed; `pnpm lint:workspace`, `pnpm build`, `pnpm test`, and `git diff --check` passed.
+
+## 2026-08-11 - Root AGENTS Constraints for Layout/UI / Layout/UI 根级 AGENTS 约束
+
+状态：已验证。
+
+Status: Verified.
+
+变更：
+
+- 完整保留 Coding Agent 第一铁律中英文原文。
+- 更新根级 `AGENTS.md` 的项目结构，加入 `architecture-layout` 与新的 docs/logs 事实源说明。
+- 增加 Architecture IR 唯一事实源、LayoutState 分离、依赖方向、Architecture Layout/Web 所有权、Ghost/Review、Decision/Checkpoint 和 Terminal/Agent 边界。
+- 增加 Layout 无 DOM 测试与未来 UI 分层测试规则。
+- 未新增单数 `AGENT.md`，未修改代码、依赖或用户 Decision。
+
+Changes:
+
+- Preserved the complete original Chinese and English Coding Agent First Law.
+- Updated the project structure in the root `AGENTS.md` for `architecture-layout` and the new docs/logs sources of truth.
+- Added Architecture IR source-of-truth, LayoutState separation, dependency direction, Architecture Layout/Web ownership, Ghost/Review, Decision/Checkpoint, and Terminal/Agent boundaries.
+- Added DOM-free Layout testing and future layered UI testing rules.
+- Added no singular `AGENT.md` and changed no code, dependency, or user Decision.
+
+验证：第一铁律完整性与双语规则检查通过；`git diff --check`、`pnpm lint:workspace`、`pnpm build` 和 `pnpm test` 通过。
+
+Validation: First Law integrity and bilingual-rule checks passed; `git diff --check`, `pnpm lint:workspace`, `pnpm build`, and `pnpm test` passed.
+
+## 2026-08-11 - UI V1 Master Planning / UI V1 主规划
+
+状态：已验证，Phase 1 阻塞。
+
+Status: Verified, Phase 1 blocked.
+
+变更：
+
+- 新增 `docs/ui-v1-execution-plan.md`，按 Phase 0–7 定义 Goal、Modules、Dependencies、Scope、Non-goals、Deliverables、Acceptance Criteria、Tests、Risks、Decision Gates 和 Exit Condition。
+- 保留 canonical Decision ID，建立附件主题编号的 10/10 crosswalk 与 Phase gate matrix。
+- 同步 Roadmap 的 Master Phase mapping，并区分 Phase 1 core protocol、Phase 5 Ghost product behavior 和 Phase 6 quality closure。
+- Risk Register 新增 R-013 至 R-015。
+- 根级 `AGENTS.md` 接入 Master Plan，并把 Phase 0→7 设为 UI V1 主执行顺序。
+- 未修改实现、依赖或 Final Decision；Phase 1 因 D-005、D-002、D-010 阻塞，D-001 也需在 solver 前确认。
+
+Changes:
+
+- Added `docs/ui-v1-execution-plan.md` with Goal, Modules, Dependencies, Scope, Non-goals, Deliverables, Acceptance Criteria, Tests, Risks, Decision Gates, and Exit Condition for Phases 0–7.
+- Preserved canonical Decision IDs and added a 10/10 crosswalk from attachment labels plus a Phase gate matrix.
+- Synchronized Master Phase mapping in the Roadmap and separated Phase 1 core protocols, Phase 5 Ghost product behavior, and Phase 6 quality closure.
+- Added R-013 through R-015 to the Risk Register.
+- Connected the Master Plan from the root `AGENTS.md` and made Phase 0→7 the UI V1 master execution order.
+- Changed no implementation, dependency, or Final Decision; D-005, D-002, and D-010 block Phase 1, and D-001 is required before solver work.
+
+验证：8/8 Phase、每 Phase 11/11 栏目、10/10 Decision/crosswalk、15/15 Risk entries 通过；`pnpm lint`、`pnpm build`、`pnpm test` 均通过。
+
+Validation: 8/8 Phases with 11/11 fields each, 10/10 Decision/crosswalk entries, and 15/15 Risk entries passed; `pnpm lint`, `pnpm build`, and `pnpm test` all passed.
