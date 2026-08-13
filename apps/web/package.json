@@ -4,15 +4,35 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "node -e \"console.log('web: no tests yet')\"",
-    "clean": "rm -rf dist"
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "test": "pnpm test:unit && pnpm test:integration",
+    "test:unit": "vitest run --exclude '**/*.integration.test.ts'",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "test:e2e": "playwright test",
+    "clean": "rm -rf .svelte-kit build coverage playwright-report test-results"
   },
   "dependencies": {
-    "@coding-cad/architecture-ir": "workspace:*"
+    "@coding-cad/architecture-ir": "workspace:*",
+    "@coding-cad/architecture-layout": "workspace:*",
+    "@coding-cad/architecture-review": "workspace:*",
+    "@coding-cad/architecture-validator": "workspace:*",
+    "@xyflow/svelte": "^1.6.3",
+    "svelte": "^5.56.9"
   },
   "devDependencies": {
-    "typescript": "^5.9.2"
+    "@playwright/test": "^1.62.1",
+    "@sveltejs/adapter-auto": "^7.0.1",
+    "@sveltejs/kit": "^2.70.2",
+    "@sveltejs/vite-plugin-svelte": "^6.2.4",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/svelte": "^5.4.2",
+    "jsdom": "^30.0.1",
+    "svelte-check": "^4.7.6",
+    "typescript": "^5.9.2",
+    "vite": "^7.3.6",
+    "vitest": "^4.1.10"
   }
 }
