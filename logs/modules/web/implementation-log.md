@@ -63,3 +63,35 @@ Approved D-003, D-008, and D-009 from the user-designated 21:03 guidance and est
 Decision/Phase 结构检查、Svelte 类型泄漏检查、`git diff --check` 与完整 `pnpm ci:verify` 均通过。Checkpoint 3 仍须通过实际 adapter、interaction、state separation、test 和 accessibility 证据后才能标记 Verified。
 
 Decision/Phase structure checks, the Svelte-type leakage check, `git diff --check`, and the complete `pnpm ci:verify` all pass. Checkpoint 3 still requires real adapter, interaction, state-separation, test, and accessibility evidence before it can be marked Verified.
+
+## 2026-08-13 - Phase 2 Narrow-Slice Planning / Phase 2 窄切片规划
+
+状态：规划中，代码实现未开始。
+
+Status: Planning in progress; code implementation has not started.
+
+把 Phase 2 拆分为 toolchain baseline、Svelte app foundation、adapter contract、Canvas shell、UI/async state、headless command application 和 phase acceptance 七个顺序切片。明确 Checkpoint 3 只验收基础 Canvas capability，而 Master Phase 2 另需完成 renderer-neutral command integration。
+
+Split Phase 2 into seven ordered slices: toolchain baseline, Svelte app foundation, adapter contract, Canvas shell, UI/async state, headless command application, and phase acceptance. Clarified that Checkpoint 3 accepts only the foundational Canvas capability, while Master Phase 2 additionally requires renderer-neutral command integration.
+
+Phase 2 不创建 Palette/Inspector 产品编辑入口；Add/Remove/Connect 通过 headless integration 验证。真实控件驱动的 add/remove/connect E2E 留给 Phase 3，并复用同一 command application。未安装依赖、未修改行为代码。
+
+Phase 2 creates no Palette/Inspector product editing entry points; Add/Remove/Connect is verified through headless integration. Real-control add/remove/connect E2E remains in Phase 3 and reuses the same command application. No dependency was installed and no behavior code changed.
+
+## 2026-08-13 - Phase 2 Implementation and Acceptance / Phase 2 实现与验收
+
+状态：已验证。
+
+Status: Verified.
+
+完成 SvelteKit/Svelte 5 app foundation、唯一 `LayoutResult -> Svelte Flow` adapter、基础 Architecture Canvas、Standard + Semantic Zoom、pan/zoom/select、LayoutState-only drag、Auto Layout reset、solver-only worker、loading/error/cancellation 与 headless Architecture Command Application。
+
+Completed the SvelteKit/Svelte 5 app foundation, sole `LayoutResult -> Svelte Flow` adapter, foundational Architecture Canvas, Standard + Semantic Zoom, pan/zoom/select, LayoutState-only drag, Auto Layout reset, solver-only worker, loading/error/cancellation, and the headless Architecture Command Application.
+
+命令 contract 保持 renderer-neutral，Add/Remove/Connect 经 candidate、Validator、Architecture Review gate、accepted ArchitectureProject、layout 与 Canvas projection；无 Svelte Flow 类型进入 command、core package 或持久化契约。
+
+Command contracts remain renderer-neutral. Add/Remove/Connect traverses candidate generation, Validator, Architecture Review gate, accepted ArchitectureProject, layout, and Canvas projection. No Svelte Flow type enters commands, core packages, or persistence contracts.
+
+定向验收通过：typecheck 0/0；unit 6 files/9 tests；integration 1 file/2 tests；Playwright Chrome E2E 1 passed；build 主页面约 65.71 KiB gzip，ELK 位于独立 worker chunk。完整 workspace CI 结果记录在根实施日志。
+
+Targeted acceptance passes: typecheck 0/0; unit 6 files/9 tests; integration 1 file/2 tests; one Playwright Chrome E2E; main-page build about 65.71 KiB gzip with ELK in a separate worker chunk. Complete workspace CI evidence is recorded in the root implementation log.

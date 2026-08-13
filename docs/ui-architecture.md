@@ -2,9 +2,9 @@
 
 ## 文档状态 / Document Status
 
-状态：Phase 2 架构基线已批准；描述职责和数据流，不代表 SvelteKit 或 Svelte Flow 已安装或实现。
+状态：Phase 2 已验证；SvelteKit/Svelte 5、Svelte Flow adapter、基础 Canvas、solver-only worker 与 headless command application 已实现。
 
-Status: the Phase 2 architecture baseline is approved; it describes responsibilities and data flow and does not imply that SvelteKit or Svelte Flow is installed or implemented.
+Status: Phase 2 is verified. SvelteKit/Svelte 5, the Svelte Flow adapter, foundational Canvas, solver-only worker, and headless command application are implemented.
 
 ## 核心原则 / Core Principle
 
@@ -27,9 +27,9 @@ Reverse interaction must not treat Svelte Flow state as ArchitectureProject. Sel
 
 ## 技术边界 / Technology Boundary
 
-V1 技术为 SvelteKit + Svelte 5 + TypeScript；D-009 已批准 `@xyflow/svelte` 作为可替换的 V1 Canvas renderer，当前仍未安装。
+V1 技术为 SvelteKit + Svelte 5 + TypeScript；D-009 已批准并采用 `@xyflow/svelte` 作为可替换的 V1 Canvas renderer。
 
-The V1 stack is SvelteKit + Svelte 5 + TypeScript; D-009 approves `@xyflow/svelte` as a replaceable V1 Canvas renderer, but it is not installed yet.
+The V1 stack is SvelteKit + Svelte 5 + TypeScript; D-009 is implemented with `@xyflow/svelte` as the replaceable V1 Canvas renderer.
 
 `@xyflow/svelte` 只能通过 `apps/web/src/lib/layout/adapters` 和 Canvas component 使用。它的类型不得进入 package public API、command、Architecture IR/DSL 或持久化 Workspace/LayoutState 格式。
 
@@ -160,13 +160,13 @@ Reject only removes the Ghost projection and does not modify the accepted Archit
 - Accessibility：键盘导航、焦点、缩放替代、screen-reader labels 和问题导航。 / Accessibility: keyboard navigation, focus, zoom alternatives, screen-reader labels, and issue navigation.
 - Performance：大图首次显示、增量更新、取消、worker failure 和恢复。 / Performance: initial display of large graphs, incremental updates, cancellation, worker failure, and recovery.
 
-测试工具只是计划，不授权本阶段安装 Vitest、Playwright、Svelte 或 Svelte Flow。
+Phase 2 已按用户明确批准建立 Vitest、Svelte component testing 与 Playwright 工具链；Phase 3 以后只在各自 Checkpoint 范围内扩展测试。
 
-The test tools are plans only and do not authorize installing Vitest, Playwright, Svelte, or Svelte Flow in this phase.
+Phase 2 establishes Vitest, Svelte component testing, and Playwright under explicit user approval. Later phases may extend them only within their respective Checkpoint scopes.
 
 ## 非目标 / Non-goals
 
-- 本阶段不初始化 SvelteKit，不写 Svelte component，不安装 UI 依赖。 / This phase does not initialize SvelteKit, write Svelte components, or install UI dependencies.
+- Phase 2 已完成 SvelteKit/Canvas 基础设施；本阶段结论不授权继续实现 Phase 3 Palette、Inspector 或完整 Greenfield workflow。 / Phase 2 has completed the SvelteKit/Canvas infrastructure; this conclusion does not authorize Phase 3 Palette, Inspector, or complete Greenfield workflows.
 - UI 不实现 Architecture Agent、Validator、Layout compiler 或 Agent runtime 的业务规则。 / The UI does not implement business rules belonging to Architecture Agent, Validators, the Layout compiler, or an Agent runtime.
 - Canvas 不是自由绘图或图形设计工具。 / The Canvas is not a free-form drawing or graphic-design tool.
 - Terminal 不在早期 UI checkpoints 范围内。 / The Terminal is outside early UI checkpoints.

@@ -4,36 +4,36 @@
 
 ## 本轮目标 / Current Objective
 
-在完整 Phase 1 实现与验证之后，读取用户指定的 21:03 决策建议，批准 D-003、D-008、D-009 并完成 Phase 1 文档收尾；不进入 Phase 2 代码实现。
+在 `codex/phase-2-svelte-cad` 分支完成 Phase 2 P2.0–P2.6：建立 Svelte CAD 基础设施、Canvas、状态边界、solver-only worker、headless command application 与验收证据。
 
-After full Phase 1 implementation and verification, read the user-designated 21:03 decision guidance, approve D-003, D-008, and D-009, and close Phase 1 documentation without entering Phase 2 code implementation.
+Complete Phase 2 P2.0–P2.6 on `codex/phase-2-svelte-cad`: establish Svelte CAD infrastructure, Canvas, state boundaries, the solver-only worker, headless command application, and acceptance evidence.
 
 ## 边界 / Boundaries
 
-- 本轮只更新 Decision、计划、边界与结构化日志，不修改行为代码。
-- 不重编号现有 canonical D-001 至 D-010；用 crosswalk 记录附件主题编号差异。
-- 记录用户按 21:03 建议授权的 D-003、D-008、D-009；D-007 继续保持 Phase 5 门禁。
-- 不初始化 SvelteKit，不安装 `@xyflow/svelte`，不实现 Canvas、drag、semantic zoom、Terminal 或 Ghost 产品行为。
+- 本轮只实现 Phase 2/Checkpoint 3 与配套 headless command application。
+- 依照用户明确批准实施 headless Review gate、LayoutState-only drag 和 app 层 Vitest/Svelte/Playwright 工具链。
+- Checkpoint 3 验收基础 Canvas；Master Phase 2 另验收 headless command application。
+- Palette/Inspector 等可见编辑入口及 add/remove/connect 产品 E2E 属于 Phase 3。
+- 不实现 Palette、Inspector、完整 Greenfield、Brownfield、Ghost、Handoff 或 Terminal。
 - 不修改 Architecture IR/DSL、`architecture-layout` public contract 或既有 Phase 1 行为。
 
-- This slice updates only Decisions, plans, boundaries, and structured logs; it changes no behavior code.
-- Do not renumber canonical D-001 through D-010; document the attachment's topic-number mismatch with a crosswalk.
-- Record D-003, D-008, and D-009 as authorized by the user's 21:03 guidance; retain D-007 as the Phase 5 gate.
-- Do not initialize SvelteKit, install `@xyflow/svelte`, or implement Canvas, drag, semantic zoom, Terminal, or Ghost product behavior.
+- This slice implements only Phase 2/Checkpoint 3 and the companion headless command application.
+- Under explicit user approval, implement the headless Review gate, LayoutState-only drag, and app-layer Vitest/Svelte/Playwright toolchain.
+- Checkpoint 3 accepts the foundational Canvas; Master Phase 2 additionally requires a headless command application.
+- Visible editing entry points such as Palette/Inspector and product E2E for add/remove/connect belong to Phase 3.
+- Do not implement Palette, Inspector, complete Greenfield, Brownfield, Ghost, Handoff, or Terminal behavior.
 - Do not change Architecture IR/DSL, the `architecture-layout` public contract, or existing Phase 1 behavior.
 
 ## 验收标准 / Acceptance Criteria
 
-- `docs/ui-v1-execution-plan.md` 按 Phase 0–7 严格顺序建立。
-- 每个 Phase 包含 Goal、Modules、Dependencies、Scope、Non-goals、Deliverables、Acceptance Criteria、Tests、Risks、Decision Gates、Exit Condition。
-- Decision crosswalk、Phase/Checkpoint 映射、阻塞状态和架构差异清晰。
-- `docs/ui-mvp-roadmap.md`、`docs/architecture-layout-decisions.md` 与 Risk Register 同步。
-- `pnpm lint`、`pnpm build`、`pnpm test` baseline 有记录。
-- Phase 1 readiness 结论有证据，未越过门禁。
+- Phase 2 有严格排序、可独立验收的窄切片。
+- Checkpoint 3 与 Master Phase 2 的职责和退出关系明确。
+- Phase 2/3 的 command、UI control 与 E2E 边界无重叠 mutation path。
+- 文档与根级/模块级日志同步，且未安装依赖或实现 UI。
+- 文档检查与现有 workspace 基线保持通过。
 
-- `docs/ui-v1-execution-plan.md` defines Phases 0–7 in strict order.
-- Every Phase contains Goal, Modules, Dependencies, Scope, Non-goals, Deliverables, Acceptance Criteria, Tests, Risks, Decision Gates, and Exit Condition.
-- Decision crosswalk, Phase/Checkpoint mapping, blocking state, and architecture differences are explicit.
-- `docs/ui-mvp-roadmap.md`, `docs/architecture-layout-decisions.md`, and the Risk Register are synchronized.
-- The `pnpm lint`, `pnpm build`, and `pnpm test` baseline is recorded.
-- Phase 1 readiness is evidence-based and does not bypass gates.
+- Phase 2 has strictly ordered, independently acceptable narrow slices.
+- The responsibility and exit relationship between Checkpoint 3 and Master Phase 2 is explicit.
+- Phase 2/3 command, UI-control, and E2E boundaries create no duplicate mutation path.
+- Documents and root/module logs are aligned, with no dependencies installed and no UI implemented.
+- Documentation checks and the existing workspace baseline remain passing.

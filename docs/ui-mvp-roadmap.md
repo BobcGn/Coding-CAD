@@ -6,9 +6,9 @@
 
 This roadmap advances by increasing risk. Each checkpoint must be accepted independently; later stages must not be marked complete while earlier Acceptance Criteria remain unmet. Technology choices and public APIs may be frozen only after the corresponding Decision receives user approval.
 
-状态词：`Pending`、`Ready`、`In Progress`、`Verified`、`Blocked by Decision`。Documentation First 与 Phase 1 已结束；Phase 2 已就绪但未开始。
+状态词：`Pending`、`Ready`、`In Progress`、`Verified`、`Blocked by Decision`。Documentation First、Phase 1 与 Phase 2 已验证；Phase 3 尚未开始。
 
-Status words: `Pending`, `Ready`, `In Progress`, `Verified`, and `Blocked by Decision`. Documentation First and Phase 1 are complete; Phase 2 is ready but not started.
+Status words: `Pending`, `Ready`, `In Progress`, `Verified`, and `Blocked by Decision`. Documentation First, Phase 1, and Phase 2 are verified; Phase 3 has not started.
 
 ## Master Phase Alignment / Master Phase 对齐
 
@@ -148,7 +148,7 @@ Phase 1 establishes only the Ghost protocol, while Phase 5 implements Ghost prod
 
 ## Checkpoint 3 — LayoutResult -> Svelte Flow Canvas
 
-**Status / 状态:** Ready, not started — D-003/D-008/D-009 approved / 已就绪、未开始——D-003/D-008/D-009 已批准
+**Status / 状态:** Verified — D-003/D-008/D-009 implemented with adapter, interaction, state-separation, accessibility, and test evidence / 已验证——D-003/D-008/D-009 已有 adapter、交互、状态分离、可访问性与测试证据
 
 **Goal / 目标**
 
@@ -180,6 +180,10 @@ Phase 1 establishes only the Ghost protocol, while Phase 5 implements Ghost prod
 
 - 不实现完整 Greenfield/Brownfield workflow、Review、Ghost 或 Terminal。 / No complete Greenfield/Brownfield workflow, Review, Ghost, or Terminal.
 - Canvas 不成为自由绘图工具。 / The Canvas does not become a free-form drawing tool.
+
+**Master Phase 2 Companion Work / Master Phase 2 配套工作**
+
+Checkpoint 3 只验收基础 Canvas capability。Master Phase 2 还必须完成 renderer-neutral Add/Remove/Connect command contract 与 `command -> candidate -> validation/acceptance -> layout -> projection` headless integration；它不要求 Palette/Inspector 产品编辑入口。通过真实产品控件执行 add/remove/connect 的 E2E 在 Checkpoint 4 / Phase 3 验收。 / Checkpoint 3 accepts only the foundational Canvas capability. Master Phase 2 must additionally complete renderer-neutral Add/Remove/Connect command contracts and the headless `command -> candidate -> validation/acceptance -> layout -> projection` integration; it does not require Palette/Inspector product editing entry points. E2E add/remove/connect through real product controls is accepted in Checkpoint 4 / Phase 3.
 
 ## Checkpoint 4 — Greenfield Project Can Display / Greenfield 项目可显示
 

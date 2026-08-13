@@ -4,6 +4,8 @@ node_modules/
 
 # Build and cache outputs
 dist/
+.svelte-kit/
+build/
 .turbo/
 .cache/
 coverage/
