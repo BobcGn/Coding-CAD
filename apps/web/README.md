@@ -4,6 +4,8 @@
 
 This app is the SvelteKit Architecture Workspace UI, the product interaction layer over Architecture IR and LayoutResult.
 
+![Phase 2 Architecture Canvas](docs/assets/phase-2-architecture-canvas.png)
+
 第一版 UI 渲染和编辑 Architecture IR，而不是直接生成代码。Phase 2 使用 Svelte Flow 作为 Architecture IR 与 LayoutResult 的可替换交互视图。
 
 D-009 已批准 Svelte Flow 作为 Architecture IR 与 LayoutResult 之上的可替换 V1 交互视图。
