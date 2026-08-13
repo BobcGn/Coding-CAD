@@ -15,7 +15,14 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "pnpm test:unit && pnpm test:integration",
+    "test:unit": "tsc -p tsconfig.json && node dist/compiler/passes/passes.test.js && node dist/engines/elk/elk-adapter.test.js",
+    "test:integration": "tsc -p tsconfig.json && node dist/compiler/compiler.test.js && node dist/engines/elk/elk-engine.test.js && node dist/incremental/incremental-layout.test.js && node dist/ghost/ghost-layout.test.js && node dist/engines/elk/performance-budget.test.js",
     "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@coding-cad/architecture-ir": "workspace:*",
+    "elkjs": "0.12.0"
   },
   "devDependencies": {
     "typescript": "^5.9.2"

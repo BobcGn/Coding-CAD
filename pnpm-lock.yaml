@@ -90,6 +90,13 @@ importers:
         version: 5.9.3
 
   packages/architecture-layout:
+    dependencies:
+      '@coding-cad/architecture-ir':
+        specifier: workspace:*
+        version: link:../architecture-ir
+      elkjs:
+        specifier: 0.12.0
+        version: 0.12.0
     devDependencies:
       typescript:
         specifier: ^5.9.2
@@ -252,6 +259,9 @@ packages:
   '@types/node@26.2.0':
     resolution: {integrity: sha512-5IviulTZeRNp2vAJ514cc/HUlY5nZ9fCbq9DMyC52BrhFZACo3nI0R7qBxhQmo/d27NFe96ur/b7Wwxklda+kg==}
 
+  elkjs@0.12.0:
+    resolution: {integrity: sha512-YZcKynxVxYoKIOEpywEPwCFdg+BTbxQRNf3pbwdDCvc8O3kQD8bmIwSxKU1eOTVc4Xo+VG9Te+575mlfvOrhEQ==}
+
   turbo@2.10.9:
     resolution: {integrity: sha512-Yl9+ukxH+UmPtKidpDkjn82tvPoEvFNb9UACd9vUomN1Ft0cwl3rx0P8yC1D93W9EOsWRMjllvIDG8y25sFOog==}
     hasBin: true
@@ -292,6 +302,8 @@ snapshots:
   '@types/node@26.2.0':
     dependencies:
       undici-types: 8.3.0
+
+  elkjs@0.12.0: {}
 
   turbo@2.10.9:
     optionalDependencies:
