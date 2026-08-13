@@ -701,3 +701,39 @@ Status: Root cause confirmed.
 用户将 CI job display name 从 `PR Skills Gate` 改为 `PR Verify`；GitHub Actions run `31707423728` 已正确识别并执行新名称。失败并非 YAML 或 job name 问题，而是对应提交 `ccf4205` 使用全角冒号 `feat：...`，未满足 `type(optional-scope): description` 的 Conventional Commits 门禁。保留 `PR Verify` 名称，不重写已推送的 `main` 历史；以本规范提交触发新的 push range 验证。
 
 The user renamed the CI job display name from `PR Skills Gate` to `PR Verify`, and GitHub Actions run `31707423728` recognized and executed the new name correctly. The failure was not caused by YAML or the job name: commit `ccf4205` used a full-width colon in `feat：...` and failed the `type(optional-scope): description` Conventional Commits gate. The `PR Verify` name is retained, pushed `main` history is not rewritten, and this conforming follow-up commit triggers validation for a new push range.
+
+## 2026-08-13 - Phase 2 Narrow-Slice Planning / Phase 2 窄切片规划
+
+状态：规划中，实现未开始。
+
+Status: Planning in progress; implementation has not started.
+
+在 `codex/phase-2-svelte-cad` 上把 Phase 2 拆分为 P2.0–P2.6 七个顺序切片，并明确 Checkpoint 3、Master Phase 2 与 Phase 3 的边界：基础 Canvas 属于 Checkpoint 3；headless Add/Remove/Connect command application 属于 Phase 2 退出条件；Palette/Inspector 产品入口及 visible-control E2E 属于 Phase 3。
+
+On `codex/phase-2-svelte-cad`, split Phase 2 into seven ordered slices, P2.0–P2.6, and clarified the boundary between Checkpoint 3, Master Phase 2, and Phase 3: the foundational Canvas belongs to Checkpoint 3; the headless Add/Remove/Connect command application is a Phase 2 exit condition; and Palette/Inspector product entry points plus visible-control E2E belong to Phase 3.
+
+本轮只更新计划与结构化日志，未安装依赖、未初始化 SvelteKit、未实现 UI 或 Layout 行为。
+
+This slice updates only plans and structured logs. It installs no dependency, initializes no SvelteKit app, and implements no UI or Layout behavior.
+
+## 2026-08-13 - Phase 2 Svelte CAD Infrastructure / Phase 2 Svelte CAD 基础设施
+
+状态：已验证。
+
+Status: Verified.
+
+按用户批准的三项推荐完成 P2.0–P2.6：使用 headless Architecture Review 作为 command acceptance gate；drag 只更新 Workspace-owned `LayoutState` 并提供 Auto Layout reset；在 `apps/web` 建立 Vitest、Svelte component testing 与 Playwright。原地把 Web placeholder 转为 SvelteKit/Svelte 5 app，采用 `@xyflow/svelte` 1.6.3 behind the sole adapter，并将 Vite 从不兼容的 8.x 调整为插件 peer range 支持的 7.3.6。
+
+Completed P2.0–P2.6 under the user's approval of all three recommendations: headless Architecture Review is the command acceptance gate; drag updates only Workspace-owned `LayoutState` with an Auto Layout reset path; and Vitest, Svelte component testing, and Playwright are established in `apps/web`. Converted the Web placeholder in place into a SvelteKit/Svelte 5 app, adopted `@xyflow/svelte` 1.6.3 behind the sole adapter, and corrected Vite from incompatible 8.x to peer-compatible 7.3.6.
+
+实现真实 ArchitectureProject fixture、LayoutResult adapter、Standard + Semantic Zoom、node/edge rendering、pan/zoom/select、keyboard/focus 基础、loading/error/cancellation、solver-only Web Worker，以及 renderer-neutral Add/Remove/Connect command application。命令链路为 `command -> candidate -> Validator -> headless Review -> accepted IR -> layout -> Canvas projection`；validation/rejection 保留原 accepted IR。
+
+Implemented a real ArchitectureProject fixture, the LayoutResult adapter, Standard + Semantic Zoom, node/edge rendering, pan/zoom/select, keyboard/focus basics, loading/error/cancellation, a solver-only Web Worker, and the renderer-neutral Add/Remove/Connect command application. The command path is `command -> candidate -> Validator -> headless Review -> accepted IR -> layout -> Canvas projection`; validation failure or rejection preserves the original accepted IR.
+
+定向证据：Web typecheck 0 errors/0 warnings；unit 6 files/9 tests；integration 1 file/2 tests；Playwright Chrome E2E 1 passed，覆盖 load、render、select、zoom、pan、drag、Auto Layout reset 与 semantic zoom。构建将 ELK 隔离在 worker chunk，主页面 chunk 约 65.71 KiB gzip；未实现 Palette、Inspector、Greenfield、Ghost 或 Terminal。
+
+Targeted evidence: Web typecheck reports 0 errors and 0 warnings; unit tests pass 6 files/9 tests; integration passes 1 file/2 tests; one Playwright Chrome E2E passes and covers load, render, select, zoom, pan, drag, Auto Layout reset, and semantic zoom. The build isolates ELK in a worker chunk while the main page chunk is about 65.71 KiB gzip. Palette, Inspector, Greenfield, Ghost, and Terminal remain unimplemented.
+
+最终完整 `pnpm ci:verify` 通过：workspace architecture 15 modules；typecheck 25/25；unit 28/28；integration 18/18；E2E 17/17；build 15/15。性能证据：100/150 cold 183.37 ms、p95 56.64 ms；500/800 cold 484.96 ms、p95 501.34 ms；ELK worker gzip 471,876 bytes。`git diff --check` 同时通过。
+
+The final complete `pnpm ci:verify` passes: workspace architecture 15 modules; typecheck 25/25; unit 28/28; integration 18/18; E2E 17/17; and build 15/15. Performance evidence: 100/150 cold 183.37 ms and p95 56.64 ms; 500/800 cold 484.96 ms and p95 501.34 ms; ELK worker gzip 471,876 bytes. `git diff --check` also passes.

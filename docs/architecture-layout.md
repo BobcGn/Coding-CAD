@@ -2,9 +2,9 @@
 
 ## 文档状态 / Document Status
 
-状态：Phase 1 已验证。Checkpoint 1–2、Incremental/Stability core 与 Ghost core protocol 已通过完整 CI 和边界检查；磁盘持久化格式仍未冻结，Phase 2 UI 契约由 D-003/D-008/D-009 管辖。
+状态：Phase 1 与 Phase 2 已验证。Checkpoint 1–3、Incremental/Stability core、Ghost core protocol、Web adapter 与 solver-only worker host integration 已通过边界和测试检查；磁盘持久化格式仍未冻结。
 
-Status: Phase 1 is verified. Checkpoints 1–2, the Incremental/Stability core, and the Ghost core protocol pass full CI and boundary checks; the disk-persistence format remains unfrozen, while D-003/D-008/D-009 govern the Phase 2 UI contract.
+Status: Phases 1 and 2 are verified. Checkpoints 1–3, the Incremental/Stability core, Ghost core protocol, Web adapter, and solver-only worker host integration pass boundary and test checks; the disk-persistence format remains unfrozen.
 
 ## 目的 / Purpose
 

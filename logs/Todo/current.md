@@ -1,6 +1,6 @@
 # 当前 TODO / Current TODO
 
-更新时间 / Updated at: 2026-08-11 19:30 CST (Asia/Shanghai)
+更新时间 / Updated at: 2026-08-13 CST (Asia/Shanghai)
 
 本文件是仍有效 TODO 的单一事实源。
 
@@ -38,9 +38,9 @@ This file is the single source of truth for active TODOs.
 
 ## TODO-005: Web Editor Timing / Web Editor 时机
 
-- 状态 / Status: 已就绪，未开始 / Ready, not started
-- 当前处理 / Current handling: D-003、D-008、D-009 已批准；Web app 仍是 TypeScript placeholder，没有实现或安装 UI。
-- 解除条件 / Exit condition: 以独立 Phase 2 窄切片初始化获批的 SvelteKit/Svelte Flow 工具链，并按 Checkpoint 3 验收。
+- 状态 / Status: Phase 2 已验证 / Phase 2 verified
+- 当前处理 / Current handling: P2.0–P2.6、Checkpoint 3、基础 Canvas、solver-only worker 与 headless command application 已完成。
+- 解除条件 / Exit condition: 已满足；后续 Web 产品能力进入独立 Phase 3。
 
 ## TODO-014: Architecture Layout Contracts / Architecture Layout 契约
 

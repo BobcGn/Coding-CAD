@@ -1,14 +1,14 @@
 # Web App / Web 应用
 
-该应用未来会成为 SvelteKit Architecture Workspace UI，是 Architecture IR 与 LayoutResult 的产品交互层。
+该应用是 SvelteKit Architecture Workspace UI，是 Architecture IR 与 LayoutResult 的产品交互层。
 
-This app will become the SvelteKit Architecture Workspace UI, the product interaction layer over Architecture IR and LayoutResult.
+This app is the SvelteKit Architecture Workspace UI, the product interaction layer over Architecture IR and LayoutResult.
 
-第一版 UI 应该渲染和编辑 Architecture IR，而不是直接生成代码。未来的 SvelteKit 产品 UI 可以使用 Svelte Flow 作为 Architecture IR 与 LayoutResult 的交互视图。
+第一版 UI 渲染和编辑 Architecture IR，而不是直接生成代码。Phase 2 使用 Svelte Flow 作为 Architecture IR 与 LayoutResult 的可替换交互视图。
 
 D-009 已批准 Svelte Flow 作为 Architecture IR 与 LayoutResult 之上的可替换 V1 交互视图。
 
-The first UI should render and edit Architecture IR rather than generate code directly. D-009 approves Svelte Flow as the replaceable V1 interactive view over Architecture IR and LayoutResult.
+The first UI renders and edits Architecture IR rather than generating code directly. Phase 2 implements Svelte Flow as the replaceable V1 interactive view over Architecture IR and LayoutResult under D-009.
 
 ```text
 ArchitectureProject
@@ -23,11 +23,11 @@ UI 不能成为新的 Architecture Source of Truth。Svelte Flow state 不能代
 
 The UI must not become a new Architecture Source of Truth. Svelte Flow state cannot replace ArchitectureProject; selection, viewport, coordinates, and expansion belong to View State, while architecture-semantic changes must pass through commands, Validators, and Review.
 
-## 当前结构阶段 / Current Structure Phase
+## Phase 2 基础设施 / Phase 2 Infrastructure
 
-`apps/web` 当前仍是 TypeScript placeholder，不是已初始化的 SvelteKit 项目。本阶段只建立 `src/lib` 下的 Architecture、CAD、Layout UI adapter 与 Terminal TODO 目录边界，不初始化 SvelteKit，也不实现 UI。
+`apps/web` 已原地初始化为 SvelteKit/Svelte 5 应用，并保留 `src/lib` 下的 Architecture、CAD、Layout adapter 与 Terminal TODO 所有权。当前实现包含真实 IR fixture、基础 Canvas、Standard + Semantic Zoom、pan/zoom/select、Workspace-owned drag position、Auto Layout reset、solver-only Web Worker 和 headless Add/Remove/Connect command application。
 
-`apps/web` remains a TypeScript placeholder and is not an initialized SvelteKit project. Phase 1 is closed and Phase 2 is ready, but this slice only preserves the Architecture, CAD, Layout UI adapter, and Terminal TODO boundaries under `src/lib`; it neither initializes SvelteKit nor implements UI.
+`apps/web` is initialized in place as a SvelteKit/Svelte 5 application while preserving Architecture, CAD, Layout adapter, and Terminal TODO ownership under `src/lib`. The current implementation includes a real IR fixture, foundational Canvas, Standard + Semantic Zoom, pan/zoom/select, Workspace-owned drag positions, Auto Layout reset, a solver-only Web Worker, and a headless Add/Remove/Connect command application.
 
 `@xyflow/svelte` 的 import 与类型只能出现在 Canvas component、`src/lib/layout/adapters` 及其 app-layer test 中，不得泄漏到 command、持久化格式或任何 package public API。手动拖动只把 position 持久化到 Workspace-owned LayoutState，不得推导 constraint；node renderer 使用 Standard density，并在 semantic zoom 远景退化为 Compact。
 
@@ -45,9 +45,9 @@ The UI must not become a new Architecture Source of Truth. Svelte Flow state can
 - Problems / Validation / 问题与校验
 - Execution Blueprint / Handoff / 执行蓝图与交接
 
-Canvas 是产品第一公民。Svelte Flow 未来只负责 node/edge rendering、selection、viewport、pan、zoom 和 connection interaction，不负责 Architecture model、reasoning、validation 或 semantic layout。
+Canvas 是产品第一公民。Svelte Flow 只负责 node/edge rendering、selection、viewport、pan、zoom 和 connection interaction，不负责 Architecture model、reasoning、validation 或 semantic layout。
 
-The Canvas is a first-class product surface. Svelte Flow will own only node/edge rendering, selection, viewport, pan, zoom, and connection interaction, not the Architecture model, reasoning, validation, or semantic layout.
+The Canvas is a first-class product surface. Svelte Flow owns only node/edge rendering, selection, viewport, pan, zoom, and connection interaction, not the Architecture model, reasoning, validation, or semantic layout.
 
 Inspector 以 Component semantics、Contracts、Constraints、Decisions、Dependencies、Implementation status 和 Validation issues 为主，不是 width/height/color/border 属性面板。
 
@@ -75,9 +75,9 @@ The terminal manages only operating-system processes and PTYs. Coding Agents rem
 
 ## 测试计划 / Test Plan
 
-未来 UI 测试计划使用 Vitest、Svelte component tests 和 Playwright，覆盖 Greenfield、Brownfield、Canvas、Inspector、Ghost accept/reject、Review 与 Blueprint handoff。工具尚未安装，本阶段不授权安装。
+Phase 2 已建立 Vitest、Svelte component tests 与 Playwright，并覆盖 adapter、command、state ownership、worker transport 和 Canvas smoke E2E。Greenfield、Brownfield、Inspector、Ghost accept/reject、Review 与 Blueprint handoff 仍按后续 Checkpoint 添加。
 
-Future UI tests plan to use Vitest, Svelte component tests, and Playwright to cover Greenfield, Brownfield, Canvas, Inspector, Ghost accept/reject, Review, and Blueprint handoff. These tools are not installed, and this phase does not authorize installation.
+Phase 2 establishes Vitest, Svelte component tests, and Playwright for adapter, command, state-ownership, worker-transport, and Canvas smoke E2E coverage. Greenfield, Brownfield, Inspector, Ghost accept/reject, Review, and Blueprint handoff tests remain scoped to later Checkpoints.
 
 ## 详细文档 / Detailed Documentation
 

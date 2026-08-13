@@ -52,9 +52,9 @@ apps                   -> public package APIs
 
 The arrows mean "depends on." Packages may depend on lower-level packages, but lower-level packages should not know about apps, UI, servers, or specific agents.
 
-`architecture-layout` 必须保持纯 TypeScript 和 renderer-neutral；`apps/web` 中的 adapter 才能把 LayoutResult 转为 Svelte Flow 类型。坐标、尺寸、viewport、collapsed 和 pinned 属于 Workspace/View State，不得进入 Architecture IR 或 DSL。
+`architecture-layout` 必须保持纯 TypeScript 和 renderer-neutral；`apps/web` 中的唯一 adapter 把 LayoutResult 转为 Svelte Flow 类型。Phase 2 的 solver-only Web Worker 由 app host 提供 transport，ELK 仍留在 solver worker chunk。坐标、尺寸、viewport、collapsed 和 pinned 属于 Workspace/View State，不得进入 Architecture IR 或 DSL。
 
-`architecture-layout` must remain pure TypeScript and renderer-neutral; only an adapter in `apps/web` may convert LayoutResult into Svelte Flow types. Coordinates, dimensions, viewport, collapsed state, and pinned state belong to Workspace/View State and must not enter Architecture IR or the DSL.
+`architecture-layout` remains pure TypeScript and renderer-neutral; the sole adapter in `apps/web` converts LayoutResult into Svelte Flow types. The Phase 2 solver-only Web Worker transport is hosted by the app, while ELK remains in the solver worker chunk. Coordinates, dimensions, viewport, collapsed state, and pinned state belong to Workspace/View State and must not enter Architecture IR or the DSL.
 
 ## Agent Execution Boundary / Agent 执行边界
 

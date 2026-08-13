@@ -2,9 +2,9 @@
 
 ## Document Status / 文档状态
 
-状态：Phase 0–1 已验证；D-003、D-008、D-009 已批准，Phase 2 已就绪但尚未开始。后续 Phase Decision 仍受各自门禁约束。
+状态：Phase 0–2 已验证；Checkpoint 3 与 Phase 2 headless command application 已取得实现和测试证据。Phase 3 尚未开始，后续 Decision 仍受各自门禁约束。
 
-Status: Phases 0–1 are verified; D-003, D-008, and D-009 are approved, so Phase 2 is ready but not started. Decisions for later Phases remain subject to their own gates.
+Status: Phases 0–2 are verified. Checkpoint 3 and the Phase 2 headless command application have implementation and test evidence. Phase 3 has not started, and later Decisions remain subject to their own gates.
 
 本文是 UI V1 从规划到 Terminal 的主执行顺序。`docs/ui-mvp-roadmap.md` 保留细粒度 capability checkpoints；本文定义跨模块 Phase 依赖、退出门槛和报告格式。发生冲突时，先遵守用户已批准的 Decision，再遵守本计划；未批准的架构冲突必须停止并询问用户。
 
@@ -46,7 +46,7 @@ The formal execution numbering remains Master Phase 0→7. The table combines th
 
 - `ArchitectureProject` remains the sole Architecture Source of Truth. / `ArchitectureProject` 仍是唯一 Architecture Source of Truth。
 - `packages/architecture-layout` has a verified coordinate-free Checkpoint 1 projection. Checkpoint 2 now adds ELK.js behind the solver-neutral engine and internal worker boundary. / `packages/architecture-layout` 已有通过验证的 Checkpoint 1 无坐标投影；Checkpoint 2 正在 solver-neutral engine 与内部 worker 边界之后接入 ELK.js。
-- `apps/web` is a TypeScript placeholder, not a SvelteKit app; Svelte 5 and `@xyflow/svelte` are not installed. / `apps/web` 是 TypeScript placeholder，不是 SvelteKit app；尚未安装 Svelte 5 与 `@xyflow/svelte`。
+- `apps/web` is now a SvelteKit/Svelte 5 app with `@xyflow/svelte` isolated behind the approved app adapter; Palette, Inspector, and complete Greenfield workflows remain unimplemented. / `apps/web` 现为 SvelteKit/Svelte 5 app，`@xyflow/svelte` 被隔离在已批准的 app adapter 后；Palette、Inspector 与完整 Greenfield workflow 仍未实现。
 - Existing Architecture Agent, Validator, Review, Workspace, Blueprint, Adapter, Analyzer, and Implementation Validator packages already define the non-UI workflow boundaries. / 既有 Architecture Agent、Validator、Review、Workspace、Blueprint、Adapter、Analyzer 和 Implementation Validator package 已定义非 UI 工作流边界。
 - Canonical D-001, D-002, D-005, and D-010 were approved by the user on 2026-08-13; the remaining Decisions retain their later-phase gates. / 用户已于 2026-08-13 批准 canonical D-001、D-002、D-005、D-010；其余 Decision 保持后续 Phase 门禁。
 - Checkpoint 1 passed its exit gate; Checkpoint 2 is authorized and in progress. / Checkpoint 1 已通过退出门禁；Checkpoint 2 已获准并正在进行。
@@ -280,9 +280,24 @@ Existing Checkpoint numbers are a capability decomposition and are no longer int
 - Architecture Command Layer：Add/Remove/Connect 经 command 生成 candidate IR change，再布局。 / Architecture Command Layer: Add/Remove/Connect creates a candidate IR change through commands and then re-layouts.
 - 基础 loading/error/cancellation 与 accessibility。 / Basic loading, error, cancellation, and accessibility behavior.
 
+### Narrow Slices / 窄切片顺序
+
+Phase 2 按以下顺序实施；每一片必须独立通过其验收证据后才能进入下一片。 / Phase 2 is implemented in the following order; each slice must produce its own acceptance evidence before the next slice begins.
+
+1. **P2.0 Baseline and Toolchain Plan / 基线与工具链计划**：核对 `apps/web` placeholder、workspace scripts、D-003/D-008/D-009、SvelteKit/Svelte 5、`@xyflow/svelte` 与测试工具的兼容范围；记录拟新增依赖和回退点。本片不安装依赖。 / Audit the `apps/web` placeholder, workspace scripts, D-003/D-008/D-009, and the compatibility range for SvelteKit/Svelte 5, `@xyflow/svelte`, and test tools; record intended dependencies and rollback points. This slice installs nothing.
+2. **P2.1 Svelte App Foundation / Svelte 应用基础**：把既有 placeholder 原地转换为最小 SvelteKit app，保留既有 `src/lib` ownership；建立 build、typecheck、unit/component test 基线。验收为 workspace scripts 与最小页面通过，不包含产品 UI。 / Convert the existing placeholder in place into a minimal SvelteKit app while preserving current `src/lib` ownership; establish build, typecheck, and unit/component-test baselines. Acceptance is passing workspace scripts and a minimal page, not product UI.
+3. **P2.2 Adapter Contract / Adapter 契约**：在唯一 adapter 边界完成 `LayoutResult -> Svelte Flow Node/Edge` 单向映射与 contract tests；证明 ID、edge endpoint、坐标/尺寸及 solver-neutral metadata 映射稳定，Svelte Flow 类型不泄漏。 / Implement the sole one-way `LayoutResult -> Svelte Flow Node/Edge` mapping and contract tests; prove stable ID, edge-endpoint, coordinate/size, and solver-neutral metadata mapping without Svelte Flow type leakage.
+4. **P2.3 Canvas Shell / Canvas 外壳**：渲染真实 `ArchitectureProject -> LayoutResult` fixture，支持 node/edge rendering、pan、zoom、selection、Standard density 与 Semantic Zoom，并完成基础 keyboard/focus/accessibility。 / Render a real `ArchitectureProject -> LayoutResult` fixture with node/edge rendering, pan, zoom, selection, Standard density, Semantic Zoom, and basic keyboard/focus/accessibility behavior.
+5. **P2.4 UI and Async State / UI 与异步状态**：分离 accepted ArchitectureProject、LayoutResult、Workspace-owned LayoutState 与 ephemeral UI state；覆盖 loading、error、cancellation、stale-result rejection。拖动若在本片启用，只写 LayoutState，禁止写 IR 或推导 constraint。 / Separate the accepted ArchitectureProject, LayoutResult, Workspace-owned LayoutState, and ephemeral UI state; cover loading, errors, cancellation, and stale-result rejection. If dragging is enabled in this slice, it writes only LayoutState and never IR or inferred constraints.
+6. **P2.5 Headless Command Application / 无界面命令应用层**：以 renderer-neutral TypeScript 定义 Add/Remove/Connect command contract、candidate generation、Validator/acceptance boundary 与 accepted-state replacement；用 unit/integration tests 证明 rejection 不破坏 accepted IR，成功路径会重新布局并产生新 Canvas projection。本片不创建 Palette、Inspector 或临时产品编辑控件。 / Define renderer-neutral TypeScript contracts for Add/Remove/Connect commands, candidate generation, the Validator/acceptance boundary, and accepted-state replacement; use unit/integration tests to prove rejection preserves accepted IR and success re-lays out into a new Canvas projection. This slice creates no Palette, Inspector, or temporary product editing controls.
+7. **P2.6 Phase Acceptance / 阶段验收**：运行 architecture-boundary checks、adapter/unit/component/integration tests，以及只覆盖 Canvas load/pan/zoom/select/accessibility 的 Playwright smoke E2E；同步文档、结构化日志和回退说明。 / Run architecture-boundary checks, adapter/unit/component/integration tests, and Playwright smoke E2E limited to Canvas load/pan/zoom/select/accessibility; synchronize documents, structured logs, and rollback guidance.
+
+Checkpoint 3 是 P2.1–P2.4 的 Canvas capability gate；P2.5 是 Master Phase 2 的额外阶段退出基础设施。两者都完成后才允许进入 Phase 3。 / Checkpoint 3 is the Canvas capability gate for P2.1–P2.4; P2.5 is additional Master Phase 2 exit infrastructure. Both must complete before Phase 3 begins.
+
 ### Non-goals / 非目标
 
 - 不实现完整 Inspector、Palette、Review、Brownfield、Ghost、Handoff 或 Terminal。 / No complete Inspector, Palette, Review, Brownfield, Ghost, Handoff, or Terminal.
+- 不实现由 Palette、Inspector 或其他产品控件驱动的完整 Greenfield 编辑工作流；这些入口与其 add/remove/connect E2E 属于 Phase 3。 / No complete Greenfield editing workflow driven by Palette, Inspector, or other product controls; those entry points and their add/remove/connect E2E belong to Phase 3.
 - Svelte Flow Node[] 不成为架构事实来源。 / Svelte Flow Node[] does not become architecture truth.
 - UI adapter 不实现 semantic layout。 / The UI adapter does not implement semantic layout.
 
@@ -303,7 +318,7 @@ Existing Checkpoint numbers are a capability decomposition and are no longer int
 
 - Unit：adapter、command reducer、state ownership。 / Unit: adapter, command reducer, and state ownership.
 - Integration：command -> candidate IR -> layout -> Canvas projection。 / Integration: command -> candidate IR -> layout -> Canvas projection.
-- E2E：Canvas load、pan、zoom、select、add/remove/connect happy path。 / E2E: Canvas load, pan, zoom, select, and add/remove/connect happy path.
+- E2E：Phase 2 只覆盖 Canvas load、pan、zoom、select 与 accessibility smoke；Add/Remove/Connect 在 Phase 2 用 headless integration 验证，经真实产品控件触发的 happy-path E2E 属于 Phase 3。 / E2E: Phase 2 covers only Canvas load, pan, zoom, select, and accessibility smoke behavior. Add/Remove/Connect is verified through headless integration in Phase 2; happy-path E2E through real product controls belongs to Phase 3.
 
 ### Risks / 风险
 
@@ -322,7 +337,7 @@ Existing Checkpoint numbers are a capability decomposition and are no longer int
 
 ### Exit Condition / 退出条件
 
-真实 IR 可稳定显示和通过 command 修改；adapter/command/component/E2E 通过；架构不变量检查通过。 / Real IR displays reliably and changes through commands; adapter, command, component, and E2E tests pass; architecture invariants pass.
+真实 IR 可稳定显示；headless command application 可在不破坏 accepted IR 的前提下生成、校验、接受或拒绝 candidate，并在接受后重新布局；adapter/command/component/Canvas smoke E2E 与架构不变量检查通过。完整 Greenfield 编辑 UI 仍未实现。 / Real IR displays reliably; the headless command application can generate, validate, accept, or reject a candidate without corrupting accepted IR and re-layout after acceptance; adapter, command, component, Canvas smoke E2E, and architecture-invariant checks pass. The complete Greenfield editing UI remains unimplemented.
 
 ## Phase 3 — Greenfield Architecture Workspace / Greenfield 架构工作区
 
@@ -351,6 +366,7 @@ Existing Checkpoint numbers are a capability decomposition and are no longer int
 - Component Palette、semantic Inspector、contract editing。 / Component Palette, semantic Inspector, and contract editing.
 - Validation/Problems projection、Review gate、Workspace save/open。 / Validation/Problems projection, Review gate, and Workspace save/open.
 - Layout 与 View State 生命周期，不污染 IR。 / Layout and View State lifecycle without IR pollution.
+- 通过 Palette、Inspector 或其他正式产品入口触发 Add/Remove/Connect，并覆盖 visible-control E2E；复用 Phase 2 command application，不另建第二套 mutation path。 / Trigger Add/Remove/Connect through Palette, Inspector, or other real product entry points and cover visible-control E2E; reuse the Phase 2 command application rather than creating a second mutation path.
 
 ### Non-goals / 非目标
 

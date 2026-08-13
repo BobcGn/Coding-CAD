@@ -543,6 +543,6 @@ Option A: only the ELK solver runs in a worker in V1. Semantic, abstraction, Vis
 ## Blocking Summary / 阻塞汇总
 
 - D-005 已于 2026-08-13 批准，Checkpoint 1 的 grouping/abstraction contract 已解除 Decision 阻塞。 / D-005 was approved on 2026-08-13, removing the Decision block from the Checkpoint 1 grouping and abstraction contracts.
-- D-001、D-002、D-010 已于 2026-08-13 批准；Checkpoint 2 仍需等待 Checkpoint 1 exit，但不再被这些技术 Decision 阻塞。 / D-001, D-002, and D-010 were approved on 2026-08-13. Checkpoint 2 still waits for Checkpoint 1 exit but is no longer blocked by these technology Decisions.
-- Checkpoint 3 的 D-003、D-008、D-009 已批准；Phase 2/Checkpoint 3 已就绪但尚未开始，仍须按其验收标准实施与验证。 / D-003, D-008, and D-009 are approved for Checkpoint 3; Phase 2/Checkpoint 3 is ready but not started and still requires implementation and evidence against its acceptance criteria.
+- D-001、D-002、D-010 已于 2026-08-13 批准并在 Checkpoint 2 验证；Phase 2 进一步证明 ELK 只进入 solver worker chunk。 / D-001, D-002, and D-010 were approved on 2026-08-13 and verified at Checkpoint 2; Phase 2 additionally proves that ELK enters only the solver worker chunk.
+- Checkpoint 3 的 D-003、D-008、D-009 已实现并验证：drag 只更新 LayoutState，node 使用 Standard + Semantic Zoom，Svelte Flow 类型限制在 Web adapter/Canvas。 / D-003, D-008, and D-009 are implemented and verified at Checkpoint 3: drag updates only LayoutState, nodes use Standard + Semantic Zoom, and Svelte Flow types remain confined to the Web adapter/Canvas.
 - D-004 已批准 V1 延后 pin；D-006 已批准 Workspace abstraction 持有 LayoutState。D-007 仍影响后续 Ghost presentation。 / D-004 approves deferring pinning beyond V1; D-006 assigns LayoutState ownership to the Workspace abstraction. D-007 still affects later Ghost presentation.
