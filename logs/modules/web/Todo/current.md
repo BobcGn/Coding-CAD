@@ -4,9 +4,9 @@
 
 ## WEB-001: IR Graph View / IR 图视图
 
-- 状态 / Status: 待处理 / Pending
-- 当前处理 / Current handling: UI Architecture 与 Checkpoint 路线图已完成设计草案；SvelteKit/Svelte Flow 尚未安装。D-009 阻塞 Checkpoint 3。
-- 解除条件 / Exit condition: 用户确认 Checkpoint 3 的 D-003、D-008、D-009，并在 Checkpoint 1–2 验证后授权 UI 实现。
+- 状态 / Status: 已就绪，未开始 / Ready, not started
+- 当前处理 / Current handling: Checkpoint 3 的 D-003、D-008、D-009 已批准；SvelteKit/Svelte Flow 尚未安装。
+- 解除条件 / Exit condition: 作为独立 Phase 2 窄切片初始化工具链，并满足 Checkpoint 3 的 adapter、state separation、interaction、test 与 accessibility 验收。
 
 ## WEB-002: Integrated Terminal Infrastructure / 集成终端基础设施
 

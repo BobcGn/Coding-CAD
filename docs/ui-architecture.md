@@ -2,9 +2,9 @@
 
 ## 文档状态 / Document Status
 
-状态：Documentation First 设计草案；描述职责和数据流，不代表 SvelteKit 或 Svelte Flow 已安装或实现。
+状态：Phase 2 架构基线已批准；描述职责和数据流，不代表 SvelteKit 或 Svelte Flow 已安装或实现。
 
-Status: Documentation First design draft; it describes responsibilities and data flow and does not imply that SvelteKit or Svelte Flow is installed or implemented.
+Status: the Phase 2 architecture baseline is approved; it describes responsibilities and data flow and does not imply that SvelteKit or Svelte Flow is installed or implemented.
 
 ## 核心原则 / Core Principle
 
@@ -27,9 +27,13 @@ Reverse interaction must not treat Svelte Flow state as ArchitectureProject. Sel
 
 ## 技术边界 / Technology Boundary
 
-V1 目标技术为 SvelteKit + Svelte 5 + TypeScript + `@xyflow/svelte`，但依赖承诺由 D-009 决定，当前没有安装。
+V1 技术为 SvelteKit + Svelte 5 + TypeScript；D-009 已批准 `@xyflow/svelte` 作为可替换的 V1 Canvas renderer，当前仍未安装。
 
-The target V1 stack is SvelteKit + Svelte 5 + TypeScript + `@xyflow/svelte`, but D-009 decides the dependency commitment and nothing is installed yet.
+The V1 stack is SvelteKit + Svelte 5 + TypeScript; D-009 approves `@xyflow/svelte` as a replaceable V1 Canvas renderer, but it is not installed yet.
+
+`@xyflow/svelte` 只能通过 `apps/web/src/lib/layout/adapters` 和 Canvas component 使用。它的类型不得进入 package public API、command、Architecture IR/DSL 或持久化 Workspace/LayoutState 格式。
+
+`@xyflow/svelte` may be used only through `apps/web/src/lib/layout/adapters` and Canvas components. Its types must not enter package public APIs, commands, Architecture IR/DSL, or persisted Workspace/LayoutState formats.
 
 `apps/web` 可以依赖 package public APIs；package 不得依赖 `apps/web`。`@coding-cad/architecture-layout` 不得导入 Svelte、DOM 或 Svelte Flow 类型。
 
@@ -102,7 +106,7 @@ Do not reintroduce an Agent Runtime, Agent Provider, Agent Scheduler, Agent Memo
 | Architecture semantics / 架构语义 | `ArchitectureProject` | 读取、发出 commands、展示 proposal/review / read, issue commands, show proposals/reviews | 以 Svelte store 代替 IR / replacing IR with a Svelte store |
 | Validation / 校验 | Validator results | 按来源展示和导航 / display and navigate by provenance | UI 自行重写规则 / reimplementing rules in UI |
 | Layout semantics / 布局语义 | Layout compiler output | 请求布局、消费 `LayoutResult` / request layout and consume `LayoutResult` | 在 component 中实现 heuristic / implementing heuristics in components |
-| View/Layout state / 视图状态 | Workspace/View State（待 D-006） / pending D-006 | selection、viewport、collapse、可能的 drag/pin / selection, viewport, collapse, possible drag/pin | 写入 Architecture IR/DSL / writing into Architecture IR/DSL |
+| View/Layout state / 视图状态 | Workspace-owned LayoutState（D-006） | selection、viewport、collapse；drag position 按 D-003 持久化；V1 无 pin / selection, viewport, collapse; drag position persists under D-003; no V1 pinning | 写入 Architecture IR/DSL 或从 drag 推导 constraint / writing into Architecture IR/DSL or inferring constraints from drag |
 | Proposal/Ghost / 建议 | Architecture Review proposal | overlay/local/comparison projection / overlay, local, or comparison projection | 接受前写入正式 IR / writing accepted IR before approval |
 | Implementation evidence / 实现证据 | Analyzer/Validator output | 展示 confidence 与 provenance / display confidence and provenance | 把低置信度推断显示为事实 / presenting low-confidence inference as fact |
 

@@ -2,22 +2,54 @@
 
 ## Document Status / 文档状态
 
-状态：Phase 0 Planning 已完成草案与 baseline，Decision Freeze 未完成；禁止进入 Phase 1。
+状态：Phase 0–1 已验证；D-003、D-008、D-009 已批准，Phase 2 已就绪但尚未开始。后续 Phase Decision 仍受各自门禁约束。
 
-Status: the Phase 0 Planning draft and baseline are complete, but Decision Freeze is incomplete; Phase 1 must not begin.
+Status: Phases 0–1 are verified; D-003, D-008, and D-009 are approved, so Phase 2 is ready but not started. Decisions for later Phases remain subject to their own gates.
 
 本文是 UI V1 从规划到 Terminal 的主执行顺序。`docs/ui-mvp-roadmap.md` 保留细粒度 capability checkpoints；本文定义跨模块 Phase 依赖、退出门槛和报告格式。发生冲突时，先遵守用户已批准的 Decision，再遵守本计划；未批准的架构冲突必须停止并询问用户。
 
 This is the master execution order for UI V1 from planning through Terminal. `docs/ui-mvp-roadmap.md` retains fine-grained capability checkpoints; this document defines cross-module phase dependencies, exit gates, and reporting. If documents conflict, follow user-approved Decisions first and then this plan; stop and ask the user about any unapproved architecture conflict.
 
+## Source Conversation Baseline / 原始对话基线
+
+本计划已于 2026-08-13 对照用户在 Codex 内置浏览器中打开的 Coding CAD 规划对话复核。对话给出的核心落地原则不是“先写 Svelte 组件”，而是按以下依赖链逐步建立产品能力：
+
+This plan was rechecked on 2026-08-13 against the Coding CAD planning conversation opened by the user in the Codex in-app browser. Its central delivery rule is not to start with Svelte components, but to build product capability through this dependency chain:
+
+```text
+底层视觉编译能力 / Semantic visual compilation
+  -> Architecture Canvas
+  -> 业务工作流 / Product workflows
+  -> 产品闭环 / Product closure
+```
+
+原始对话中的八个落地阶段与本文 Master Phase 一一对应；本文是在该基线之上补充仓库事实、Decision gate、测试、风险与退出条件，不另建第二套阶段体系。
+
+The eight delivery stages in the source conversation map one-to-one to the Master Phases below. This document enriches that baseline with repository facts, Decision gates, tests, risks, and exit conditions instead of creating a second phase system.
+
+| 顺序 / Order | 原始八阶段基线 / Source eight-stage baseline | 本文 / This plan | 核心能力结果 / Core capability outcome |
+| --- | --- | --- | --- |
+| 1 | Semantic Layout Compiler v0.1 | Phase 1 — Semantic Layout Compiler | `ArchitectureProject -> VisualGraph -> LayoutGraph -> LayoutResult` |
+| 2 | Svelte CAD Infrastructure | Phase 2 — Svelte CAD Infrastructure | `LayoutResult -> Web adapter -> Architecture Canvas` |
+| 3 | Greenfield Architecture Workspace | Phase 3 — Greenfield Architecture Workspace | requirement-to-accepted-architecture vertical workflow / 从需求到正式架构的垂直流程 |
+| 4 | Brownfield Architecture Workspace | Phase 4 — Brownfield Architecture Workspace | repository reverse engineering with progressive disclosure / 带渐进披露的仓库反演 |
+| 5 | Ghost Architecture + Review + Execution Handoff | Phase 5 — Ghost Architecture + Review + Execution Handoff | proposal-to-review-to-guide product closure / 从 proposal、review 到 guide 的产品闭环 |
+| 6 | Layout Quality / Performance / E2E | Phase 6 — Layout Quality / Performance / E2E | semantic quality, stability, performance, and cross-flow evidence / 语义质量、稳定性、性能与跨流程证据 |
+| 7 | Integrated Terminal | Phase 7 — Integrated Terminal | user-managed shell host after architecture approval / 架构批准后的用户自主管理 shell 宿主 |
+| 0 | Planning / Decision Freeze（后续 Master Task 增加的前置治理阶段 / governance prerequisite added by the later Master Task） | Phase 0 — Planning / Decision Freeze | freeze or defer decisions before implementation / 实现前冻结或延后决策 |
+
+顺序表保留 Master Phase 0→7 的正式执行编号；上表把原始对话的产品落地顺序与后续加入的 Phase 0 治理前置合并展示。任何摘要不得把 Phase 0 误计为产品能力实现，也不得据此跳过 Phase 0。
+
+The formal execution numbering remains Master Phase 0→7. The table combines the source conversation's product-delivery order with the later Phase 0 governance prerequisite. No summary may count Phase 0 as implemented product capability or use this mapping to bypass Phase 0.
+
 ## Restored Repository Facts / 已恢复的仓库事实
 
 - `ArchitectureProject` remains the sole Architecture Source of Truth. / `ArchitectureProject` 仍是唯一 Architecture Source of Truth。
-- `packages/architecture-layout` is a pure TypeScript skeleton; every source file is `export {};`, with no runtime dependency or implementation. / `packages/architecture-layout` 是纯 TypeScript skeleton；全部源码均为 `export {};`，没有 runtime dependency 或实现。
+- `packages/architecture-layout` has a verified coordinate-free Checkpoint 1 projection. Checkpoint 2 now adds ELK.js behind the solver-neutral engine and internal worker boundary. / `packages/architecture-layout` 已有通过验证的 Checkpoint 1 无坐标投影；Checkpoint 2 正在 solver-neutral engine 与内部 worker 边界之后接入 ELK.js。
 - `apps/web` is a TypeScript placeholder, not a SvelteKit app; Svelte 5 and `@xyflow/svelte` are not installed. / `apps/web` 是 TypeScript placeholder，不是 SvelteKit app；尚未安装 Svelte 5 与 `@xyflow/svelte`。
 - Existing Architecture Agent, Validator, Review, Workspace, Blueprint, Adapter, Analyzer, and Implementation Validator packages already define the non-UI workflow boundaries. / 既有 Architecture Agent、Validator、Review、Workspace、Blueprint、Adapter、Analyzer 和 Implementation Validator package 已定义非 UI 工作流边界。
-- All canonical D-001 through D-010 Decisions remain `USER DECISION REQUIRED` with `Final Decision: TBD`. / canonical D-001 至 D-010 全部仍为 `USER DECISION REQUIRED`，`Final Decision: TBD`。
-- Canonical D-005 blocks the first code checkpoint. / canonical D-005 阻塞第一个代码 Checkpoint。
+- Canonical D-001, D-002, D-005, and D-010 were approved by the user on 2026-08-13; the remaining Decisions retain their later-phase gates. / 用户已于 2026-08-13 批准 canonical D-001、D-002、D-005、D-010；其余 Decision 保持后续 Phase 门禁。
+- Checkpoint 1 passed its exit gate; Checkpoint 2 is authorized and in progress. / Checkpoint 1 已通过退出门禁；Checkpoint 2 已获准并正在进行。
 
 ## Governance Difference: Decision Number Crosswalk / 治理差异：Decision 编号映射
 
@@ -129,7 +161,7 @@ Existing Checkpoint numbers are a capability decomposition and are no longer int
 ### Decision Gates / 决策门禁
 
 - Phase 0 exit 前，D-001…D-010 必须被用户决定或明确延后。 / Before Phase 0 exit, the user must decide or explicitly defer D-001…D-010.
-- Phase 1 start 至少被 D-005 阻塞；solver segment 被 D-002、D-010 阻塞，D-001 必须在 solver 前确认。 / Phase 1 start is blocked at least by D-005; the solver segment is blocked by D-002 and D-010, and D-001 must be confirmed before solver work.
+- D-001、D-002、D-005、D-010 已批准；Checkpoint 1 已验证，Checkpoint 2 已获准。 / D-001, D-002, D-005, and D-010 are approved; Checkpoint 1 is verified and Checkpoint 2 is authorized.
 
 ### Exit Condition / 退出条件
 
@@ -158,7 +190,10 @@ Existing Checkpoint numbers are a capability decomposition and are no longer int
 
 - Layout/Visual IR、stable identity、result integrity。 / Layout/Visual IR, stable identity, and result integrity.
 - Semantic Classification、Architecture Abstraction、Visual IR、Constraint Generation passes。 / Semantic Classification, Architecture Abstraction, Visual IR, and Constraint Generation passes.
+- V0.1 semantic roles 至少覆盖 `actor`、`gateway`、`service`、`database`、`cache`、`queue`、`external`；更细角色必须保持 Layout classification，而不是新增 Architecture IR domain object。 / V0.1 semantic roles cover at least `actor`, `gateway`, `service`, `database`, `cache`, `queue`, and `external`; finer roles remain Layout classifications rather than new Architecture IR domain objects.
+- V0.1 layout hints 至少表达 `rank`、`proximity`、`group`、`direction` 与 `port`，并保持 preference/constraint 语义，不升级为 Validator correctness rule。 / V0.1 layout hints express at least `rank`, `proximity`, `group`, `direction`, and `port`, and remain preferences or constraints rather than Validator correctness rules.
 - solver-neutral `LayoutEngine`、批准后的 solver adapter 和 worker boundary。 / Solver-neutral `LayoutEngine`, approved solver adapter, and worker boundary.
+- 第一个可验收版本只批准一种正式默认布局策略；方向和 solver 由 D-001/D-002 决定，其他策略不进入同一切片。 / The first acceptable version supports only one approved formal default layout strategy; D-001/D-002 decide its direction and solver, and additional strategies stay out of the same slice.
 - Stability Pass、FULL/INCREMENTAL core、movement cost。 / Stability Pass, FULL/INCREMENTAL core, and movement cost.
 - Ghost Layout protocol 与 local-placement contract，不做 UI。 / Ghost Layout protocol and local-placement contract without UI.
 - deterministic validation、diagnostics、cancellation/fallback。 / Deterministic validation, diagnostics, and cancellation/fallback.
@@ -180,8 +215,10 @@ Existing Checkpoint numbers are a capability decomposition and are no longer int
 
 - ArchitectureProject 可生成合法 LayoutResult。 / ArchitectureProject generates a valid LayoutResult.
 - 相同输入/options 产生 deterministic result。 / Identical inputs and options produce deterministic results.
-- database、cache、service、queue、external role 产生可验证 layout hints。 / Database, cache, service, queue, and external roles produce verifiable layout hints.
+- actor、gateway、service、database、cache、queue、external role 产生可验证 layout hints。 / Actor, gateway, service, database, cache, queue, and external roles produce verifiable layout hints.
+- `rank`、`proximity`、`group`、`direction`、`port` 均有 fixture/invariant 证据，且不会写回 ArchitectureProject。 / `rank`, `proximity`, `group`, `direction`, and `port` all have fixture or invariant evidence and are never written back to ArchitectureProject.
 - 新增局部组件不大幅移动无关节点，达到批准 movement threshold。 / Adding a local component does not significantly move unrelated nodes and meets the approved movement threshold.
+- mental-map 回归至少包含“在既有图中为一个 service 增加 Redis/cache，多个无关节点不得整体换位”的场景。 / Mental-map regression includes at least the scenario of adding Redis/cache to one service in an existing graph without causing multiple unrelated nodes to change overall positions.
 - Layout IR 无 renderer、ELK、Svelte、DOM 类型。 / Layout IR has no renderer, ELK, Svelte, or DOM types.
 - Architecture IR/DSL 无视觉状态字段。 / Architecture IR/DSL contains no visual-state fields.
 - failure、timeout/cancellation 有结构化诊断与 fallback。 / Failure, timeout, and cancellation have structured diagnostics and fallback.
@@ -189,7 +226,7 @@ Existing Checkpoint numbers are a capability decomposition and are no longer int
 ### Tests / 测试
 
 - Unit：classifier、abstraction、constraints、stability、movement cost、result validation。 / Unit: classifier, abstraction, constraints, stability, movement cost, and result validation.
-- Integration：ArchitectureProject 到 LayoutResult、solver adapter contract、incremental diff。 / Integration: ArchitectureProject to LayoutResult, solver-adapter contract, and incremental diff.
+- Integration：ArchitectureProject 到 LayoutResult、solver adapter contract、incremental diff，以及 Redis/cache mental-map fixture。 / Integration: ArchitectureProject to LayoutResult, solver-adapter contract, incremental diff, and the Redis/cache mental-map fixture.
 - E2E：package-level Node fixture runner；无浏览器。 / E2E: package-level Node fixture runner without a browser.
 
 ### Risks / 风险
@@ -200,16 +237,16 @@ Existing Checkpoint numbers are a capability decomposition and are no longer int
 
 ### Decision Gates / 决策门禁
 
-- D-005：YES，阻塞第一个 Visual/Layout IR abstraction contract。
-- D-002：YES，阻塞正式 solver adapter。
-- D-010：YES，阻塞 worker boundary。
-- D-001：当前标记 NO，但必须在正式 solver options 前确认。
+- D-005：已批准并用于 Checkpoint 1 abstraction contract。
+- D-002：已批准 ELK.js behind `LayoutEngine`。
+- D-010：已批准 V1 solver-only worker。
+- D-001：已批准 LR default compiler option。
 - D-007：只阻塞 Ghost presentation，不阻塞 core protocol。
 
-- D-005: YES, blocks the first Visual/Layout IR abstraction contract.
-- D-002: YES, blocks the official solver adapter.
-- D-010: YES, blocks the worker boundary.
-- D-001: currently NO, but must be confirmed before official solver options.
+- D-005 is approved and applied to the Checkpoint 1 abstraction contract.
+- D-002 approves ELK.js behind `LayoutEngine`.
+- D-010 approves a solver-only worker for V1.
+- D-001 approves LR as the default compiler option.
 - D-007: blocks Ghost presentation only, not the core protocol.
 
 ### Exit Condition / 退出条件
@@ -637,22 +674,26 @@ Every completed Phase must report the following and must not merely say “imple
 
 ## Current Phase 1 Readiness / 当前 Phase 1 就绪度
 
-结论：**BLOCKED — DO NOT START PHASE 1**。
+结论：**PHASE 1 VERIFIED — PHASE 2 READY, NOT STARTED**。
 
-Conclusion: **BLOCKED — DO NOT START PHASE 1**.
+Conclusion: **PHASE 1 VERIFIED — PHASE 2 READY, NOT STARTED**.
 
-- D-005 Progressive Disclosure V1 Granularity：`Blocking: YES`，在 Checkpoint 1/Phase 1 Visual/Layout IR contract 前必须决定。
-- D-002 V1 Layout Solver：`Blocking: YES`，阻塞 Phase 1 solver adapter。
-- D-010 Web Worker Boundary：`Blocking: YES`，阻塞 Phase 1 worker boundary。
-- D-001 Default Direction：虽为 `Blocking: NO`，但必须在正式 solver options 前决定。
-- Phase 0 还没有任何 Final Decision，Decision Freeze 未完成。
+- D-005 Progressive Disclosure V1 Granularity：已批准 Option A，允许 Checkpoint 1 实现 component、显式 module、infrastructure grouping；不做自动 domain inference。
+- D-002 V1 Layout Solver：已通过 `LayoutEngine` 与内部 adapter 接入 ELK.js。
+- D-010 Web Worker Boundary：solver-only worker protocol/runtime 已实现并保持内部。
+- D-001 Default Direction：已批准 LR default，作为 compiler option。
+- D-004：已批准 V1 延后 pin；D-006：已批准 Workspace abstraction 持有 LayoutState。
+- D-003 已批准 drag position 只进入 Workspace-owned LayoutState；D-008 已批准 Standard + Semantic Zoom；D-009 已批准由 web adapter 隔离的 `@xyflow/svelte` V1 renderer。
+- D-007 仍按 Phase 5 Ghost presentation 门禁处理。
 
-- D-005 Progressive Disclosure V1 Granularity: `Blocking: YES` before the Checkpoint 1/Phase 1 Visual/Layout IR contract.
-- D-002 V1 Layout Solver: `Blocking: YES` for the Phase 1 solver adapter.
-- D-010 Web Worker Boundary: `Blocking: YES` for the Phase 1 worker boundary.
-- D-001 Default Direction: currently `Blocking: NO`, but required before official solver options.
-- Phase 0 has no Final Decision yet, so Decision Freeze is incomplete.
+- D-005 Progressive Disclosure V1 Granularity: Option A approved, authorizing component, explicit module, and infrastructure grouping in Checkpoint 1 without automatic domain inference.
+- D-002 V1 Layout Solver: ELK.js is integrated behind `LayoutEngine` and the internal adapter.
+- D-010 Web Worker Boundary: the solver-only worker protocol/runtime is implemented and remains internal.
+- D-001 Default Direction: LR default approved as a compiler option.
+- D-004 defers pinning beyond V1; D-006 assigns LayoutState to the Workspace abstraction.
+- D-003 approves drag positions only in Workspace-owned LayoutState; D-008 approves Standard + Semantic Zoom; D-009 approves an `@xyflow/svelte` V1 renderer isolated by the web adapter.
+- D-007 retains its Phase 5 Ghost-presentation gate.
 
-下一动作必须由用户确认 Phase 1 所需 Decision；在此之前只允许继续不受阻塞影响的规划或事实恢复工作。
+Checkpoint 1–2、FULL/INCREMENTAL、mental-map、movement-cost 与 Ghost core protocol 已通过 package tests、批准性能预算和完整 CI。Phase 1 已收尾；Svelte UI 本轮未开始，Phase 2 必须作为独立窄切片实施。
 
-The next action requires user confirmation of the Decisions needed by Phase 1. Until then, only planning or fact-restoration work unaffected by the blockers may continue.
+Checkpoints 1–2, FULL/INCREMENTAL behavior, mental-map and movement-cost infrastructure, and the Ghost core protocol pass package tests, approved performance budgets, and the complete CI gate. Phase 1 is closed; Svelte UI did not start in this slice and Phase 2 must be implemented as a separate narrow slice.

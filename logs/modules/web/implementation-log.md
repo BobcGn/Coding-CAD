@@ -43,3 +43,23 @@ Status: Verified, not ready.
 按严格依赖顺序规划 Svelte CAD、Greenfield、Brownfield、Ghost/Review/Handoff、Quality/E2E 和 Terminal。`apps/web` 保持 placeholder；Phase 2 需等待 Phase 1 exit 与 D-009 等 Decision。
 
 Planned Svelte CAD, Greenfield, Brownfield, Ghost/Review/Handoff, Quality/E2E, and Terminal in strict dependency order. `apps/web` remains a placeholder; Phase 2 awaits Phase 1 exit and Decisions including D-009.
+
+## 2026-08-13 - UI Eight-Stage Source Mapping / UI 八阶段来源映射
+
+确认原始对话的 Canvas、业务工作流与产品闭环阶段已由 Master Phase 2–7 覆盖；只补充来源映射，不重建 Roadmap，不初始化 SvelteKit，不安装依赖。
+
+Confirmed that Master Phases 2–7 already cover the source conversation's Canvas, product workflows, and product-closure stages. Added source mapping only; did not rebuild the Roadmap, initialize SvelteKit, or install dependencies.
+
+## 2026-08-13 - Phase 2 Prerequisite Decisions / Phase 2 前置决策
+
+状态：已就绪，未开始。
+
+Status: Ready, not started.
+
+按用户指定的 21:03 建议批准 D-003、D-008、D-009，并把 anti-corruption adapter、Workspace-owned drag position 与 Standard + Semantic Zoom 设为 Checkpoint 3 guardrail。只更新文档和门禁状态；未初始化 SvelteKit、安装 `@xyflow/svelte` 或实现 UI。
+
+Approved D-003, D-008, and D-009 from the user-designated 21:03 guidance and established the anti-corruption adapter, Workspace-owned drag positions, and Standard + Semantic Zoom as Checkpoint 3 guardrails. Updated documentation and gate state only; did not initialize SvelteKit, install `@xyflow/svelte`, or implement UI.
+
+Decision/Phase 结构检查、Svelte 类型泄漏检查、`git diff --check` 与完整 `pnpm ci:verify` 均通过。Checkpoint 3 仍须通过实际 adapter、interaction、state separation、test 和 accessibility 证据后才能标记 Verified。
+
+Decision/Phase structure checks, the Svelte-type leakage check, `git diff --check`, and the complete `pnpm ci:verify` all pass. Checkpoint 3 still requires real adapter, interaction, state-separation, test, and accessibility evidence before it can be marked Verified.

@@ -1,6 +1,6 @@
 # 当前证据链 / Current Evidence Chain
 
-更新时间 / Updated at: 2026-08-11 19:30 CST (Asia/Shanghai)
+更新时间 / Updated at: 2026-08-13 CST (Asia/Shanghai)
 
 ## 本轮事件源 / Current Event Sources
 
@@ -22,6 +22,8 @@
 | UI / Architecture Layout Documentation First | 用户要求先统一边界、风险、测试与 Decision / User requested shared boundaries, risks, tests, and Decisions before implementation | 新增四份设计文档、10 个 Decision、11 个 Checkpoint / Added four design documents, 10 Decisions, and 11 Checkpoints | `docs/ui-architecture.md`、`docs/architecture-layout.md`、`docs/architecture-layout-decisions.md`、`docs/ui-mvp-roadmap.md` |
 | Root Coding Agent constraints / 根级 Coding Agent 约束 | 用户要求保留第一铁律并适配新目录 / User requested preserving the First Law while adapting to the new structure | 更新 `AGENTS.md` 的 Layout/UI/Decision/Checkpoint/Terminal 约束 / Updated Layout/UI/Decision/Checkpoint/Terminal constraints in `AGENTS.md` | `AGENTS.md`、`docs/architecture-layout-decisions.md`、`docs/ui-mvp-roadmap.md` |
 | UI V1 Master Planning | 用户要求先规划 Phase 0–7、更新 Decisions/Risks/Roadmap 并跑 baseline / User requested Phase 0–7 planning, Decision/Risk/Roadmap updates, and baseline | 新增 Master Plan、canonical crosswalk、Phase gates 与 readiness 结论 / Added the Master Plan, canonical crosswalk, Phase gates, and readiness result | `docs/ui-v1-execution-plan.md`、`docs/architecture-layout-decisions.md`、`docs/ui-mvp-roadmap.md`、`docs/architecture-layout.md` |
+| UI eight-stage source reconciliation / UI 八阶段来源复核 | 用户要求从内置浏览器中的原始规划提取八阶段并落地 / User requested extracting the eight stages from the original plan in the in-app browser | 复用并完善既有 Master Plan，新增来源映射与 Phase 1 细化验收，不建立重复体系 / Reused and improved the existing Master Plan with source mapping and refined Phase 1 acceptance instead of creating a duplicate system | `docs/ui-v1-execution-plan.md`、`logs/State/current.md`、`logs/modules/architecture-layout/implementation-log.md`、`logs/modules/web/implementation-log.md` |
+| Phase 1 decision closure / Phase 1 决策收尾 | 用户指定内置浏览器 21:03 建议并要求据此执行 / User designated the 21:03 in-app-browser guidance and asked to execute it | 批准 D-003/D-008/D-009，冻结 Phase 2 guardrail，但不开始 UI 实现 / Approved D-003/D-008/D-009 and froze Phase 2 guardrails without starting UI implementation | `docs/architecture-layout-decisions.md`、`docs/ui-v1-execution-plan.md`、`docs/ui-mvp-roadmap.md`、`docs/ui-architecture.md`、`logs/State/current.md` |
 
 ## 本轮验证记录 / Current Validation Records
 

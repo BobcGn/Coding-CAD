@@ -1,16 +1,24 @@
 # 当前状态 / Current State
 
-更新时间 / Updated at: 2026-08-11 20:30 CST (Asia/Shanghai)
+更新时间 / Updated at: 2026-08-13 CST (Asia/Shanghai)
 
 ## 总览 / Overview
 
-状态：已验证，Phase 0 Decision Freeze 阻塞。
+状态：Phase 1 已验证并完成文档收尾；D-003、D-008、D-009 已批准，Phase 2 已就绪但尚未开始。
 
-Status: Verified, blocked at Phase 0 Decision Freeze.
+Status: Phase 1 is verified and documentation closure is complete; D-003, D-008, and D-009 are approved, so Phase 2 is ready but not started.
 
-UI V1 Master Execution Plan、Decision crosswalk、Phase gate matrix、Roadmap mapping 与扩展 Risk Register 已验证。Phase 1 因 canonical D-005、D-002、D-010 未决而不能开始；D-001 也必须在 solver options 前确认。
+2026-08-13 读取用户指定的内置浏览器 21:03 决策建议后，按用户“根据建议执行”授权记录：D-009 采用由 web anti-corruption adapter 隔离的 `@xyflow/svelte`；D-003 只把 drag position 写入 Workspace-owned LayoutState，禁止修改 IR 或推导 constraint；D-008 采用 Standard + Semantic Zoom。此次只完成 Phase 1 文档收尾和 Phase 2 readiness，不安装或实现 UI。
 
-The UI V1 Master Execution Plan, Decision crosswalk, Phase gate matrix, Roadmap mapping, and expanded Risk Register are verified. Phase 1 cannot begin while canonical D-005, D-002, and D-010 remain undecided; D-001 is also required before solver options.
+After reading the user-designated 21:03 decision guidance in the in-app browser on 2026-08-13, the user's instruction to execute those recommendations records: D-009 adopts `@xyflow/svelte` behind a web anti-corruption adapter; D-003 stores drag positions only in Workspace-owned LayoutState without changing IR or inferring constraints; and D-008 adopts Standard + Semantic Zoom. This slice closes Phase 1 documentation and establishes Phase 2 readiness only; it installs and implements no UI.
+
+用户新增批准 D-004、D-006、100/150 与 500/800 性能预算、ELK worker gzip 预算和 movement threshold。Checkpoint 2 预算门禁与 incremental package tests 已通过；Svelte、Ghost、Terminal、pin 与磁盘持久化均未实现。
+
+2026-08-13 已对照内置浏览器中的原始八阶段对话复核：既有 Master Phase 0→7 不需重建；已补充原始阶段映射、底层视觉编译能力到产品闭环的顺序原则，以及 Phase 1 roles/hints/单策略/determinism/Redis mental-map 验收证据要求。门禁状态不变。
+
+The user additionally approved D-004, D-006, the 100/150 and 500/800 performance budgets, the ELK worker gzip budget, and the movement threshold. Checkpoint 2 budget gates and incremental package tests pass. Svelte, Ghost, Terminal, pinning, and disk persistence are not implemented.
+
+On 2026-08-13 the plan was rechecked against the source eight-stage conversation in the in-app browser. The existing Master Phase 0→7 structure did not need replacement; source-stage mapping, the visual-compilation-to-product-closure ordering rule, and Phase 1 evidence requirements were added before the approved Checkpoint 1 slice began.
 
 ## 当前变更 / Current Changes
 

@@ -2,10 +2,10 @@
 
 更新时间 / Updated at: 2026-08-11 20:30 CST (Asia/Shanghai)
 
-状态：已验证，尚未就绪。
+状态：Phase 2 已就绪，尚未开始。
 
-Status: Verified, not ready.
+Status: Phase 2 ready, not started.
 
-`apps/web` 仍是 TypeScript placeholder。Master Phase 2–7 已按 Svelte CAD、Greenfield、Brownfield、Ghost/Review/Handoff、Quality/E2E、Terminal 严格排序。D-009 阻塞 Phase 2；未开始 UI 实现或安装依赖。
+`apps/web` 仍是 TypeScript placeholder。D-003、D-008、D-009 已批准：drag position 归 Workspace-owned LayoutState、node 使用 Standard + Semantic Zoom、V1 Canvas renderer 使用由 adapter 隔离的 `@xyflow/svelte`。未开始 UI 实现或安装依赖。
 
-`apps/web` remains a TypeScript placeholder. Master Phases 2–7 now plan Svelte CAD, Greenfield, Brownfield, Ghost/Review/Handoff, quality/E2E, and Terminal in strict order. D-009 blocks Phase 2; no UI implementation or dependency installation started.
+`apps/web` remains a TypeScript placeholder. D-003, D-008, and D-009 are approved: drag positions belong to Workspace-owned LayoutState, nodes use Standard + Semantic Zoom, and the V1 Canvas renderer uses `@xyflow/svelte` behind the adapter. No UI implementation or dependency installation has started.

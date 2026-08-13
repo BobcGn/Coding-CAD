@@ -597,3 +597,79 @@ Changes:
 验证：8/8 Phase、每 Phase 11/11 栏目、10/10 Decision/crosswalk、15/15 Risk entries 通过；`pnpm lint`、`pnpm build`、`pnpm test` 均通过。
 
 Validation: 8/8 Phases with 11/11 fields each, 10/10 Decision/crosswalk entries, and 15/15 Risk entries passed; `pnpm lint`, `pnpm build`, and `pnpm test` all passed.
+
+## 2026-08-13 - UI Eight-Stage Source Reconciliation / UI 八阶段来源复核
+
+状态：文档已完善，门禁不变。
+
+Status: documentation improved; gates unchanged.
+
+对照用户在 Codex 内置浏览器中打开的原始规划，确认现有 `docs/ui-v1-execution-plan.md` 已覆盖八阶段且不应另建体系。补充原始阶段到 Master Phase 0→7 的映射、视觉编译到产品闭环的依赖原则，并细化 Phase 1 的 semantic roles、layout hints、单一正式策略、determinism 与 Redis mental-map 验收要求。未修改代码、依赖、Architecture IR 或 Final Decision。
+
+Rechecked the original plan opened by the user in the Codex in-app browser and confirmed that `docs/ui-v1-execution-plan.md` already covers the eight stages and should not be duplicated. Added source-to-Master-Phase mapping, the visual-compilation-to-product-closure dependency rule, and refined Phase 1 acceptance for semantic roles, layout hints, one formal strategy, determinism, and the Redis mental-map scenario. Changed no code, dependency, Architecture IR, or Final Decision.
+
+## 2026-08-13 - Phase 1 Checkpoint 1 Projection Slice / Phase 1 Checkpoint 1 投影切片
+
+状态：已验证。
+
+Status: Verified.
+
+用户批准 D-001、D-002、D-005、D-010 后，`architecture-layout` 实现 coordinate-free 的 semantic classification、component/explicit-module/infrastructure abstraction、VisualGraph、LayoutGraph 与 rank/group/proximity/direction constraints。新增 deterministic、序列化、唯一 ID、合法 endpoint、输入不可变和 renderer/coordinate 禁止字段测试。没有实现 ELK、worker、坐标、LayoutResult、incremental、Ghost、Svelte 或 UI。
+
+After the user approved D-001, D-002, D-005, and D-010, `architecture-layout` implemented coordinate-free semantic classification, component/explicit-module/infrastructure abstraction, VisualGraph, LayoutGraph, and rank/group/proximity/direction constraints. Added tests for determinism, serialization, unique IDs, valid endpoints, input immutability, and forbidden renderer/coordinate fields. No ELK, worker, coordinates, LayoutResult, incremental behavior, Ghost behavior, Svelte, or UI was implemented.
+
+验证：package TypeScript compile、pass unit test 与 compiler integration test 通过；用户恢复 pnpm 环境后，`pnpm ci:verify` 完整通过：typecheck 23/23、unit 27/27、integration 17/17、E2E 16/16、build 15/15。
+
+Validation: package TypeScript compilation, pass unit tests, and compiler integration tests passed. After the user restored the pnpm environment, the complete `pnpm ci:verify` passed: typecheck 23/23, unit 27/27, integration 17/17, E2E 16/16, and build 15/15.
+
+## 2026-08-13 - Phase 1 Checkpoint 2 Started / Phase 1 Checkpoint 2 启动
+
+状态：进行中，package 验证通过。
+
+Status: In progress; package verification passed.
+
+第一阶段文档与 Checkpoint 1 验收状态完成同步后，按已批准 D-001/D-002/D-010 开始 Checkpoint 2。新增唯一 runtime dependency `elkjs@0.12.0`，并通过 solver-neutral public API、内部 adapter 和内部 solver-only worker boundary 隔离。实现没有修改 Architecture IR/DSL、apps/web、Svelte、Ghost、Terminal、persistence 或 incremental 行为。
+
+After synchronizing Phase 1 documentation and the Checkpoint 1 acceptance state, Checkpoint 2 began under approved D-001/D-002/D-010. Added the sole runtime dependency `elkjs@0.12.0`, isolated behind a solver-neutral public API, an internal adapter, and an internal solver-only worker boundary. The implementation changes no Architecture IR/DSL, apps/web, Svelte, Ghost, Terminal, persistence, or incremental behavior.
+
+Package typecheck/unit/integration tests and the complete `pnpm ci:verify` pass: typecheck 23/23, unit 27/27, integration 17/17, E2E 16/16, build 15/15. Checkpoint 2 remains open only for the unapproved large-graph latency/web-bundle budget and later host-integration evidence.
+
+## 2026-08-13 - Phase 1 Incremental/Stability Infrastructure / Phase 1 增量稳定性基础设施
+
+状态：已验证。
+
+Status: Verified.
+
+用户批准所有推荐项：100/150 p95 ≤ 250 ms、500/800 p95 ≤ 1.5 s、ELK worker gzip ≤ 550 KiB 且动态加载；D-004 延后 V1 pin；D-006 由 Workspace abstraction 持有 LayoutState；未受影响节点 movement p95 ≤ 48 px、max ≤ 144 px 且不整体翻转顺序。实现 FULL/INCREMENTAL、missing-state/direction-change FULL fallback、可序列化 LayoutState、change derivation、local placement、stability pass 与 movement report。Redis/cache 新增、connection add、component remove 回归均通过，未受影响节点为 0 px 移动。
+
+The user approved all recommended options: p95 ≤ 250 ms for 100/150, p95 ≤ 1.5 s for 500/800, an ELK worker ≤ 550 KiB gzip with dynamic loading, D-004 deferring V1 pinning, D-006 assigning LayoutState to the Workspace abstraction, and unaffected movement p95 ≤ 48 px/max ≤ 144 px without overall order reversal. Implemented FULL/INCREMENTAL behavior, missing-state/direction-change FULL fallback, serializable LayoutState, change derivation, local placement, a stability pass, and movement reports. Redis/cache addition, connection addition, and component removal regressions pass with 0 px movement for unaffected nodes.
+
+完整 `pnpm ci:verify` 通过：typecheck 23/23、unit 27/27、integration 17/17、E2E 16/16、build 15/15。完整 CI 中性能证据：100/150 cold 180.19 ms、p95 56.92 ms；500/800 cold 460.39 ms、p95 506.66 ms；ELK gzip 471,876 bytes。
+
+The complete `pnpm ci:verify` passed: typecheck 23/23, unit 27/27, integration 17/17, E2E 16/16, and build 15/15. Full-CI performance evidence: 100/150 cold 180.19 ms and p95 56.92 ms; 500/800 cold 460.39 ms and p95 506.66 ms; ELK gzip 471,876 bytes.
+
+随后完成 Phase 1 Ghost core protocol：proposal-scoped identity、只投影新增 node/edge、局部放置且不修改 accepted IR/LayoutState。没有实现 D-007 管辖的呈现策略、Review accept/reject 或 UI。
+
+The Phase 1 Ghost core protocol then added proposal-scoped identity, projection of added nodes/edges only, and local placement without mutating accepted IR/LayoutState. It implements no D-007 presentation strategy, Review accept/reject behavior, or UI.
+
+Phase 1 最终完整 `pnpm ci:verify` 再次通过；public declaration 未泄漏 ELK/worker/UI 类型，`architecture-layout` 不依赖 `architecture-review`/Svelte/apps/web，Architecture IR/DSL 未出现视觉状态字段。Phase 1 据此标记 Verified。
+
+The final Phase 1 `pnpm ci:verify` passed again. Public declarations leak no ELK, worker, or UI types; `architecture-layout` does not depend on `architecture-review`, Svelte, or apps/web; Architecture IR/DSL contains no visual-state fields. Phase 1 is therefore marked Verified.
+
+## 2026-08-13 - Phase 1 Decision Closure / Phase 1 决策收尾
+
+状态：已验证；Phase 2 已就绪但未开始。
+
+Status: Verified; Phase 2 is ready but not started.
+
+读取用户指定的内置浏览器 21:03 决策建议，并依据用户“根据建议执行”授权正式批准 Phase 2 前置项：D-009 采用 `@xyflow/svelte`，但只允许经 `apps/web` anti-corruption adapter 进入 Canvas；D-003 只持久化 Workspace-owned LayoutState 中的 drag position，禁止修改 IR 或自动推导 constraint；D-008 采用 Standard + Semantic Zoom。同步 Decision、Master Plan、Roadmap、UI Architecture、AGENTS、web README 和结构化日志。
+
+Read the user-designated 21:03 decision guidance in the in-app browser and, under the user's instruction to execute it, formally approved the Phase 2 prerequisites: D-009 adopts `@xyflow/svelte` only through the `apps/web` anti-corruption adapter; D-003 persists only drag positions in Workspace-owned LayoutState without changing IR or inferring constraints; and D-008 adopts Standard + Semantic Zoom. Synchronized the Decision record, Master Plan, Roadmap, UI Architecture, AGENTS, web README, and structured logs.
+
+本收尾没有初始化 SvelteKit、安装 UI 依赖、实现 Canvas/drag/semantic zoom、修改 Architecture IR，或进入 Phase 2 代码实现。
+
+This closure did not initialize SvelteKit, install UI dependencies, implement Canvas/drag/semantic zoom, change Architecture IR, or begin Phase 2 code implementation.
+
+验证：Decision 结构为 10/10、已批准 9、仅 D-007 保持 TBD；Master Phase 0→7 顺序检查、禁止 Svelte 类型泄漏检查与 `git diff --check` 通过。完整 `pnpm ci:verify` 通过：typecheck 23/23、unit 27/27、integration 17/17、E2E 16/16、build 15/15。
+
+Validation: the Decision structure is 10/10 with 9 approved and only D-007 remaining TBD; Master Phase 0→7 ordering, forbidden Svelte-type leakage, and `git diff --check` pass. The complete `pnpm ci:verify` passes: typecheck 23/23, unit 27/27, integration 17/17, E2E 16/16, and build 15/15.

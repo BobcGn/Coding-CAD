@@ -6,7 +6,9 @@ This app will become the SvelteKit Architecture Workspace UI, the product intera
 
 第一版 UI 应该渲染和编辑 Architecture IR，而不是直接生成代码。未来的 SvelteKit 产品 UI 可以使用 Svelte Flow 作为 Architecture IR 与 LayoutResult 的交互视图。
 
-The first UI should render and edit Architecture IR rather than generate code directly. The future SvelteKit product UI may use Svelte Flow as an interactive view over Architecture IR and LayoutResult.
+D-009 已批准 Svelte Flow 作为 Architecture IR 与 LayoutResult 之上的可替换 V1 交互视图。
+
+The first UI should render and edit Architecture IR rather than generate code directly. D-009 approves Svelte Flow as the replaceable V1 interactive view over Architecture IR and LayoutResult.
 
 ```text
 ArchitectureProject
@@ -25,7 +27,11 @@ The UI must not become a new Architecture Source of Truth. Svelte Flow state can
 
 `apps/web` 当前仍是 TypeScript placeholder，不是已初始化的 SvelteKit 项目。本阶段只建立 `src/lib` 下的 Architecture、CAD、Layout UI adapter 与 Terminal TODO 目录边界，不初始化 SvelteKit，也不实现 UI。
 
-`apps/web` remains a TypeScript placeholder and is not an initialized SvelteKit project. This phase only establishes Architecture, CAD, Layout UI adapter, and Terminal TODO boundaries under `src/lib`; it neither initializes SvelteKit nor implements UI.
+`apps/web` remains a TypeScript placeholder and is not an initialized SvelteKit project. Phase 1 is closed and Phase 2 is ready, but this slice only preserves the Architecture, CAD, Layout UI adapter, and Terminal TODO boundaries under `src/lib`; it neither initializes SvelteKit nor implements UI.
+
+`@xyflow/svelte` 的 import 与类型只能出现在 Canvas component、`src/lib/layout/adapters` 及其 app-layer test 中，不得泄漏到 command、持久化格式或任何 package public API。手动拖动只把 position 持久化到 Workspace-owned LayoutState，不得推导 constraint；node renderer 使用 Standard density，并在 semantic zoom 远景退化为 Compact。
+
+`@xyflow/svelte` imports and types are restricted to Canvas components, `src/lib/layout/adapters`, and their app-layer tests. They must not leak into commands, persistence formats, or any package public API. Manual drag persists only position in Workspace-owned LayoutState and must not infer constraints; node rendering uses Standard density with a Compact semantic-zoom fallback.
 
 ## UI MVP Roadmap / UI MVP 路线图
 

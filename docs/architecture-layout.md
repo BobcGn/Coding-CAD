@@ -2,9 +2,9 @@
 
 ## 文档状态 / Document Status
 
-状态：设计草案，仅用于冻结职责与约束；未冻结 public API、solver 或持久化格式。
+状态：Phase 1 已验证。Checkpoint 1–2、Incremental/Stability core 与 Ghost core protocol 已通过完整 CI 和边界检查；磁盘持久化格式仍未冻结，Phase 2 UI 契约由 D-003/D-008/D-009 管辖。
 
-Status: design draft for freezing responsibilities and constraints only; public APIs, the solver, and persistence formats are not frozen.
+Status: Phase 1 is verified. Checkpoints 1–2, the Incremental/Stability core, and the Ghost core protocol pass full CI and boundary checks; the disk-persistence format remains unfrozen, while D-003/D-008/D-009 govern the Phase 2 UI contract.
 
 ## 目的 / Purpose
 
@@ -55,9 +55,9 @@ Abstraction Pass 控制展示粒度，重点服务 Brownfield Repository Analysi
 
 The Abstraction Pass controls visual granularity, especially for Brownfield Repository Analysis. When the Analyzer produces many components, the default view should not expose every node.
 
-未来策略边界包括 domain grouping、module grouping、infrastructure grouping、collapse/expand 和 progressive disclosure。V1 只承诺定义 renderer-independent 的分组协议和策略入口；具体 V1 粒度由 D-005 决定。
+策略边界包括 domain grouping、module grouping、infrastructure grouping、collapse/expand 和 progressive disclosure。D-005 已批准 V1 使用 component、显式 module 与 infrastructure grouping；domain grouping 仅消费明确来源信号，不做自动推断。
 
-Future strategy boundaries include domain grouping, module grouping, infrastructure grouping, collapse/expand, and progressive disclosure. V1 promises only renderer-independent grouping protocols and strategy entry points; D-005 decides the concrete V1 granularity.
+Strategy boundaries include domain grouping, module grouping, infrastructure grouping, collapse/expand, and progressive disclosure. D-005 approves component, explicit-module, and infrastructure grouping for V1; domain grouping consumes only explicit source signals and performs no automatic inference.
 
 ### Visual IR Pass / 视觉 IR 阶段
 
@@ -89,9 +89,9 @@ These are layout preferences or constraints, not architecture-correctness rules.
 
 The architecture must remain solver-neutral. `LayoutEngine` is the internal abstraction boundary: it accepts renderer-independent Layout IR and constraints and returns a solver-neutral result. No package consumer may depend on ELK types.
 
-ELK.js Layered Layout 是 V1 第一候选，但在 D-002 完成前不是正式决定。ELK 只可能是 constraint solver，不是 Coding CAD layout architecture。adapter 必须隔离选项翻译、worker 消息和错误处理，使替换 solver 不影响 compiler passes 或 `apps/web`。
+ELK.js Layered Layout 已由 D-002 批准为 V1 solver，但只能位于 `LayoutEngine` 与内部 adapter 之后。ELK 只是 constraint solver，不是 Coding CAD layout architecture。adapter 必须隔离选项翻译、worker 消息和错误处理，使替换 solver 不影响 compiler passes 或 `apps/web`。
 
-ELK.js Layered Layout is the leading V1 candidate but is not official until D-002 is decided. ELK may be a constraint solver, not the Coding CAD layout architecture. Its adapter must isolate option translation, worker messages, and errors so replacing the solver does not affect compiler passes or `apps/web`.
+ELK.js Layered Layout is approved by D-002 as the V1 solver, but only behind `LayoutEngine` and an internal adapter. ELK is a constraint solver, not the Coding CAD layout architecture. Its adapter must isolate option translation, worker messages, and errors so replacing the solver does not affect compiler passes or `apps/web`.
 
 ### Stability Pass / 稳定性阶段
 
@@ -102,6 +102,10 @@ Stability objectives include readability, semantic consistency, crossing count, 
 上一版位置只能作为 LayoutState/hint 输入，不能成为 ArchitectureProject 字段。输出应能够解释哪些节点因结构变化必须移动，哪些节点被稳定性策略保留。
 
 Previous positions may enter only as LayoutState or hints, never as ArchitectureProject fields. Results should explain which nodes had to move because of structural changes and which were preserved by stability policy.
+
+V1 的已批准 movement budget 为：未受影响节点 p95 ≤ 48 px、最大 ≤ 144 px，不允许整体相对顺序翻转。D-004 延后 pin，因此 landmark 只要求保持相对位置；不能把 pin 作为掩盖自动布局失败的手段。
+
+The approved V1 movement budget is p95 ≤ 48 px and maximum ≤ 144 px for unaffected nodes, with no overall relative-order reversal. D-004 defers pinning, so landmarks preserve relative position only; pinning cannot hide automatic-layout failures.
 
 ### Incremental Layout / 增量布局
 
@@ -117,6 +121,10 @@ Incremental 输入至少需要 previous LayoutState、IR change set 或可推导
 
 Incremental input needs at least previous LayoutState, an IR change set or derivable diff, and current abstraction state. Without previous state it must safely fall back to FULL.
 
+D-006 指定 LayoutState 由 Workspace abstraction 持有；本 package 只定义纯内存、可序列化的状态与生命周期契约，不冻结 `.coding-cad/layout.json` 或浏览器存储格式。
+
+D-006 assigns LayoutState ownership to the Workspace abstraction. This package defines only a pure in-memory, serializable state and lifecycle contract and freezes neither `.coding-cad/layout.json` nor a browser-storage format.
+
 ### Ghost Layout / Ghost 布局
 
 Architecture Proposal 在接受前不属于正式 ArchitectureProject。Ghost node/edge 仅表示建议，必须拥有 proposal identity，优先采用 local placement，且不应触发正式架构全图重排。
@@ -127,15 +135,19 @@ An Architecture Proposal is not part of the accepted ArchitectureProject before 
 
 The acceptance path is `Proposal -> Architecture Review -> ArchitectureProject -> Incremental Layout`; rejection only removes the Ghost projection. D-007 decides whether V1 uses an overlay, local extension, or comparison view.
 
+Phase 1 只提供 `GhostLayoutProjection` 协议：proposal-scoped identity、相对 accepted graph 的新增 node/edge projection，以及不修改 accepted ArchitectureProject/LayoutState 的局部 placement。它不定义颜色、透明度、overlay/comparison view，也不执行 accept/reject。
+
+Phase 1 provides only the `GhostLayoutProjection` protocol: proposal-scoped identity, added-node/edge projection relative to the accepted graph, and local placement that does not mutate the accepted ArchitectureProject/LayoutState. It defines no color, opacity, overlay/comparison view, or accept/reject behavior.
+
 ## Architecture IR 与 Layout State 分离 / Separating Architecture IR and Layout State
 
 `ArchitectureProject` 描述“系统是什么”；`LayoutState` 描述“用户怎么看这个系统”。以下字段绝对禁止进入 Architecture IR 或 Architecture DSL：`x`、`y`、`width`、`height`、`viewport`、`collapsed`、`pinned`。
 
 `ArchitectureProject` describes “what the system is”; `LayoutState` describes “how a user views the system.” The following fields must never enter Architecture IR or Architecture DSL: `x`, `y`, `width`, `height`, `viewport`, `collapsed`, and `pinned`.
 
-Layout State 属于 Workspace/View State。`.coding-cad/workspace/layout.json` 等路径仅是讨论示例，不是已批准格式；D-003、D-004 和 D-006 决定拖动、pin 与存储语义。
+Layout State 属于 Workspace/View State。D-003 只允许持久化 drag position，D-004 将 pin 延后到 V1 之后，D-006 指定 Workspace abstraction 持有状态；`.coding-cad/workspace/layout.json` 等路径仍只是讨论示例，不是已批准格式。
 
-Layout State belongs to Workspace/View State. Paths such as `.coding-cad/workspace/layout.json` are discussion examples, not approved formats; D-003, D-004, and D-006 decide drag, pin, and storage semantics.
+Layout State belongs to Workspace/View State. D-003 allows only drag-position persistence, D-004 defers pinning beyond V1, and D-006 assigns ownership to the Workspace abstraction; paths such as `.coding-cad/workspace/layout.json` remain discussion examples rather than approved formats.
 
 ## 依赖和运行边界 / Dependency and Runtime Boundaries
 
@@ -149,10 +161,10 @@ apps/web layout adapter
 Svelte Flow / Architecture Canvas
 ```
 
-- 可依赖 / May depend on: `@coding-cad/architecture-ir`（待契约阶段引入 / introduced only with an approved contract）, solver adapter dependency（待 D-002 / after D-002）。
+- 可依赖 / May depend on: `@coding-cad/architecture-ir`（已用于只读输入 / used as read-only input）与 D-002 批准的 ELK adapter dependency。
 - 禁止依赖 / Forbidden dependencies: Svelte、SvelteKit、`@xyflow/svelte`、DOM、CSS、`apps/web`。
 - 可测试环境 / Test environment: Node.js without Svelte, DOM, or a browser.
-- 并发边界 / Concurrency boundary: D-010 决定仅 solver worker 化或完整 compiler worker 化。
+- 并发边界 / Concurrency boundary: D-010 已批准 V1 仅 solver worker 化；compiler contracts 必须保持可序列化。
 
 ## 测试计划 / Test Plan
 
@@ -205,9 +217,9 @@ Probability and impact use Low, Medium, and High. Owner Layer identifies mitigat
 
 ## 非目标 / Non-goals
 
-本阶段不定义不可逆 public API，不选择正式 solver，不安装依赖，不实现算法、ELK adapter、worker、Ghost、持久化或 UI。
+Checkpoint 2 不定义不可逆 UI API，不实现 Ghost、持久化或 UI；只实现 solver-neutral engine/result contract、内部 ELK adapter 与 solver-only worker boundary。
 
-This phase does not define irreversible public APIs, choose the official solver, install dependencies, or implement algorithms, an ELK adapter, workers, Ghost behavior, persistence, or UI.
+Checkpoint 2 does not define irreversible UI APIs or implement Ghost behavior, persistence, or UI. It implements only solver-neutral engine/result contracts, the internal ELK adapter, and the solver-only worker boundary.
 
 ## 相关文档 / Related Documents
 

@@ -6,9 +6,9 @@
 
 This roadmap advances by increasing risk. Each checkpoint must be accepted independently; later stages must not be marked complete while earlier Acceptance Criteria remain unmet. Technology choices and public APIs may be frozen only after the corresponding Decision receives user approval.
 
-状态词：`Pending`、`In Progress`、`Verified`、`Blocked by Decision`。当前只有 Checkpoint 0 可以在 Documentation First 阶段完成。
+状态词：`Pending`、`Ready`、`In Progress`、`Verified`、`Blocked by Decision`。Documentation First 与 Phase 1 已结束；Phase 2 已就绪但未开始。
 
-Status words: `Pending`, `In Progress`, `Verified`, and `Blocked by Decision`. Only Checkpoint 0 can be completed during Documentation First.
+Status words: `Pending`, `Ready`, `In Progress`, `Verified`, and `Blocked by Decision`. Documentation First and Phase 1 are complete; Phase 2 is ready but not started.
 
 ## Master Phase Alignment / Master Phase 对齐
 
@@ -33,7 +33,7 @@ Phase 1 establishes only the Ghost protocol, while Phase 5 implements Ghost prod
 
 ## Checkpoint 0 — Documentation / Architecture Frozen / 文档与架构边界冻结
 
-**Status / 状态:** In Progress — planning documents verified; Decision Freeze blocked / 进行中——规划文档已验证，Decision Freeze 被阻塞
+**Status / 状态:** Verified — Phase 1 complete; D-003/D-008/D-009 approved for Phase 2; later Decisions remain gated / 已验证——Phase 1 完成；D-003/D-008/D-009 已批准用于 Phase 2；更后续 Decision 仍按门禁处理
 
 **Goal / 目标**
 
@@ -56,7 +56,7 @@ Phase 1 establishes only the Ghost protocol, while Phase 5 implements Ghost prod
 
 - Architecture IR 明确为唯一 Architecture Source of Truth。 / Architecture IR is explicitly the sole Architecture Source of Truth.
 - Layout compiler 和 UI adapter 的依赖方向、禁止类型泄漏和 View State 分离已记录。 / Dependency direction, forbidden type leakage, and View State separation are documented.
-- 10 个 Decision 使用统一模板，`Final Decision` 全部为 `TBD`。 / All 10 Decisions use the common template and every `Final Decision` is `TBD`.
+- 10 个 Decision 使用统一模板；已批准项有可追溯 Final Decision，未批准项保持 `TBD`。 / All 10 Decisions use the common template; approved items have traceable Final Decisions and unapproved items remain `TBD`.
 - Risk Register 覆盖指定风险并包含 probability、impact、mitigation、owner、user decision。 / The Risk Register covers required risks with probability, impact, mitigation, owner, and user-decision fields.
 - 没有算法、Svelte、Terminal、Ghost 行为或依赖安装。 / No algorithms, Svelte, Terminal, Ghost behavior, or dependency installation occurs.
 
@@ -72,7 +72,7 @@ Phase 1 establishes only the Ghost protocol, while Phase 5 implements Ghost prod
 
 ## Checkpoint 1 — ArchitectureProject -> Visual/Layout IR
 
-**Status / 状态:** Blocked by Decision D-005
+**Status / 状态:** Verified — accepted on 2026-08-13 with package tests and `pnpm ci:verify` / 已验证——2026-08-13 经 package tests 与 `pnpm ci:verify` 验收
 
 **Goal / 目标**
 
@@ -111,7 +111,7 @@ Phase 1 establishes only the Ghost protocol, while Phase 5 implements Ghost prod
 
 ## Checkpoint 2 — Layout IR -> Solver -> LayoutResult
 
-**Status / 状态:** Blocked by Decisions D-002 and D-010; D-001 required / 被 D-002、D-010 阻塞，且需 D-001
+**Status / 状态:** Verified — approved budgets and complete CI passed on 2026-08-13 / 已验证——2026-08-13 已通过批准预算与完整 CI
 
 **Goal / 目标**
 
@@ -133,7 +133,7 @@ Phase 1 establishes only the Ghost protocol, while Phase 5 implements Ghost prod
 - LayoutResult node ID 唯一、edge endpoint 合法、坐标和尺寸有限。 / LayoutResult node IDs are unique, edge endpoints valid, and coordinates and dimensions finite.
 - 相同输入/options 具有可声明的 deterministic behavior。 / Identical inputs and options provide documented deterministic behavior.
 - solver failure、timeout/cancellation 有结构化诊断和安全 fallback。 / Solver failure, timeout, and cancellation have structured diagnostics and a safe fallback.
-- 基准 fixture 达到批准的 latency/bundle budget。 / Benchmark fixtures meet approved latency and bundle budgets.
+- 100 nodes/150 edges 稳态 p95 ≤ 250 ms，500 nodes/800 edges 稳态 p95 ≤ 1.5 s；ELK worker gzip ≤ 550 KiB 且动态加载、不进入首屏主 bundle。 / Steady-state p95 is ≤ 250 ms for 100 nodes/150 edges and ≤ 1.5 s for 500 nodes/800 edges; the ELK worker is ≤ 550 KiB gzip and dynamically loaded outside the initial main bundle.
 - worker 不接收 Svelte/DOM 对象。 / Workers receive no Svelte or DOM objects.
 
 **Known Risks / 已知风险**
@@ -148,7 +148,7 @@ Phase 1 establishes only the Ghost protocol, while Phase 5 implements Ghost prod
 
 ## Checkpoint 3 — LayoutResult -> Svelte Flow Canvas
 
-**Status / 状态:** Blocked by Decision D-009; D-003 and D-008 required / 被 D-009 阻塞，且需 D-003、D-008
+**Status / 状态:** Ready, not started — D-003/D-008/D-009 approved / 已就绪、未开始——D-003/D-008/D-009 已批准
 
 **Goal / 目标**
 
@@ -250,7 +250,7 @@ Phase 1 establishes only the Ghost protocol, while Phase 5 implements Ghost prod
 
 ## Checkpoint 6 — Incremental Layout Stability / 增量布局稳定性
 
-**Status / 状态:** Pending; Decisions D-004 and D-006 required / 待处理，需 D-004、D-006
+**Status / 状态:** In Progress; D-004 and D-006 approved on 2026-08-13 / 进行中；D-004 与 D-006 已于 2026-08-13 批准
 
 **Goal / 目标**
 
@@ -268,7 +268,7 @@ Phase 1 establishes only the Ghost protocol, while Phase 5 implements Ghost prod
 **Acceptance Criteria / 验收标准**
 
 - 无 previous state 时安全退化 FULL。 / Safely falls back to FULL without previous state.
-- fixture 中无关节点移动低于批准阈值；关键 landmark 稳定。 / Unrelated-node movement stays below an approved threshold and landmarks remain stable.
+- fixture 中未受影响节点 p95 移动不超过 48 px、最大移动不超过 144 px，不发生整体相对顺序翻转；无 pin 的 V1 landmark 保持相对位置。 / In fixtures, unaffected-node p95 movement stays at or below 48 px, maximum movement stays at or below 144 px, no overall relative-order reversal occurs, and V1 landmarks without pinning preserve relative position.
 - 相同 prior state + diff 产生 deterministic result。 / Identical prior state and diff produce deterministic results.
 - LayoutState 不进入 Architecture IR/DSL；存储符合 D-006。 / LayoutState never enters Architecture IR/DSL and storage follows D-006.
 - incremental regression tests 和 movement metrics 通过。 / Incremental regression tests and movement metrics pass.

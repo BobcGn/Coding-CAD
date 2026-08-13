@@ -1,8 +1,8 @@
 # Architecture Layout Decisions / Architecture Layout 决策清单
 
-本文记录尚未由用户确认的产品与架构选择。推荐方向用于促进讨论，不构成决定；所有 `Final Decision` 必须由用户填写或明确批准。
+本文记录 UI/Layout 产品与架构选择及其批准状态。推荐方向用于促进讨论，不构成决定；所有 `Final Decision` 必须由用户填写或明确批准。
 
-This document records product and architecture choices not yet confirmed by the user. Recommended directions support discussion and are not decisions; every `Final Decision` must be filled in or explicitly approved by the user.
+This document records UI/Layout product and architecture choices and their approval status. Recommended directions support discussion and are not decisions; every `Final Decision` must be filled in or explicitly approved by the user.
 
 ## Canonical ID Rule and Master Task Crosswalk / 正式编号规则与 Master Task 映射
 
@@ -27,16 +27,16 @@ D-001 through D-010 in this file are the repository's canonical IDs. The UI V1 M
 
 | Canonical Decision | Current Blocking | Master Phase Gate / Phase 门禁 | Current Result / 当前结果 |
 | --- | --- | --- | --- |
-| D-005 | YES | Phase 1 start: abstraction/Visual IR contract / Phase 1 起点 | BLOCKED — TBD |
-| D-002 | YES | Phase 1 solver adapter | BLOCKED — TBD |
-| D-010 | YES | Phase 1 worker boundary | BLOCKED — TBD |
-| D-001 | NO | Required before Phase 1 solver options / Phase 1 solver options 前必需 | REQUIRED — TBD |
-| D-009 | YES | Phase 2 Canvas engine/toolchain | BLOCKED — TBD |
-| D-003 | NO | Required before Phase 2 drag behavior | REQUIRED — TBD |
-| D-008 | NO | Required before Phase 2 node renderer contract | REQUIRED — TBD |
-| D-006 | NO | Required before Phase 3 persistence and Phase 6 quality closure | REQUIRED — TBD |
+| D-005 | YES | Phase 1 start: abstraction/Visual IR contract / Phase 1 起点 | APPROVED — Option A |
+| D-002 | YES | Phase 1 solver adapter | APPROVED — ELK.js behind `LayoutEngine` |
+| D-010 | YES | Phase 1 worker boundary | APPROVED — solver-only worker for V1 |
+| D-001 | NO | Required before Phase 1 solver options / Phase 1 solver options 前必需 | APPROVED — LR default |
+| D-009 | YES | Phase 2 Canvas engine/toolchain | APPROVED — `@xyflow/svelte` behind web adapter |
+| D-003 | NO | Required before Phase 2 drag behavior | APPROVED — Workspace-owned LayoutState, conditional |
+| D-008 | NO | Required before Phase 2 node renderer contract | APPROVED — Standard + Semantic Zoom |
+| D-006 | NO | Required before Phase 3 persistence and Phase 6 quality closure | APPROVED — Workspace abstraction |
 | D-007 | NO | Required before Phase 5 Ghost presentation | REQUIRED — TBD |
-| D-004 | NO | Required or explicitly deferred before Phase 6 exit | REQUIRED/DEFER — TBD |
+| D-004 | NO | Required or explicitly deferred before Phase 6 exit | APPROVED — deferred beyond V1 |
 
 `Blocking: NO` 不代表 Codex 可以自行决定，只表示未到该功能边界时可以继续无关工作。Phase 0 Decision Freeze 必须由用户填写 Final Decision，或明确把某项延后到指定 Phase。
 
@@ -45,7 +45,7 @@ D-001 through D-010 in this file are the repository's canonical IDs. The UI V1 M
 # D-001 Default Architecture Direction / 默认架构方向
 
 Status:
-USER DECISION REQUIRED
+APPROVED — 2026-08-13
 
 Context / 背景:
 Semantic Layout 需要默认主轴，同时允许未来按 workspace 或图类型覆盖。 / Semantic Layout needs a default primary axis while allowing future workspace- or graph-specific overrides.
@@ -88,12 +88,12 @@ Decision Needed Before / 最晚决策点:
 Checkpoint 2
 
 Final Decision:
-TBD
+Option B: LR is the V1 default. Direction remains a compiler option and is not embedded as intrinsic Visual/Layout IR semantics. / V1 默认使用 LR；direction 保持 compiler option，不成为 Visual/Layout IR 的固有语义。
 
 # D-002 V1 Layout Solver / V1 布局 Solver
 
 Status:
-USER DECISION REQUIRED
+APPROVED — 2026-08-13
 
 Context / 背景:
 LayoutEngine 必须 solver-neutral，但 V1 需要一个实际 solver 才能产生 LayoutResult。 / LayoutEngine must remain solver-neutral, but V1 needs a concrete solver to produce LayoutResult.
@@ -146,12 +146,12 @@ Decision Needed Before / 最晚决策点:
 Checkpoint 2
 
 Final Decision:
-TBD
+Option A: use ELK.js Layered Layout only behind the solver-neutral `LayoutEngine` and the internal ELK adapter. Solver-specific types must not cross the engine boundary. / 采用 ELK.js Layered Layout，但只能位于 solver-neutral `LayoutEngine` 与内部 ELK adapter 之后；solver-specific 类型不得越过 engine 边界。
 
 # D-003 Manual Drag Semantics / 手动拖动语义
 
 Status:
-USER DECISION REQUIRED
+APPROVED — 2026-08-13
 
 Context / 背景:
 Manual layout 是 escape hatch，但拖动后的含义会影响 LayoutState、增量布局和团队协作。 / Manual layout is an escape hatch, but drag semantics affect LayoutState, incremental layout, and collaboration.
@@ -198,12 +198,12 @@ Decision Needed Before / 最晚决策点:
 Checkpoint 3
 
 Final Decision:
-TBD
+Option B, with V1 guardrails: manual drag persists only node position in Workspace-owned `LayoutState`; it never mutates Architecture IR/DSL and never infers layout constraints or architecture semantics. Persisted positions are view preferences consumed by incremental layout, not permanent solver facts. Removed or incompatible node identities must be ignored safely, and Auto Layout must provide an explicit path back to generated placement. Disk format and shared-versus-personal storage remain governed by D-006 and later Workspace integration evidence. / 选择 Option B，并附带 V1 guardrail：手动拖动只把节点位置持久化到 Workspace-owned `LayoutState`；绝不修改 Architecture IR/DSL，也不推导布局 constraint 或架构语义。持久化位置是供增量布局消费的 view preference，不是永久 solver fact。已删除或不兼容的 node identity 必须安全忽略，Auto Layout 必须提供明确返回自动生成位置的路径。磁盘格式及共享/个人存储仍由 D-006 与后续 Workspace 集成证据管辖。
 
 # D-004 Pinned Nodes in V1 / V1 是否支持 Pinned Node
 
 Status:
-USER DECISION REQUIRED
+APPROVED — 2026-08-13
 
 Context / 背景:
 Pin 可以稳定关键节点，但可能把 automatic layout 变成手动约束管理。 / Pinning can stabilize key nodes but may turn automatic layout into manual constraint management.
@@ -242,12 +242,12 @@ Decision Needed Before / 最晚决策点:
 Checkpoint 6
 
 Final Decision:
-TBD
+Option B: pinned nodes are deferred beyond V1. V1 must first prove automatic and incremental stability; pinning may be reconsidered only from observed failure evidence. / 选择 Option B：V1 延后 pinned node。V1 必须先验证自动布局与增量稳定性；只有真实失败证据出现后才重新评估 pin。
 
 # D-005 Progressive Disclosure V1 Granularity / V1 渐进披露粒度
 
 Status:
-USER DECISION REQUIRED
+APPROVED — 2026-08-13
 
 Context / 背景:
 Brownfield Analyzer 可能产生数十到数百组件，Abstraction Pass 需要明确 V1 的最小分组层级。 / Brownfield Analyzer may produce tens or hundreds of components, so the Abstraction Pass needs a minimum V1 grouping level.
@@ -286,12 +286,12 @@ Decision Needed Before / 最晚决策点:
 Checkpoint 1
 
 Final Decision:
-TBD
+Option A: V1 supports component, explicit module, and infrastructure grouping. Domain grouping has a protocol boundary but is used only when the source IR carries an explicit domain signal; automatic domain inference is excluded. / V1 支持 component、显式 module 与 infrastructure grouping；保留 domain grouping 协议边界，但仅在来源 IR 有明确 domain 信号时使用，不做自动 domain inference。
 
 # D-006 Layout State Storage / Layout State 存储位置
 
 Status:
-USER DECISION REQUIRED
+APPROVED — 2026-08-13
 
 Context / 背景:
 LayoutState 是 View/Workspace State，不属于 Architecture IR；仍需决定持久化位置和共享语义。 / LayoutState is View/Workspace State, not Architecture IR; its persistence location and sharing semantics remain undecided.
@@ -346,7 +346,7 @@ Decision Needed Before / 最晚决策点:
 Checkpoint 6
 
 Final Decision:
-TBD
+Option A: LayoutState is owned through the Workspace abstraction. V1 does not freeze a disk schema; `architecture-layout` defines only the pure in-memory state/lifecycle contract, while concrete storage remains a Workspace responsibility. / 选择 Option A：LayoutState 由 Workspace abstraction 持有。V1 不冻结磁盘 schema；`architecture-layout` 只定义纯内存状态与生命周期契约，具体存储仍归 Workspace 负责。
 
 # D-007 Ghost Proposal Layout Behavior / Ghost Proposal 布局行为
 
@@ -403,7 +403,7 @@ TBD
 # D-008 Node Visual Density / 节点视觉密度
 
 Status:
-USER DECISION REQUIRED
+APPROVED — 2026-08-13
 
 Context / 背景:
 Canvas 必须提供足够架构信息，又不能替代 Inspector 或使大图不可读。 / The Canvas must show enough architecture information without replacing the Inspector or making large graphs unreadable.
@@ -450,12 +450,12 @@ Decision Needed Before / 最晚决策点:
 Checkpoint 3
 
 Final Decision:
-TBD
+Option B: V1 uses Standard nodes with Semantic Zoom. The default node shows name, semantic role, a short contract summary, and at most one primary status/issue indicator; zoomed-out rendering degrades to Compact topology cues. Detailed contracts, evidence, confidence, and issue lists belong in Inspector/Problems. Density is a renderer concern and must not alter ArchitectureProject or LayoutResult semantics. / 选择 Option B：V1 使用 Standard node + Semantic Zoom。默认节点显示名称、semantic role、简短 contract summary，以及最多一个主要 status/issue indicator；远景缩放退化为 Compact 拓扑提示。详细 contract、evidence、confidence 与 issue list 属于 Inspector/Problems。密度是 renderer concern，不得改变 ArchitectureProject 或 LayoutResult 语义。
 
 # D-009 Svelte Flow Dependency Commitment / Svelte Flow 依赖承诺
 
 Status:
-USER DECISION REQUIRED
+APPROVED — 2026-08-13
 
 Context / 背景:
 `@xyflow/svelte` 是 V1 Canvas engine 候选，提供成熟的交互能力，但会形成产品 UI 的重要依赖。 / `@xyflow/svelte` is the candidate V1 Canvas engine with mature interactions, but it becomes a significant product-UI dependency.
@@ -494,12 +494,12 @@ Decision Needed Before / 最晚决策点:
 Checkpoint 3
 
 Final Decision:
-TBD
+Option A: adopt `@xyflow/svelte` as the V1 Canvas renderer, while keeping the Canvas engine replaceable infrastructure. The mandatory anti-corruption path is `ArchitectureProject -> architecture-layout -> LayoutResult -> apps/web/src/lib/layout/adapters -> @xyflow/svelte`. Its imports and types MAY appear only in `apps/web` Canvas/adapters and app-layer tests; they MUST NOT appear in core packages, Architecture IR/DSL, `architecture-layout` public contracts, commands, or persisted Workspace/LayoutState formats. The adapter must be one-way and contract-tested before Checkpoint 3 can be verified. This decision authorizes Phase 2 entry planning; it does not by itself install dependencies or complete the Canvas. / 选择 Option A：V1 采用 `@xyflow/svelte` 作为 Canvas renderer，同时把 Canvas engine 保持为可替换基础设施。强制 anti-corruption 路径为 `ArchitectureProject -> architecture-layout -> LayoutResult -> apps/web/src/lib/layout/adapters -> @xyflow/svelte`。其 import 与类型只允许出现在 `apps/web` Canvas/adapters 和 app-layer tests；严禁进入核心 package、Architecture IR/DSL、`architecture-layout` public contract、command 或持久化 Workspace/LayoutState 格式。adapter 必须单向并通过 contract test，Checkpoint 3 才能标记 Verified。本决定授权 Phase 2 入口规划，但不自动安装依赖或完成 Canvas。
 
 # D-010 Web Worker Boundary / Web Worker 边界
 
 Status:
-USER DECISION REQUIRED
+APPROVED — 2026-08-13
 
 Context / 背景:
 Semantic passes 与 solver 都可能消耗 CPU，大型 Brownfield 图不得阻塞 UI。 / Semantic passes and the solver may consume CPU, and large Brownfield graphs must not block the UI.
@@ -538,11 +538,11 @@ Decision Needed Before / 最晚决策点:
 Checkpoint 2
 
 Final Decision:
-TBD
+Option A: only the ELK solver runs in a worker in V1. Semantic, abstraction, Visual IR, and constraint passes stay on the caller side while every compiler/engine contract remains serializable. Revisit full compiler workers only with benchmark evidence. / V1 仅把 ELK solver 放入 worker；Semantic、Abstraction、Visual IR 与 Constraint pass 留在调用侧，同时所有 compiler/engine contract 必须可序列化。只有 benchmark 证据表明需要时才重新评估完整 compiler worker 化。
 
 ## Blocking Summary / 阻塞汇总
 
-- 第一个代码实现阶段 Checkpoint 1 被 D-005 阻塞，因为 Visual/Layout IR 的 grouping/abstraction contract 取决于 V1 粒度。 / The first coding stage, Checkpoint 1, is blocked by D-005 because the grouping and abstraction contract depends on V1 granularity.
-- Checkpoint 2 被 D-002 和 D-010 阻塞；D-001 最晚也需在此确认。 / Checkpoint 2 is blocked by D-002 and D-010; D-001 must also be confirmed by then.
-- Checkpoint 3 被 D-009 阻塞；D-003 与 D-008 应在此之前确认。 / Checkpoint 3 is blocked by D-009; D-003 and D-008 should be confirmed before it.
-- 后续阶段分别受 D-004、D-006、D-007 影响。 / Later stages are affected by D-004, D-006, and D-007 respectively.
+- D-005 已于 2026-08-13 批准，Checkpoint 1 的 grouping/abstraction contract 已解除 Decision 阻塞。 / D-005 was approved on 2026-08-13, removing the Decision block from the Checkpoint 1 grouping and abstraction contracts.
+- D-001、D-002、D-010 已于 2026-08-13 批准；Checkpoint 2 仍需等待 Checkpoint 1 exit，但不再被这些技术 Decision 阻塞。 / D-001, D-002, and D-010 were approved on 2026-08-13. Checkpoint 2 still waits for Checkpoint 1 exit but is no longer blocked by these technology Decisions.
+- Checkpoint 3 的 D-003、D-008、D-009 已批准；Phase 2/Checkpoint 3 已就绪但尚未开始，仍须按其验收标准实施与验证。 / D-003, D-008, and D-009 are approved for Checkpoint 3; Phase 2/Checkpoint 3 is ready but not started and still requires implementation and evidence against its acceptance criteria.
+- D-004 已批准 V1 延后 pin；D-006 已批准 Workspace abstraction 持有 LayoutState。D-007 仍影响后续 Ghost presentation。 / D-004 approves deferring pinning beyond V1; D-006 assigns LayoutState ownership to the Workspace abstraction. D-007 still affects later Ghost presentation.

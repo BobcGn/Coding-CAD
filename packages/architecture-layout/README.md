@@ -4,9 +4,9 @@
 
 `architecture-layout` is a pure TypeScript Architecture Visualization Intelligence Layer over Architecture IR. It compiles architecture semantics into a renderer-independent layout projection that helps humans understand software architecture.
 
-当前状态：Documentation First skeleton。所有源码仍是合法空模块；没有 public API、算法、solver adapter 或 runtime dependency。
+当前状态：Phase 1 基础设施已实现。Checkpoint 1–2、Incremental/Stability core 与 Ghost core protocol 已通过 package 验证；Ghost 产品行为和 UI 尚未实现。
 
-Current status: Documentation First skeleton. All source files remain valid empty modules; there is no public API, algorithm, solver adapter, or runtime dependency.
+Current status: Phase 1 infrastructure is implemented. Checkpoints 1–2, the Incremental/Stability core, and the Ghost core protocol pass package verification; Ghost product behavior and UI remain unimplemented.
 
 ## 预期流水线 / Intended Pipeline
 
@@ -21,25 +21,25 @@ ArchitectureProject
   -> LayoutResult
 ```
 
-Semantic role 只服务布局，不是新的 Architecture IR 领域对象。Constraint 是 layout preference，不是 Architecture Validator correctness rule。ELK.js 只是待用户决策的 solver 候选，不是 package architecture。
+Semantic role 只服务布局，不是新的 Architecture IR 领域对象。Constraint 是 layout preference，不是 Architecture Validator correctness rule。ELK.js 已获准作为 Checkpoint 2 solver，但只能隐藏在 `LayoutEngine` 与内部 adapter 后，不是 package architecture。
 
-Semantic roles serve layout only and are not new Architecture IR domain objects. Constraints are layout preferences, not Architecture Validator correctness rules. ELK.js is a solver candidate pending user decision, not the package architecture.
+Semantic roles serve layout only and are not new Architecture IR domain objects. Constraints are layout preferences, not Architecture Validator correctness rules. ELK.js is approved for Checkpoint 2 only behind `LayoutEngine`; it is not the package architecture.
 
 ## 边界 / Boundaries
 
 - Architecture IR 始终是架构事实来源；本 package 只生成布局投影。
-- 本 package 未来可以消费 `@coding-cad/architecture-ir` 并适配 ELK.js，但当前未添加依赖。
+- 本 package 仅以类型和只读输入消费 `@coding-cad/architecture-ir`；不会写回 ArchitectureProject。
 - 本 package 不依赖 Svelte、SvelteKit、Svelte Flow、DOM、CSS 或 `apps/web`。
 - `apps/web` 是本 package 的未来消费者，UI adapter 不属于本 package。
-- 当前所有 TypeScript 文件均为合法空模块，不包含算法、solver adapter 或行为。
+- 当前 public API 暴露 coordinate-free compiler projection、solver-neutral `LayoutEngine` factory 与 `LayoutResult` 类型；ELK 与 worker-specific 类型保持内部。
 - `ArchitectureProject` 描述系统是什么；LayoutState 描述用户怎么看。坐标、尺寸、viewport、collapsed 和 pinned 不得进入 Architecture IR/DSL。
 - 未批准 Proposal 只允许形成 Ghost projection，接受后才通过 Review 进入 ArchitectureProject 和 incremental layout。
 
 - Architecture IR remains the architecture source of truth; this package only produces layout projections.
-- This package may consume `@coding-cad/architecture-ir` and adapt ELK.js in the future, but no dependencies are added now.
+- This package consumes `@coding-cad/architecture-ir` only as typed, read-only input and never writes back into ArchitectureProject.
 - This package does not depend on Svelte, SvelteKit, Svelte Flow, the DOM, CSS, or `apps/web`.
 - `apps/web` is a future consumer of this package; UI adapters do not belong here.
-- All current TypeScript files are valid empty modules with no algorithm, solver adapter, or behavior.
+- The current public API exposes the coordinate-free compiler projection, a solver-neutral `LayoutEngine` factory, and `LayoutResult` types; ELK and worker-specific types remain internal.
 - `ArchitectureProject` describes what the system is; LayoutState describes how a user views it. Coordinates, dimensions, viewport, collapsed state, and pinned state must not enter Architecture IR/DSL.
 - Unapproved proposals may form only a Ghost projection; after acceptance through Review they enter ArchitectureProject and incremental layout.
 
@@ -55,15 +55,15 @@ Semantic roles serve layout only and are not new Architecture IR domain objects.
 
 ## 测试边界 / Test Boundary
 
-未来 package 测试必须能在无 Svelte、无 DOM、无浏览器的 Node.js 环境运行。测试重点是 semantic preference、determinism、incremental stability、LayoutResult 完整性、唯一 ID、合法 endpoint 和输入不可变。
+Package 测试必须能在无 Svelte、无 DOM、无浏览器的 Node.js 环境运行。Checkpoint 1 已覆盖 semantic preference 与 projection invariant；Checkpoint 2 新增真实 ELK、确定性、有限坐标、输入不可变、结果校验，以及 failure/timeout/cancellation fallback 与 worker 边界测试。
 
-Future package tests must run in Node.js without Svelte, a DOM, or a browser. They focus on semantic preferences, determinism, incremental stability, LayoutResult integrity, unique IDs, valid endpoints, and input immutability.
+Package tests must run in Node.js without Svelte, a DOM, or a browser. Tests cover semantic projection, real ELK, result integrity, fallback/worker boundaries, approved performance budgets, missing-state FULL fallback, deterministic incremental results, and Redis/cache mental-map stability.
 
 ## Decision Gates / 决策门禁
 
-当前任何技术推荐都不是最终决定。Checkpoint 1 开始前必须先确认 progressive-disclosure V1 粒度；solver、direction、worker、drag、pin、persistence 和 Ghost 行为按路线图逐步确认。
+D-001、D-002、D-004、D-005、D-006、D-010 已获用户批准。V1 延后 pin，LayoutState 由 Workspace abstraction 持有且不冻结磁盘格式。drag、Ghost 与 UI 仍按后续门禁确认。
 
-No technical recommendation is a final decision. Progressive-disclosure V1 granularity must be confirmed before Checkpoint 1; solver, direction, worker, drag, pin, persistence, and Ghost behavior are confirmed progressively through the roadmap.
+D-001, D-002, D-004, D-005, D-006, and D-010 are user-approved. Pinning is deferred beyond V1, and LayoutState is owned by the Workspace abstraction without freezing a disk format. Drag, Ghost behavior, and UI retain their later gates.
 
 ## 详细文档 / Detailed Documentation
 

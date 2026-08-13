@@ -1,26 +1,26 @@
 # 当前范围 / Current Scope
 
-更新时间 / Updated at: 2026-08-11 20:30 CST (Asia/Shanghai)
+更新时间 / Updated at: 2026-08-13 CST (Asia/Shanghai)
 
 ## 本轮目标 / Current Objective
 
-基于真实仓库建立 UI V1 Master Execution Plan，同步既有 Roadmap、Decision blocking 状态与 Risk Register，运行 baseline，并判断 Phase 1 是否可以开始。
+在完整 Phase 1 实现与验证之后，读取用户指定的 21:03 决策建议，批准 D-003、D-008、D-009 并完成 Phase 1 文档收尾；不进入 Phase 2 代码实现。
 
-Create the UI V1 Master Execution Plan from repository facts, synchronize the existing Roadmap, Decision blocking state, and Risk Register, run the baseline, and determine whether Phase 1 may start.
+After full Phase 1 implementation and verification, read the user-designated 21:03 decision guidance, approve D-003, D-008, and D-009, and close Phase 1 documentation without entering Phase 2 code implementation.
 
 ## 边界 / Boundaries
 
-- 当前第一轮只写规划文档和结构化日志，不实现任何 Phase 1–7 代码。
+- 本轮只更新 Decision、计划、边界与结构化日志，不修改行为代码。
 - 不重编号现有 canonical D-001 至 D-010；用 crosswalk 记录附件主题编号差异。
-- 不替用户填写 `Final Decision`，不越过 `USER DECISION REQUIRED` 门禁。
-- 不安装依赖，不修改 Architecture IR、Layout skeleton、Web skeleton 或 Terminal。
-- Phase 1 被 blocking Decision 阻塞时，完成 Planning Summary 后停止。
+- 记录用户按 21:03 建议授权的 D-003、D-008、D-009；D-007 继续保持 Phase 5 门禁。
+- 不初始化 SvelteKit，不安装 `@xyflow/svelte`，不实现 Canvas、drag、semantic zoom、Terminal 或 Ghost 产品行为。
+- 不修改 Architecture IR/DSL、`architecture-layout` public contract 或既有 Phase 1 行为。
 
-- This first round changes only planning documents and structured logs; it implements no Phase 1–7 code.
+- This slice updates only Decisions, plans, boundaries, and structured logs; it changes no behavior code.
 - Do not renumber canonical D-001 through D-010; document the attachment's topic-number mismatch with a crosswalk.
-- Do not fill `Final Decision` for the user or bypass a `USER DECISION REQUIRED` gate.
-- Do not install dependencies or modify Architecture IR, the Layout skeleton, the Web skeleton, or Terminal.
-- If blocking Decisions prevent Phase 1, stop after the Planning Summary.
+- Record D-003, D-008, and D-009 as authorized by the user's 21:03 guidance; retain D-007 as the Phase 5 gate.
+- Do not initialize SvelteKit, install `@xyflow/svelte`, or implement Canvas, drag, semantic zoom, Terminal, or Ghost product behavior.
+- Do not change Architecture IR/DSL, the `architecture-layout` public contract, or existing Phase 1 behavior.
 
 ## 验收标准 / Acceptance Criteria
 
