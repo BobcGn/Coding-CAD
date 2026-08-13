@@ -691,3 +691,13 @@ The fix preserves the original 250 ms / 1.5 s budgets and 20 samples per window 
 本地定向 integration 与完整 `pnpm ci:verify` 通过；完整 CI 证据为 100/150 p95-window 71.13 ms、500/800 p95-window 493.50 ms、ELK gzip 471,876 bytes。
 
 The targeted integration test and complete local `pnpm ci:verify` pass; full-CI evidence is a 71.13 ms p95 window for 100/150, a 493.50 ms p95 window for 500/800, and ELK gzip of 471,876 bytes.
+
+## 2026-08-13 - CI Job Rename Follow-up / CI Job 重命名跟进
+
+状态：根因已确认。
+
+Status: Root cause confirmed.
+
+用户将 CI job display name 从 `PR Skills Gate` 改为 `PR Verify`；GitHub Actions run `31707423728` 已正确识别并执行新名称。失败并非 YAML 或 job name 问题，而是对应提交 `ccf4205` 使用全角冒号 `feat：...`，未满足 `type(optional-scope): description` 的 Conventional Commits 门禁。保留 `PR Verify` 名称，不重写已推送的 `main` 历史；以本规范提交触发新的 push range 验证。
+
+The user renamed the CI job display name from `PR Skills Gate` to `PR Verify`, and GitHub Actions run `31707423728` recognized and executed the new name correctly. The failure was not caused by YAML or the job name: commit `ccf4205` used a full-width colon in `feat：...` and failed the `type(optional-scope): description` Conventional Commits gate. The `PR Verify` name is retained, pushed `main` history is not rewritten, and this conforming follow-up commit triggers validation for a new push range.
