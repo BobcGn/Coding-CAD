@@ -133,3 +133,17 @@ Implemented the P3.1 minimal slice: apps/web/src/lib/architecture/workspace/ pro
 验证：web typecheck 0/0；unit 7 files/11 tests（新增 contract 2 tests）；integration 2 files/5 tests（新增 bridge round-trip 3 tests）；web build 成功且 @coding-cad/workspace 仅出现在 server chunks（browser client 无 node:* 模块、无 FileWorkspaceStorage/磁盘 schema、无 Workspace 类逻辑）。全仓 typecheck 25/25、unit 28/28、build 15/15。
 
 Validation: web typecheck 0/0; unit 7 files/11 tests (2 new contract tests); integration 2 files/5 tests (3 new bridge round-trip tests); web build succeeds with @coding-cad/workspace confined to server chunks (browser client has no node:* modules, no FileWorkspaceStorage/disk schemas, and no Workspace class logic). Full workspace typecheck 25/25, unit 28/28, and build 15/15 pass.
+
+## 2026-08-15 - P3.2 Requirement to Candidate / P3.2 Requirement 到 Candidate
+
+状态：已验证。
+
+Status: Verified.
+
+实现 P3.2：apps/web/src/lib/architecture/greenfield/candidate-flow.ts 提供 requirement -> deterministic Architecture Agent -> candidate ArchitectureProject -> Validator Problems -> 最小 Review gate proposal 的 renderer-neutral 流程（P3-D2 生成零 LLM）。apps/web 新增 @coding-cad/architecture-agent workspace:* 依赖。
+
+Implemented P3.2: apps/web/src/lib/architecture/greenfield/candidate-flow.ts provides the renderer-neutral requirement -> deterministic Architecture Agent -> candidate ArchitectureProject -> Validator Problems -> minimal Review gate proposal flow (P3-D2 zero-LLM generation). apps/web gained the @coding-cad/architecture-agent workspace:* dependency.
+
+验证：web typecheck 0/0；unit 8 files/16 tests（新增 candidate-flow 5 tests）；integration 3 files/7 tests（新增 candidate->review gate 2 tests）；determinism、accepted IR 不变、Problems 可追溯与 accept/reject 不变量均有断言。
+
+Validation: web typecheck 0/0; unit 8 files/16 tests (5 new candidate-flow tests); integration 3 files/7 tests (2 new candidate -> review gate tests); determinism, accepted-IR immutability, Problems provenance, and accept/reject invariants are all asserted.

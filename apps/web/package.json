@@ -15,6 +15,7 @@
     "clean": "rm -rf .svelte-kit build coverage playwright-report test-results"
   },
   "dependencies": {
+    "@coding-cad/architecture-agent": "workspace:*",
     "@coding-cad/architecture-ir": "workspace:*",
     "@coding-cad/architecture-layout": "workspace:*",
     "@coding-cad/architecture-review": "workspace:*",
