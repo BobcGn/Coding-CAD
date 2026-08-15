@@ -6,6 +6,9 @@
   import { resetToGeneratedLayout } from "$lib/architecture/state/workspace-view-state.js";
   import { projectPalette, type PaletteItem } from "$lib/architecture/greenfield/palette.js";
   import { toAddComponentCommand } from "$lib/architecture/greenfield/palette.js";
+  import { projectInspector } from "$lib/architecture/greenfield/inspector.js";
+  import type { InspectorViewModel } from "$lib/architecture/greenfield/inspector.js";
+  import type { ArchitectureCommand } from "$lib/architecture/commands/architecture-command.js";
   import type { GreenfieldShellState } from "$lib/architecture/greenfield/workspace-shell.js";
 
   let controller = $state<WorkspaceShellController>();
@@ -17,6 +20,10 @@
   let errorMessage = $state("");
   let selectedNodeIds = $state<string[]>([]);
   let paletteItems = $state<readonly PaletteItem[]>(projectPalette().items);
+  let inspector = $state<InspectorViewModel>();
+  let editDescription = $state("");
+  let editCapability = $state("");
+  let noticeMessage = $state("");
 
   function syncFromController(): void {
     if (controller === undefined) return;
@@ -25,7 +32,63 @@
     layout = controller.layout();
     selectedNodeIds = [...shell.selectedNodeIds];
     errorMessage = shell.status === "error" ? shell.message : "";
+    noticeMessage = shell.status === "error" ? "" : shell.message;
     busy = shell.status === "generating" || shell.status === "layout";
+    updateInspector();
+  }
+
+  function updateInspector(): void {
+    updateInspectorFor(selectedNodeIds);
+  }
+
+  function updateInspectorFor(nodeIds: readonly string[]): void {
+    if (controller === undefined || nodeIds.length === 0) {
+      inspector = undefined;
+      return;
+    }
+    const state = controller.state();
+    // The Canvas may show a candidate (pending) or the accepted architecture;
+    // inspect whichever projection is currently rendered.
+    const source = state.candidate ?? state.accepted;
+    const component = source.architecture.components.find((entry) => entry.id === nodeIds[0]);
+    if (component === undefined) {
+      inspector = undefined;
+      return;
+    }
+    inspector = projectInspector(component, state.validation?.issues ?? []);
+    editDescription = inspector.description;
+  }
+
+  async function runInspectorCommand(command: ArchitectureCommand): Promise<void> {
+    if (controller === undefined || busy) return;
+    busy = true;
+    errorMessage = "";
+    try {
+      await controller.executeCommand(command);
+    } catch (error) {
+      errorMessage = error instanceof Error ? error.message : "Inspector command failed.";
+    } finally {
+      syncFromController();
+    }
+  }
+
+  function handleSaveDescription(): void {
+    if (inspector === undefined) return;
+    void runInspectorCommand({
+      type: "inspector-update-description",
+      componentId: inspector.componentId,
+      description: editDescription
+    });
+  }
+
+  function handleAddCapability(): void {
+    if (inspector === undefined || editCapability.trim().length === 0) return;
+    void runInspectorCommand({
+      type: "inspector-add-capability",
+      componentId: inspector.componentId,
+      capability: editCapability.trim()
+    });
+    editCapability = "";
   }
 
   async function handleGenerate(): Promise<void> {
@@ -41,10 +104,18 @@
     }
   }
 
-  function handleAccept(): void {
+  async function handleAccept(): Promise<void> {
     if (controller === undefined || busy) return;
     busy = true;
-    void controller.acceptCandidate().finally(() => { busy = false; syncFromController(); });
+    errorMessage = "";
+    try {
+      await controller.acceptCandidate();
+    } catch (error) {
+      errorMessage = error instanceof Error ? error.message : "Accept failed.";
+    } finally {
+      busy = false;
+      syncFromController();
+    }
   }
 
   function handleReject(): void {
@@ -110,8 +181,8 @@
 
   {#if errorMessage}
     <section class="error" role="alert">{errorMessage}</section>
-  {:else if shell?.message}
-    <section class="notice" aria-live="polite">{shell.message}</section>
+  {:else if noticeMessage}
+    <section class="notice" aria-live="polite">{noticeMessage}</section>
   {/if}
 
   {#if shell?.status === "generating" || shell?.status === "layout"}
@@ -142,10 +213,61 @@
           layout={layout}
           viewState={shell.layoutState}
           onViewStateChange={(next) => controller?.updateLayoutState(next)}
-          onSelectionChange={(nodeIds) => { selectedNodeIds = [...nodeIds]; }}
+          onSelectionChange={(nodeIds) => {
+            selectedNodeIds = [...nodeIds];
+            updateInspectorFor(nodeIds);
+          }}
         />
       </section>
       <aside class="problems">
+        {#if inspector}
+          <section class="inspector" aria-label="Component Inspector">
+            <h2>Inspector</h2>
+            <dl>
+              <dt>Name</dt>
+              <dd>{inspector.name}</dd>
+              <dt>Type</dt>
+              <dd>{inspector.type ?? "unset"}</dd>
+              <dt>Description</dt>
+              <dd>
+                <textarea bind:value={editDescription} rows="2" disabled={busy}></textarea>
+                <button type="button" onclick={handleSaveDescription} disabled={busy}>Save Description</button>
+              </dd>
+              <dt>Capabilities</dt>
+              <dd>
+                <ul class="chips">
+                  {#each inspector.capabilities as capability (capability)}
+                    <li>
+                      {capability}
+                      <button
+                        type="button"
+                        class="chip-remove"
+                        aria-label="Remove capability"
+                        onclick={() => {
+                          const current = inspector;
+                          if (current === undefined) return;
+                          void runInspectorCommand({
+                            type: "inspector-remove-capability",
+                            componentId: current.componentId,
+                            capability
+                          });
+                        }}
+                        disabled={busy}
+                      >×</button>
+                    </li>
+                  {/each}
+                </ul>
+                <div class="capability-add">
+                  <input bind:value={editCapability} placeholder="capability" disabled={busy} />
+                  <button type="button" onclick={handleAddCapability} disabled={busy || editCapability.trim().length === 0}>Add</button>
+                </div>
+              </dd>
+            </dl>
+            {#if inspector.issues.length > 0}
+              <p class="warn">This component has {inspector.issues.length} validation issue(s).</p>
+            {/if}
+          </section>
+        {/if}
         <h2>Problems</h2>
         {#if shell.validation && shell.validation.issues.length > 0}
           <ul>
@@ -220,6 +342,19 @@
   button.palette-item { width: 100%; display: grid; gap: 0.2rem; text-align: left; border: 1px solid #e2e8f0; border-radius: 8px; background: #fff; padding: 0.5rem; cursor: pointer; }
   button.palette-item span { color: #64748b; font-size: 0.75rem; text-transform: uppercase; }
   .problems { border: 1px solid #cbd5e1; border-radius: 12px; background: #f8fafc; padding: 0.75rem; overflow: auto; }
+  .inspector { border: 1px solid #e2e8f0; border-radius: 10px; background: #fff; padding: 0.6rem; margin-bottom: 0.75rem; }
+  .inspector h2 { margin: 0 0 0.4rem; font-size: 0.95rem; }
+  .inspector dl { margin: 0; display: grid; gap: 0.4rem; }
+  .inspector dt { font-weight: 600; font-size: 0.8rem; color: #475569; text-transform: uppercase; }
+  .inspector dd { margin: 0; font-size: 0.85rem; }
+  .inspector textarea { width: 100%; resize: vertical; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0.3rem; }
+  .inspector button { margin-top: 0.3rem; }
+  ul.chips { margin: 0.2rem 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 0.3rem; }
+  ul.chips li { border: 1px solid #bfdbfe; border-radius: 999px; background: #eff6ff; padding: 0.1rem 0.4rem; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.25rem; }
+  button.chip-remove { margin: 0; border: none; background: none; color: #b91c1c; cursor: pointer; padding: 0; font-size: 0.8rem; }
+  .capability-add { display: flex; gap: 0.3rem; margin-top: 0.3rem; }
+  .capability-add input { flex: 1; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0.25rem; font-size: 0.8rem; }
+  .capability-add button { margin: 0; }
   .problems h2 { margin: 0 0 0.5rem; font-size: 1rem; }
   .problems ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.5rem; }
   .problems li { border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.5rem; }

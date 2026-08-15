@@ -94,5 +94,11 @@ function describeCommand(command: ArchitectureCommand): string {
     case "add-component": return `Add component ${command.component.id}`;
     case "remove-component": return `Remove component ${command.componentId}`;
     case "connect-components": return `Connect components with ${command.connection.id}`;
+    case "inspector-update-description": return `Update description of ${command.componentId}`;
+    case "inspector-update-type": return `Update type of ${command.componentId}`;
+    case "inspector-add-capability": return `Add capability ${command.capability} to ${command.componentId}`;
+    case "inspector-remove-capability": return `Remove capability ${command.capability} from ${command.componentId}`;
+    case "inspector-add-limitation": return `Add limitation ${command.limitation} to ${command.componentId}`;
   }
+  return "Unknown command";
 }
