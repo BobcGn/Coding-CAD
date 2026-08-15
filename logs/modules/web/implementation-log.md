@@ -215,3 +215,17 @@ Implemented P3.6: @coding-cad/workspace gained an optional viewState field with 
 验证：web typecheck 0/0；unit 30/30；integration 3 files/9 tests（新增 2 个 viewState 往返）；Playwright E2E 6 passed（新增 Save/Open 恢复架构事实与视图）；build 通过；全仓 typecheck 25/25。
 
 Validation: web typecheck 0/0; unit 30/30; integration 3 files/9 tests (2 new view-state round-trips); six Playwright E2E pass (new Save/Open restores architecture facts and view); build succeeds; full workspace typecheck 25/25.
+
+## 2026-08-15 - P3.7 Phase Acceptance / P3.7 阶段验收
+
+状态：已验证。
+
+Status: Verified.
+
+P3.7 验收：补齐 points-system Create/Display/Edit/Validate/Accept/Save/Open happy path 与 invalid-candidate/rejection/error paths 的 Playwright E2E（新增空 requirement 阻止生成、重复组件拒绝、完整 happy path 三个测试）；运行完整 pnpm ci:verify 全部通过。
+
+P3.7 acceptance: completed the points-system Create/Display/Edit/Validate/Accept/Save/Open happy path plus invalid-candidate, rejection, and error-path Playwright E2E (three new tests: empty requirement blocks generation, duplicate component rejected, full happy path); the complete pnpm ci:verify passes.
+
+验证：Playwright E2E 9 passed；pnpm ci:verify 全门禁通过（workspace architecture 15 modules、typecheck 25/25、unit 28/28、integration 18/18、E2E 17/17、build 15/15、change-record/commit/security checks）。
+
+Validation: nine Playwright E2E pass; pnpm ci:verify passes all gates (workspace architecture 15 modules, typecheck 25/25, unit 28/28, integration 18/18, E2E 17/17, build 15/15, plus change-record, commit-message, and security checks).

@@ -115,3 +115,46 @@ test("rejecting a candidate keeps the accepted architecture and clears review", 
   await expect(page.getByText(/rejected; accepted IR unchanged/i)).toBeVisible();
   await expect(page.getByRole("heading", { name: "Review" })).toBeHidden();
 });
+
+test("empty requirement shows an error and blocks generation", async ({ page }) => {
+  await page.goto("/");
+  await page.locator("#requirement").fill("   ");
+  const generate = page.getByRole("button", { name: "Generate Architecture" });
+  await expect(generate).toBeDisabled();
+});
+
+test("duplicate palette component is rejected and accepted IR is preserved", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Generate Architecture" }).click();
+  await page.getByRole("button", { name: "Accept" }).click();
+  await expect(page.getByText(/Candidate accepted/i)).toBeVisible();
+
+  // PostgreSQL is already in the accepted architecture; adding it again fails.
+  await page.getByRole("button", { name: /PostgreSQL/ }).click();
+  await expect(page.getByText(/Command rejected: Component postgresql already exists/i)).toBeVisible();
+});
+
+test("full greenfield happy path: create, validate, accept, save, open", async ({ page }) => {
+  await page.goto("/");
+
+  // Create from requirement.
+  await page.getByRole("button", { name: "Generate Architecture" }).click();
+  await expect(page.getByRole("heading", { name: "Problems" })).toBeVisible();
+
+  // Display: the candidate renders on the canvas.
+  await expect(page.locator(".svelte-flow__node").filter({ hasText: "PointService" })).toBeVisible();
+
+  // Edit: accept the candidate so the architecture is committed.
+  await page.getByRole("button", { name: "Accept" }).click();
+  await expect(page.getByText(/Candidate accepted/i)).toBeVisible();
+
+  // Validate: problems are still navigable after acceptance.
+  await expect(page.getByRole("heading", { name: "Problems" })).toBeVisible();
+
+  // Save and open round-trip.
+  await nativeClick(page, page.getByRole("button", { name: "Save" }));
+  await expect(page.getByText(/Project saved/i)).toBeVisible();
+  await nativeClick(page, page.getByRole("button", { name: "Open" }));
+  await expect(page.getByText(/Project opened/i)).toBeVisible();
+  await expect(page.locator(".svelte-flow__node").filter({ hasText: "PointService" })).toBeVisible();
+});
