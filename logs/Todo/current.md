@@ -12,11 +12,17 @@ This file is the single source of truth for active TODOs.
 - 当前处理 / Current handling: `ArchitectureProject` 和拆分类型文件已完成，尚未加入运行时 schema 校验。
 - 解除条件 / Exit condition: 为 IR 增加稳定 schemaVersion 策略、运行时校验和错误定位测试。
 
-## TODO-009: Architecture Agent Real LLM Integration / Architecture Agent 真实 LLM 接入
+## TODO-009: Review-Side LLM Support / 审批侧 LLM 支持
 
 - 状态 / Status: 待处理 / Pending
-- 当前处理 / Current handling: `packages/architecture-agent` 当前使用 Mock Provider 和确定性启发式流程。
-- 解除条件 / Exit condition: 定义真实 LLM Provider 的超时、错误处理、结构化输出校验、提示版本和审计记录。
+- 当前处理 / Current handling: `packages/architecture-agent` 使用 Mock Provider 和确定性启发式流程；P3-D2（2026-08-15 用户确认）规定 LLM 在生成部分无职责。
+- 边界 / Boundary: LLM 只允许出现在审批/评审等下游辅助环节（如 Review 辅助分析、建议生成），禁止用于 requirement -> candidate 的架构生成；任何生成侧 LLM 接入都需要新的用户决策。
+- 解除条件 / Exit condition: 定义审批侧 LLM 支持的超时、错误处理、结构化输出校验、提示版本和审计记录，且不触碰生成流程。
+
+- Status: Pending
+- Current handling: `packages/architecture-agent` uses the Mock Provider and deterministic heuristics; P3-D2 (user-confirmed 2026-08-15) assigns LLM no role in generation.
+- Boundary: LLM is allowed only in downstream approval/review support (for example, review assistance or suggestion generation); it is prohibited from architecture generation from requirement to candidate, and any generation-side LLM integration requires a new user decision.
+- Exit condition: Define timeout, error handling, structured-output validation, prompt versioning, and audit records for approval-side LLM support without touching the generation flow.
 
 ## TODO-010: Architecture Agent Planning Generalization / Architecture Agent 规划泛化
 

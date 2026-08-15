@@ -187,7 +187,7 @@ Checkpoint 3 只验收基础 Canvas capability。Master Phase 2 还必须完成 
 
 ## Checkpoint 4 — Greenfield Project Can Display / Greenfield 项目可显示
 
-**Status / 状态:** Blocked by Decision — planning complete; P3-D1, P3-D2, and P3-D3 require confirmation before their corresponding implementation slices / 被决策阻塞——规划完成；P3-D1、P3-D2、P3-D3 须在对应实现切片前确认
+**Status / 状态:** Blocked by Decision — planning complete; P3-D2 approved by the user on 2026-08-15 (zero LLM in generation); P3-D1 and P3-D3 still require confirmation before their slices / 被决策阻塞——规划完成；P3-D2 已于 2026-08-15 由用户确认（生成零 LLM）；P3-D1、P3-D3 仍须在对应实现切片前确认
 
 **Goal / 目标**
 
@@ -218,13 +218,13 @@ Checkpoint 3 只验收基础 Canvas capability。Master Phase 2 还必须完成 
 **Non-goals / 非目标**
 
 - 不包含 repository import、Ghost、完整 Review 或 execution handoff。 / No repository import, Ghost, complete Review, or execution handoff.
-- 不接入真实 LLM Provider，不冻结通用 Inspector patch API，不让浏览器直接使用 Node filesystem。 / No real LLM Provider integration, generic Inspector patch API, or direct browser use of the Node filesystem.
+- 不接入真实 LLM Provider，生成阶段不调用 LLM（P3-D2 已确认：LLM 在生成部分无职责，仅负责后续审批等支持功能）；不冻结通用 Inspector patch API，不让浏览器直接使用 Node filesystem。 / No real LLM Provider integration, and no generation stage invokes an LLM (P3-D2 confirmed: LLM has no role in generation and is limited to later approval/review support); no generic Inspector patch API or direct browser use of the Node filesystem.
 
 **Ordered Slices / 顺序切片**
 
 P3.0 contract/host freeze → P3.1 Workspace host bridge → P3.2 requirement-to-candidate → P3.3 workspace shell/projection → P3.4 Palette command entry → P3.5 semantic Inspector → P3.6 Save/Open lifecycle → P3.7 acceptance。
 
-每个切片已有完整 Goal、Input、Output、Acceptance Criteria、Known Risks、Non-goals 与 Exit Evidence 规格，见 [Master Plan Phase 3 详细切片规格](../ui-v1-execution-plan.md)。P3-D1、P3-D2、P3-D3 仍是实现前必须由用户确认的决策门禁。 / Each slice now has complete Goal, Input, Output, Acceptance Criteria, Known Risks, Non-goals, and Exit Evidence specifications in the [Master Plan Phase 3 detailed slice specifications](../ui-v1-execution-plan.md). P3-D1, P3-D2, and P3-D3 remain pre-implementation decision gates requiring user confirmation.
+每个切片已有完整 Goal、Input、Output、Acceptance Criteria、Known Risks、Non-goals 与 Exit Evidence 规格，见 [Master Plan Phase 3 详细切片规格](../ui-v1-execution-plan.md)。P3-D2 已由用户确认（生成零 LLM，LLM 仅限审批等下游支持）；P3-D1 与 P3-D3 仍是实现前必须由用户确认的决策门禁。 / Each slice now has complete Goal, Input, Output, Acceptance Criteria, Known Risks, Non-goals, and Exit Evidence specifications in the [Master Plan Phase 3 detailed slice specifications](../ui-v1-execution-plan.md). P3-D2 is confirmed by the user (zero LLM in generation; LLM limited to downstream approval/review support); P3-D1 and P3-D3 remain pre-implementation decision gates requiring user confirmation.
 
 ## Checkpoint 5 — Brownfield Repository Can Display / Brownfield 仓库可显示
 

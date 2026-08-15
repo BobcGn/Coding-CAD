@@ -133,13 +133,17 @@ Do not reintroduce an Agent Runtime, Agent Provider, Agent Scheduler, Agent Memo
 ```text
 New Project
   -> Requirement
-  -> Architecture Agent
+  -> Architecture Agent (deterministic + Mock Provider)
   -> candidate ArchitectureProject
   -> Validator / Review
   -> Architecture Semantic Layout
   -> LayoutResult
   -> Canvas
 ```
+
+P3-D2（2026-08-15 用户确认）明确 LLM 职责边界：**LLM 在架构生成部分无职责，仅负责后续审批等支持功能**。requirement -> candidate ArchitectureProject 的生成完全由 deterministic Architecture Agent + Mock Provider 完成，任何生成阶段都不调用 LLM；真实 LLM 若未来接入，只允许出现在审批/评审等下游辅助环节，且由 TODO-009 独立门禁管辖。UI 不得把生成流程伪装成 LLM 驱动，也不得在生成侧预留 LLM 调用点。
+
+P3-D2 (user-confirmed 2026-08-15) defines the LLM responsibility boundary: **LLM has no role in architecture generation and is limited to later approval/review support**. Requirement -> candidate ArchitectureProject generation is fully handled by the deterministic Architecture Agent with the Mock Provider; no generation stage invokes an LLM. If a real LLM is integrated in the future, it may appear only in downstream approval/review support under the separate TODO-009 gate. The UI must not present generation as LLM-driven and must not reserve LLM call sites on the generation side.
 
 ### Brownfield / 已有仓库
 

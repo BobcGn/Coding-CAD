@@ -770,3 +770,21 @@ The Master Plan Phase 3 section now carries complete specifications for each P3.
 本轮未安装依赖、未修改行为代码；文档结构、Git 边界与 workspace 基线检查在提交前通过。
 
 This slice installs no dependency and changes no behavior code; documentation-structure, Git-boundary, and workspace-baseline checks pass before commit.
+
+## 2026-08-15 - P3-D2 Confirmed: Zero LLM in Generation / P3-D2 确认：生成零 LLM
+
+状态：决策已记录，Phase 3 实现开始。
+
+Status: Decision recorded; Phase 3 implementation has started.
+
+用户在 codex/phase-3-greenfield-workspace 上明确 P3-D2 决策：**LLM 在生成部分无职责，仅负责后续审批等功能**。requirement -> candidate ArchitectureProject 的生成完全由 deterministic Architecture Agent + Mock Provider 完成，任何生成阶段不调用 LLM；真实 LLM 若未来接入只允许出现在审批/评审等下游辅助环节，由 TODO-009 独立门禁管辖。
+
+The user explicitly confirmed P3-D2 on codex/phase-3-greenfield-workspace: **LLM has no role in architecture generation and is limited to later approval/review support**. Requirement -> candidate ArchitectureProject generation is fully handled by the deterministic Architecture Agent with the Mock Provider; no generation stage invokes an LLM. If a real LLM is integrated in the future, it is allowed only in downstream approval/review support under the separate TODO-009 gate.
+
+边界已写入 docs/architecture-layout-decisions.md（P3-D2 门禁行与 Blocking Summary）、docs/ui-v1-execution-plan.md（P3-D2 门禁与 P3.2 Non-goals）、docs/ui-mvp-roadmap.md（Checkpoint 4 状态/Non-goals/Ordered Slices）、docs/ui-architecture.md（Greenfield 工作流 LLM 边界）。TODO-009 定位调整为审批侧 LLM 支持。
+
+The boundary is recorded in docs/architecture-layout-decisions.md (P3-D2 gate row and Blocking Summary), docs/ui-v1-execution-plan.md (P3-D2 gate and P3.2 Non-goals), docs/ui-mvp-roadmap.md (Checkpoint 4 status/Non-goals/Ordered Slices), and docs/ui-architecture.md (Greenfield workflow LLM boundary). TODO-009 is refocused as approval-side LLM support.
+
+P3-D1（Workspace host boundary）与 P3-D3（Inspector command granularity）仍为推荐方向，等待用户确认；确认前不进入 P3.1/P3.5 实现边界。本轮文档改动未安装依赖、未修改行为代码；提交前的验证命令通过。
+
+P3-D1 (Workspace host boundary) and P3-D3 (Inspector command granularity) remain recommendations awaiting user confirmation; their implementation boundaries are not entered before confirmation. This slice installs no dependency and changes no behavior code; verification commands pass before commit.
