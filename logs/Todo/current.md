@@ -50,15 +50,15 @@ This file is the single source of truth for active TODOs.
 
 ## TODO-016: Greenfield Architecture Workspace / Greenfield 架构工作区
 
-- 状态 / Status: 详细规划完成，等待决策 / Detailed planning complete, awaiting decisions
-- 当前处理 / Current handling: P3.0–P3.7 每个切片已在 Master Plan 展开为 Goal/Input/Output/Acceptance/Risk/Non-goal/Exit Evidence 规格；Phase 3 分支已同步合并后的 main；尚未实现产品代码。
-- 决策门禁 / Decision gates: P3-D1 Workspace host boundary、P3-D2 Greenfield generation mode、P3-D3 Inspector command granularity。
-- 解除条件 / Exit condition: 用户确认三项门禁后，从 P3.0/P3.1 开始窄切片实现，并最终通过 Create/Display/Edit/Validate/Accept/Save/Open E2E 与完整 CI。
+- 状态 / Status: 实现中（P3.0 完成，P3.1 进行中）/ In progress (P3.0 complete, P3.1 in progress)
+- 当前处理 / Current handling: P3-D1、P3-D2、P3-D3 已全部由用户于 2026-08-15 确认；P3.0 契约冻结完成（browser-safe DTO、server boundary、生命周期矩阵、生成零 LLM）；P3.1 Workspace host bridge 实现中。
+- 决策门禁 / Decision gates: P3-D1（已确认）、P3-D2（已确认）、P3-D3（已确认）。
+- 解除条件 / Exit condition: 完成 P3.1 后继续 P3.2–P3.7 窄切片，最终通过 Create/Display/Edit/Validate/Accept/Save/Open E2E 与完整 CI。
 
-- Status: Detailed planning complete, awaiting decisions
-- Current handling: Each P3.0–P3.7 slice is expanded in the Master Plan with Goal/Input/Output/Acceptance/Risk/Non-goal/Exit-Evidence specifications; the Phase 3 branch is aligned with post-merge main; no product code is implemented.
-- Decision gates: P3-D1 Workspace host boundary, P3-D2 Greenfield generation mode, and P3-D3 Inspector command granularity.
-- Exit condition: After user confirmation, implement from P3.0/P3.1 in narrow slices and ultimately pass Create/Display/Edit/Validate/Accept/Save/Open E2E and full CI.
+- Status: In progress (P3.0 complete, P3.1 in progress)
+- Current handling: P3-D1, P3-D2, and P3-D3 were all confirmed by the user on 2026-08-15; the P3.0 contract freeze is complete (browser-safe DTOs, server boundary, lifecycle matrix, zero-LLM generation); P3.1 Workspace host bridge is in progress.
+- Decision gates: P3-D1 (confirmed), P3-D2 (confirmed), and P3-D3 (confirmed).
+- Exit condition: After P3.1, continue P3.2–P3.7 narrow slices and ultimately pass Create/Display/Edit/Validate/Accept/Save/Open E2E and full CI.
 
 ## TODO-014: Architecture Layout Contracts / Architecture Layout 契约
 

@@ -788,3 +788,21 @@ The boundary is recorded in docs/architecture-layout-decisions.md (P3-D2 gate ro
 P3-D1（Workspace host boundary）与 P3-D3（Inspector command granularity）仍为推荐方向，等待用户确认；确认前不进入 P3.1/P3.5 实现边界。本轮文档改动未安装依赖、未修改行为代码；提交前的验证命令通过。
 
 P3-D1 (Workspace host boundary) and P3-D3 (Inspector command granularity) remain recommendations awaiting user confirmation; their implementation boundaries are not entered before confirmation. This slice installs no dependency and changes no behavior code; verification commands pass before commit.
+
+## 2026-08-15 - P3-D1/P3-D3 Confirmed; P3.0 Complete / P3-D1/P3-D3 确认；P3.0 完成
+
+状态：决策全部确认；P3.0 契约冻结完成；P3.1 开始。
+
+Status: All decisions confirmed; the P3.0 contract freeze is complete; P3.1 has started.
+
+用户批准 P3-D1（SvelteKit server boundary + typed app contract，浏览器不导入 node:*/FileWorkspaceStorage/磁盘 schema）与 P3-D3（app-private field-specific commands，禁止 generic patch）。连同此前确认的 P3-D2（生成零 LLM），Phase 3 三项门禁全部通过。
+
+The user approved P3-D1 (SvelteKit server boundary with typed app contracts; the browser imports no node:*/FileWorkspaceStorage/disk schemas) and P3-D3 (app-private field-specific commands; generic patches prohibited). Together with the previously confirmed P3-D2 (zero LLM in generation), all three Phase 3 gates are cleared.
+
+P3.0 交付：apps/web/src/lib/cad/workspace/README.md 冻结 browser-safe DTO 边界、SvelteKit server boundary 与 accepted/candidate/evidence/view-state/ephemeral 生命周期所有权矩阵；packages/architecture-agent 移除生成路径 LLM 调用点（删除 llm/ 目录与 system prompt，index 不再导出 LLM provider）。
+
+P3.0 deliverables: apps/web/src/lib/cad/workspace/README.md freezes the browser-safe DTO boundary, SvelteKit server boundary, and the accepted/candidate/evidence/view-state/ephemeral lifecycle ownership matrix; packages/architecture-agent removed generation-side LLM call sites (deleted the llm/ directory and system prompt; index no longer exports an LLM provider).
+
+验证：全仓 typecheck 25/25、unit 28/28、integration 18/18 通过；git diff --check 通过。
+
+Validation: full workspace typecheck 25/25, unit 28/28, and integration 18/18 pass; git diff --check passes.

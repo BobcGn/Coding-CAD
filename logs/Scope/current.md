@@ -1,35 +1,35 @@
 # 当前范围 / Current Scope
 
-更新时间 / Updated at: 2026-08-15 23:05 CST (Asia/Shanghai)
+更新时间 / Updated at: 2026-08-15 23:20 CST (Asia/Shanghai)
 
 ## 本轮目标 / Current Objective
 
-在 `codex/phase-3-greenfield-workspace` 上确认 P3-D2 决策边界并开始 Phase 3 实现：用户明确「LLM 在生成部分无职责，仅负责后续审批等功能」，将该边界写入决策与 UI 架构文档，然后从 P3.0（契约与宿主冻结）开始窄切片实现。
+在 `codex/phase-3-greenfield-workspace` 上完成 P3.0（契约与宿主冻结）并开始 P3.1（Workspace host bridge）：P3-D1、P3-D2、P3-D3 已全部由用户于 2026-08-15 确认，Phase 3 正式进入实现。
 
-Confirm the P3-D2 decision boundary and begin Phase 3 implementation on `codex/phase-3-greenfield-workspace`: the user stated that "LLM has no role in generation and is limited to later approval/review support"; record that boundary in the Decisions and UI architecture documents, then start narrow-slice implementation from P3.0 (contract and host freeze).
+Complete P3.0 (contract and host freeze) and start P3.1 (Workspace host bridge) on `codex/phase-3-greenfield-workspace`: P3-D1, P3-D2, and P3-D3 were all confirmed by the user on 2026-08-15, and Phase 3 implementation has officially started.
 
 ## 边界 / Boundaries
 
-- 本轮先落实 P3-D2 决策文档，再开始 P3.0/P3.1 窄切片；不跨入 P3.2 及以后切片。
-- P3-D1 与 P3-D3 未由用户确认前，不进入 P3.1/P3.5 的实现边界。
+- 本轮实现 P3.0/P3.1 窄切片；不跨入 P3.2 及以后切片。
 - 保留 ArchitectureProject 唯一事实来源、Phase 2 adapter/worker/command application 和 D-006 Workspace ownership。
 - 不实现 Brownfield、Ghost、完整 Review、Handoff、Terminal 或真实 LLM Provider。
-- 不修改 Architecture IR/DSL，不冻结 generic Inspector patch 或 workspace disk schema。
+- 不修改 Architecture IR/DSL，不冻结 workspace 磁盘格式；P3.1 只建立 bridge 最小切片。
+- 浏览器不得导入 `node:*`、`FileWorkspaceStorage` 或磁盘 schema（P3-D1）。
 
-- This slice first records the P3-D2 decision, then starts narrow-slice implementation at P3.0/P3.1; it does not cross into P3.2 or later slices.
-- Do not enter the P3.1/P3.5 implementation boundaries before P3-D1 and P3-D3 are confirmed by the user.
+- This slice implements the P3.0/P3.1 narrow slices; it does not cross into P3.2 or later slices.
 - Preserve ArchitectureProject as the sole source of truth, the Phase 2 adapter/worker/command application, and D-006 Workspace ownership.
 - Do not implement Brownfield, Ghost, complete Review, Handoff, Terminal, or a real LLM Provider.
-- Do not change Architecture IR/DSL or freeze a generic Inspector patch or Workspace disk schema.
+- Do not change Architecture IR/DSL or freeze the Workspace disk format; P3.1 establishes only the minimal bridge slice.
+- The browser must not import `node:*`, `FileWorkspaceStorage`, or disk schemas (P3-D1).
 
 ## 验收标准 / Acceptance Criteria
 
-- P3-D2 的 LLM 边界（生成零 LLM，LLM 仅限审批等下游支持）已写入 Decisions、Master Plan、Roadmap 与 UI 架构文档。
-- TODO-009 定位为审批侧 LLM 支持，生成侧不预留 LLM 调用点。
-- P3.0 输出契约、宿主边界与生命周期矩阵；P3.1 建立 Workspace host bridge 最小实现。
+- P3.0 输出 browser-safe DTO 边界、SvelteKit server boundary 与四类生命周期所有权矩阵（已写入 `apps/web/src/lib/cad/workspace/README.md`）。
+- 生成路径零 LLM（P3-D2 已落实：移除 `architecture-agent` 的 LLM 调用点）。
+- P3.1 建立最小 Workspace host bridge：server boundary + typed create/open/save contract。
 - 文档与根级/模块级日志同步，验证命令通过。
 
-- The P3-D2 LLM boundary (zero LLM in generation; LLM limited to downstream approval/review support) is written into Decisions, the Master Plan, Roadmap, and UI architecture documents.
-- TODO-009 is refocused as approval-side LLM support with no generation-side LLM call sites.
-- P3.0 produces contracts, the host boundary, and the lifecycle matrix; P3.1 establishes a minimal Workspace host bridge.
+- P3.0 produces the browser-safe DTO boundary, SvelteKit server boundary, and four-lifecycle ownership matrix (recorded in `apps/web/src/lib/cad/workspace/README.md`).
+- The generation path has zero LLM (P3-D2 implemented: LLM call sites removed from `architecture-agent`).
+- P3.1 establishes a minimal Workspace host bridge: server boundary plus typed create/open/save contracts.
 - Documents and root/module logs are aligned and verification commands pass.
