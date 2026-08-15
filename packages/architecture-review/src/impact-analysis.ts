@@ -1,5 +1,5 @@
 import type { ValidationIssue, ValidationResult } from "@coding-cad/architecture-validator";
-import { compareArchitectures, type ArchitectureDiff } from "@coding-cad/workspace";
+import { compareArchitectures, type ArchitectureDiff } from "@coding-cad/workspace/pure";
 import type { ArchitectureChange } from "./proposal.js";
 
 export type ImpactRisk = "low" | "medium" | "high";

@@ -1,6 +1,6 @@
 import type { ArchitectureProject } from "@coding-cad/architecture-ir";
 import type { ValidationResult } from "@coding-cad/architecture-validator";
-import type { ArchitectureVersion } from "@coding-cad/workspace";
+import type { ArchitectureVersion } from "@coding-cad/workspace/pure";
 import type { Approval } from "./approval.js";
 import type { ImpactAnalysis } from "./impact-analysis.js";
 import type { ReviewComment } from "./review-comment.js";

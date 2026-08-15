@@ -1,14 +1,22 @@
 import { expect, test } from "@playwright/test";
 
-test("loads a navigable architecture canvas", async ({ page }) => {
+test("greenfield workspace generates, validates, and renders a navigable canvas", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "Architecture Canvas" })).toBeVisible();
-  await expect(page.getByRole("region", { name: "Architecture Canvas" })).toBeVisible();
-  const gateway = page.getByText("API Gateway");
-  await expect(gateway).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Greenfield Architecture Workspace" })).toBeVisible();
 
-  await gateway.click();
-  await expect(page.getByText("Selected: gateway")).toBeVisible();
+  // Generate a candidate from the default requirement.
+  await page.getByRole("button", { name: "Generate Architecture" }).click();
+  await expect(page.getByRole("heading", { name: "Problems" })).toBeVisible();
+
+  // The generated candidate renders PointService and its infrastructure.
+  const pointService = page.getByText("PointService");
+  await expect(pointService).toBeVisible();
+  await expect(page.getByText("PostgreSQL")).toBeVisible();
+
+  // Selecting a node updates the selection label with its id.
+  const pointServiceNode = page.locator(".svelte-flow__node").filter({ hasText: "PointService" });
+  await pointServiceNode.click();
+  await expect(page.getByText("Selected: point-service")).toBeVisible();
 
   const viewport = page.locator(".svelte-flow__viewport");
   const initialTransform = await viewport.getAttribute("style");
@@ -27,12 +35,11 @@ test("loads a navigable architecture canvas", async ({ page }) => {
   }
   await expect.poll(() => viewport.getAttribute("style")).not.toBe(zoomedTransform);
 
-  const gatewayNode = page.locator(".svelte-flow__node").filter({ hasText: "API Gateway" });
-  await gatewayNode.focus();
-  await expect(gatewayNode).toBeFocused();
-  const nodeTransform = (): Promise<string> => gatewayNode.evaluate((element) => (element as HTMLElement).style.transform);
+  await pointServiceNode.focus();
+  await expect(pointServiceNode).toBeFocused();
+  const nodeTransform = (): Promise<string> => pointServiceNode.evaluate((element) => (element as HTMLElement).style.transform);
   const generatedTransform = await nodeTransform();
-  const nodeBox = await gatewayNode.boundingBox();
+  const nodeBox = await pointServiceNode.boundingBox();
   expect(nodeBox).not.toBeNull();
   if (nodeBox !== null) {
     await page.mouse.move(nodeBox.x + nodeBox.width / 2, nodeBox.y + nodeBox.height / 2);
@@ -48,4 +55,26 @@ test("loads a navigable architecture canvas", async ({ page }) => {
     await page.getByRole("button", { name: /zoom out/i }).click();
   }
   await expect(page.getByRole("region", { name: "Architecture Canvas" })).toHaveAttribute("data-density", "compact");
+});
+
+test("validation problems navigate to the affected component", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Generate Architecture" }).click();
+  await expect(page.getByRole("heading", { name: "Problems" })).toBeVisible();
+
+  // Problems reference the Redis limitation; clicking the link selects the node.
+  const redisProblem = page.getByRole("listitem").filter({ hasText: "Redis should not be used as primary storage" });
+  await expect(redisProblem).toBeVisible();
+  await redisProblem.getByRole("button", { name: "redis" }).click();
+  await expect(page.getByText("Selected: redis")).toBeVisible();
+});
+
+test("rejecting a candidate keeps the accepted architecture and clears review", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Generate Architecture" }).click();
+  await expect(page.getByRole("heading", { name: "Review" })).toBeVisible();
+
+  await page.getByRole("button", { name: "Reject" }).click();
+  await expect(page.getByText(/rejected; accepted IR unchanged/i)).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Review" })).toBeHidden();
 });

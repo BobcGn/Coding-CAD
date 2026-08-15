@@ -147,3 +147,21 @@ Implemented P3.2: apps/web/src/lib/architecture/greenfield/candidate-flow.ts pro
 验证：web typecheck 0/0；unit 8 files/16 tests（新增 candidate-flow 5 tests）；integration 3 files/7 tests（新增 candidate->review gate 2 tests）；determinism、accepted IR 不变、Problems 可追溯与 accept/reject 不变量均有断言。
 
 Validation: web typecheck 0/0; unit 8 files/16 tests (5 new candidate-flow tests); integration 3 files/7 tests (2 new candidate -> review gate tests); determinism, accepted-IR immutability, Problems provenance, and accept/reject invariants are all asserted.
+
+## 2026-08-15 - P3.3 Workspace Shell and Projection / P3.3 Workspace 外壳与投影
+
+状态：已验证。
+
+Status: Verified.
+
+实现 P3.3：apps/web/src/lib/architecture/greenfield/workspace-shell.ts 与 workspace-shell-controller.ts 提供 Greenfield workspace shell 状态层（accepted/candidate/evidence/view 四类生命周期分离），+page.svelte 集成 New Project、Requirement 输入、Canvas 投影、Problems 面板、selection 导航与 loading/error/cancellation 状态。
+
+Implemented P3.3: workspace-shell.ts and workspace-shell-controller.ts in apps/web/src/lib/architecture/greenfield provide the Greenfield workspace shell state layer (accepted/candidate/evidence/view lifecycle separation), and +page.svelte integrates New Project, Requirement input, Canvas projection, Problems panel, selection navigation, and loading/error/cancellation states.
+
+同时修复 browser-safe 边界（P3-D1）：@coding-cad/workspace 新增 ./pure 子路径导出（diff/version 无 node:*），architecture-review 的 workspace 导入改为 /pure，并移除 review 默认 idGenerator 的 node:crypto 依赖（改 browser-safe 实现），使 client bundle 不再解析 Node-only 存储代码。Canvas 的 selection 改用节点 DOM data-id 的原生点击处理，解决 Svelte Flow onselectionchange 在该环境下不触发的问题。
+
+Also fixed the browser-safe boundary (P3-D1): @coding-cad/workspace gained a ./pure subpath export (diff/version without node:*), architecture-review imports workspace via /pure and removed the node:crypto dependency from its default idGenerator (browser-safe implementation), so the client bundle no longer resolves Node-only storage code. Canvas selection now uses native click handling via node DOM data-id, fixing the non-firing Svelte Flow onselectionchange in this environment.
+
+验证：web typecheck 0/0；unit 9 files/21 tests；integration 3 files/7 tests；Playwright E2E 3 passed（Greenfield 生成/Canvas 交互、Problems 导航、Reject 保持 accepted IR）；web build 成功且 client bundle 无 node:*。
+
+Validation: web typecheck 0/0; unit 9 files/21 tests; integration 3 files/7 tests; three Playwright E2E pass (Greenfield generate/Canvas interaction, Problems navigation, Reject preserves accepted IR); web build succeeds with no node:* in the client bundle.

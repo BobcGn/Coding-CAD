@@ -40,7 +40,9 @@ export class CandidateFlow {
   constructor(options: CandidateFlowOptions = {}) {
     this.agent = options.agent ?? new ArchitectureAgent();
     this.validator = options.validator ?? new ArchitectureValidator();
-    this.review = options.review ?? new ArchitectureReview();
+    this.review = options.review ?? new ArchitectureReview({
+      idGenerator: browserSafeIdGenerator
+    });
   }
 
   async generate(requirement: string, accepted: ArchitectureProject): Promise<CandidateFlowResult> {
@@ -58,4 +60,17 @@ export class CandidateFlow {
     });
     return { candidate, validation, proposal, accepted };
   }
+}
+
+/**
+ * Browser-safe id generator for the Review gate. Avoids importing the
+ * Node-only default randomUUID from @coding-cad/architecture-review so the
+ * client bundle stays free of node:* (P3-D1).
+ */
+function browserSafeIdGenerator(): string {
+  const cryptoObject = globalThis.crypto;
+  if (cryptoObject !== undefined && typeof cryptoObject.randomUUID === "function") {
+    return cryptoObject.randomUUID();
+  }
+  return `proposal-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }

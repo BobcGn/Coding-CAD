@@ -5,6 +5,7 @@
     Controls,
     MiniMap,
     SvelteFlow,
+    type NodeEventWithPointer,
     type NodeTargetEventWithPointer,
     type OnMove,
     type OnSelectionChange
@@ -58,22 +59,40 @@
     onSelectionChange?.(nodes.map(({ id }) => id), edges.map(({ id }) => id));
   };
 
+  // onselectionchange can be unreliable across Svelte Flow versions, so node
+  // clicks explicitly report selection via the node DOM data-id (P3.3
+  // selection navigation). This is a fallback that always works.
+  const handleNodeClick: NodeEventWithPointer<MouseEvent | TouchEvent, ArchitectureFlowNode> = ({ node }) => {
+    onSelectionChange?.([node.id], []);
+  };
+
+  function handleSectionClick(event: MouseEvent): void {
+    const target = event.target as Element | null;
+    const nodeElement = target?.closest?.(".svelte-flow__node");
+    const nodeId = nodeElement?.getAttribute("data-id");
+    if (nodeId !== undefined && nodeId !== null) {
+      onSelectionChange?.([nodeId], []);
+    }
+  }
+
   const handleMove: OnMove = (_event, viewport) => {
     compact = viewport.zoom < 0.65;
     onViewportChange?.(viewport);
   };
 </script>
 
-<section class:semantic-compact={compact} data-density={compact ? "compact" : "standard"} aria-label="Architecture Canvas">
+<section class:semantic-compact={compact} data-density={compact ? "compact" : "standard"} aria-label="Architecture Canvas" onclick={handleSectionClick}>
   <SvelteFlow
     bind:nodes={flowNodes}
     bind:edges={flowEdges}
     {nodeTypes}
     fitView
+    style="width: 100%; height: 100%;"
     minZoom={0.2}
     maxZoom={2}
     nodesConnectable={false}
     onnodedragstop={handleDragStop}
+    onnodeclick={handleNodeClick}
     onselectionchange={handleSelection}
     onmove={handleMove}
   >
