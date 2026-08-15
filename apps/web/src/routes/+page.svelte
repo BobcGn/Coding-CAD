@@ -144,6 +144,32 @@
     }
   }
 
+  async function handleSave(): Promise<void> {
+    if (controller === undefined || busy) return;
+    busy = true;
+    errorMessage = "";
+    try {
+      await controller.saveProject();
+    } catch (error) {
+      errorMessage = error instanceof Error ? error.message : "Save failed.";
+    } finally {
+      syncFromController();
+    }
+  }
+
+  async function handleOpen(): Promise<void> {
+    if (controller === undefined || busy) return;
+    busy = true;
+    errorMessage = "";
+    try {
+      await controller.openProject(controller.state().accepted.intent.name);
+    } catch (error) {
+      errorMessage = error instanceof Error ? error.message : "Open failed.";
+    } finally {
+      syncFromController();
+    }
+  }
+
   function handleAutoLayout(): void {
     if (controller === undefined || controller.layout() === undefined) return;
     const layout = controller.layout()!;
@@ -167,6 +193,8 @@
     <p>Coding CAD</p>
     <h1>Greenfield Architecture Workspace</h1>
     <button type="button" onclick={handleNewProject} disabled={busy}>New Project</button>
+    <button type="button" onclick={handleSave} disabled={busy || !shell?.accepted}>Save</button>
+    <button type="button" onclick={handleOpen} disabled={busy}>Open</button>
     <button type="button" onclick={handleAutoLayout} disabled={busy || !layout}>Auto Layout</button>
     <span aria-live="polite">{selectedNodeIds.length === 0 ? "No selection" : `Selected: ${selectedNodeIds.join(", ")}`}</span>
   </header>

@@ -70,3 +70,34 @@ describe("workspace host bridge round-trips (P3.1)", () => {
     });
   });
 });
+
+describe("workspace view state round-trips (P3.6)", () => {
+  it("saveViewState persists independently of the IR snapshot", async () => {
+    await withTemporaryWorkspace(async (directory) => {
+      await Workspace.create(directory, pointsSystemFixture);
+      const workspace = await Workspace.open(directory);
+      assert.equal(workspace.loadViewState(), undefined);
+
+      await workspace.saveViewState(JSON.stringify({ version: 1, direction: "LR", nodes: [], edges: [] }));
+      const reopened = await Workspace.open(directory);
+      assert.deepEqual(
+        JSON.parse(reopened.loadViewState() ?? "null"),
+        { version: 1, direction: "LR", nodes: [], edges: [] }
+      );
+      // The IR snapshot is untouched by view state writes.
+      assert.deepEqual(reopened.loadLatestArchitecture(), pointsSystemFixture);
+    });
+  });
+
+  it("architecture snapshot and view state are saved and read separately", async () => {
+    await withTemporaryWorkspace(async (directory) => {
+      const created = await Workspace.create(directory, pointsSystemFixture);
+      await created.saveViewState(JSON.stringify({ version: 7 }));
+      await created.saveSnapshot(pointsSystemFixture);
+
+      const reopened = await Workspace.open(directory);
+      assert.equal(reopened.latestVersion, 2);
+      assert.equal(reopened.loadViewState(), JSON.stringify({ version: 7 }));
+    });
+  });
+});

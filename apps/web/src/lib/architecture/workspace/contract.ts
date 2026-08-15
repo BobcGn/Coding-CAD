@@ -40,12 +40,16 @@ export interface OpenProjectRequest {
 export interface OpenProjectResponse {
   readonly project: WorkspaceProjectDto;
   readonly architectureJson: string;
+  /** Serialized Layout/View State, independent of the IR snapshot (P3.0). */
+  readonly viewStateJson?: string;
 }
 
 /** Persist the current accepted ArchitectureProject snapshot. */
 export interface SaveProjectRequest {
   readonly id: string;
   readonly architectureJson: string;
+  /** Serialized Layout/View State saved separately from the IR (P3.0). */
+  readonly viewStateJson?: string;
 }
 
 export interface SaveProjectResponse {

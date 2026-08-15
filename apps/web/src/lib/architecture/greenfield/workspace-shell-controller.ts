@@ -12,6 +12,11 @@ import { resetToGeneratedLayout } from "$lib/architecture/state/workspace-view-s
 import { CandidateFlow } from "./candidate-flow.js";
 import type { ArchitectureCommand } from "../commands/architecture-command.js";
 import { CommandApplication } from "../commands/command-application.js";
+import {
+  createProject as createProjectViaBridge,
+  saveProject as saveProjectViaBridge,
+  openProject as openProjectViaBridge
+} from "../workspace/workspace-bridge.js";
 import type { GreenfieldShellState, ShellStatus } from "./workspace-shell.js";
 
 /**
@@ -40,6 +45,8 @@ export interface ShellController {
   updateLayoutState(next: LayoutState): void;
   selectNodeIds(nodeIds: readonly string[]): void;
   reset(): void;
+  saveProject(): Promise<string>;
+  openProject(id: string): Promise<void>;
 }
 
 export interface ShellControllerOptions {
@@ -199,6 +206,54 @@ export class WorkspaceShellController implements ShellController {
     };
     this.projectionValue = undefined;
     this.layoutValue = undefined;
+  }
+
+  async saveProject(): Promise<string> {
+    const architectureJson = JSON.stringify(this.shell.accepted);
+    const viewStateJson = this.shell.layoutState === undefined
+      ? undefined
+      : JSON.stringify(this.shell.layoutState);
+    const name = this.shell.accepted.intent.name;
+    // First save creates the project; later saves open and append snapshots.
+    let version = 1;
+    try {
+      const response = await saveProjectViaBridge({ id: name, architectureJson, viewStateJson });
+      version = response.version;
+    } catch (error) {
+      // Workspace does not exist yet: create it, then persist the snapshot.
+      await createProjectViaBridge({ name, architectureJson });
+      const response = await saveProjectViaBridge({ id: name, architectureJson, viewStateJson });
+      version = response.version;
+    }
+    this.shell = {
+      ...this.shell,
+      status: "ready",
+      message: `Project saved (version ${version}).`
+    };
+    return name;
+  }
+
+  async openProject(id: string): Promise<void> {
+    const response = await openProjectViaBridge({ id });
+    const architecture = JSON.parse(response.architectureJson) as ArchitectureProject;
+    this.shell = {
+      accepted: architecture,
+      status: "ready",
+      message: `Project opened: ${response.project.name}.`,
+      selectedNodeIds: []
+    };
+    if (response.viewStateJson !== undefined) {
+      this.shell = {
+        ...this.shell,
+        layoutState: JSON.parse(response.viewStateJson) as LayoutState
+      };
+    }
+    await this.layoutCandidate(architecture);
+    this.shell = {
+      ...this.shell,
+      status: "ready",
+      message: `Project opened: ${response.project.name}.`
+    };
   }
 
   private flowSubmitAndApprove(proposal: Proposal): void {

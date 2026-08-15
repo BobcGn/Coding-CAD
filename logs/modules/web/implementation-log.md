@@ -183,3 +183,35 @@ Also fixed the Canvas height collapse (the .svelte-flow height was 0, intercepti
 验证：web typecheck 0/0；unit 9 files/23 tests（新增 2 个命令执行测试）；integration 3 files/7 tests；Playwright E2E 4 passed（Greenfield 全流程、Palette 添加 Kafka、Problems 导航、Reject）；build 通过。
 
 Validation: web typecheck 0/0; unit 9 files/23 tests (2 new command-execution tests); integration 3 files/7 tests; four Playwright E2E pass (Greenfield full flow, Palette adds Kafka, Problems navigation, Reject); build passes.
+
+## 2026-08-15 - P3.5 Semantic Inspector / P3.5 语义 Inspector
+
+状态：已验证。
+
+Status: Verified.
+
+实现 P3.5：apps/web/src/lib/architecture/greenfield/inspector.ts 投影选中组件的 semantics（name/description/type/capabilities/limitations/contracts）与 validation issues；ArchitectureCommand 新增 field-specific Inspector 命令（inspector-update-description/type、add/remove-capability、add-limitation，P3-D3 无 generic patch），apply-command.ts 实现字段级应用；+page.svelte 增加 Inspector 面板（选中节点显示，编辑 description/capabilities 经 command application）。
+
+Implemented P3.5: inspector.ts projects the selected component's semantics (name/description/type/capabilities/limitations/contracts) and validation issues; ArchitectureCommand gained field-specific Inspector commands (inspector-update-description/type, add/remove-capability, add-limitation; P3-D3 no generic patch) applied field-wise in apply-command.ts; +page.svelte adds an Inspector panel (shown on node selection, editing description/capabilities through the command application).
+
+同时修复 Accept 后交互冻结（handleAccept 改用 await 模式）与消息显示（noticeMessage 独立 $state），并把 E2E 的 Inspector/Svelte Flow 控件交互改为原生事件分发以适配 Playwright 与 Svelte 5 事件委托的兼容限制。
+
+Also fixed the post-Accept interaction freeze (handleAccept now uses await) and message display (noticeMessage as a separate $state), and switched Inspector/Svelte Flow control interactions in E2E to native event dispatch to accommodate the Playwright/Svelte 5 event-delegation compatibility limitation.
+
+验证：web typecheck 0/0；unit 10 files/30 tests（新增 7 个 Inspector 命令测试）；integration 3 files/7 tests；Playwright E2E 5 passed（Greenfield、Inspector 编辑、Palette、Problems 导航、Reject）；build 通过。
+
+Validation: web typecheck 0/0; unit 10 files/30 tests (7 new inspector command tests); integration 3 files/7 tests; five Playwright E2E pass (Greenfield, Inspector edit, Palette, Problems navigation, Reject); build passes.
+
+## 2026-08-15 - P3.6 Save/Open Lifecycle / P3.6 Save/Open 生命周期
+
+状态：已验证。
+
+Status: Verified.
+
+实现 P3.6：@coding-cad/workspace 新增可选 viewState 字段与 saveViewState/loadViewState（与 ArchitectureProject snapshot 分离保存，P3.0 矩阵）；workspace contract 的 Save/Open DTO 携带 viewStateJson；server route PUT 保存 viewState、GET 返回 viewState；WorkspaceShellController 新增 saveProject（首次保存自动 create fallback）与 openProject；+page.svelte 增加 Save/Open 按钮。Playwright webServer 改为 vite dev 以支持 server routes。
+
+Implemented P3.6: @coding-cad/workspace gained an optional viewState field with saveViewState/loadViewState (saved separately from ArchitectureProject snapshots per the P3.0 matrix); the workspace contract Save/Open DTOs carry viewStateJson; the server route PUT persists view state and GET returns it; WorkspaceShellController gained saveProject (with a create fallback on first save) and openProject; +page.svelte gained Save/Open buttons. The Playwright webServer now uses vite dev to serve server routes.
+
+验证：web typecheck 0/0；unit 30/30；integration 3 files/9 tests（新增 2 个 viewState 往返）；Playwright E2E 6 passed（新增 Save/Open 恢复架构事实与视图）；build 通过；全仓 typecheck 25/25。
+
+Validation: web typecheck 0/0; unit 30/30; integration 3 files/9 tests (2 new view-state round-trips); six Playwright E2E pass (new Save/Open restores architecture facts and view); build succeeds; full workspace typecheck 25/25.

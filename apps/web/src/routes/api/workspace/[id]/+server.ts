@@ -44,13 +44,14 @@ export const GET: RequestHandler = async ({ params }) => {
     throw error(400, "OpenProjectRequest requires an id.");
   }
 
-  const workspace = await Workspace.open(`${WORKSPACE_ROOT}/${id}`);
+  const workspace = await Workspace.open(`${WORKSPACE_ROOT}/${encodeURIComponent(id)}`);
   const architectureJson = JSON.stringify(workspace.loadLatestArchitecture());
+  const viewStateJson = workspace.loadViewState();
   const dto = toProjectDto(workspace);
   if (!isWorkspaceProjectDto(dto)) {
     throw error(500, "Workspace returned an invalid project DTO.");
   }
-  return json({ project: dto, architectureJson });
+  return json({ project: dto, architectureJson, ...(viewStateJson === undefined ? {} : { viewStateJson }) });
 };
 
 export const PUT: RequestHandler = async ({ params, request }) => {
@@ -64,9 +65,12 @@ export const PUT: RequestHandler = async ({ params, request }) => {
     throw error(400, "SaveProjectRequest requires architectureJson.");
   }
 
-  const workspace = await Workspace.open(`${WORKSPACE_ROOT}/${id}`);
+  const workspace = await Workspace.open(`${WORKSPACE_ROOT}/${encodeURIComponent(id)}`);
   const architecture = parseArchitecture(payload.architectureJson);
   const snapshot = await workspace.saveSnapshot(architecture);
+  if (typeof payload.viewStateJson === "string") {
+    await workspace.saveViewState(payload.viewStateJson);
+  }
   return json({
     project: toProjectDto(workspace),
     version: snapshot.version

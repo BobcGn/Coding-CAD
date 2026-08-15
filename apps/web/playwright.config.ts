@@ -12,7 +12,9 @@ export default defineConfig({
   },
   projects: [{ name: "chrome", use: { ...devices["Desktop Chrome"], channel: "chrome" } }],
   webServer: {
-    command: "pnpm build && pnpm preview --host 127.0.0.1 --port 4173",
+    // vite dev serves SvelteKit server routes (needed for the Workspace API),
+    // unlike pnpm preview which is a static production preview.
+    command: "pnpm dev --host 127.0.0.1 --port 4173",
     port: 4173,
     reuseExistingServer: !process.env.CI
   }

@@ -45,6 +45,24 @@ test("palette adds a component through the command application", async ({ page }
   await expect(page.locator(".svelte-flow__node").filter({ hasText: "Kafka" })).toBeVisible();
 });
 
+test("save and open restore the accepted architecture and a usable view", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Generate Architecture" }).click();
+  await expect(page.getByRole("heading", { name: "Review" })).toBeVisible();
+  await page.getByRole("button", { name: "Accept" }).click();
+  await expect(page.getByText(/Candidate accepted/i)).toBeVisible();
+
+  // Save the accepted project, then open it back.
+  await nativeClick(page, page.getByRole("button", { name: "Save" }));
+  await expect(page.getByText(/Project saved/i)).toBeVisible();
+  await nativeClick(page, page.getByRole("button", { name: "Open" }));
+  await expect(page.getByText(/Project opened/i)).toBeVisible();
+
+  // The architecture facts are restored and the canvas renders nodes.
+  await expect(page.locator(".svelte-flow__node").filter({ hasText: "PointService" })).toBeVisible();
+  await expect(page.locator(".svelte-flow__node").filter({ hasText: "PostgreSQL" })).toBeVisible();
+});
+
 test("inspector edits a component description via explicit command", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Generate Architecture" }).click();
