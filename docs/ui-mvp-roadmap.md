@@ -187,7 +187,7 @@ Checkpoint 3 只验收基础 Canvas capability。Master Phase 2 还必须完成 
 
 ## Checkpoint 4 — Greenfield Project Can Display / Greenfield 项目可显示
 
-**Status / 状态:** In Progress — planning complete; P3-D1, P3-D2, and P3-D3 all approved by the user on 2026-08-15; P3.0/P3.1 implementation started / 进行中——规划完成；P3-D1、P3-D2、P3-D3 已于 2026-08-15 全部由用户确认；P3.0/P3.1 实现已开始
+**Status / 状态:** Verified — P3.0–P3.7 complete; Greenfield requirement-to-save/open flow passes nine Playwright E2E and full ci:verify / 已验证——P3.0–P3.7 全部完成；Greenfield requirement 到 save/open 全流程通过 9 个 Playwright E2E 与完整 ci:verify
 
 **Goal / 目标**
 
@@ -224,7 +224,7 @@ Checkpoint 3 只验收基础 Canvas capability。Master Phase 2 还必须完成 
 
 P3.0 contract/host freeze → P3.1 Workspace host bridge → P3.2 requirement-to-candidate → P3.3 workspace shell/projection → P3.4 Palette command entry → P3.5 semantic Inspector → P3.6 Save/Open lifecycle → P3.7 acceptance。
 
-每个切片已有完整 Goal、Input、Output、Acceptance Criteria、Known Risks、Non-goals 与 Exit Evidence 规格，见 [Master Plan Phase 3 详细切片规格](../ui-v1-execution-plan.md)。P3-D1、P3-D2、P3-D3 均已由用户于 2026-08-15 确认，Phase 3 进入实现。 / Each slice now has complete Goal, Input, Output, Acceptance Criteria, Known Risks, Non-goals, and Exit Evidence specifications in the [Master Plan Phase 3 detailed slice specifications](../ui-v1-execution-plan.md). P3-D1, P3-D2, and P3-D3 were all confirmed by the user on 2026-08-15, and Phase 3 implementation has started.
+每个切片已有完整 Goal、Input、Output、Acceptance Criteria、Known Risks、Non-goals 与 Exit Evidence 规格，见 [Master Plan Phase 3 详细切片规格](../ui-v1-execution-plan.md)。P3-D1、P3-D2、P3-D3 均已由用户于 2026-08-15 确认；Phase 3 已全部实现并验证。 / Each slice now has complete Goal, Input, Output, Acceptance Criteria, Known Risks, Non-goals, and Exit Evidence specifications in the [Master Plan Phase 3 detailed slice specifications](../ui-v1-execution-plan.md). P3-D1, P3-D2, and P3-D3 were all confirmed by the user on 2026-08-15; Phase 3 is fully implemented and verified.
 
 ## Checkpoint 5 — Brownfield Repository Can Display / Brownfield 仓库可显示
 

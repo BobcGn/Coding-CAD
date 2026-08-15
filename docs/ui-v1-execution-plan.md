@@ -2,9 +2,9 @@
 
 ## Document Status / 文档状态
 
-状态：Phase 0–2 已验证并合并；P3-D1–P3-D3 已由用户于 2026-08-15 全部确认；Phase 3 从 P3.0/P3.1 开始实现。
+状态：Phase 0–3 已验证并合并；P3-D1–P3-D3 已由用户于 2026-08-15 全部确认；Phase 3 Greenfield Workspace 已按 P3.0–P3.7 完成并通过完整 CI。Phase 4（Brownfield）为下一切片。
 
-Status: Phases 0–2 are verified and merged. P3-D1 through P3-D3 were all confirmed by the user on 2026-08-15; Phase 3 implementation starts at P3.0/P3.1.
+Status: Phases 0–3 are verified and merged. P3-D1 through P3-D3 were all confirmed by the user on 2026-08-15; the Phase 3 Greenfield Workspace is complete across P3.0–P3.7 and passes full CI. Phase 4 (Brownfield) is the next slice.
 
 本文是 UI V1 从规划到 Terminal 的主执行顺序。`docs/ui-mvp-roadmap.md` 保留细粒度 capability checkpoints；本文定义跨模块 Phase 依赖、退出门槛和报告格式。发生冲突时，先遵守用户已批准的 Decision，再遵守本计划；未批准的架构冲突必须停止并询问用户。
 
@@ -850,4 +850,4 @@ Conclusion: **PHASES 0–2 VERIFIED AND MERGED — PHASE 3 PLANNED, AWAITING DEC
 - Phase 0 Decision Freeze：D-001–D-006 与 D-008–D-010 已批准；D-007 保留 Phase 5 Ghost-presentation 门禁。 / Phase 0 Decision Freeze: D-001 through D-006 and D-008 through D-010 are approved; D-007 retains its Phase 5 Ghost-presentation gate.
 - Phase 1 Semantic Layout Compiler：Checkpoint 1–2、FULL/INCREMENTAL、mental-map、movement-cost 与 Ghost core protocol 已通过 package tests、批准性能预算和完整 CI。 / Phase 1 Semantic Layout Compiler: Checkpoints 1–2, FULL/INCREMENTAL behavior, mental-map and movement-cost infrastructure, and the Ghost core protocol pass package tests, approved performance budgets, and the complete CI gate.
 - Phase 2 Svelte CAD Infrastructure：SvelteKit/Svelte 5 app、唯一 LayoutResult->Svelte Flow adapter、基础 Canvas、Standard + Semantic Zoom、LayoutState-only drag、Auto Layout reset、solver-only worker 与 headless Add/Remove/Connect command application 已实现并合并（PR #1）。 / Phase 2 Svelte CAD Infrastructure: the SvelteKit/Svelte 5 app, sole LayoutResult->Svelte Flow adapter, foundational Canvas, Standard + Semantic Zoom, LayoutState-only drag, Auto Layout reset, solver-only worker, and headless Add/Remove/Connect command application are implemented and merged (PR #1).
-- Phase 3 Greenfield Workspace：规划完成（P3.0–P3.7 窄切片）；P3-D1、P3-D2、P3-D3 已由用户于 2026-08-15 全部确认，P3.0/P3.1 实现开始。 / Phase 3 Greenfield Workspace: planning is complete (P3.0–P3.7 narrow slices); P3-D1, P3-D2, and P3-D3 were all confirmed by the user on 2026-08-15, and P3.0/P3.1 implementation has started.
+- Phase 3 Greenfield Workspace：已按 P3.0–P3.7 全部完成并验证；P3-D1、P3-D2、P3-D3 已由用户于 2026-08-15 确认。Greenfield 支持 requirement -> candidate -> validate -> accept -> save/open 全流程。 / Phase 3 Greenfield Workspace: complete and verified across P3.0–P3.7; P3-D1, P3-D2, and P3-D3 were confirmed by the user on 2026-08-15. Greenfield supports the full requirement -> candidate -> validate -> accept -> save/open flow.

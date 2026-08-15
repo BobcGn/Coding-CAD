@@ -816,3 +816,53 @@ Status: Verified; P3.1 is complete and P3.2 (Requirement to Candidate) is the ne
 P3.1 交付：browser-safe typed contract 与 workspace-bridge client 在 apps/web/src/lib/architecture/workspace/；SvelteKit server routes 在 apps/web/src/routes/api/workspace/ 承载 Node-only Workspace create/open/save。@coding-cad/workspace 依赖加入 apps/web 并更新 lockfile。构建产物验证 Node-only 代码只进入 server chunks，浏览器 bundle 零 node:* 泄漏。
 
 P3.1 deliverables: browser-safe typed contracts and the workspace-bridge client in apps/web/src/lib/architecture/workspace/; SvelteKit server routes in apps/web/src/routes/api/workspace/ hosting Node-only Workspace create/open/save. The @coding-cad/workspace dependency was added to apps/web and the lockfile was updated. Build artifacts confirm Node-only code enters only server chunks with zero node:* leakage in the browser bundle.
+
+## 2026-08-16 - Phase 3 Completion Report / Phase 3 完成报告
+
+### 1. Completed / 已完成
+
+Phase 3（Greenfield Architecture Workspace）按 P3.0–P3.7 全部实现：P3.0 契约与宿主冻结（browser-safe DTO、SvelteKit server boundary、生命周期矩阵、生成零 LLM）；P3.1 Workspace host bridge（server routes + typed contract）；P3.2 Requirement to Candidate（deterministic Agent + Validator + 最小 Review gate）；P3.3 Workspace shell（New Project/Requirement/Canvas/Problems/selection/loading-error）；P3.4 Palette command entry；P3.5 Semantic Inspector（field-specific 命令）；P3.6 Save/Open lifecycle（IR/evidence/view state 分离）；P3.7 Phase acceptance（happy path + error paths + 完整 CI）。
+
+Phase 3 (Greenfield Architecture Workspace) is fully implemented across P3.0–P3.7: P3.0 contract/host freeze (browser-safe DTOs, SvelteKit server boundary, lifecycle matrix, zero-LLM generation); P3.1 Workspace host bridge (server routes + typed contract); P3.2 Requirement to Candidate (deterministic Agent + Validator + minimal Review gate); P3.3 Workspace shell (New Project/Requirement/Canvas/Problems/selection/loading-error); P3.4 Palette command entry; P3.5 Semantic Inspector (field-specific commands); P3.6 Save/Open lifecycle (IR/evidence/view state separation); P3.7 phase acceptance (happy path + error paths + full CI).
+
+### 2. Acceptance Criteria Result / 验收结果
+
+Create/Display/Edit/Validate/Accept/Save/Open happy path 通过（9 个 Playwright E2E）；invalid-candidate/rejection/error paths 通过（空 requirement、重复组件、reject）；所有 semantic edit 经 command/proposal 且不直接改 accepted IR；validation issue 可导航；保存后 IR 与 Layout/View State 分离；默认布局无需手动整理。
+
+The Create/Display/Edit/Validate/Accept/Save/Open happy path passes (nine Playwright E2E); invalid-candidate, rejection, and error paths pass (empty requirement, duplicate component, reject); every semantic edit uses a command/proposal without directly mutating accepted IR; validation issues navigate; saved IR and Layout/View State stay separate; the default layout needs no manual arrangement.
+
+### 3. Tests / 测试
+
+pnpm ci:verify 全门禁通过：workspace architecture 15 modules；typecheck 25/25；unit 28/28；integration 18/18；E2E 17/17（web 9 + cli 8）；build 15/15；change-record、commit-message、secrets checks 通过。web 侧 unit 10 files/30 tests、integration 3 files/9 tests、Playwright 9 tests。
+
+pnpm ci:verify passes all gates: workspace architecture 15 modules; typecheck 25/25; unit 28/28; integration 18/18; E2E 17/17 (web 9 + cli 8); build 15/15; change-record, commit-message, and secrets checks pass. Web: unit 10 files/30 tests, integration 3 files/9 tests, Playwright 9 tests.
+
+### 4. Architecture Invariants Check / 架构不变量检查
+
+ArchitectureProject 仍是唯一事实来源；浏览器 bundle 无 node:*、FileWorkspaceStorage 或磁盘 schema（P3-D1）；生成路径零 LLM（P3-D2）；Inspector 无 generic patch 且不编辑 width/height/color/border（P3-D3）；accepted/candidate/evidence/view-state 生命周期分离（P3.0 矩阵）；LayoutState 不写入 Architecture IR。
+
+ArchitectureProject remains the sole source of truth; the browser bundle has no node:*, FileWorkspaceStorage, or disk schemas (P3-D1); the generation path has zero LLM (P3-D2); the Inspector has no generic patch and no width/height/color/border editing (P3-D3); accepted/candidate/evidence/view-state lifecycles stay separate (P3.0 matrix); LayoutState never enters Architecture IR.
+
+### 5. Known Risks / 已知风险
+
+Playwright 与 Svelte 5 事件委托存在兼容限制（条件渲染面板内按钮需原生事件分发）；vite dev 用于 E2E（preview 不提供 server routes）；workspace 磁盘格式仍未冻结（D-006 后续门禁）。
+
+Playwright and Svelte 5 event delegation have a compatibility limitation (buttons inside conditionally rendered panels need native event dispatch); E2E uses vite dev (preview does not serve server routes); the workspace disk format remains unfrozen (later D-006 gate).
+
+### 6. Technical Debt / 技术债
+
+workspace package 的 ./pure 子路径导出与 browser-safe idGenerator 是为 P3-D1 引入的最小适配；E2E nativeClick helper 用于规避 Playwright/Svelte 5 兼容限制；Inspector 编辑暂限 description/capabilities（contracts/constraints 编辑留待后续切片）。
+
+The workspace ./pure subpath export and browser-safe idGenerator are minimal P3-D1 adaptations; the E2E nativeClick helper works around the Playwright/Svelte 5 limitation; Inspector editing is limited to description/capabilities for now (contracts/constraints editing remains for later slices).
+
+### 7. Decision Required / 待决策
+
+无阻塞决策。D-007（Ghost presentation）保留 Phase 5 门禁；D-004/D-006 的后续子决策（pin、shared/personal storage）在 Phase 6 前确认。
+
+No blocking decisions. D-007 (Ghost presentation) retains its Phase 5 gate; later D-004/D-006 sub-decisions (pin, shared/personal storage) are confirmed before Phase 6.
+
+### 8. Next Phase Readiness / 下一 Phase 就绪度
+
+Phase 3 完成；Phase 4（Brownfield Architecture Workspace）就绪，依赖 Phase 3 exit 与 D-005（已批准）。
+
+Phase 3 is complete; Phase 4 (Brownfield Architecture Workspace) is ready, depending on the Phase 3 exit and D-005 (approved).

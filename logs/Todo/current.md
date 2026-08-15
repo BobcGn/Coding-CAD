@@ -50,15 +50,15 @@ This file is the single source of truth for active TODOs.
 
 ## TODO-016: Greenfield Architecture Workspace / Greenfield 架构工作区
 
-- 状态 / Status: 实现中（P3.0 完成，P3.1 进行中）/ In progress (P3.0 complete, P3.1 in progress)
-- 当前处理 / Current handling: P3-D1、P3-D2、P3-D3 已全部由用户于 2026-08-15 确认；P3.0 契约冻结完成（browser-safe DTO、server boundary、生命周期矩阵、生成零 LLM）；P3.1 Workspace host bridge 实现中。
-- 决策门禁 / Decision gates: P3-D1（已确认）、P3-D2（已确认）、P3-D3（已确认）。
-- 解除条件 / Exit condition: 完成 P3.1 后继续 P3.2–P3.7 窄切片，最终通过 Create/Display/Edit/Validate/Accept/Save/Open E2E 与完整 CI。
+- 状态 / Status: 已完成 / Complete
+- 当前处理 / Current handling: Phase 3（Greenfield Architecture Workspace）P3.0–P3.7 全部实现并验证；requirement -> candidate -> validate -> accept -> save/open 全流程 E2E 通过；完整 ci:verify 通过。
+- 决策门禁 / Decision gates: P3-D1、P3-D2、P3-D3（均已确认）。
+- 解除条件 / Exit condition: 已满足；后续 Greenfield 扩展与 Phase 4 Brownfield 进入独立切片。
 
-- Status: In progress (P3.0 complete, P3.1 in progress)
-- Current handling: P3-D1, P3-D2, and P3-D3 were all confirmed by the user on 2026-08-15; the P3.0 contract freeze is complete (browser-safe DTOs, server boundary, lifecycle matrix, zero-LLM generation); P3.1 Workspace host bridge is in progress.
-- Decision gates: P3-D1 (confirmed), P3-D2 (confirmed), and P3-D3 (confirmed).
-- Exit condition: After P3.1, continue P3.2–P3.7 narrow slices and ultimately pass Create/Display/Edit/Validate/Accept/Save/Open E2E and full CI.
+- Status: Complete
+- Current handling: Phase 3 (Greenfield Architecture Workspace) P3.0–P3.7 fully implemented and verified; the requirement -> candidate -> validate -> accept -> save/open flow passes E2E; the complete ci:verify passes.
+- Decision gates: P3-D1, P3-D2, and P3-D3 (all confirmed).
+- Exit condition: Met; later Greenfield extensions and Phase 4 Brownfield enter separate slices.
 
 ## TODO-014: Architecture Layout Contracts / Architecture Layout 契约
 

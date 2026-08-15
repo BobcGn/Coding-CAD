@@ -4,9 +4,9 @@
 
 ## 总览 / Overview
 
-状态：Phase 0–2 已验证并合并；Phase 3 详细规划完成；P3-D1、P3-D2、P3-D3 已全部由用户于 2026-08-15 确认（P3-D1 server boundary + typed contract；P3-D2 生成零 LLM；P3-D3 field-specific commands）；P3.0 完成、P3.1 实现进行中。
+状态：Phase 0–3 已验证并合并；Phase 3（Greenfield Architecture Workspace）按 P3.0–P3.7 全部实现并验证；P3-D1、P3-D2、P3-D3 已于 2026-08-15 全部由用户确认。完整 pnpm ci:verify 通过。Phase 4（Brownfield）为下一阶段。
 
-Status: Phases 0–2 are verified and merged. Detailed Phase 3 planning is complete; P3-D1, P3-D2, and P3-D3 were all confirmed by the user on 2026-08-15 (P3-D1 server boundary + typed contract; P3-D2 zero LLM in generation; P3-D3 field-specific commands); P3.0 is complete and P3.1 implementation is in progress.
+Status: Phases 0–3 are verified and merged. Phase 3 (Greenfield Architecture Workspace) is fully implemented and verified across P3.0–P3.7; P3-D1, P3-D2, and P3-D3 were all confirmed by the user on 2026-08-15. The complete pnpm ci:verify passes. Phase 4 (Brownfield) is next.
 
 Phase 3 规划为 P3.0–P3.7：contract/host freeze、Workspace host bridge、requirement-to-candidate、workspace shell/projection、Palette command entry、semantic Inspector、Save/Open lifecycle 与 phase acceptance。每个切片已在 `docs/ui-v1-execution-plan.md` 展开为 Goal、Input、Output、Acceptance Criteria、Known Risks、Non-goals 与 Exit Evidence 规格。P3-D2 已确认；P3-D1 与 P3-D3 保持待用户确认。
 
