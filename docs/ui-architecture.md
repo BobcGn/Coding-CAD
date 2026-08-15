@@ -2,9 +2,25 @@
 
 ## 文档状态 / Document Status
 
-状态：Phase 2 已验证；SvelteKit/Svelte 5、Svelte Flow adapter、基础 Canvas、solver-only worker 与 headless command application 已实现。
+状态：Phase 2 已验证并合并；Phase 3 Greenfield Workspace 正在规划，代码尚未开始。
 
-Status: Phase 2 is verified. SvelteKit/Svelte 5, the Svelte Flow adapter, foundational Canvas, solver-only worker, and headless command application are implemented.
+Status: Phase 2 is verified and merged. The Phase 3 Greenfield Workspace is being planned and implementation has not started.
+
+## Greenfield Host Boundary / Greenfield 宿主边界
+
+Phase 3 必须把浏览器交互与 Node-only Workspace 持久化隔开。推荐的待批准路径是： / Phase 3 must separate browser interaction from Node-only Workspace persistence. The recommended path, pending approval, is:
+
+```text
+Svelte UI
+  -> typed app contract
+  -> SvelteKit server boundary
+  -> @coding-cad/workspace
+  -> workspace-internal storage
+```
+
+浏览器不得导入 `node:*`、`FileWorkspaceStorage` 或 workspace 磁盘格式。ArchitectureProject snapshot、validation/review evidence、LayoutState 与 ephemeral UI state 必须保持不同生命周期；具体 storage contract 在 P3-D1 确认前不得冻结。 / The browser must not import `node:*`, `FileWorkspaceStorage`, or the workspace disk format. ArchitectureProject snapshots, validation/review evidence, LayoutState, and ephemeral UI state must retain distinct lifecycles; no concrete storage contract may be frozen before P3-D1 is confirmed.
+
+Phase 3 只提供 candidate accept/reject 的最小 Review gate。完整 Review UI、comment、multi-approval、impact analysis 与 Ghost presentation 留给 Phase 5。 / Phase 3 provides only a minimal candidate accept/reject Review gate. The complete Review UI, comments, multi-approval, impact analysis, and Ghost presentation remain in Phase 5.
 
 ## 核心原则 / Core Principle
 

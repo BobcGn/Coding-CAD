@@ -1,39 +1,37 @@
 # 当前范围 / Current Scope
 
-更新时间 / Updated at: 2026-08-13 CST (Asia/Shanghai)
+更新时间 / Updated at: 2026-08-15 22:45 CST (Asia/Shanghai)
 
 ## 本轮目标 / Current Objective
 
-在 `codex/phase-2-svelte-cad` 分支完成 Phase 2 P2.0–P2.6：建立 Svelte CAD 基础设施、Canvas、状态边界、solver-only worker、headless command application 与验收证据。
+在 `codex/phase-3-greenfield-workspace` 上完成 Phase 3 的详细实现规划与文档状态同步：修复 web 模块日志漂移，把 P3.0–P3.7 每个切片展开为 Goal/Input/Output/Acceptance/Risk/Non-goal/Exit-evidence 规格，并保持 P3-D1–P3-D3 决策门禁。
 
-Complete Phase 2 P2.0–P2.6 on `codex/phase-2-svelte-cad`: establish Svelte CAD infrastructure, Canvas, state boundaries, the solver-only worker, headless command application, and acceptance evidence.
+Complete detailed Phase 3 implementation planning and document-state synchronization on `codex/phase-3-greenfield-workspace`: fix web module log drift, expand each P3.0–P3.7 slice into Goal/Input/Output/Acceptance/Risk/Non-goal/Exit-evidence specifications, and preserve the P3-D1–P3-D3 decision gates.
 
 ## 边界 / Boundaries
 
-- 本轮只实现 Phase 2/Checkpoint 3 与配套 headless command application。
-- 依照用户明确批准实施 headless Review gate、LayoutState-only drag 和 app 层 Vitest/Svelte/Playwright 工具链。
-- Checkpoint 3 验收基础 Canvas；Master Phase 2 另验收 headless command application。
-- Palette/Inspector 等可见编辑入口及 add/remove/connect 产品 E2E 属于 Phase 3。
-- 不实现 Palette、Inspector、完整 Greenfield、Brownfield、Ghost、Handoff 或 Terminal。
-- 不修改 Architecture IR/DSL、`architecture-layout` public contract 或既有 Phase 1 行为。
+- 本轮只做规划与文档/日志同步，不实现 Greenfield UI 或持久化，不安装依赖。
+- 保留 ArchitectureProject 唯一事实来源、Phase 2 adapter/worker/command application 和 D-006 Workspace ownership。
+- P3-D1–P3-D3 未由用户确认前，不进入对应实现边界。
+- 不实现 Brownfield、Ghost、完整 Review、Handoff、Terminal 或真实 LLM Provider。
+- 不修改 Architecture IR/DSL，不冻结 generic Inspector patch 或 workspace disk schema。
 
-- This slice implements only Phase 2/Checkpoint 3 and the companion headless command application.
-- Under explicit user approval, implement the headless Review gate, LayoutState-only drag, and app-layer Vitest/Svelte/Playwright toolchain.
-- Checkpoint 3 accepts the foundational Canvas; Master Phase 2 additionally requires a headless command application.
-- Visible editing entry points such as Palette/Inspector and product E2E for add/remove/connect belong to Phase 3.
-- Do not implement Palette, Inspector, complete Greenfield, Brownfield, Ghost, Handoff, or Terminal behavior.
-- Do not change Architecture IR/DSL, the `architecture-layout` public contract, or existing Phase 1 behavior.
+- This slice performs planning and document/log synchronization only; it implements no Greenfield UI or persistence and installs no dependency.
+- Preserve ArchitectureProject as the sole source of truth, the Phase 2 adapter/worker/command application, and D-006 Workspace ownership.
+- Do not enter the corresponding implementation boundary before P3-D1 through P3-D3 are confirmed by the user.
+- Do not implement Brownfield, Ghost, complete Review, Handoff, Terminal, or a real LLM Provider.
+- Do not change Architecture IR/DSL or freeze a generic Inspector patch or Workspace disk schema.
 
 ## 验收标准 / Acceptance Criteria
 
-- Phase 2 有严格排序、可独立验收的窄切片。
-- Checkpoint 3 与 Master Phase 2 的职责和退出关系明确。
-- Phase 2/3 的 command、UI control 与 E2E 边界无重叠 mutation path。
-- 文档与根级/模块级日志同步，且未安装依赖或实现 UI。
-- 文档检查与现有 workspace 基线保持通过。
+- 每个 P3.x 切片在 Master Plan 中有完整 Goal、Input、Output、Acceptance、Risk、Non-goal 与 Exit Evidence。
+- web 模块日志与根日志反映 Phase 0–2 已验证合并、Phase 3 详细规划完成且等待用户决策。
+- 最小 Review gate 与 Phase 5 完整 Review/Ghost 边界无重叠。
+- 文档与根级/模块级日志同步，且未安装依赖或修改行为代码。
+- 文档结构、Git 边界和现有 workspace 基线检查通过。
 
-- Phase 2 has strictly ordered, independently acceptable narrow slices.
-- The responsibility and exit relationship between Checkpoint 3 and Master Phase 2 is explicit.
-- Phase 2/3 command, UI-control, and E2E boundaries create no duplicate mutation path.
-- Documents and root/module logs are aligned, with no dependencies installed and no UI implemented.
-- Documentation checks and the existing workspace baseline remain passing.
+- Each P3.x slice has complete Goal, Input, Output, Acceptance, Risk, Non-goal, and Exit Evidence in the Master Plan.
+- Web module logs and root logs reflect Phases 0–2 verified and merged, with detailed Phase 3 planning complete and awaiting user decisions.
+- The minimal Review gate does not overlap the complete Phase 5 Review/Ghost scope.
+- Documents and root/module logs are aligned with no dependency installation or behavior change.
+- Documentation structure, Git boundaries, and the existing workspace baseline remain passing.

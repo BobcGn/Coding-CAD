@@ -42,6 +42,18 @@ This file is the single source of truth for active TODOs.
 - 当前处理 / Current handling: P2.0–P2.6、Checkpoint 3、基础 Canvas、solver-only worker 与 headless command application 已完成。
 - 解除条件 / Exit condition: 已满足；后续 Web 产品能力进入独立 Phase 3。
 
+## TODO-016: Greenfield Architecture Workspace / Greenfield 架构工作区
+
+- 状态 / Status: 详细规划完成，等待决策 / Detailed planning complete, awaiting decisions
+- 当前处理 / Current handling: P3.0–P3.7 每个切片已在 Master Plan 展开为 Goal/Input/Output/Acceptance/Risk/Non-goal/Exit Evidence 规格；Phase 3 分支已同步合并后的 main；尚未实现产品代码。
+- 决策门禁 / Decision gates: P3-D1 Workspace host boundary、P3-D2 Greenfield generation mode、P3-D3 Inspector command granularity。
+- 解除条件 / Exit condition: 用户确认三项门禁后，从 P3.0/P3.1 开始窄切片实现，并最终通过 Create/Display/Edit/Validate/Accept/Save/Open E2E 与完整 CI。
+
+- Status: Detailed planning complete, awaiting decisions
+- Current handling: Each P3.0–P3.7 slice is expanded in the Master Plan with Goal/Input/Output/Acceptance/Risk/Non-goal/Exit-Evidence specifications; the Phase 3 branch is aligned with post-merge main; no product code is implemented.
+- Decision gates: P3-D1 Workspace host boundary, P3-D2 Greenfield generation mode, and P3-D3 Inspector command granularity.
+- Exit condition: After user confirmation, implement from P3.0/P3.1 in narrow slices and ultimately pass Create/Display/Edit/Validate/Accept/Save/Open E2E and full CI.
+
 ## TODO-014: Architecture Layout Contracts / Architecture Layout 契约
 
 - 状态 / Status: Phase 1 已验证 / Phase 1 verified

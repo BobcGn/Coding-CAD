@@ -1,12 +1,16 @@
 # 当前状态 / Current State
 
-更新时间 / Updated at: 2026-08-13 CST (Asia/Shanghai)
+更新时间 / Updated at: 2026-08-15 22:45 CST (Asia/Shanghai)
 
 ## 总览 / Overview
 
-状态：Phase 0–2 已验证；Checkpoint 3 与 Phase 2 headless command application 已完成。Phase 3 尚未开始。
+状态：Phase 0–2 已验证并合并；Phase 2 分支已删除；Phase 3 分支已快进到合并后的 `main`，详细切片规划完成，代码尚未开始，等待用户确认 P3-D1–P3-D3。
 
-Status: Phases 0–2 are verified. Checkpoint 3 and the Phase 2 headless command application are complete. Phase 3 has not started.
+Status: Phases 0–2 are verified and merged. The Phase 2 branch is deleted. The Phase 3 branch is fast-forwarded to post-merge `main`; detailed slice planning is complete, implementation has not started, and P3-D1 through P3-D3 await user confirmation.
+
+Phase 3 规划为 P3.0–P3.7：contract/host freeze、Workspace host bridge、requirement-to-candidate、workspace shell/projection、Palette command entry、semantic Inspector、Save/Open lifecycle 与 phase acceptance。每个切片已在 `docs/ui-v1-execution-plan.md` 展开为 Goal、Input、Output、Acceptance Criteria、Known Risks、Non-goals 与 Exit Evidence 规格。P3-D1–P3-D3 保持待用户确认。
+
+Phase 3 is planned as P3.0–P3.7: contract/host freeze, Workspace host bridge, requirement-to-candidate, workspace shell/projection, Palette command entry, semantic Inspector, Save/Open lifecycle, and phase acceptance. Each slice is expanded in `docs/ui-v1-execution-plan.md` with Goal, Input, Output, Acceptance Criteria, Known Risks, Non-goals, and Exit Evidence specifications. P3-D1 through P3-D3 remain pending user confirmation.
 
 Phase 2 已按 P2.0–P2.6 窄切片完成：SvelteKit/Svelte 5 app foundation、唯一 LayoutResult-to-Svelte-Flow adapter、基础 Canvas、Standard + Semantic Zoom、LayoutState-only drag、Auto Layout reset、solver-only Web Worker，以及 renderer-neutral Add/Remove/Connect command application。
 

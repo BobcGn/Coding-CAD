@@ -737,3 +737,36 @@ Targeted evidence: Web typecheck reports 0 errors and 0 warnings; unit tests pas
 最终完整 `pnpm ci:verify` 通过：workspace architecture 15 modules；typecheck 25/25；unit 28/28；integration 18/18；E2E 17/17；build 15/15。性能证据：100/150 cold 183.37 ms、p95 56.64 ms；500/800 cold 484.96 ms、p95 501.34 ms；ELK worker gzip 471,876 bytes。`git diff --check` 同时通过。
 
 The final complete `pnpm ci:verify` passes: workspace architecture 15 modules; typecheck 25/25; unit 28/28; integration 18/18; E2E 17/17; and build 15/15. Performance evidence: 100/150 cold 183.37 ms and p95 56.64 ms; 500/800 cold 484.96 ms and p95 501.34 ms; ELK worker gzip 471,876 bytes. `git diff --check` also passes.
+
+## 2026-08-13 - Phase 3 Greenfield Planning / Phase 3 Greenfield 规划
+
+状态：规划完成，等待用户决策；实现未开始。
+
+Status: Planning complete and awaiting user decisions; implementation has not started.
+
+PR #1 已合并为 `a917f5d`，本地与远端 Phase 2 分支已删除；`codex/phase-3-greenfield-workspace` 已快进到合并后的 `main`。Phase 3 被拆分为 P3.0–P3.7，覆盖 Workspace host、candidate/review lifecycle、Workspace shell、Palette、Inspector、Save/Open 与验收。
+
+PR #1 was merged as `a917f5d`; the local and remote Phase 2 branches were deleted, and `codex/phase-3-greenfield-workspace` was fast-forwarded to post-merge `main`. Phase 3 is split into P3.0–P3.7 covering Workspace hosting, candidate/review lifecycle, Workspace shell, Palette, Inspector, Save/Open, and acceptance.
+
+规划识别三个实现前门禁：P3-D1 使用 SvelteKit server boundary 隔离 Node-only Workspace；P3-D2 使用现有 deterministic Architecture Agent/Mock Provider 作为 V1 Greenfield baseline；P3-D3 使用 app-private field-specific Inspector commands 并禁止 generic patch。三项均为推荐，尚未代替用户决策。本轮未安装依赖或修改行为代码。
+
+Planning identified three pre-implementation gates: P3-D1 isolates the Node-only Workspace behind a SvelteKit server boundary; P3-D2 uses the existing deterministic Architecture Agent/Mock Provider as the V1 Greenfield baseline; and P3-D3 uses app-private field-specific Inspector commands while prohibiting generic patches. All three are recommendations and do not replace user decisions. This slice installs no dependency and changes no behavior code.
+
+
+## 2026-08-15 - Phase 3 Detailed Slice Planning / Phase 3 详细切片规划
+
+状态：详细规划完成，等待用户决策；实现未开始。
+
+Status: Detailed planning complete and awaiting user decisions; implementation has not started.
+
+同步了 `logs/modules/web` 的 Scope/State/Todo/Links（此前仍停留在 Phase 2 之前的 placeholder 描述），并把 `docs/ui-v1-execution-plan.md` 尾部的旧 Phase 1 Readiness 段更新为 Phase 0–2 已验证合并、Phase 3 规划完成的当前状态。
+
+Synchronized `logs/modules/web` Scope/State/Todo/Links (previously still describing the pre-Phase-2 placeholder) and updated the stale Phase 1 Readiness section at the end of `docs/ui-v1-execution-plan.md` to the current state of Phases 0–2 verified and merged with Phase 3 planning complete.
+
+在 Master Plan 的 Phase 3 部分为 P3.0–P3.7 每个切片补充了完整规格：Goal、Input、Output、Acceptance Criteria、Known Risks、Non-goals 与 Exit Evidence，覆盖 Workspace host bridge、requirement-to-candidate、workspace shell、Palette command entry、semantic Inspector、Save/Open lifecycle 与阶段验收；Roadmap Checkpoint 4 已链接到该详细规格。P3-D1–P3-D3 保持为推荐方向，等待用户确认后才进入对应实现边界。
+
+The Master Plan Phase 3 section now carries complete specifications for each P3.0–P3.7 slice: Goal, Input, Output, Acceptance Criteria, Known Risks, Non-goals, and Exit Evidence, covering the Workspace host bridge, requirement-to-candidate, workspace shell, Palette command entry, semantic Inspector, Save/Open lifecycle, and phase acceptance; Roadmap Checkpoint 4 links to these detailed specifications. P3-D1 through P3-D3 remain recommendations awaiting user confirmation before their implementation boundaries.
+
+本轮未安装依赖、未修改行为代码；文档结构、Git 边界与 workspace 基线检查在提交前通过。
+
+This slice installs no dependency and changes no behavior code; documentation-structure, Git-boundary, and workspace-baseline checks pass before commit.

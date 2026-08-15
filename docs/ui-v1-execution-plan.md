@@ -2,9 +2,9 @@
 
 ## Document Status / 文档状态
 
-状态：Phase 0–2 已验证；Checkpoint 3 与 Phase 2 headless command application 已取得实现和测试证据。Phase 3 尚未开始，后续 Decision 仍受各自门禁约束。
+状态：Phase 0–2 已验证并合并；Phase 3 规划中，代码尚未开始。P3-D1–P3-D3 必须在对应实现边界前由用户确认。
 
-Status: Phases 0–2 are verified. Checkpoint 3 and the Phase 2 headless command application have implementation and test evidence. Phase 3 has not started, and later Decisions remain subject to their own gates.
+Status: Phases 0–2 are verified and merged. Phase 3 planning is in progress and implementation has not started. P3-D1 through P3-D3 require user confirmation before their implementation boundaries.
 
 本文是 UI V1 从规划到 Terminal 的主执行顺序。`docs/ui-mvp-roadmap.md` 保留细粒度 capability checkpoints；本文定义跨模块 Phase 依赖、退出门槛和报告格式。发生冲突时，先遵守用户已批准的 Decision，再遵守本计划；未批准的架构冲突必须停止并询问用户。
 
@@ -49,7 +49,7 @@ The formal execution numbering remains Master Phase 0→7. The table combines th
 - `apps/web` is now a SvelteKit/Svelte 5 app with `@xyflow/svelte` isolated behind the approved app adapter; Palette, Inspector, and complete Greenfield workflows remain unimplemented. / `apps/web` 现为 SvelteKit/Svelte 5 app，`@xyflow/svelte` 被隔离在已批准的 app adapter 后；Palette、Inspector 与完整 Greenfield workflow 仍未实现。
 - Existing Architecture Agent, Validator, Review, Workspace, Blueprint, Adapter, Analyzer, and Implementation Validator packages already define the non-UI workflow boundaries. / 既有 Architecture Agent、Validator、Review、Workspace、Blueprint、Adapter、Analyzer 和 Implementation Validator package 已定义非 UI 工作流边界。
 - Canonical D-001, D-002, D-005, and D-010 were approved by the user on 2026-08-13; the remaining Decisions retain their later-phase gates. / 用户已于 2026-08-13 批准 canonical D-001、D-002、D-005、D-010；其余 Decision 保持后续 Phase 门禁。
-- Checkpoint 1 passed its exit gate; Checkpoint 2 is authorized and in progress. / Checkpoint 1 已通过退出门禁；Checkpoint 2 已获准并正在进行。
+- Checkpoints 1–3 and Phases 1–2 passed their exit gates and are merged; Phase 3 planning is active. / Checkpoint 1–3 与 Phase 1–2 已通过退出门禁并合并；Phase 3 正在规划。
 
 ## Governance Difference: Decision Number Crosswalk / 治理差异：Decision 编号映射
 
@@ -161,7 +161,7 @@ Existing Checkpoint numbers are a capability decomposition and are no longer int
 ### Decision Gates / 决策门禁
 
 - Phase 0 exit 前，D-001…D-010 必须被用户决定或明确延后。 / Before Phase 0 exit, the user must decide or explicitly defer D-001…D-010.
-- D-001、D-002、D-005、D-010 已批准；Checkpoint 1 已验证，Checkpoint 2 已获准。 / D-001, D-002, D-005, and D-010 are approved; Checkpoint 1 is verified and Checkpoint 2 is authorized.
+- D-001–D-006 与 D-008–D-010 已批准；Checkpoint 1–3 已验证并合并；D-007 保留 Phase 5 门禁。 / D-001 through D-006 and D-008 through D-010 are approved; Checkpoints 1–3 are verified and merged; D-007 remains the Phase 5 gate.
 
 ### Exit Condition / 退出条件
 
@@ -368,6 +368,153 @@ Checkpoint 3 是 P2.1–P2.4 的 Canvas capability gate；P2.5 是 Master Phase 
 - Layout 与 View State 生命周期，不污染 IR。 / Layout and View State lifecycle without IR pollution.
 - 通过 Palette、Inspector 或其他正式产品入口触发 Add/Remove/Connect，并覆盖 visible-control E2E；复用 Phase 2 command application，不另建第二套 mutation path。 / Trigger Add/Remove/Connect through Palette, Inspector, or other real product entry points and cover visible-control E2E; reuse the Phase 2 command application rather than creating a second mutation path.
 
+### Narrow Slices / 窄切片顺序
+
+Phase 3 按以下顺序实施；每片必须先恢复 Goal、Input、Output、Acceptance、Risk 与 Non-goal，并独立产出证据。 / Phase 3 is implemented in the following order; each slice must first restore its Goal, Input, Output, Acceptance, Risk, and Non-goal and then produce independent evidence.
+
+1. **P3.0 Contract and Host Freeze / 契约与宿主冻结**：确认 P3-D1–P3-D3，定义 browser-safe DTO、SvelteKit server boundary、accepted/candidate/review/view-state 生命周期和回退点；不实现产品行为。 / Confirm P3-D1 through P3-D3 and define browser-safe DTOs, the SvelteKit server boundary, accepted/candidate/review/view-state lifecycles, and rollback points; implement no product behavior.
+2. **P3.1 Workspace Host Bridge / Workspace 宿主桥接**：让 Node-only `@coding-cad/workspace` 只在 SvelteKit server boundary 运行；浏览器通过 typed app contract create/open/save，不直接导入 `node:*` 或文件存储类型。ArchitectureProject snapshot 与 Layout/View State 分开保存。 / Run Node-only `@coding-cad/workspace` only at the SvelteKit server boundary; the browser creates, opens, and saves through a typed app contract without importing `node:*` or file-storage types. ArchitectureProject snapshots remain separate from Layout/View State.
+3. **P3.2 Requirement to Candidate / Requirement 到 Candidate**：使用批准的 Greenfield generation mode 生成 candidate ArchitectureProject，经 Validator 产生 Problems，并通过最小 accept/reject gate；accepted ArchitectureProject 在批准前不变。 / Use the approved Greenfield generation mode to create a candidate ArchitectureProject, produce Problems through Validator, and pass a minimal accept/reject gate; the accepted ArchitectureProject remains unchanged before approval.
+4. **P3.3 Workspace Shell and Projection / Workspace 外壳与投影**：建立 New Project、Requirement、Canvas、Problems、selection navigation 与 loading/error/cancellation 状态；复用 Phase 2 worker、adapter 和 Canvas。 / Establish New Project, Requirement, Canvas, Problems, selection navigation, and loading/error/cancellation state while reusing the Phase 2 worker, adapter, and Canvas.
+5. **P3.4 Palette Command Entry / Palette 命令入口**：从 Component Registry 投影 Palette item，通过 Phase 2 command application 执行 Add/Remove/Connect；不建立第二套组件模型或 mutation path。 / Project Palette items from Component Registry and execute Add/Remove/Connect through the Phase 2 command application without creating a second component model or mutation path.
+6. **P3.5 Semantic Inspector / 语义 Inspector**：显示并按批准粒度编辑 component semantics、capabilities、contracts 与 validation issues；只发显式 command，不提供 generic JSON patch 或 width/height/color/border 控件。 / Display and edit component semantics, capabilities, contracts, and validation issues at the approved granularity; emit only explicit commands and provide no generic JSON patch or width/height/color/border controls.
+7. **P3.6 Save/Open Lifecycle / Save/Open 生命周期**：保存 accepted ArchitectureProject、validation evidence 和独立 Layout/View State；重新打开后恢复相同架构事实与可用视图，忽略失效 node identity。 / Save the accepted ArchitectureProject, validation evidence, and separate Layout/View State; reopening restores the same architecture facts and a usable view while safely ignoring stale node identities.
+8. **P3.7 Phase Acceptance / 阶段验收**：完成 points-system Create/Display/Edit/Validate/Accept/Save/Open happy path 与 invalid-candidate/rejection/error paths；运行 unit/component/integration/Playwright、架构边界与完整 CI，并同步报告和回退证据。 / Complete points-system Create/Display/Edit/Validate/Accept/Save/Open happy paths plus invalid-candidate, rejection, and error paths; run unit/component/integration/Playwright, architecture-boundary checks, and full CI and synchronize reports and rollback evidence.
+
+### Detailed Slice Specifications / 切片详细规格
+
+以下每个切片都必须在开始实现前恢复其 Goal、Input、Output、Acceptance、Risk 与 Non-goal，并在切片结束时独立产出外部证据。 / Each slice below must restore its Goal, Input, Output, Acceptance, Risk, and Non-goal before implementation and produce independent external evidence at its end.
+
+#### P3.0 Contract and Host Freeze / 契约与宿主冻结
+
+**Goal / 目标**：确认 P3-D1-P3-D3，冻结 Phase 3 的 browser-safe 契约、宿主边界与生命周期划分，为全部后续切片建立不可变基线；本片不实现产品行为。 / Confirm P3-D1 through P3-D3 and freeze the Phase 3 browser-safe contracts, host boundary, and lifecycle split, establishing the immutable baseline for all later slices; this slice implements no product behavior.
+
+**Input / 输入**：Phase 2 已验证的 adapter/worker/command application；@coding-cad/workspace、architecture-agent、architecture-validator、component-registry、architecture-review 的 public API 事实；D-006 的 LayoutState ownership。 / Phase 2 verified adapter/worker/command application; public-API facts from the Workspace, Architecture Agent, Validator, Component Registry, and Architecture Review packages; D-006 LayoutState ownership.
+
+**Output / 输出**：P3-D1-P3-D3 的用户确认记录；browser-safe DTO 契约；SvelteKit server boundary 定义；accepted/candidate/review/view-state 四类生命周期的所有权矩阵；回退点。 / User confirmation records for P3-D1 through P3-D3; browser-safe DTO contracts; the SvelteKit server boundary definition; an ownership matrix for the accepted/candidate/review/view-state lifecycles; rollback points.
+
+**Acceptance Criteria / 验收标准**：三项 P3-Dx 均由用户明确决定；浏览器不得导入 node:*、FileWorkspaceStorage 或磁盘 schema 的约束已写入契约；ArchitectureProject snapshot、validation/review evidence、LayoutState 与 ephemeral UI state 有独立生命周期；未冻结 workspace 磁盘格式或 generic Inspector patch API。 / All three P3-Dx gates are explicitly decided by the user; the constraint that the browser never imports node:* or FileWorkspaceStorage or disk schemas is written into the contracts; ArchitectureProject snapshots, validation/review evidence, LayoutState, and ephemeral UI state have distinct lifecycles; no workspace disk format or generic Inspector patch API is frozen.
+
+**Known Risks / 已知风险**：宿主边界与磁盘格式提前冻结；DTO 与现有 package API 漂移；生命周期所有权含糊导致后续切片返工。 / Premature host-boundary or disk-format freeze; DTO drift from existing package APIs; ambiguous lifecycle ownership forcing rework in later slices.
+
+**Non-goals / 非目标**：不实现任何产品 UI、存储读写或生成逻辑；不修改 Architecture IR/DSL。 / No product UI, storage I/O, or generation logic; no Architecture IR/DSL change.
+
+**Exit Evidence / 退出证据**：用户确认记录；契约、生命周期与回退文档；文档结构检查与 workspace 基线通过。 / User confirmation records; contract, lifecycle, and rollback documentation; documentation-structure checks and the workspace baseline pass.
+
+#### P3.1 Workspace Host Bridge / Workspace 宿主桥接
+
+**Goal / 目标**：让 Node-only @coding-cad/workspace 只在 SvelteKit server boundary 运行，浏览器通过 typed app contract 创建、打开、保存项目，且不直接导入 node:* 或文件存储类型。 / Run Node-only @coding-cad/workspace only at the SvelteKit server boundary; the browser creates, opens, and saves projects through a typed app contract without importing node:* or file-storage types.
+
+**Input / 输入**：P3.0 冻结的 browser-safe DTO 与 server boundary；@coding-cad/workspace 的 Node-only storage 能力；apps/web Phase 2 app。 / The P3.0-frozen browser-safe DTOs and server boundary; Node-only storage capabilities of @coding-cad/workspace; the Phase 2 apps/web app.
+
+**Output / 输出**：SvelteKit server route/endpoint 桥接层；typed create/open/save app contract；ArchitectureProject snapshot 与 Layout/View State 分离存储的最小实现。 / A SvelteKit server route/endpoint bridge; typed create/open/save app contracts; a minimal implementation that stores ArchitectureProject snapshots separately from Layout/View State.
+
+**Acceptance Criteria / 验收标准**：浏览器 bundle 不含 node:* 或 workspace 磁盘类型（build 与 lint 证据）；create/open/save 经 typed contract 往返一致；snapshot 与 Layout/View State 可分别读写；server boundary 拒绝未类型化请求。 / The browser bundle contains no node:* or workspace disk types (build and lint evidence); create/open/save round-trips consistently through typed contracts; snapshots and Layout/View State are separately readable and writable; the server boundary rejects untyped requests.
+
+**Known Risks / 已知风险**：DTO 与 Workspace public API 不一致；序列化丢失 provenance；server route 变成第二套业务逻辑入口。 / DTO and Workspace public-API mismatch; serialization loses provenance; server routes become a second business-logic entry.
+
+**Non-goals / 非目标**：不实现保存格式的最终版本；不做多用户并发或共享存储；不引入数据库。 / No final save format; no multi-user concurrency or shared storage; no database.
+
+**Exit Evidence / 退出证据**：bridge/contract unit 与 integration tests；浏览器 bundle 类型检查；往返一致性测试。 / Bridge/contract unit and integration tests; browser-bundle type checks; round-trip consistency tests.
+
+#### P3.2 Requirement to Candidate / Requirement 到 Candidate
+
+**Goal / 目标**：使用 P3-D2 批准的生成模式，从 requirement 生成 candidate ArchitectureProject，经 Validator 产生 Problems，并通过最小 accept/reject gate；accepted ArchitectureProject 在批准前保持不变。 / Using the P3-D2-approved generation mode, create a candidate ArchitectureProject from a requirement, produce Problems through Validator, and pass a minimal accept/reject gate; the accepted ArchitectureProject remains unchanged before approval.
+
+**Input / 输入**：用户 requirement；packages/architecture-agent（deterministic + Mock Provider baseline）；architecture-validator；component-registry；P3.1 的 app contract。 / A user requirement; packages/architecture-agent (deterministic + Mock Provider baseline); architecture-validator; component-registry; the P3.1 app contract.
+
+**Output / 输出**：requirement -> candidate IR -> Problems -> minimal Review gate 的 renderer-neutral 流程；accept/reject 后 accepted IR 更新（accept 时）并保留 rejected candidate 为可丢弃状态。 / A renderer-neutral requirement -> candidate IR -> Problems -> minimal Review gate flow; on accept the accepted IR updates, and on reject the candidate becomes a discardable state.
+
+**Acceptance Criteria / 验收标准**：相同 requirement 产生 deterministic candidate；Validator Problems 可追溯来源；accept 前 accepted IR 不变；accept 必须经过 Review gate 后才更新 accepted IR 并触发布局；reject 不改变 accepted IR。 / The same requirement produces a deterministic candidate; Validator Problems retain provenance; the accepted IR is unchanged before accept; accept passes through the Review gate before updating the accepted IR and triggering layout; reject leaves the accepted IR untouched.
+
+**Known Risks / 已知风险**：Agent 输出与 command model 不一致；生成结果不稳定；Review gate 与 Phase 5 完整 Review 语义重叠。 / Agent output and command-model mismatch; unstable generation results; the Review gate overlapping Phase 5 complete-Review semantics.
+
+**Non-goals / 非目标**：不接入真实 LLM Provider（留 TODO-009）；不做 Ghost presentation；不实现评论、多人 approval 或 impact analysis。 / No real LLM Provider (TODO-009 gate); no Ghost presentation; no comments, multi-approval, or impact analysis.
+
+**Exit Evidence / 退出证据**：Agent -> Validator -> Review integration tests；points-system requirement fixture；determinism 测试；accept/reject 不变量测试。 / Agent -> Validator -> Review integration tests; a points-system requirement fixture; determinism tests; accept/reject invariant tests.
+
+#### P3.3 Workspace Shell and Projection / Workspace 外壳与投影
+
+**Goal / 目标**：建立 New Project、Requirement、Canvas、Problems、selection navigation 与 loading/error/cancellation 状态；复用 Phase 2 worker、adapter 与 Canvas，不重建布局或渲染逻辑。 / Establish New Project, Requirement, Canvas, Problems, selection navigation, and loading/error/cancellation state while reusing the Phase 2 worker, adapter, and Canvas without rebuilding layout or rendering logic.
+
+**Input / 输入**：P3.1/P3.2 的 contract 与 candidate/review 流程；Phase 2 Canvas/worker/adapter；LayoutState 与 ephemeral UI state 的 P3.0 生命周期矩阵。 / P3.1/P3.2 contracts and candidate/review flow; Phase 2 Canvas/worker/adapter; the P3.0 lifecycle matrix for LayoutState and ephemeral UI state.
+
+**Output / 输出**：Greenfield workspace shell（New Project、Requirement 输入、Canvas 投影、Problems 面板、选择导航）；loading/error/cancellation 状态机。 / A Greenfield workspace shell (New Project, Requirement input, Canvas projection, Problems panel, selection navigation); a loading/error/cancellation state machine.
+
+**Acceptance Criteria / 验收标准**：从 requirement 到 Canvas 投影可重复；Problems 项可导航到对应对象；loading/error/cancellation 不破坏 accepted IR 或 LayoutState；选择导航不产生架构 mutation；UI state 与 ArchitectureProject/LayoutResult 分离。 / Requirement-to-Canvas projection is repeatable; Problems entries navigate to their objects; loading/error/cancellation never corrupt accepted IR or LayoutState; selection navigation performs no architecture mutation; UI state stays separate from ArchitectureProject/LayoutResult.
+
+**Known Risks / 已知风险**：shell 状态与持久化状态混淆；Problems 投影复制 Validator 规则；cancellation 竞态产生 stale projection。 / Shell state confused with persisted state; Problems projection duplicates Validator rules; cancellation races produce stale projections.
+
+**Non-goals / 非目标**：不实现 Palette/Inspector 编辑入口；不做完整 Review workspace；不实现 Brownfield import。 / No Palette/Inspector editing entry points; no complete Review workspace; no Brownfield import.
+
+**Exit Evidence / 退出证据**：Svelte component tests；Playwright happy/error paths（New Project -> requirement -> Canvas -> Problems -> selection）；状态所有权单元测试。 / Svelte component tests; Playwright happy/error paths (New Project -> requirement -> Canvas -> Problems -> selection); state-ownership unit tests.
+
+#### P3.4 Palette Command Entry / Palette 命令入口
+
+**Goal / 目标**：从 Component Registry 投影 Palette item，通过 Phase 2 command application 执行 Add/Remove/Connect；不建立第二套组件模型或 mutation path。 / Project Palette items from Component Registry and execute Add/Remove/Connect through the Phase 2 command application without creating a second component model or mutation path.
+
+**Input / 输入**：@coding-cad/component-registry 的组件能力；Phase 2 Add/Remove/Connect command contracts；accepted/candidate IR 状态。 / Component capabilities from @coding-cad/component-registry; Phase 2 Add/Remove/Connect command contracts; accepted and candidate IR state.
+
+**Output / 输出**：Palette UI 投影（分类、搜索、禁用/可用状态）；Add/Remove/Connect 的产品级触发路径与 visible-control E2E。 / A Palette UI projection (categories, search, disabled/enabled states); product-level Add/Remove/Connect triggers and visible-control E2E.
+
+**Acceptance Criteria / 验收标准**：Palette item 来自 Registry 且类型安全；所有 mutation 只经 Phase 2 command application；添加组件后 Canvas 增量更新且无关节点稳定；remove/connect 同样走命令并保持 accepted IR 不变量；无第二套 mutation path（架构 lint 证据）。 / Palette items come from the Registry and are type-safe; every mutation goes through the Phase 2 command application; adding a component increments the Canvas while unrelated nodes stay stable; remove/connect also use commands and preserve accepted-IR invariants; no second mutation path exists (architecture-lint evidence).
+
+**Known Risks / 已知风险**：Palette 投影漂移出 Registry 事实；拖放被视为 UI 自有模型；命令失败吞掉诊断。 / Palette projection drifts from Registry facts; drag-and-drop is treated as a UI-owned model; command failures swallow diagnostics.
+
+**Non-goals / 非目标**：不实现自由拖放建模；不做组件编辑（属 Inspector）；不引入第二套组件模型。 / No free-form drag modeling; no component editing (Inspector scope); no second component model.
+
+**Exit Evidence / 退出证据**：Palette/command unit tests；visible-control E2E（add/remove/connect）；命令路径 lint 检查。 / Palette/command unit tests; visible-control E2E (add/remove/connect); command-path lint checks.
+
+#### P3.5 Semantic Inspector / 语义 Inspector
+
+**Goal / 目标**：显示并按 P3-D3 批准粒度编辑 component semantics、capabilities、contracts 与 validation issues；只发显式 command，不提供 generic JSON patch 或 width/height/color/border 控件。 / Display and edit component semantics, capabilities, contracts, and validation issues at the P3-D3-approved granularity; emit only explicit commands and provide no generic JSON patch or width/height/color/border controls.
+
+**Input / 输入**：P3-D3 批准的 Inspector command 粒度；selected identity；ArchitectureProject 的 semantics/capabilities/contracts；Validator Problems。 / The P3-D3-approved Inspector command granularity; selected identity; ArchitectureProject semantics/capabilities/contracts; Validator Problems.
+
+**Output / 输出**：语义优先的 Inspector UI；field-specific explicit commands；编辑后 candidate 经 Validator/Review 的闭环。 / A semantics-first Inspector UI; field-specific explicit commands; an edit -> candidate -> Validator/Review closed loop.
+
+**Acceptance Criteria / 验收标准**：编辑只产生显式 command，且经 command application 进入 candidate 流程；无 generic JSON patch；无 width/height/color/border 编辑控件；Inspector 不复制 Validator/Review 业务规则；编辑产生的 validation issue 可导航。 / Edits produce only explicit commands routed through the command application into the candidate flow; no generic JSON patch; no width/height/color/border controls; the Inspector does not duplicate Validator/Review business rules; edited validation issues remain navigable.
+
+**Known Risks / 已知风险**：Inspector 复制核心业务规则；field-specific command 集膨胀；编辑状态与候选 IR 分叉。 / Inspector duplicates core business rules; the field-specific command set balloons; edit state forks from candidate IR.
+
+**Non-goals / 非目标**：不新增 Architecture IR 语义；不做图形设计属性面板；不实现 Ghost/Proposal 编辑。 / No new Architecture IR semantics; no graphic-design property panel; no Ghost/Proposal editing.
+
+**Exit Evidence / 退出证据**：Inspector/command unit tests；component tests；edit-command E2E；IR-语义无变化检查。 / Inspector/command unit tests; component tests; edit-command E2E; no-IR-semantic-change checks.
+
+#### P3.6 Save/Open Lifecycle / Save/Open 生命周期
+
+**Goal / 目标**：保存 accepted ArchitectureProject、validation evidence 与独立 Layout/View State；重新打开后恢复相同架构事实与可用视图，安全忽略失效 node identity。 / Save the accepted ArchitectureProject, validation evidence, and separate Layout/View State; reopening restores the same architecture facts and a usable view while safely ignoring stale node identities.
+
+**Input / 输入**：P3.1 bridge 与 storage；accepted IR snapshot；validation/review evidence；LayoutState/View State；失效 identity 处理规则（D-003）。 / P3.1 bridge and storage; accepted-IR snapshot; validation/review evidence; LayoutState/View State; stale-identity handling rules (D-003).
+
+**Output / 输出**：Save/Open 产品路径；可恢复的 snapshot + evidence + view state 组合；失效 node identity 的安全忽略逻辑。 / Save/Open product paths; a restorable snapshot + evidence + view-state combination; safe stale-node-identity ignoring logic.
+
+**Acceptance Criteria / 验收标准**：保存后重开恢复相同架构事实；Layout/View State 独立保存且不与 IR 合并；失效 node identity 被安全忽略且视图可用；保存/打开往返的确定性校验通过。 / Reopening restores identical architecture facts; Layout/View State saves separately and never merges into IR; stale node identities are safely ignored with a usable view; save/open round-trips pass determinism checks.
+
+**Known Risks / 已知风险**：LayoutState 污染 ArchitectureProject；失效 identity 破坏 mental map；磁盘格式冻结过早。 / LayoutState pollutes ArchitectureProject; stale identities damage the mental map; the disk format freezes prematurely.
+
+**Non-goals / 非目标**：不冻结最终磁盘格式；不做共享/个人存储策略决策（D-006 后续门禁）；不做版本迁移框架。 / No final disk-format freeze; no shared/personal storage decision (later D-006 gate); no version-migration framework.
+
+**Exit Evidence / 退出证据**：Save/Open integration tests；往返一致性与失效 identity 测试；Playwright save/open happy path。 / Save/Open integration tests; round-trip consistency and stale-identity tests; Playwright save/open happy path.
+
+#### P3.7 Phase Acceptance / 阶段验收
+
+**Goal / 目标**：完成 points-system Create/Display/Edit/Validate/Accept/Save/Open happy path 与 invalid-candidate/rejection/error paths；运行 unit/component/integration/Playwright、架构边界与完整 CI，并同步报告与回退证据。 / Complete the points-system Create/Display/Edit/Validate/Accept/Save/Open happy path plus invalid-candidate, rejection, and error paths; run unit/component/integration/Playwright, architecture-boundary checks, and full CI; synchronize reports and rollback evidence.
+
+**Input / 输入**：P3.0-P3.6 全部切片产出；points-system fixture；既有架构不变量与边界检查。 / All P3.0-P3.6 slice outputs; the points-system fixture; existing architecture invariants and boundary checks.
+
+**Output / 输出**：Phase 3 完成报告（按 Required Phase Completion Report 格式）；E2E 证据；workspace/IR/View State 边界评审记录。 / A Phase 3 completion report (Required Phase Completion Report format); E2E evidence; the Workspace/IR/View State boundary review record.
+
+**Acceptance Criteria / 验收标准**：happy path 全流程通过；invalid-candidate、rejection、error paths 有覆盖；所有 semantic edit 经 command/proposal 且不直接改 accepted IR；validation issue 可导航；保存后 IR 与 Layout/View State 分离；默认布局无需手动整理；完整 pnpm ci:verify 通过。 / The happy path passes end to end; invalid-candidate, rejection, and error paths are covered; every semantic edit uses a command/proposal without directly mutating accepted IR; validation issues navigate; saved IR and Layout/View State stay separate; the default layout needs no manual arrangement; the full pnpm ci:verify passes.
+
+**Known Risks / 已知风险**：E2E 覆盖不足而宣称完成；切片间契约漂移在验收时才暴露；性能或可读性未达标。 / Claiming completion with insufficient E2E coverage; cross-slice contract drift surfacing only at acceptance; performance or readability falling short.
+
+**Non-goals / 非目标**：不包含 Brownfield、Ghost、完整 Review、Handoff 或 Terminal；不引入真实 LLM。 / No Brownfield, Ghost, complete Review, Handoff, or Terminal; no real LLM.
+
+**Exit Evidence / 退出证据**：完整 CI 输出；Playwright 全套；边界与不变量检查；Phase 3 报告与回退说明。 / Full CI output; the complete Playwright suite; boundary and invariant checks; the Phase 3 report and rollback guidance.
+
+Phase 3 的 Review 仅是使 candidate 成为 accepted ArchitectureProject 的最小确认门禁；评论、多人 approval、impact analysis、Ghost presentation 与完整 Review workspace 属于 Phase 5。 / Phase 3 Review is only the minimal confirmation gate that turns a candidate into an accepted ArchitectureProject; comments, multi-reviewer approval, impact analysis, Ghost presentation, and the complete Review workspace belong to Phase 5.
+
 ### Non-goals / 非目标
 
 - 不做 Brownfield import、Ghost、Execution Handoff 或 Terminal。 / No Brownfield import, Ghost, Execution Handoff, or Terminal.
@@ -405,6 +552,12 @@ Checkpoint 3 是 P2.1–P2.4 的 Canvas capability gate；P2.5 是 Master Phase 
 
 - D-006: LayoutState storage and shared/personal scope.
 - Any new Inspector product semantics, irreversible command API, or IR change requires a new Decision.
+
+Phase 3 planning gates are recorded below without changing Architecture IR or freezing implementation prematurely. / 以下 Phase 3 规划门禁不修改 Architecture IR，也不提前冻结实现：
+
+- **P3-D1 Workspace host boundary / Workspace 宿主边界**：推荐 SvelteKit server boundary 调用 Node-only Workspace，浏览器只使用 typed app contract；阻塞 P3.1。 / Recommend a SvelteKit server boundary around the Node-only Workspace with a typed browser-facing app contract; blocks P3.1.
+- **P3-D2 Greenfield generation mode / Greenfield 生成模式**：推荐 V1 使用既有 deterministic Architecture Agent/Mock Provider 作为可重复基线，不接真实 LLM；阻塞 P3.2。 / Recommend the existing deterministic Architecture Agent/Mock Provider as the repeatable V1 baseline without a real LLM; blocks P3.2.
+- **P3-D3 Inspector command granularity / Inspector 命令粒度**：推荐 app-private、field-specific commands，禁止 generic patch；阻塞 P3.5。 / Recommend app-private, field-specific commands and prohibit generic patches; blocks P3.5.
 
 ### Exit Condition / 退出条件
 
@@ -688,28 +841,13 @@ Every completed Phase must report the following and must not merely say “imple
 7. **Decision Required / 待决策**
 8. **Next Phase Readiness / 下一 Phase 就绪度**
 
-## Current Phase 1 Readiness / 当前 Phase 1 就绪度
+## Current Phase Readiness / 当前 Phase 就绪度
 
-结论：**PHASE 1 VERIFIED — PHASE 2 READY, NOT STARTED**。
+结论：**PHASES 0–2 VERIFIED AND MERGED — PHASE 3 PLANNED, AWAITING DECISIONS**。
 
-Conclusion: **PHASE 1 VERIFIED — PHASE 2 READY, NOT STARTED**.
+Conclusion: **PHASES 0–2 VERIFIED AND MERGED — PHASE 3 PLANNED, AWAITING DECISIONS**.
 
-- D-005 Progressive Disclosure V1 Granularity：已批准 Option A，允许 Checkpoint 1 实现 component、显式 module、infrastructure grouping；不做自动 domain inference。
-- D-002 V1 Layout Solver：已通过 `LayoutEngine` 与内部 adapter 接入 ELK.js。
-- D-010 Web Worker Boundary：solver-only worker protocol/runtime 已实现并保持内部。
-- D-001 Default Direction：已批准 LR default，作为 compiler option。
-- D-004：已批准 V1 延后 pin；D-006：已批准 Workspace abstraction 持有 LayoutState。
-- D-003 已批准 drag position 只进入 Workspace-owned LayoutState；D-008 已批准 Standard + Semantic Zoom；D-009 已批准由 web adapter 隔离的 `@xyflow/svelte` V1 renderer。
-- D-007 仍按 Phase 5 Ghost presentation 门禁处理。
-
-- D-005 Progressive Disclosure V1 Granularity: Option A approved, authorizing component, explicit module, and infrastructure grouping in Checkpoint 1 without automatic domain inference.
-- D-002 V1 Layout Solver: ELK.js is integrated behind `LayoutEngine` and the internal adapter.
-- D-010 Web Worker Boundary: the solver-only worker protocol/runtime is implemented and remains internal.
-- D-001 Default Direction: LR default approved as a compiler option.
-- D-004 defers pinning beyond V1; D-006 assigns LayoutState to the Workspace abstraction.
-- D-003 approves drag positions only in Workspace-owned LayoutState; D-008 approves Standard + Semantic Zoom; D-009 approves an `@xyflow/svelte` V1 renderer isolated by the web adapter.
-- D-007 retains its Phase 5 Ghost-presentation gate.
-
-Checkpoint 1–2、FULL/INCREMENTAL、mental-map、movement-cost 与 Ghost core protocol 已通过 package tests、批准性能预算和完整 CI。Phase 1 已收尾；Svelte UI 本轮未开始，Phase 2 必须作为独立窄切片实施。
-
-Checkpoints 1–2, FULL/INCREMENTAL behavior, mental-map and movement-cost infrastructure, and the Ghost core protocol pass package tests, approved performance budgets, and the complete CI gate. Phase 1 is closed; Svelte UI did not start in this slice and Phase 2 must be implemented as a separate narrow slice.
+- Phase 0 Decision Freeze：D-001–D-006 与 D-008–D-010 已批准；D-007 保留 Phase 5 Ghost-presentation 门禁。 / Phase 0 Decision Freeze: D-001 through D-006 and D-008 through D-010 are approved; D-007 retains its Phase 5 Ghost-presentation gate.
+- Phase 1 Semantic Layout Compiler：Checkpoint 1–2、FULL/INCREMENTAL、mental-map、movement-cost 与 Ghost core protocol 已通过 package tests、批准性能预算和完整 CI。 / Phase 1 Semantic Layout Compiler: Checkpoints 1–2, FULL/INCREMENTAL behavior, mental-map and movement-cost infrastructure, and the Ghost core protocol pass package tests, approved performance budgets, and the complete CI gate.
+- Phase 2 Svelte CAD Infrastructure：SvelteKit/Svelte 5 app、唯一 LayoutResult->Svelte Flow adapter、基础 Canvas、Standard + Semantic Zoom、LayoutState-only drag、Auto Layout reset、solver-only worker 与 headless Add/Remove/Connect command application 已实现并合并（PR #1）。 / Phase 2 Svelte CAD Infrastructure: the SvelteKit/Svelte 5 app, sole LayoutResult->Svelte Flow adapter, foundational Canvas, Standard + Semantic Zoom, LayoutState-only drag, Auto Layout reset, solver-only worker, and headless Add/Remove/Connect command application are implemented and merged (PR #1).
+- Phase 3 Greenfield Workspace：规划完成（P3.0–P3.7 窄切片）；P3-D1、P3-D2、P3-D3 为推荐方向，等待用户确认后方可进入对应实现边界。 / Phase 3 Greenfield Workspace: planning is complete (P3.0–P3.7 narrow slices); P3-D1, P3-D2, and P3-D3 are recommendations awaiting user confirmation before their implementation boundaries.

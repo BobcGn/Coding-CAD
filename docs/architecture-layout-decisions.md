@@ -42,6 +42,18 @@ D-001 through D-010 in this file are the repository's canonical IDs. The UI V1 M
 
 `Blocking: NO` does not authorize Codex to decide; it only allows unrelated work before that feature boundary. Phase 0 Decision Freeze requires the user to fill the Final Decision or explicitly defer the item to a named Phase.
 
+## Phase 3 Planning Gates / Phase 3 规划门禁
+
+这些是 Phase 3 新发现的 app-integration 决策点，不重编号既有 D-001–D-010，也不改变其历史。推荐不等于批准；对应 implementation slice 必须等待用户确认。 / These app-integration decisions were discovered during Phase 3 planning. They do not renumber or alter the history of D-001 through D-010. A recommendation is not approval; the corresponding implementation slice must wait for user confirmation.
+
+| Gate | Blocks | Recommended Direction / 推荐方向 | Status / 状态 |
+| --- | --- | --- | --- |
+| P3-D1 Workspace host boundary / Workspace 宿主边界 | P3.1 | Node-only Workspace behind a SvelteKit server boundary; browser uses typed app contracts / Node-only Workspace 位于 SvelteKit server boundary 后，浏览器使用 typed app contract | USER DECISION REQUIRED |
+| P3-D2 Greenfield generation mode / Greenfield 生成模式 | P3.2 | Existing deterministic Architecture Agent with Mock Provider for V1; no real LLM / V1 使用现有 deterministic Architecture Agent + Mock Provider；不接真实 LLM | USER DECISION REQUIRED |
+| P3-D3 Inspector command granularity / Inspector 命令粒度 | P3.5 | App-private field-specific commands; no generic patch / app-private field-specific command；禁止 generic patch | USER DECISION REQUIRED |
+
+P3-D1 必须保持 ArchitectureProject snapshot、validation/review evidence、LayoutState 与 ephemeral UI state 的生命周期分离；不得让浏览器导入 `node:*`、`FileWorkspaceStorage` 或磁盘 schema。P3-D2 不关闭未来真实 LLM 集成，只把它留在 TODO-009 的独立门禁。P3-D3 不新增 Architecture IR 语义；如果所需字段不在现有 IR 中，必须停止并另行决策。 / P3-D1 must keep ArchitectureProject snapshots, validation/review evidence, LayoutState, and ephemeral UI state on separate lifecycles and must not expose `node:*`, `FileWorkspaceStorage`, or disk schemas to the browser. P3-D2 does not preclude future real-LLM integration; it leaves that work under the separate TODO-009 gate. P3-D3 adds no Architecture IR semantics; if a required field does not exist in the current IR, implementation must stop for a separate decision.
+
 # D-001 Default Architecture Direction / 默认架构方向
 
 Status:
@@ -546,3 +558,4 @@ Option A: only the ELK solver runs in a worker in V1. Semantic, abstraction, Vis
 - D-001、D-002、D-010 已于 2026-08-13 批准并在 Checkpoint 2 验证；Phase 2 进一步证明 ELK 只进入 solver worker chunk。 / D-001, D-002, and D-010 were approved on 2026-08-13 and verified at Checkpoint 2; Phase 2 additionally proves that ELK enters only the solver worker chunk.
 - Checkpoint 3 的 D-003、D-008、D-009 已实现并验证：drag 只更新 LayoutState，node 使用 Standard + Semantic Zoom，Svelte Flow 类型限制在 Web adapter/Canvas。 / D-003, D-008, and D-009 are implemented and verified at Checkpoint 3: drag updates only LayoutState, nodes use Standard + Semantic Zoom, and Svelte Flow types remain confined to the Web adapter/Canvas.
 - D-004 已批准 V1 延后 pin；D-006 已批准 Workspace abstraction 持有 LayoutState。D-007 仍影响后续 Ghost presentation。 / D-004 approves deferring pinning beyond V1; D-006 assigns LayoutState ownership to the Workspace abstraction. D-007 still affects later Ghost presentation.
+- Phase 3 新增 P3-D1（Workspace host boundary）、P3-D2（Greenfield generation mode）、P3-D3（Inspector command granularity）三个规划门禁，均为推荐方向，等待用户确认；它们不重编号 D-001–D-010，也不改变既有 Decision 历史。 / Phase 3 adds three planning gates — P3-D1 (Workspace host boundary), P3-D2 (Greenfield generation mode), and P3-D3 (Inspector command granularity) — all recommendations awaiting user confirmation; they do not renumber D-001 through D-010 or alter existing Decision history.
