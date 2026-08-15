@@ -2,9 +2,9 @@
 
 ## 状态 / Status
 
-P3.0 Contract and Host Freeze（2026-08-15）。本文件冻结 Greenfield Workspace 的 browser-safe 契约、宿主边界与生命周期所有权；P3.1 起按此契约实现 Workspace host bridge。本目录不含产品实现。
+P3.0 Contract and Host Freeze（2026-08-15）冻结本文件的契约；P3.1（2026-08-15）已按此契约实现 Workspace host bridge（见 `apps/web/src/lib/architecture/workspace/` 与 `apps/web/src/routes/api/workspace/`）。本目录仍是产品 Workspace UI 的未来边界，不包含 UI 实现。
 
-P3.0 Contract and Host Freeze (2026-08-15). This file freezes the Greenfield Workspace browser-safe contracts, host boundary, and lifecycle ownership; Workspace host bridge is implemented from P3.1 against these contracts. This directory contains no product implementation.
+P3.0 Contract and Host Freeze (2026-08-15) freezes the contracts in this file; P3.1 (2026-08-15) implemented the Workspace host bridge against them (see `apps/web/src/lib/architecture/workspace/` and `apps/web/src/routes/api/workspace/`). This directory remains the future product Workspace UI boundary and contains no UI implementation.
 
 ## 宿主边界 / Host Boundary
 

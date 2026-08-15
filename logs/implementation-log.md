@@ -806,3 +806,13 @@ P3.0 deliverables: apps/web/src/lib/cad/workspace/README.md freezes the browser-
 验证：全仓 typecheck 25/25、unit 28/28、integration 18/18 通过；git diff --check 通过。
 
 Validation: full workspace typecheck 25/25, unit 28/28, and integration 18/18 pass; git diff --check passes.
+
+## 2026-08-15 - P3.1 Workspace Host Bridge Complete / P3.1 Workspace 宿主桥接完成
+
+状态：已验证；P3.1 完成，P3.2（Requirement to Candidate）为下一切片。
+
+Status: Verified; P3.1 is complete and P3.2 (Requirement to Candidate) is the next slice.
+
+P3.1 交付：browser-safe typed contract 与 workspace-bridge client 在 apps/web/src/lib/architecture/workspace/；SvelteKit server routes 在 apps/web/src/routes/api/workspace/ 承载 Node-only Workspace create/open/save。@coding-cad/workspace 依赖加入 apps/web 并更新 lockfile。构建产物验证 Node-only 代码只进入 server chunks，浏览器 bundle 零 node:* 泄漏。
+
+P3.1 deliverables: browser-safe typed contracts and the workspace-bridge client in apps/web/src/lib/architecture/workspace/; SvelteKit server routes in apps/web/src/routes/api/workspace/ hosting Node-only Workspace create/open/save. The @coding-cad/workspace dependency was added to apps/web and the lockfile was updated. Build artifacts confirm Node-only code enters only server chunks with zero node:* leakage in the browser bundle.

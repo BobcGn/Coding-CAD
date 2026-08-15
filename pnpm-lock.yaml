@@ -45,6 +45,9 @@ importers:
       '@coding-cad/architecture-validator':
         specifier: workspace:*
         version: link:../../packages/architecture-validator
+      '@coding-cad/workspace':
+        specifier: workspace:*
+        version: link:../../packages/workspace
       '@xyflow/svelte':
         specifier: ^1.6.3
         version: 1.6.3(svelte@5.56.9)

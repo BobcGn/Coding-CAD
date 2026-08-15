@@ -119,3 +119,17 @@ Synchronized `logs/modules/web` Scope/State/Todo/Links to the state of Phase 2 v
 
 本轮未安装依赖、未实现 UI。
 This slice installs no dependency and implements no UI.
+
+## 2026-08-15 - P3.1 Workspace Host Bridge / P3.1 Workspace 宿主桥接
+
+状态：已验证。
+
+Status: Verified.
+
+实现 P3.1 最小切片：apps/web/src/lib/architecture/workspace/ 提供 browser-safe typed contract（Create/Open/Save DTO）与 workspace-bridge typed client；apps/web/src/routes/api/workspace/ 的 SvelteKit server routes（POST 创建、GET 打开、PUT 保存）承载 Node-only @coding-cad/workspace 操作。apps/web 新增 @coding-cad/workspace workspace:* 依赖并更新 lockfile。
+
+Implemented the P3.1 minimal slice: apps/web/src/lib/architecture/workspace/ provides browser-safe typed contracts (Create/Open/Save DTOs) and the workspace-bridge typed client; SvelteKit server routes under apps/web/src/routes/api/workspace/ (POST create, GET open, PUT save) host the Node-only @coding-cad/workspace operations. apps/web gained the @coding-cad/workspace workspace:* dependency and the lockfile was updated.
+
+验证：web typecheck 0/0；unit 7 files/11 tests（新增 contract 2 tests）；integration 2 files/5 tests（新增 bridge round-trip 3 tests）；web build 成功且 @coding-cad/workspace 仅出现在 server chunks（browser client 无 node:* 模块、无 FileWorkspaceStorage/磁盘 schema、无 Workspace 类逻辑）。全仓 typecheck 25/25、unit 28/28、build 15/15。
+
+Validation: web typecheck 0/0; unit 7 files/11 tests (2 new contract tests); integration 2 files/5 tests (3 new bridge round-trip tests); web build succeeds with @coding-cad/workspace confined to server chunks (browser client has no node:* modules, no FileWorkspaceStorage/disk schemas, and no Workspace class logic). Full workspace typecheck 25/25, unit 28/28, and build 15/15 pass.
