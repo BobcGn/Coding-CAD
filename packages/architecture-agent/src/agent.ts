@@ -11,8 +11,6 @@ import {
   type ValidationResult
 } from "@coding-cad/architecture-validator";
 import type { AgentContext } from "./context.js";
-import type { LLMProvider } from "./llm/provider.js";
-import { MockLLMProvider } from "./llm/mock-provider.js";
 import {
   HeuristicRequirementAnalyzer,
   type RequirementAnalyzer
@@ -29,10 +27,8 @@ import {
   ValidatorFeedbackRefinementLoop,
   type RefinementLoop
 } from "./validation/refinement-loop.js";
-import { architectureSystemPrompt } from "./prompts/architecture-system-prompt.js";
 
 export interface ArchitectureAgentOptions {
-  readonly llmProvider?: LLMProvider;
   readonly requirementAnalyzer?: RequirementAnalyzer;
   readonly decisionMaker?: DecisionMaker;
   readonly planner?: ArchitecturePlanner;
@@ -42,7 +38,6 @@ export interface ArchitectureAgentOptions {
 }
 
 export class ArchitectureAgent {
-  private readonly llmProvider: LLMProvider;
   private readonly requirementAnalyzer: RequirementAnalyzer;
   private readonly decisionMaker: DecisionMaker;
   private readonly planner: ArchitecturePlanner;
@@ -51,7 +46,6 @@ export class ArchitectureAgent {
   private readonly validator: ArchitectureValidator;
 
   constructor(options: ArchitectureAgentOptions = {}) {
-    this.llmProvider = options.llmProvider ?? new MockLLMProvider();
     this.requirementAnalyzer = options.requirementAnalyzer ?? new HeuristicRequirementAnalyzer();
     this.decisionMaker = options.decisionMaker ?? new HeuristicDecisionMaker();
     this.planner = options.planner ?? new HeuristicArchitecturePlanner({
@@ -67,8 +61,6 @@ export class ArchitectureAgent {
   async design(requirement: string): Promise<ArchitectureProject> {
     const context = await this.createContext(requirement);
     const analysis = await this.requirementAnalyzer.analyze(context.requirement);
-
-    await this.llmProvider.generate(`${architectureSystemPrompt}\n\nRequirement:\n${context.requirement}`);
 
     const draft = await this.planner.plan(analysis);
     const validation = this.validator.validate(draft);

@@ -79,20 +79,15 @@ The returned value is an `ArchitectureProject`, not source code and not YAML.
 
 返回值是 `ArchitectureProject`，不是源码，也不是 YAML。
 
-## Current LLM Strategy / 当前 LLM 策略
+## Generation Boundary / 生成边界（P3-D2）
 
-The first implementation uses `MockLLMProvider`. This keeps the reasoning pipeline deterministic while the architecture contract is still being proven.
+P3-D2（2026-08-15 用户确认）：**LLM 在架构生成部分无职责，仅负责后续审批等支持功能**。requirement -> candidate `ArchitectureProject` 的生成完全由 deterministic 的 Requirement Analyzer、Decision Maker、Architecture Planner 与 Validator 反馈循环完成；生成路径不包含任何 LLM 调用点，也不导出 LLM Provider 接口。
 
-第一阶段使用 `MockLLMProvider`。这样在验证架构契约时，推理流程保持确定性。
+P3-D2 (user-confirmed 2026-08-15): **LLM has no role in architecture generation and is limited to later approval/review support**. Requirement -> candidate `ArchitectureProject` generation is fully handled by the deterministic Requirement Analyzer, Decision Maker, Architecture Planner, and Validator feedback loop; the generation path contains no LLM call sites and exports no LLM Provider interface.
 
-Future providers can implement:
+若未来在审批/评审等下游辅助环节接入真实 LLM，必须通过新的用户决策与独立门禁（见根 TODO-009），且不得触碰生成流程。
 
-未来 provider 可以实现：
-
-- OpenAI
-- Claude
-- Gemini
-- Local LLM
+If a real LLM is integrated in the future for downstream approval/review support, it requires a new user decision and an independent gate (see root TODO-009) and must not touch the generation flow.
 
 ## Design Principles / 设计原则
 
