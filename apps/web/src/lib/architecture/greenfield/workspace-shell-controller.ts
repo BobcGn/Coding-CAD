@@ -10,6 +10,8 @@ import type { Proposal } from "@coding-cad/architecture-review";
 import { BrowserWorkerLayoutEngine } from "$lib/layout/worker/browser-worker-layout-engine.js";
 import { resetToGeneratedLayout } from "$lib/architecture/state/workspace-view-state.js";
 import { CandidateFlow } from "./candidate-flow.js";
+import type { ArchitectureCommand } from "../commands/architecture-command.js";
+import { CommandApplication } from "../commands/command-application.js";
 import type { GreenfieldShellState, ShellStatus } from "./workspace-shell.js";
 
 /**
@@ -34,6 +36,7 @@ export interface ShellController {
   generateFromRequirement(requirement: string, signal?: AbortSignal): Promise<void>;
   acceptCandidate(): Promise<void>;
   rejectCandidate(): void;
+  executeCommand(command: ArchitectureCommand): Promise<void>;
   updateLayoutState(next: LayoutState): void;
   selectNodeIds(nodeIds: readonly string[]): void;
   reset(): void;
@@ -50,6 +53,7 @@ export class WorkspaceShellController implements ShellController {
   private layoutValue: LayoutResult | undefined;
   private readonly flow: CandidateFlow;
   private readonly engineFactory: () => LayoutEngine;
+  private readonly commands: CommandApplication;
 
   constructor(accepted: ArchitectureProject, options: ShellControllerOptions = {}) {
     this.shell = {
@@ -60,6 +64,9 @@ export class WorkspaceShellController implements ShellController {
     };
     this.flow = options.flow ?? new CandidateFlow();
     this.engineFactory = options.engineFactory ?? (() => new BrowserWorkerLayoutEngine());
+    this.commands = new CommandApplication({
+      layoutEngine: this.engineFactory()
+    });
   }
 
   state(): GreenfieldShellState {
@@ -135,6 +142,46 @@ export class WorkspaceShellController implements ShellController {
     };
   }
 
+  async executeCommand(command: ArchitectureCommand): Promise<void> {
+    this.shell = { ...this.shell, status: "layout", message: "" };
+    try {
+      const result = await this.commands.execute(this.shell.accepted, command, "approve");
+      if (result.status === "rejected") {
+        this.shell = {
+          ...this.shell,
+          status: "error",
+          message: result.validation.issues.length > 0
+            ? `Command rejected: ${result.validation.issues[0]?.title ?? "validation failed"}`
+            : "Command rejected."
+        };
+        return;
+      }
+      this.shell = {
+        ...this.shell,
+        accepted: result.accepted,
+        status: "ready",
+        message: `Command accepted: ${describeCommand(command)}`
+      };
+      this.projectionValue = result.projection;
+      this.layoutValue = result.layout;
+      if (result.layout !== undefined) {
+        this.shell = {
+          ...this.shell,
+          layoutState: resetToGeneratedLayout(result.layout),
+          status: "ready",
+          message: `Command accepted: ${describeCommand(command)}`
+        };
+      }
+    } catch (error) {
+      const reason = error instanceof Error ? error.message : "Command failed.";
+      this.shell = {
+        ...this.shell,
+        status: "error",
+        message: `Command rejected: ${reason}`
+      };
+    }
+  }
+
   updateLayoutState(next: LayoutState): void {
     this.shell = { ...this.shell, layoutState: next };
   }
@@ -178,6 +225,14 @@ export class WorkspaceShellController implements ShellController {
         engine.dispose();
       }
     }
+  }
+}
+
+function describeCommand(command: ArchitectureCommand): string {
+  switch (command.type) {
+    case "add-component": return "Add component " + command.component.id;
+    case "remove-component": return "Remove component " + command.componentId;
+    case "connect-components": return "Connect components " + command.connection.id;
   }
 }
 

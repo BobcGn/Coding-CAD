@@ -165,3 +165,21 @@ Also fixed the browser-safe boundary (P3-D1): @coding-cad/workspace gained a ./p
 验证：web typecheck 0/0；unit 9 files/21 tests；integration 3 files/7 tests；Playwright E2E 3 passed（Greenfield 生成/Canvas 交互、Problems 导航、Reject 保持 accepted IR）；web build 成功且 client bundle 无 node:*。
 
 Validation: web typecheck 0/0; unit 9 files/21 tests; integration 3 files/7 tests; three Playwright E2E pass (Greenfield generate/Canvas interaction, Problems navigation, Reject preserves accepted IR); web build succeeds with no node:* in the client bundle.
+
+## 2026-08-15 - P3.4 Palette Command Entry / P3.4 Palette 命令入口
+
+状态：已验证。
+
+Status: Verified.
+
+实现 P3.4：apps/web/src/lib/architecture/greenfield/palette.ts 从 Component Registry 投影 browser-safe Palette items 并产生 Add/Remove/Connect 显式命令；WorkspaceShellController.executeCommand 复用 Phase 2 CommandApplication（candidate -> Validator -> Review gate -> accepted -> layout）执行命令；+page.svelte 增加 Palette 面板，三栏布局（Palette + Canvas + Problems）。apps/web 新增 @coding-cad/component-registry 依赖。
+
+Implemented P3.4: palette.ts projects browser-safe Palette items from the Component Registry and produces explicit Add/Remove/Connect commands; WorkspaceShellController.executeCommand reuses the Phase 2 CommandApplication (candidate -> Validator -> Review gate -> accepted -> layout); +page.svelte gains a Palette panel in a three-column layout (Palette + Canvas + Problems). apps/web gained the @coding-cad/component-registry dependency.
+
+同时修复 Canvas 高度塌陷（.svelte-flow 高度 0 导致指针事件被拦截）——根因是组件样式选择器仍为旧 section，已改为对根 div 生效；Canvas role 调整为 application 并补充键盘支持。
+
+Also fixed the Canvas height collapse (the .svelte-flow height was 0, intercepting pointer events) — the root cause was the component style selector still targeting the old section; it now targets the root div. The Canvas role is now application with keyboard support.
+
+验证：web typecheck 0/0；unit 9 files/23 tests（新增 2 个命令执行测试）；integration 3 files/7 tests；Playwright E2E 4 passed（Greenfield 全流程、Palette 添加 Kafka、Problems 导航、Reject）；build 通过。
+
+Validation: web typecheck 0/0; unit 9 files/23 tests (2 new command-execution tests); integration 3 files/7 tests; four Playwright E2E pass (Greenfield full flow, Palette adds Kafka, Problems navigation, Reject); build passes.

@@ -20,6 +20,7 @@
     "@coding-cad/architecture-layout": "workspace:*",
     "@coding-cad/architecture-review": "workspace:*",
     "@coding-cad/architecture-validator": "workspace:*",
+    "@coding-cad/component-registry": "workspace:*",
     "@coding-cad/workspace": "workspace:*",
     "@xyflow/svelte": "^1.6.3",
     "svelte": "^5.56.9"

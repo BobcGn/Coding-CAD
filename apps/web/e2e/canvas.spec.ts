@@ -9,12 +9,11 @@ test("greenfield workspace generates, validates, and renders a navigable canvas"
   await expect(page.getByRole("heading", { name: "Problems" })).toBeVisible();
 
   // The generated candidate renders PointService and its infrastructure.
-  const pointService = page.getByText("PointService");
-  await expect(pointService).toBeVisible();
-  await expect(page.getByText("PostgreSQL")).toBeVisible();
+  const pointServiceNode = page.locator(".svelte-flow__node").filter({ hasText: "PointService" });
+  await expect(pointServiceNode).toBeVisible();
+  await expect(page.locator(".svelte-flow__node").filter({ hasText: "PostgreSQL" })).toBeVisible();
 
   // Selecting a node updates the selection label with its id.
-  const pointServiceNode = page.locator(".svelte-flow__node").filter({ hasText: "PointService" });
   await pointServiceNode.click();
   await expect(page.getByText("Selected: point-service")).toBeVisible();
 
@@ -54,7 +53,18 @@ test("greenfield workspace generates, validates, and renders a navigable canvas"
   for (let index = 0; index < 5; index += 1) {
     await page.getByRole("button", { name: /zoom out/i }).click();
   }
-  await expect(page.getByRole("region", { name: "Architecture Canvas" })).toHaveAttribute("data-density", "compact");
+  await expect(page.locator("[data-density='compact']")).toBeVisible();
+});
+
+test("palette adds a component through the command application", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Generate Architecture" }).click();
+  await expect(page.getByRole("heading", { name: "Palette" })).toBeVisible();
+
+  // Add Kafka from the palette; the command application accepts it.
+  await page.getByRole("button", { name: /Kafka/ }).click();
+  await expect(page.getByText(/Command accepted: Add component kafka/i)).toBeVisible();
+  await expect(page.locator(".svelte-flow__node").filter({ hasText: "Kafka" })).toBeVisible();
 });
 
 test("validation problems navigate to the affected component", async ({ page }) => {

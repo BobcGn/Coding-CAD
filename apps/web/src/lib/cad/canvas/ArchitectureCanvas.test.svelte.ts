@@ -25,6 +25,6 @@ describe("Architecture Canvas", () => {
       layout: { status: "success", direction: "LR", size: { width: 0, height: 0 }, nodes: [], edges: [], diagnostics: [] },
       viewState: { version: 1, direction: "LR", nodes: [], edges: [] }
     });
-    expect(screen.getByRole("region", { name: "Architecture Canvas" })).toBeInTheDocument();
+    expect(screen.getByRole("application", { name: "Architecture Canvas" })).toBeInTheDocument();
   });
 });

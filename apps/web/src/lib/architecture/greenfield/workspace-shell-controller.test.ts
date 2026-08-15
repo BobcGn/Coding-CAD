@@ -80,4 +80,38 @@ describe("P3.3 workspace shell controller", () => {
     assert.equal(state.proposal, undefined);
     assert.deepEqual(state.accepted, acceptedBefore);
   });
+
+  it("executes an add-component command through the command application", async () => {
+    const controller = createController();
+    const acceptedBefore = structuredClone(pointsSystemFixture);
+
+    await controller.executeCommand({
+      type: "add-component",
+      component: { id: "kafka", name: "Kafka", type: "queue", capabilities: ["asynchronous-delivery"] }
+    });
+
+    const state = controller.state();
+    assert.equal(state.status, "ready");
+    assert.ok(state.message.includes("Add component kafka"));
+    assert.notDeepEqual(state.accepted, acceptedBefore);
+    assert.ok(state.accepted.architecture.components.some((component) => component.id === "kafka"));
+  });
+
+  it("a duplicate add-component command is rejected and preserves accepted IR", async () => {
+    const controller = createController();
+    await controller.executeCommand({
+      type: "add-component",
+      component: { id: "kafka", name: "Kafka", type: "queue", capabilities: ["asynchronous-delivery"] }
+    });
+    const acceptedAfterFirst = structuredClone(controller.state().accepted);
+
+    await controller.executeCommand({
+      type: "add-component",
+      component: { id: "kafka", name: "Kafka", type: "queue", capabilities: ["asynchronous-delivery"] }
+    });
+
+    const state = controller.state();
+    assert.equal(state.status, "error");
+    assert.deepEqual(state.accepted, acceptedAfterFirst);
+  });
 });

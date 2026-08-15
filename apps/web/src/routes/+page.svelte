@@ -4,6 +4,8 @@
   import { WorkspaceShellController } from "$lib/architecture/greenfield/workspace-shell-controller.js";
   import { pointsSystemFixture } from "$lib/architecture/projection/points-system-fixture.js";
   import { resetToGeneratedLayout } from "$lib/architecture/state/workspace-view-state.js";
+  import { projectPalette, type PaletteItem } from "$lib/architecture/greenfield/palette.js";
+  import { toAddComponentCommand } from "$lib/architecture/greenfield/palette.js";
   import type { GreenfieldShellState } from "$lib/architecture/greenfield/workspace-shell.js";
 
   let controller = $state<WorkspaceShellController>();
@@ -14,6 +16,7 @@
   let busy = $state(false);
   let errorMessage = $state("");
   let selectedNodeIds = $state<string[]>([]);
+  let paletteItems = $state<readonly PaletteItem[]>(projectPalette().items);
 
   function syncFromController(): void {
     if (controller === undefined) return;
@@ -55,6 +58,19 @@
     controller.reset();
     requirement = "设计一个积分系统。100万用户。积分不能丢失。未来支持活动兑换。";
     syncFromController();
+  }
+
+  async function handleAddFromPalette(item: PaletteItem): Promise<void> {
+    if (controller === undefined || busy) return;
+    busy = true;
+    errorMessage = "";
+    try {
+      await controller.executeCommand(toAddComponentCommand(item));
+    } catch (error) {
+      errorMessage = error instanceof Error ? error.message : "Command failed.";
+    } finally {
+      syncFromController();
+    }
   }
 
   function handleAutoLayout(): void {
@@ -102,6 +118,24 @@
     <section class="status" aria-busy="true" aria-live="polite">Generating and laying out architecture…</section>
   {:else if shell && projection && layout && shell.layoutState}
     <div class="workspace">
+      <aside class="palette">
+        <h2>Palette</h2>
+        <ul>
+          {#each paletteItems as item (item.id)}
+            <li>
+              <button
+                type="button"
+                class="palette-item"
+                onclick={() => handleAddFromPalette(item)}
+                disabled={busy}
+              >
+                <strong>{item.name}</strong>
+                <span>{item.category}</span>
+              </button>
+            </li>
+          {/each}
+        </ul>
+      </aside>
       <section class="canvas">
         <ArchitectureCanvas
           projection={projection}
@@ -172,10 +206,19 @@
   textarea { resize: vertical; border: 1px solid #94a3b8; border-radius: 0.5rem; padding: 0.4rem; }
   button { border: 1px solid #94a3b8; border-radius: 0.5rem; background: #f8fafc; padding: 0.4rem 0.7rem; cursor: pointer; }
   button:disabled { opacity: 0.55; cursor: not-allowed; }
-  .workspace { display: grid; grid-template-columns: 1fr 22rem; gap: 0.75rem; min-height: 30rem; }
-  .canvas { height: 30rem; border-radius: 12px; background: #f8fafc; overflow: hidden; }
-  .canvas :global(.svelte-flow) { width: 100%; height: 100%; }
+  .workspace { display: grid; grid-template-columns: 12rem minmax(0, 1fr) 18rem; gap: 0.75rem; min-height: 30rem; }
+  @media (max-width: 1100px) { .workspace { grid-template-columns: 10rem minmax(0, 1fr); } .workspace .problems { display: none; } }
+  .canvas { height: 30rem; border-radius: 12px; background: #f8fafc; overflow: hidden; pointer-events: none; }
+  .canvas :global(.svelte-flow) { width: 100%; height: 100%; pointer-events: auto; }
   .canvas :global(.svelte-flow__nodes) { height: 100%; z-index: 5; position: relative; }
+  .canvas :global(.svelte-flow__pane) { z-index: 0; }
+  .canvas :global(.svelte-flow__node) { pointer-events: auto !important; }
+  .palette { border: 1px solid #cbd5e1; border-radius: 12px; background: #f8fafc; padding: 0.75rem; overflow: auto; }
+  .palette h2 { margin: 0 0 0.5rem; font-size: 1rem; }
+  .palette ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.5rem; }
+  .palette li { margin: 0; }
+  button.palette-item { width: 100%; display: grid; gap: 0.2rem; text-align: left; border: 1px solid #e2e8f0; border-radius: 8px; background: #fff; padding: 0.5rem; cursor: pointer; }
+  button.palette-item span { color: #64748b; font-size: 0.75rem; text-transform: uppercase; }
   .problems { border: 1px solid #cbd5e1; border-radius: 12px; background: #f8fafc; padding: 0.75rem; overflow: auto; }
   .problems h2 { margin: 0 0 0.5rem; font-size: 1rem; }
   .problems ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.5rem; }

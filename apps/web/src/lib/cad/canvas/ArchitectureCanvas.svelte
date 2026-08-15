@@ -66,12 +66,23 @@
     onSelectionChange?.([node.id], []);
   };
 
-  function handleSectionClick(event: MouseEvent): void {
-    const target = event.target as Element | null;
-    const nodeElement = target?.closest?.(".svelte-flow__node");
+  function selectNodeFromTarget(target: EventTarget | null): void {
+    const element = target as Element | null;
+    const nodeElement = element?.closest?.(".svelte-flow__node");
     const nodeId = nodeElement?.getAttribute("data-id");
     if (nodeId !== undefined && nodeId !== null) {
       onSelectionChange?.([nodeId], []);
+    }
+  }
+
+  function handleSectionClick(event: MouseEvent): void {
+    selectNodeFromTarget(event.target);
+  }
+
+  function handleSectionKeyDown(event: KeyboardEvent): void {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      selectNodeFromTarget(event.target);
     }
   }
 
@@ -81,7 +92,14 @@
   };
 </script>
 
-<section class:semantic-compact={compact} data-density={compact ? "compact" : "standard"} aria-label="Architecture Canvas" onclick={handleSectionClick}>
+<div
+  class:semantic-compact={compact}
+  data-density={compact ? "compact" : "standard"}
+  aria-label="Architecture Canvas"
+  role="application"
+  onclick={handleSectionClick}
+  onkeydown={handleSectionKeyDown}
+>
   <SvelteFlow
     bind:nodes={flowNodes}
     bind:edges={flowEdges}
@@ -100,10 +118,10 @@
     <Controls />
     <MiniMap pannable zoomable />
   </SvelteFlow>
-</section>
+</div>
 
 <style>
-  section {
+  div {
     width: 100%;
     height: 100%;
     min-height: 36rem;
