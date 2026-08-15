@@ -95,3 +95,27 @@ Command contracts remain renderer-neutral. Add/Remove/Connect traverses candidat
 定向验收通过：typecheck 0/0；unit 6 files/9 tests；integration 1 file/2 tests；Playwright Chrome E2E 1 passed；build 主页面约 65.71 KiB gzip，ELK 位于独立 worker chunk。完整 workspace CI 结果记录在根实施日志。
 
 Targeted acceptance passes: typecheck 0/0; unit 6 files/9 tests; integration 1 file/2 tests; one Playwright Chrome E2E; main-page build about 65.71 KiB gzip with ELK in a separate worker chunk. Complete workspace CI evidence is recorded in the root implementation log.
+
+## 2026-08-13 - Phase 3 Greenfield Planning / Phase 3 Greenfield 规划
+
+状态：规划完成，代码未开始。
+
+Status: Planning complete; code has not started.
+
+规划 P3.0–P3.7 的 Greenfield 垂直切片，并明确浏览器不得直接导入 Node Workspace/filesystem、Palette/Inspector 必须复用 Phase 2 command application、Phase 3 Review 仅为最小 accept/reject gate。P3-D1–P3-D3 等待用户确认。本轮未安装依赖或实现 UI。
+
+Planned the P3.0–P3.7 Greenfield vertical slices and established that the browser must not directly import the Node Workspace/filesystem, Palette and Inspector must reuse the Phase 2 command application, and Phase 3 Review is only a minimal accept/reject gate. P3-D1 through P3-D3 await user confirmation. This slice installs no dependency and implements no UI.
+
+
+## 2026-08-15 - Phase 3 Detailed Slice Planning / Phase 3 详细切片规划
+
+状态：详细规划完成，代码未开始。
+
+Status: Detailed planning complete; code has not started.
+
+同步了 `logs/modules/web` 的 Scope/State/Todo/Links 到 Phase 2 已验证、Phase 3 详细规划完成的状态；WEB-001 重新定义为 Greenfield Architecture Workspace 并等待 P3-D1–P3-D3 决策。Master Plan 已为 P3.0–P3.7 提供完整切片规格，供实现开始时逐片恢复。
+
+Synchronized `logs/modules/web` Scope/State/Todo/Links to the state of Phase 2 verified and detailed Phase 3 planning complete; WEB-001 is redefined as the Greenfield Architecture Workspace and awaits the P3-D1–P3-D3 decisions. The Master Plan now provides complete slice specifications for P3.0–P3.7 to restore slice by slice when implementation starts.
+
+本轮未安装依赖、未实现 UI。
+This slice installs no dependency and implements no UI.
