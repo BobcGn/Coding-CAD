@@ -229,3 +229,17 @@ P3.7 acceptance: completed the points-system Create/Display/Edit/Validate/Accept
 验证：Playwright E2E 9 passed；pnpm ci:verify 全门禁通过（workspace architecture 15 modules、typecheck 25/25、unit 28/28、integration 18/18、E2E 17/17、build 15/15、change-record/commit/security checks）。
 
 Validation: nine Playwright E2E pass; pnpm ci:verify passes all gates (workspace architecture 15 modules, typecheck 25/25, unit 28/28, integration 18/18, E2E 17/17, build 15/15, plus change-record, commit-message, and security checks).
+
+## 2026-08-16 - Workspace Sidebar and Personal Settings / 工作区侧边栏与个人设置
+
+状态：已验证。
+
+Status: Verified.
+
+提 PR 前 UI 收尾：新增左侧工作区侧边栏，聚合新建项目、保存、打开与自动布局等项目管理功能；个人设置整合到侧边栏左下角的齿轮图标，点击弹出设置弹窗，包含语言（中文/English）与主题（亮色/暗色/跟随系统）。设置作为 ephemeral UI state 持久化到浏览器 localStorage，不进入 Architecture IR、LayoutState 或 Workspace 磁盘格式（P3.0 矩阵）；主题通过 data-theme 属性与 CSS 变量实现，跟随系统模式监听 prefers-color-scheme。
+
+Pre-PR UI closeout: added a left workspace sidebar aggregating project management (New Project, Save, Open, Auto Layout); personal settings are collapsed behind a gear icon in the sidebar bottom-left that opens a dialog with language (中文/English) and theme (light/dark/system). Settings persist as ephemeral UI state in browser localStorage and never enter Architecture IR, LayoutState, or the Workspace disk format (P3.0 matrix); the theme uses a data-theme attribute with CSS variables, and system mode listens to prefers-color-scheme.
+
+验证：web typecheck 0/0；unit 11 files/38 tests（新增 7 个 ui-settings 测试）；integration 3 files/9 tests；Playwright E2E 10 passed（新增侧边栏+齿轮弹窗设置测试）；完整 pnpm ci:verify 通过（unit 28/28、integration 18/18、E2E 17/17、build 15/15）。
+
+Validation: web typecheck 0/0; unit 11 files/38 tests (7 new ui-settings tests); integration 3 files/9 tests; ten Playwright E2E pass (new sidebar + gear settings dialog test); the complete pnpm ci:verify passes (unit 28/28, integration 18/18, E2E 17/17, build 15/15).

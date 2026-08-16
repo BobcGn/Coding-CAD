@@ -134,6 +134,31 @@ test("duplicate palette component is rejected and accepted IR is preserved", asy
   await expect(page.getByText(/Command rejected: Component postgresql already exists/i)).toBeVisible();
 });
 
+test("workspace sidebar hosts project actions and a gear settings popover", async ({ page }) => {
+  await page.goto("/");
+  // Default locale is English; the sidebar is present with project actions.
+  await expect(page.getByRole("complementary", { name: "Workspace" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "New Project" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Save" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Open" })).toBeVisible();
+
+  // The gear opens a settings dialog; settings are not expanded in the sidebar.
+  const gear = page.getByRole("button", { name: "Personal Settings" });
+  await gear.click();
+  await expect(page.getByRole("dialog", { name: "Personal Settings" })).toBeVisible();
+
+  // Language switch to Chinese updates sidebar labels.
+  await page.selectOption("#locale-setting", "zh");
+  await expect(page.getByRole("button", { name: "新建项目" })).toBeVisible();
+
+  // Theme switch applies the data-theme attribute.
+  const html = page.locator("html");
+  await page.getByLabel("暗色").check();
+  await expect(html).toHaveAttribute("data-theme", "dark");
+  await page.getByLabel("亮色").check();
+  await expect(html).toHaveAttribute("data-theme", "light");
+});
+
 test("full greenfield happy path: create, validate, accept, save, open", async ({ page }) => {
   await page.goto("/");
 

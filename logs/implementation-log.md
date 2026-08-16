@@ -866,3 +866,13 @@ No blocking decisions. D-007 (Ghost presentation) retains its Phase 5 gate; late
 Phase 3 完成；Phase 4（Brownfield Architecture Workspace）就绪，依赖 Phase 3 exit 与 D-005（已批准）。
 
 Phase 3 is complete; Phase 4 (Brownfield Architecture Workspace) is ready, depending on the Phase 3 exit and D-005 (approved).
+
+## 2026-08-16 - Workspace Sidebar and Personal Settings / 工作区侧边栏与个人设置
+
+状态：已验证；Phase 3 UI 收尾完成。
+
+Status: Verified; Phase 3 UI closeout complete.
+
+提 PR 前完成两项 UI 收尾：左侧工作区侧边栏聚合项目管理功能；个人设置整合到侧边栏左下角齿轮图标弹窗（语言 + 主题亮/暗/跟随系统），设置持久化到浏览器 localStorage，不进入架构/磁盘格式。完整 pnpm ci:verify 通过。
+
+Completed two pre-PR UI closeouts: the left workspace sidebar aggregates project management, and personal settings are collapsed behind a gear-icon dialog in the sidebar bottom-left (language + light/dark/system theme), persisted to browser localStorage without entering architecture or disk formats. The complete pnpm ci:verify passes.

@@ -35,6 +35,16 @@ The UI must not become a new Architecture Source of Truth. Svelte Flow state can
 
 `@xyflow/svelte` imports and types are restricted to Canvas components, `src/lib/layout/adapters`, and their app-layer tests. They must not leak into commands, persistence formats, or any package public API. Manual drag persists only position in Workspace-owned LayoutState and must not infer constraints; node rendering uses Standard density with a Compact semantic-zoom fallback.
 
+## Phase 3 Greenfield Workspace / Phase 3 Greenfield 工作区
+
+`apps/web` 的左侧工作区侧边栏聚合项目管理（新建项目、保存、打开、自动布局）；侧边栏左下角的齿轮图标打开个人设置弹窗，包含语言（中文/English）与主题（亮色/暗色/跟随系统）。设置作为 ephemeral UI state 持久化到浏览器 localStorage，不进入 Architecture IR、LayoutState 或 Workspace 磁盘格式（P3.0 生命周期矩阵）。
+
+The left workspace sidebar aggregates project management (New Project, Save, Open, Auto Layout); the gear icon in the sidebar bottom-left opens a personal settings dialog with language (中文/English) and theme (light/dark/system). Settings persist as ephemeral UI state in browser localStorage and never enter Architecture IR, LayoutState, or the Workspace disk format (P3.0 lifecycle matrix).
+
+Phase 3 支持 requirement -> candidate ArchitectureProject -> Validator Problems -> 最小 Review gate -> accepted IR -> save/open 全流程；Palette 从 Component Registry 投影组件，Inspector 用 field-specific 命令编辑 semantics（P3-D3）。
+
+Phase 3 supports the full requirement -> candidate ArchitectureProject -> Validator Problems -> minimal Review gate -> accepted IR -> save/open flow; the Palette projects components from the Component Registry, and the Inspector edits semantics through field-specific commands (P3-D3).
+
 ## UI MVP Roadmap / UI MVP 路线图
 
 ### Architecture Workspace / 架构工作区

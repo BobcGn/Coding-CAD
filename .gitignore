@@ -15,6 +15,9 @@ coverage/
 .agents/
 .codex/
 
+# Coding CAD workspace storage (default root for saved projects)
+.coding-cad/
+
 # Environment and secrets
 .env
 .env.*
