@@ -12,11 +12,17 @@ This file is the single source of truth for active TODOs.
 - 当前处理 / Current handling: `ArchitectureProject` 和拆分类型文件已完成，尚未加入运行时 schema 校验。
 - 解除条件 / Exit condition: 为 IR 增加稳定 schemaVersion 策略、运行时校验和错误定位测试。
 
-## TODO-009: Architecture Agent Real LLM Integration / Architecture Agent 真实 LLM 接入
+## TODO-009: Review-Side LLM Support / 审批侧 LLM 支持
 
 - 状态 / Status: 待处理 / Pending
-- 当前处理 / Current handling: `packages/architecture-agent` 当前使用 Mock Provider 和确定性启发式流程。
-- 解除条件 / Exit condition: 定义真实 LLM Provider 的超时、错误处理、结构化输出校验、提示版本和审计记录。
+- 当前处理 / Current handling: `packages/architecture-agent` 使用 Mock Provider 和确定性启发式流程；P3-D2（2026-08-15 用户确认）规定 LLM 在生成部分无职责。
+- 边界 / Boundary: LLM 只允许出现在审批/评审等下游辅助环节（如 Review 辅助分析、建议生成），禁止用于 requirement -> candidate 的架构生成；任何生成侧 LLM 接入都需要新的用户决策。
+- 解除条件 / Exit condition: 定义审批侧 LLM 支持的超时、错误处理、结构化输出校验、提示版本和审计记录，且不触碰生成流程。
+
+- Status: Pending
+- Current handling: `packages/architecture-agent` uses the Mock Provider and deterministic heuristics; P3-D2 (user-confirmed 2026-08-15) assigns LLM no role in generation.
+- Boundary: LLM is allowed only in downstream approval/review support (for example, review assistance or suggestion generation); it is prohibited from architecture generation from requirement to candidate, and any generation-side LLM integration requires a new user decision.
+- Exit condition: Define timeout, error handling, structured-output validation, prompt versioning, and audit records for approval-side LLM support without touching the generation flow.
 
 ## TODO-010: Architecture Agent Planning Generalization / Architecture Agent 规划泛化
 
@@ -41,6 +47,18 @@ This file is the single source of truth for active TODOs.
 - 状态 / Status: Phase 2 已验证 / Phase 2 verified
 - 当前处理 / Current handling: P2.0–P2.6、Checkpoint 3、基础 Canvas、solver-only worker 与 headless command application 已完成。
 - 解除条件 / Exit condition: 已满足；后续 Web 产品能力进入独立 Phase 3。
+
+## TODO-016: Greenfield Architecture Workspace / Greenfield 架构工作区
+
+- 状态 / Status: 已完成 / Complete
+- 当前处理 / Current handling: Phase 3（Greenfield Architecture Workspace）P3.0–P3.7 全部实现并验证；requirement -> candidate -> validate -> accept -> save/open 全流程 E2E 通过；完整 ci:verify 通过。
+- 决策门禁 / Decision gates: P3-D1、P3-D2、P3-D3（均已确认）。
+- 解除条件 / Exit condition: 已满足；后续 Greenfield 扩展与 Phase 4 Brownfield 进入独立切片。
+
+- Status: Complete
+- Current handling: Phase 3 (Greenfield Architecture Workspace) P3.0–P3.7 fully implemented and verified; the requirement -> candidate -> validate -> accept -> save/open flow passes E2E; the complete ci:verify passes.
+- Decision gates: P3-D1, P3-D2, and P3-D3 (all confirmed).
+- Exit condition: Met; later Greenfield extensions and Phase 4 Brownfield enter separate slices.
 
 ## TODO-014: Architecture Layout Contracts / Architecture Layout 契约
 

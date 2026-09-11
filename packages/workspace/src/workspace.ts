@@ -21,6 +21,11 @@ export interface WorkspaceData {
   readonly decisions: readonly DecisionRecord[];
   readonly validationHistory: readonly ValidationRecord[];
   readonly blueprintHistory: readonly BlueprintRecord[];
+  /**
+   * Browser-safe serialized Layout/View State. Kept separate from
+   * ArchitectureProject snapshots (P3.0 matrix); never merged into the IR.
+   */
+  readonly viewState?: string;
 }
 
 export interface WorkspaceStorage {
@@ -193,6 +198,14 @@ export class Workspace {
     this.assertUniqueRecordId(record.id);
     await this.persist({ blueprintHistory: [...this.data.blueprintHistory, record] });
     return clone(record);
+  }
+
+  async saveViewState(serializedViewState: string): Promise<void> {
+    await this.persist({ viewState: serializedViewState });
+  }
+
+  loadViewState(): string | undefined {
+    return this.data.viewState === undefined ? undefined : this.data.viewState;
   }
 
   exportReport(): WorkspaceReport {

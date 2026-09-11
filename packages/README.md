@@ -185,6 +185,6 @@ The core loop uses three independently executable test layers:
 | 集成 / Integration | DSL -> IR -> Registry -> Validator 的进程内组合 / In-process DSL -> IR -> Registry -> Validator composition | `pnpm test:integration` | `packages/cli/src/integration.test.ts` |
 | 端到端 / End-to-end | 真实 CLI 子进程、文件输入、stdout/stderr 与退出码 / Real CLI subprocess, file input, stdout/stderr, and exit codes | `pnpm test:e2e` | `packages/cli/src/cli.test.ts` |
 
-`pnpm test` 仍是 workspace 总入口。`apps/server` 和 `apps/web` 当前是占位边界，它们的占位脚本不计入十二个核心模块的测试覆盖。
+`pnpm test` 仍是 workspace 总入口。`apps/web` 自 Phase 2 起已是 SvelteKit/Svelte 5 app，并拥有独立 typecheck、unit、integration 与 Playwright E2E 证据（详见 `apps/web/README.md`）；`apps/server` 仍是占位边界。核心 package 的十二个模块测试覆盖以其自身 `src/*.test.ts` 为准。
 
-`pnpm test` remains the workspace-wide entry point. `apps/server` and `apps/web` are currently placeholder boundaries; their placeholder scripts do not count as test coverage for the twelve core modules.
+`pnpm test` remains the workspace-wide entry point. `apps/web` has been a SvelteKit/Svelte 5 app since Phase 2 with its own typecheck, unit, integration, and Playwright E2E evidence (see `apps/web/README.md`); `apps/server` remains a placeholder boundary. Test coverage for the twelve core packages is measured by their own `src/*.test.ts` files.

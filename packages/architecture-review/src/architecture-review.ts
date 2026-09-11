@@ -1,4 +1,3 @@
-import { randomUUID } from "node:crypto";
 import type { ArchitectureProject } from "@coding-cad/architecture-ir";
 import type { Approval, RecordApprovalInput } from "./approval.js";
 import { analyzeImpact } from "./impact-analysis.js";
@@ -18,7 +17,7 @@ export class ArchitectureReview {
 
   constructor(options: ArchitectureReviewOptions = {}) {
     this.clock = options.clock ?? (() => new Date());
-    this.idGenerator = options.idGenerator ?? randomUUID;
+    this.idGenerator = options.idGenerator ?? browserSafeIdGenerator;
   }
 
   createProposal(input: CreateProposalInput): Proposal {
@@ -198,4 +197,17 @@ function assertNonEmpty(value: string, field: string): void {
 
 function clone<T>(value: T): T {
   return structuredClone(value);
+}
+
+/**
+ * Browser-safe default id generator. Avoids a Node-only randomUUID import so
+ * the package can be consumed from a browser bundle (P3-D1) without pulling
+ * node:* modules into the client.
+ */
+function browserSafeIdGenerator(): string {
+  const cryptoObject = globalThis.crypto;
+  if (cryptoObject !== undefined && typeof cryptoObject.randomUUID === "function") {
+    return cryptoObject.randomUUID();
+  }
+  return `proposal-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }

@@ -2,9 +2,25 @@
 
 ## 文档状态 / Document Status
 
-状态：Phase 2 已验证；SvelteKit/Svelte 5、Svelte Flow adapter、基础 Canvas、solver-only worker 与 headless command application 已实现。
+状态：Phase 2 已验证并合并；Phase 3 Greenfield Workspace 正在规划，代码尚未开始。
 
-Status: Phase 2 is verified. SvelteKit/Svelte 5, the Svelte Flow adapter, foundational Canvas, solver-only worker, and headless command application are implemented.
+Status: Phase 2 is verified and merged. The Phase 3 Greenfield Workspace is being planned and implementation has not started.
+
+## Greenfield Host Boundary / Greenfield 宿主边界
+
+Phase 3 必须把浏览器交互与 Node-only Workspace 持久化隔开。推荐的待批准路径是： / Phase 3 must separate browser interaction from Node-only Workspace persistence. The recommended path, pending approval, is:
+
+```text
+Svelte UI
+  -> typed app contract
+  -> SvelteKit server boundary
+  -> @coding-cad/workspace
+  -> workspace-internal storage
+```
+
+浏览器不得导入 `node:*`、`FileWorkspaceStorage` 或 workspace 磁盘格式。ArchitectureProject snapshot、validation/review evidence、LayoutState 与 ephemeral UI state 必须保持不同生命周期；具体 storage contract 在 P3-D1 确认前不得冻结。 / The browser must not import `node:*`, `FileWorkspaceStorage`, or the workspace disk format. ArchitectureProject snapshots, validation/review evidence, LayoutState, and ephemeral UI state must retain distinct lifecycles; no concrete storage contract may be frozen before P3-D1 is confirmed.
+
+Phase 3 只提供 candidate accept/reject 的最小 Review gate。完整 Review UI、comment、multi-approval、impact analysis 与 Ghost presentation 留给 Phase 5。 / Phase 3 provides only a minimal candidate accept/reject Review gate. The complete Review UI, comments, multi-approval, impact analysis, and Ghost presentation remain in Phase 5.
 
 ## 核心原则 / Core Principle
 
@@ -117,13 +133,17 @@ Do not reintroduce an Agent Runtime, Agent Provider, Agent Scheduler, Agent Memo
 ```text
 New Project
   -> Requirement
-  -> Architecture Agent
+  -> Architecture Agent (deterministic + Mock Provider)
   -> candidate ArchitectureProject
   -> Validator / Review
   -> Architecture Semantic Layout
   -> LayoutResult
   -> Canvas
 ```
+
+P3-D2（2026-08-15 用户确认）明确 LLM 职责边界：**LLM 在架构生成部分无职责，仅负责后续审批等支持功能**。requirement -> candidate ArchitectureProject 的生成完全由 deterministic Architecture Agent + Mock Provider 完成，任何生成阶段都不调用 LLM；真实 LLM 若未来接入，只允许出现在审批/评审等下游辅助环节，且由 TODO-009 独立门禁管辖。UI 不得把生成流程伪装成 LLM 驱动，也不得在生成侧预留 LLM 调用点。
+
+P3-D2 (user-confirmed 2026-08-15) defines the LLM responsibility boundary: **LLM has no role in architecture generation and is limited to later approval/review support**. Requirement -> candidate ArchitectureProject generation is fully handled by the deterministic Architecture Agent with the Mock Provider; no generation stage invokes an LLM. If a real LLM is integrated in the future, it may appear only in downstream approval/review support under the separate TODO-009 gate. The UI must not present generation as LLM-driven and must not reserve LLM call sites on the generation side.
 
 ### Brownfield / 已有仓库
 

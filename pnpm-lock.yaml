@@ -33,6 +33,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@coding-cad/architecture-agent':
+        specifier: workspace:*
+        version: link:../../packages/architecture-agent
       '@coding-cad/architecture-ir':
         specifier: workspace:*
         version: link:../../packages/architecture-ir
@@ -45,6 +48,12 @@ importers:
       '@coding-cad/architecture-validator':
         specifier: workspace:*
         version: link:../../packages/architecture-validator
+      '@coding-cad/component-registry':
+        specifier: workspace:*
+        version: link:../../packages/component-registry
+      '@coding-cad/workspace':
+        specifier: workspace:*
+        version: link:../../packages/workspace
       '@xyflow/svelte':
         specifier: ^1.6.3
         version: 1.6.3(svelte@5.56.9)

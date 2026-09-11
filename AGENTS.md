@@ -123,14 +123,14 @@ Before non-trivial Layout or UI work, read `docs/ui-v1-execution-plan.md`, `docs
 - Restore each Checkpoint's Goal, Input, Output, Acceptance Criteria, Known Risks, and Non-goals before coding.
 - Do not mark a Checkpoint complete without external evidence for every Acceptance Criterion.
 - If a required Decision remains `USER DECISION REQUIRED`, stop before the blocked implementation boundary and ask the user.
-- Current documented gate: Phase 1 and Checkpoints 1–2 are verified; D-003, D-008, and D-009 are approved; Phase 2/Checkpoint 3 is ready but not started. Re-read the documents because this status may change.
+- Current documented gate: Phases 0–2 and Checkpoints 1–3 are verified and merged; D-001–D-006 and D-008–D-010 are approved; Phase 3 planning is complete and awaits user confirmation of P3-D1–P3-D3 before its implementation slices. Re-read the documents because this status may change.
 - Update design docs, Decision records, roadmap status, and structured logs whenever an approved implementation changes a documented contract or risk.
 
 - 除非用户在理解影响与回退后明确改变计划，否则按 `docs/ui-v1-execution-plan.md` 的 Master Phase 0→7 顺序工作，并把 Checkpoint 作为该顺序内的能力验收门禁。
 - 编码前恢复该 Checkpoint 的 Goal、Input、Output、Acceptance Criteria、Known Risks 和 Non-goals。
 - 未用外部证据满足全部 Acceptance Criteria，不得把 Checkpoint 标为完成。
 - 所需 Decision 仍为 `USER DECISION REQUIRED` 时，必须停在被阻塞的实现边界并询问用户。
-- 当前文档门禁：Phase 1 与 Checkpoint 1–2 已验证；D-003、D-008、D-009 已批准；Phase 2/Checkpoint 3 已就绪但尚未开始。状态可能变化，必须重新读取文档。
+- 当前文档门禁：Phase 0–2 与 Checkpoint 1–3 已验证并合并；D-001–D-006 与 D-008–D-010 已批准；Phase 3 规划完成，等待用户确认 P3-D1–P3-D3 后方可进入实现切片。状态可能变化，必须重新读取文档。
 - 已批准实现改变文档契约或风险时，必须同步更新设计文档、Decision、Roadmap 状态和结构化日志。
 
 ## Terminal and External Agent Boundary / Terminal 与外部 Agent 边界

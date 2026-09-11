@@ -1,12 +1,16 @@
 # 当前状态 / Current State
 
-更新时间 / Updated at: 2026-08-13 CST (Asia/Shanghai)
+更新时间 / Updated at: 2026-08-15 22:45 CST (Asia/Shanghai)
 
 ## 总览 / Overview
 
-状态：Phase 0–2 已验证；Checkpoint 3 与 Phase 2 headless command application 已完成。Phase 3 尚未开始。
+状态：Phase 0–3 已验证并合并；Phase 3（Greenfield Architecture Workspace）按 P3.0–P3.7 全部实现并验证；P3-D1、P3-D2、P3-D3 已于 2026-08-15 全部由用户确认。完整 pnpm ci:verify 通过。Phase 4（Brownfield）为下一阶段。
 
-Status: Phases 0–2 are verified. Checkpoint 3 and the Phase 2 headless command application are complete. Phase 3 has not started.
+Status: Phases 0–3 are verified and merged. Phase 3 (Greenfield Architecture Workspace) is fully implemented and verified across P3.0–P3.7; P3-D1, P3-D2, and P3-D3 were all confirmed by the user on 2026-08-15. The complete pnpm ci:verify passes. Phase 4 (Brownfield) is next.
+
+Phase 3 规划为 P3.0–P3.7：contract/host freeze、Workspace host bridge、requirement-to-candidate、workspace shell/projection、Palette command entry、semantic Inspector、Save/Open lifecycle 与 phase acceptance。每个切片已在 `docs/ui-v1-execution-plan.md` 展开为 Goal、Input、Output、Acceptance Criteria、Known Risks、Non-goals 与 Exit Evidence 规格。P3-D2 已确认；P3-D1 与 P3-D3 保持待用户确认。
+
+Phase 3 is planned as P3.0–P3.7: contract/host freeze, Workspace host bridge, requirement-to-candidate, workspace shell/projection, Palette command entry, semantic Inspector, Save/Open lifecycle, and phase acceptance. Each slice is expanded in `docs/ui-v1-execution-plan.md` with Goal, Input, Output, Acceptance Criteria, Known Risks, Non-goals, and Exit Evidence specifications. P3-D2 is confirmed; P3-D1 and P3-D3 remain pending user confirmation.
 
 Phase 2 已按 P2.0–P2.6 窄切片完成：SvelteKit/Svelte 5 app foundation、唯一 LayoutResult-to-Svelte-Flow adapter、基础 Canvas、Standard + Semantic Zoom、LayoutState-only drag、Auto Layout reset、solver-only Web Worker，以及 renderer-neutral Add/Remove/Connect command application。
 

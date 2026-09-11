@@ -737,3 +737,142 @@ Targeted evidence: Web typecheck reports 0 errors and 0 warnings; unit tests pas
 最终完整 `pnpm ci:verify` 通过：workspace architecture 15 modules；typecheck 25/25；unit 28/28；integration 18/18；E2E 17/17；build 15/15。性能证据：100/150 cold 183.37 ms、p95 56.64 ms；500/800 cold 484.96 ms、p95 501.34 ms；ELK worker gzip 471,876 bytes。`git diff --check` 同时通过。
 
 The final complete `pnpm ci:verify` passes: workspace architecture 15 modules; typecheck 25/25; unit 28/28; integration 18/18; E2E 17/17; and build 15/15. Performance evidence: 100/150 cold 183.37 ms and p95 56.64 ms; 500/800 cold 484.96 ms and p95 501.34 ms; ELK worker gzip 471,876 bytes. `git diff --check` also passes.
+
+## 2026-08-13 - Phase 3 Greenfield Planning / Phase 3 Greenfield 规划
+
+状态：规划完成，等待用户决策；实现未开始。
+
+Status: Planning complete and awaiting user decisions; implementation has not started.
+
+PR #1 已合并为 `a917f5d`，本地与远端 Phase 2 分支已删除；`codex/phase-3-greenfield-workspace` 已快进到合并后的 `main`。Phase 3 被拆分为 P3.0–P3.7，覆盖 Workspace host、candidate/review lifecycle、Workspace shell、Palette、Inspector、Save/Open 与验收。
+
+PR #1 was merged as `a917f5d`; the local and remote Phase 2 branches were deleted, and `codex/phase-3-greenfield-workspace` was fast-forwarded to post-merge `main`. Phase 3 is split into P3.0–P3.7 covering Workspace hosting, candidate/review lifecycle, Workspace shell, Palette, Inspector, Save/Open, and acceptance.
+
+规划识别三个实现前门禁：P3-D1 使用 SvelteKit server boundary 隔离 Node-only Workspace；P3-D2 使用现有 deterministic Architecture Agent/Mock Provider 作为 V1 Greenfield baseline；P3-D3 使用 app-private field-specific Inspector commands 并禁止 generic patch。三项均为推荐，尚未代替用户决策。本轮未安装依赖或修改行为代码。
+
+Planning identified three pre-implementation gates: P3-D1 isolates the Node-only Workspace behind a SvelteKit server boundary; P3-D2 uses the existing deterministic Architecture Agent/Mock Provider as the V1 Greenfield baseline; and P3-D3 uses app-private field-specific Inspector commands while prohibiting generic patches. All three are recommendations and do not replace user decisions. This slice installs no dependency and changes no behavior code.
+
+
+## 2026-08-15 - Phase 3 Detailed Slice Planning / Phase 3 详细切片规划
+
+状态：详细规划完成，等待用户决策；实现未开始。
+
+Status: Detailed planning complete and awaiting user decisions; implementation has not started.
+
+同步了 `logs/modules/web` 的 Scope/State/Todo/Links（此前仍停留在 Phase 2 之前的 placeholder 描述），并把 `docs/ui-v1-execution-plan.md` 尾部的旧 Phase 1 Readiness 段更新为 Phase 0–2 已验证合并、Phase 3 规划完成的当前状态。
+
+Synchronized `logs/modules/web` Scope/State/Todo/Links (previously still describing the pre-Phase-2 placeholder) and updated the stale Phase 1 Readiness section at the end of `docs/ui-v1-execution-plan.md` to the current state of Phases 0–2 verified and merged with Phase 3 planning complete.
+
+在 Master Plan 的 Phase 3 部分为 P3.0–P3.7 每个切片补充了完整规格：Goal、Input、Output、Acceptance Criteria、Known Risks、Non-goals 与 Exit Evidence，覆盖 Workspace host bridge、requirement-to-candidate、workspace shell、Palette command entry、semantic Inspector、Save/Open lifecycle 与阶段验收；Roadmap Checkpoint 4 已链接到该详细规格。P3-D1–P3-D3 保持为推荐方向，等待用户确认后才进入对应实现边界。
+
+The Master Plan Phase 3 section now carries complete specifications for each P3.0–P3.7 slice: Goal, Input, Output, Acceptance Criteria, Known Risks, Non-goals, and Exit Evidence, covering the Workspace host bridge, requirement-to-candidate, workspace shell, Palette command entry, semantic Inspector, Save/Open lifecycle, and phase acceptance; Roadmap Checkpoint 4 links to these detailed specifications. P3-D1 through P3-D3 remain recommendations awaiting user confirmation before their implementation boundaries.
+
+本轮未安装依赖、未修改行为代码；文档结构、Git 边界与 workspace 基线检查在提交前通过。
+
+This slice installs no dependency and changes no behavior code; documentation-structure, Git-boundary, and workspace-baseline checks pass before commit.
+
+## 2026-08-15 - P3-D2 Confirmed: Zero LLM in Generation / P3-D2 确认：生成零 LLM
+
+状态：决策已记录，Phase 3 实现开始。
+
+Status: Decision recorded; Phase 3 implementation has started.
+
+用户在 codex/phase-3-greenfield-workspace 上明确 P3-D2 决策：**LLM 在生成部分无职责，仅负责后续审批等功能**。requirement -> candidate ArchitectureProject 的生成完全由 deterministic Architecture Agent + Mock Provider 完成，任何生成阶段不调用 LLM；真实 LLM 若未来接入只允许出现在审批/评审等下游辅助环节，由 TODO-009 独立门禁管辖。
+
+The user explicitly confirmed P3-D2 on codex/phase-3-greenfield-workspace: **LLM has no role in architecture generation and is limited to later approval/review support**. Requirement -> candidate ArchitectureProject generation is fully handled by the deterministic Architecture Agent with the Mock Provider; no generation stage invokes an LLM. If a real LLM is integrated in the future, it is allowed only in downstream approval/review support under the separate TODO-009 gate.
+
+边界已写入 docs/architecture-layout-decisions.md（P3-D2 门禁行与 Blocking Summary）、docs/ui-v1-execution-plan.md（P3-D2 门禁与 P3.2 Non-goals）、docs/ui-mvp-roadmap.md（Checkpoint 4 状态/Non-goals/Ordered Slices）、docs/ui-architecture.md（Greenfield 工作流 LLM 边界）。TODO-009 定位调整为审批侧 LLM 支持。
+
+The boundary is recorded in docs/architecture-layout-decisions.md (P3-D2 gate row and Blocking Summary), docs/ui-v1-execution-plan.md (P3-D2 gate and P3.2 Non-goals), docs/ui-mvp-roadmap.md (Checkpoint 4 status/Non-goals/Ordered Slices), and docs/ui-architecture.md (Greenfield workflow LLM boundary). TODO-009 is refocused as approval-side LLM support.
+
+P3-D1（Workspace host boundary）与 P3-D3（Inspector command granularity）仍为推荐方向，等待用户确认；确认前不进入 P3.1/P3.5 实现边界。本轮文档改动未安装依赖、未修改行为代码；提交前的验证命令通过。
+
+P3-D1 (Workspace host boundary) and P3-D3 (Inspector command granularity) remain recommendations awaiting user confirmation; their implementation boundaries are not entered before confirmation. This slice installs no dependency and changes no behavior code; verification commands pass before commit.
+
+## 2026-08-15 - P3-D1/P3-D3 Confirmed; P3.0 Complete / P3-D1/P3-D3 确认；P3.0 完成
+
+状态：决策全部确认；P3.0 契约冻结完成；P3.1 开始。
+
+Status: All decisions confirmed; the P3.0 contract freeze is complete; P3.1 has started.
+
+用户批准 P3-D1（SvelteKit server boundary + typed app contract，浏览器不导入 node:*/FileWorkspaceStorage/磁盘 schema）与 P3-D3（app-private field-specific commands，禁止 generic patch）。连同此前确认的 P3-D2（生成零 LLM），Phase 3 三项门禁全部通过。
+
+The user approved P3-D1 (SvelteKit server boundary with typed app contracts; the browser imports no node:*/FileWorkspaceStorage/disk schemas) and P3-D3 (app-private field-specific commands; generic patches prohibited). Together with the previously confirmed P3-D2 (zero LLM in generation), all three Phase 3 gates are cleared.
+
+P3.0 交付：apps/web/src/lib/cad/workspace/README.md 冻结 browser-safe DTO 边界、SvelteKit server boundary 与 accepted/candidate/evidence/view-state/ephemeral 生命周期所有权矩阵；packages/architecture-agent 移除生成路径 LLM 调用点（删除 llm/ 目录与 system prompt，index 不再导出 LLM provider）。
+
+P3.0 deliverables: apps/web/src/lib/cad/workspace/README.md freezes the browser-safe DTO boundary, SvelteKit server boundary, and the accepted/candidate/evidence/view-state/ephemeral lifecycle ownership matrix; packages/architecture-agent removed generation-side LLM call sites (deleted the llm/ directory and system prompt; index no longer exports an LLM provider).
+
+验证：全仓 typecheck 25/25、unit 28/28、integration 18/18 通过；git diff --check 通过。
+
+Validation: full workspace typecheck 25/25, unit 28/28, and integration 18/18 pass; git diff --check passes.
+
+## 2026-08-15 - P3.1 Workspace Host Bridge Complete / P3.1 Workspace 宿主桥接完成
+
+状态：已验证；P3.1 完成，P3.2（Requirement to Candidate）为下一切片。
+
+Status: Verified; P3.1 is complete and P3.2 (Requirement to Candidate) is the next slice.
+
+P3.1 交付：browser-safe typed contract 与 workspace-bridge client 在 apps/web/src/lib/architecture/workspace/；SvelteKit server routes 在 apps/web/src/routes/api/workspace/ 承载 Node-only Workspace create/open/save。@coding-cad/workspace 依赖加入 apps/web 并更新 lockfile。构建产物验证 Node-only 代码只进入 server chunks，浏览器 bundle 零 node:* 泄漏。
+
+P3.1 deliverables: browser-safe typed contracts and the workspace-bridge client in apps/web/src/lib/architecture/workspace/; SvelteKit server routes in apps/web/src/routes/api/workspace/ hosting Node-only Workspace create/open/save. The @coding-cad/workspace dependency was added to apps/web and the lockfile was updated. Build artifacts confirm Node-only code enters only server chunks with zero node:* leakage in the browser bundle.
+
+## 2026-08-16 - Phase 3 Completion Report / Phase 3 完成报告
+
+### 1. Completed / 已完成
+
+Phase 3（Greenfield Architecture Workspace）按 P3.0–P3.7 全部实现：P3.0 契约与宿主冻结（browser-safe DTO、SvelteKit server boundary、生命周期矩阵、生成零 LLM）；P3.1 Workspace host bridge（server routes + typed contract）；P3.2 Requirement to Candidate（deterministic Agent + Validator + 最小 Review gate）；P3.3 Workspace shell（New Project/Requirement/Canvas/Problems/selection/loading-error）；P3.4 Palette command entry；P3.5 Semantic Inspector（field-specific 命令）；P3.6 Save/Open lifecycle（IR/evidence/view state 分离）；P3.7 Phase acceptance（happy path + error paths + 完整 CI）。
+
+Phase 3 (Greenfield Architecture Workspace) is fully implemented across P3.0–P3.7: P3.0 contract/host freeze (browser-safe DTOs, SvelteKit server boundary, lifecycle matrix, zero-LLM generation); P3.1 Workspace host bridge (server routes + typed contract); P3.2 Requirement to Candidate (deterministic Agent + Validator + minimal Review gate); P3.3 Workspace shell (New Project/Requirement/Canvas/Problems/selection/loading-error); P3.4 Palette command entry; P3.5 Semantic Inspector (field-specific commands); P3.6 Save/Open lifecycle (IR/evidence/view state separation); P3.7 phase acceptance (happy path + error paths + full CI).
+
+### 2. Acceptance Criteria Result / 验收结果
+
+Create/Display/Edit/Validate/Accept/Save/Open happy path 通过（9 个 Playwright E2E）；invalid-candidate/rejection/error paths 通过（空 requirement、重复组件、reject）；所有 semantic edit 经 command/proposal 且不直接改 accepted IR；validation issue 可导航；保存后 IR 与 Layout/View State 分离；默认布局无需手动整理。
+
+The Create/Display/Edit/Validate/Accept/Save/Open happy path passes (nine Playwright E2E); invalid-candidate, rejection, and error paths pass (empty requirement, duplicate component, reject); every semantic edit uses a command/proposal without directly mutating accepted IR; validation issues navigate; saved IR and Layout/View State stay separate; the default layout needs no manual arrangement.
+
+### 3. Tests / 测试
+
+pnpm ci:verify 全门禁通过：workspace architecture 15 modules；typecheck 25/25；unit 28/28；integration 18/18；E2E 17/17（web 9 + cli 8）；build 15/15；change-record、commit-message、secrets checks 通过。web 侧 unit 10 files/30 tests、integration 3 files/9 tests、Playwright 9 tests。
+
+pnpm ci:verify passes all gates: workspace architecture 15 modules; typecheck 25/25; unit 28/28; integration 18/18; E2E 17/17 (web 9 + cli 8); build 15/15; change-record, commit-message, and secrets checks pass. Web: unit 10 files/30 tests, integration 3 files/9 tests, Playwright 9 tests.
+
+### 4. Architecture Invariants Check / 架构不变量检查
+
+ArchitectureProject 仍是唯一事实来源；浏览器 bundle 无 node:*、FileWorkspaceStorage 或磁盘 schema（P3-D1）；生成路径零 LLM（P3-D2）；Inspector 无 generic patch 且不编辑 width/height/color/border（P3-D3）；accepted/candidate/evidence/view-state 生命周期分离（P3.0 矩阵）；LayoutState 不写入 Architecture IR。
+
+ArchitectureProject remains the sole source of truth; the browser bundle has no node:*, FileWorkspaceStorage, or disk schemas (P3-D1); the generation path has zero LLM (P3-D2); the Inspector has no generic patch and no width/height/color/border editing (P3-D3); accepted/candidate/evidence/view-state lifecycles stay separate (P3.0 matrix); LayoutState never enters Architecture IR.
+
+### 5. Known Risks / 已知风险
+
+Playwright 与 Svelte 5 事件委托存在兼容限制（条件渲染面板内按钮需原生事件分发）；vite dev 用于 E2E（preview 不提供 server routes）；workspace 磁盘格式仍未冻结（D-006 后续门禁）。
+
+Playwright and Svelte 5 event delegation have a compatibility limitation (buttons inside conditionally rendered panels need native event dispatch); E2E uses vite dev (preview does not serve server routes); the workspace disk format remains unfrozen (later D-006 gate).
+
+### 6. Technical Debt / 技术债
+
+workspace package 的 ./pure 子路径导出与 browser-safe idGenerator 是为 P3-D1 引入的最小适配；E2E nativeClick helper 用于规避 Playwright/Svelte 5 兼容限制；Inspector 编辑暂限 description/capabilities（contracts/constraints 编辑留待后续切片）。
+
+The workspace ./pure subpath export and browser-safe idGenerator are minimal P3-D1 adaptations; the E2E nativeClick helper works around the Playwright/Svelte 5 limitation; Inspector editing is limited to description/capabilities for now (contracts/constraints editing remains for later slices).
+
+### 7. Decision Required / 待决策
+
+无阻塞决策。D-007（Ghost presentation）保留 Phase 5 门禁；D-004/D-006 的后续子决策（pin、shared/personal storage）在 Phase 6 前确认。
+
+No blocking decisions. D-007 (Ghost presentation) retains its Phase 5 gate; later D-004/D-006 sub-decisions (pin, shared/personal storage) are confirmed before Phase 6.
+
+### 8. Next Phase Readiness / 下一 Phase 就绪度
+
+Phase 3 完成；Phase 4（Brownfield Architecture Workspace）就绪，依赖 Phase 3 exit 与 D-005（已批准）。
+
+Phase 3 is complete; Phase 4 (Brownfield Architecture Workspace) is ready, depending on the Phase 3 exit and D-005 (approved).
+
+## 2026-08-16 - Workspace Sidebar and Personal Settings / 工作区侧边栏与个人设置
+
+状态：已验证；Phase 3 UI 收尾完成。
+
+Status: Verified; Phase 3 UI closeout complete.
+
+提 PR 前完成两项 UI 收尾：左侧工作区侧边栏聚合项目管理功能；个人设置整合到侧边栏左下角齿轮图标弹窗（语言 + 主题亮/暗/跟随系统），设置持久化到浏览器 localStorage，不进入架构/磁盘格式。完整 pnpm ci:verify 通过。
+
+Completed two pre-PR UI closeouts: the left workspace sidebar aggregates project management, and personal settings are collapsed behind a gear-icon dialog in the sidebar bottom-left (language + light/dark/system theme), persisted to browser localStorage without entering architecture or disk formats. The complete pnpm ci:verify passes.

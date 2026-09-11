@@ -1,39 +1,31 @@
 # 当前范围 / Current Scope
 
-更新时间 / Updated at: 2026-08-13 CST (Asia/Shanghai)
+更新时间 / Updated at: 2026-08-16 00:10 CST (Asia/Shanghai)
 
 ## 本轮目标 / Current Objective
 
-在 `codex/phase-2-svelte-cad` 分支完成 Phase 2 P2.0–P2.6：建立 Svelte CAD 基础设施、Canvas、状态边界、solver-only worker、headless command application 与验收证据。
+Phase 3（Greenfield Architecture Workspace）已全部完成：P3.0–P3.7 实现与验收通过，完整 pnpm ci:verify 通过。下一步为 Phase 4（Brownfield Architecture Workspace）规划。
 
-Complete Phase 2 P2.0–P2.6 on `codex/phase-2-svelte-cad`: establish Svelte CAD infrastructure, Canvas, state boundaries, the solver-only worker, headless command application, and acceptance evidence.
+Phase 3 (Greenfield Architecture Workspace) is fully complete: P3.0–P3.7 implementation and acceptance pass, and the complete pnpm ci:verify passes. The next slice is Phase 4 (Brownfield Architecture Workspace) planning.
 
 ## 边界 / Boundaries
 
-- 本轮只实现 Phase 2/Checkpoint 3 与配套 headless command application。
-- 依照用户明确批准实施 headless Review gate、LayoutState-only drag 和 app 层 Vitest/Svelte/Playwright 工具链。
-- Checkpoint 3 验收基础 Canvas；Master Phase 2 另验收 headless command application。
-- Palette/Inspector 等可见编辑入口及 add/remove/connect 产品 E2E 属于 Phase 3。
-- 不实现 Palette、Inspector、完整 Greenfield、Brownfield、Ghost、Handoff 或 Terminal。
-- 不修改 Architecture IR/DSL、`architecture-layout` public contract 或既有 Phase 1 行为。
+- Phase 3 已收尾；不进入 Phase 4 实现。
+- 保留 ArchitectureProject 唯一事实来源、browser-safe server boundary（P3-D1）与生成零 LLM（P3-D2）。
+- 不实现 Brownfield、Ghost、完整 Review、Handoff、Terminal 或真实 LLM Provider。
 
-- This slice implements only Phase 2/Checkpoint 3 and the companion headless command application.
-- Under explicit user approval, implement the headless Review gate, LayoutState-only drag, and app-layer Vitest/Svelte/Playwright toolchain.
-- Checkpoint 3 accepts the foundational Canvas; Master Phase 2 additionally requires a headless command application.
-- Visible editing entry points such as Palette/Inspector and product E2E for add/remove/connect belong to Phase 3.
-- Do not implement Palette, Inspector, complete Greenfield, Brownfield, Ghost, Handoff, or Terminal behavior.
-- Do not change Architecture IR/DSL, the `architecture-layout` public contract, or existing Phase 1 behavior.
+- Phase 3 is closed; no Phase 4 implementation begins.
+- Preserve ArchitectureProject as the sole source of truth, the browser-safe server boundary (P3-D1), and zero-LLM generation (P3-D2).
+- Do not implement Brownfield, Ghost, complete Review, Handoff, Terminal, or a real LLM Provider.
 
 ## 验收标准 / Acceptance Criteria
 
-- Phase 2 有严格排序、可独立验收的窄切片。
-- Checkpoint 3 与 Master Phase 2 的职责和退出关系明确。
-- Phase 2/3 的 command、UI control 与 E2E 边界无重叠 mutation path。
-- 文档与根级/模块级日志同步，且未安装依赖或实现 UI。
-- 文档检查与现有 workspace 基线保持通过。
+- P3.0–P3.7 全部切片实现并验证。
+- Greenfield requirement -> candidate -> validate -> accept -> save/open 全流程 E2E 通过。
+- 完整 pnpm ci:verify 通过（typecheck 25/25、unit 28/28、integration 18/18、E2E 17/17、build 15/15）。
+- 文档与根级/模块级日志同步。
 
-- Phase 2 has strictly ordered, independently acceptable narrow slices.
-- The responsibility and exit relationship between Checkpoint 3 and Master Phase 2 is explicit.
-- Phase 2/3 command, UI-control, and E2E boundaries create no duplicate mutation path.
-- Documents and root/module logs are aligned, with no dependencies installed and no UI implemented.
-- Documentation checks and the existing workspace baseline remain passing.
+- All P3.0–P3.7 slices are implemented and verified.
+- The Greenfield requirement -> candidate -> validate -> accept -> save/open flow passes E2E.
+- The complete pnpm ci:verify passes (typecheck 25/25, unit 28/28, integration 18/18, E2E 17/17, build 15/15).
+- Documents and root/module logs are aligned.
