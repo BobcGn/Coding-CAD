@@ -9,12 +9,14 @@
 3. `Links/current.md` 必须记录可复现证据，包括文件、命令和结果。
 4. `implementation-log.md` 只追加历史切片，不重写旧记录。
 5. 所有 Markdown 日志必须中英双语。
+6. 所有 PR 描述、阶段退出报告、变更记录（change-record）、每个步骤的汇报统一按“1. 做了什么 / What -> 2. 为什么这么做 / Why -> 3. 验证结果 / Verification”顺序书写，中英双语。
 
 1. Root logs are the cross-module source of truth; module logs are local sources of truth.
 2. `Todo/current.md` is the single body source for active TODOs; other logs should reference TODO IDs.
 3. `Links/current.md` must record reproducible evidence, including files, commands, and results.
 4. `implementation-log.md` is append-only for historical slices.
 5. All Markdown logs must be bilingual in Chinese and English.
+6. All PR descriptions, phase exit reports, change records (change-record), and step reports must follow "1. 做了什么 / What -> 2. 为什么这么做 / Why -> 3. 验证结果 / Verification" in order, bilingual.
 
 ## Coding CAD 标准 / Coding CAD Standards
 

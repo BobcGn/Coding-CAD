@@ -937,3 +937,27 @@ PR #3首次远端CI在额外security:audit步骤报告7high，本地旧ci:verify
 
 
 本轮最终验证：冻结安装、源码build、安全high门禁及含审计的强制ci:verify均exit0；Web58unit/9integration/dev21/preview21，所有Turbo阶段0cached。pnpm audit --json仍exit1，因剩余2moderate/1low；不将其误标为零漏洞或环境错误。证据见logs/validation/p3-security-closeout/report.md；远端以PR Checks为准。 / Final local gates pass with forced source builds and all browser guards. Unfiltered JSON audit exits1 for remaining low/moderate findings, not a zero-vulnerability claim or environment error. Hosted status remains independently observable.
+
+## 2026-10-16 - 阶段 4 步骤 0：固化记录格式与规则文档 / Phase 4 Step 0: Standardize Recording Format and Rules
+
+### 1. 做了什么 / What
+- 识别仓库中所有涉及记录格式的载体：`.github/pull_request_template.md`、`AGENTS.md`、`CLAUDE.md`、`docs/documentation-guidelines.md`、`docs/logging-system.md`、`logs/Standards/current.md`、`logs/README.md`、`scripts/ci/check-change-record.mjs` 以及 `scripts/ci/check-change-record.test.mjs`。
+- 将“1. 做了什么 / What -> 2. 为什么这么做 / Why -> 3. 验证结果 / Verification”三段式顺序结构和中英双语要求写入上述所有规则与模板载体。
+- 升级 `scripts/ci/check-change-record.mjs`，增加对变更条目的三段结构与中英双语的自动化校验；新增单元测试 `scripts/ci/check-change-record.test.mjs`（7/7 通过），并在 `package.json` 的 `check:changelog` 中集成测试运行。
+- 创建阶段 4 PR 草稿 `.github/pr-draft-phase4.md`，按新统一格式书写；严格保持未跟踪文件 `.github/pr-draft-phase3.md` 不受触碰。
+- Identified all record format carriers in the repository and updated them with the standardized three-part sequence: 1. 做了什么 / What -> 2. 为什么这么做 / Why -> 3. 验证结果 / Verification in bilingual English and Chinese.
+- Enhanced `scripts/ci/check-change-record.mjs` with automatic structural validation, added unit tests in `scripts/ci/check-change-record.test.mjs`, and wired them into `check:changelog`.
+- Initialized `.github/pr-draft-phase4.md` without modifying `.github/pr-draft-phase3.md`.
+
+### 2. 为什么这么做 / Why
+- 动机：统一全生命周期的工程记录规范，消除 PR、阶段退出报告、变更记录和步骤汇报中的格式分歧与理由缺失，保证事实链可审计、可追溯。
+- 备选方案与取舍：考虑过仅在文档中做软性口头约定，但容易在多阶段迭代中出现退化；选择将规则固化为 CI 检查脚本并配齐正负单元测试，形成强制工程轨道。保留对历史旧记录的兼容模式（allowLegacy），不破坏历史提交的查验。
+- Motivation: Standardize engineering records across PRs, exit reports, change-logs, and step reports to guarantee an auditable, traceable evidence chain.
+- Tradeoffs: Enforced via CI script rather than only textual documentation to prevent format regression. Added legacy compatibility mode so historical records remain verifiable.
+
+### 3. 验证结果 / Verification
+- 单元测试 / Unit tests: `node --test scripts/ci/check-change-record.test.mjs` 通过（7/7 用例，包含合规通过、缺 Why 拦截、顺序倒置拦截、缺 What 拦截、缺 Verification 拦截、单语拦截、旧格式兼容）。
+- 命令验证 / Commands: `pnpm check:changelog` 与 `CI=true TURBO_FORCE=true pnpm ci:verify` 执行通过。
+- 负控验证 / Negative control: 临时构造缺失“为什么这么做 / Why”字段的变更记录条目，执行 `pnpm check:changelog` 准确失败（exit 1）并提示缺失 Section 2；恢复合规内容后重测通过。
+- 状态分类 / Status: 已实现并验证（步骤 0 全部范围）。
+- 风险与回退 / Risks & Rollback: 回退本步骤可执行 `git revert <step-0-commit>`。

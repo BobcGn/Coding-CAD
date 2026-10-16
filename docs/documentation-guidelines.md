@@ -52,3 +52,16 @@ This project follows the documentation view emphasized by *A Philosophy of Softw
 当修改 `packages/` 下的核心契约时，需要同步检查三类文档：根 README 的总体说明、`packages/README.md` 的模块边界，以及相关 public type 或 public function 的注释。
 
 When changing a core contract under `packages/`, check three documentation surfaces together: the root README overview, `packages/README.md` module boundaries, and comments on related public types or public functions.
+
+## Unified Recording Format / 统一记录格式
+
+所有 PR 描述、阶段退出报告、变更记录（change-record）、每个步骤的汇报，统一按以下顺序书写，中英双语：
+1. 做了什么 / What：改动内容与范围，可定位到提交哈希与文件路径。
+2. 为什么这么做 / Why：动机、考虑过的备选方案与取舍、被放弃的方案及原因。
+3. 验证结果 / Verification：运行的命令、实际结果、测试文件路径；区分“已实现并验证 / 已实现未验证 / 未实现”；未验证项与原因；风险与回退方式。
+
+All PR descriptions, phase exit reports, change records (change-record), and step reports must strictly follow the bilingual three-part structure in order:
+1. 做了什么 / What: changes and scope, locatable to commit hashes and file paths.
+2. 为什么这么做 / Why: motivation, alternatives considered, tradeoffs, and reasons for rejected options.
+3. 验证结果 / Verification: executed commands, actual results, test file paths; categorize as "Implemented and verified / Implemented but unverified / Not implemented"; unverified items and reasons; risks and rollback instructions.
+
