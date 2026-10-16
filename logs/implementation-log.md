@@ -902,3 +902,11 @@ Motivation: reconcile conflicting current status without rewriting historical im
 根因与放弃方案见root-cause.md；不采用更换solver、新增物理worker、全compiler搬迁或只调default层级等方案。 / See root-cause.md for alternatives; solver replacement, another physical worker, compiler relocation and extra default normalization were not used.
 
 步骤2最终双模式证据：dev与preview的真实Worker均返回status=success、diagnostics=[]、3条已路由边，均无fallback/pageerror。见repaired-modes.json。 / Final Step 2 evidence: actual workers in dev and preview both returned success, empty diagnostics and three routed edges, with no fallback/page error.
+
+## 2026-10-16 - ELK Step 3 Hard Gate / ELK步骤3硬门禁
+
+每个现有浏览器用例都使用自动solverGuard，观察实际solver-only Worker的LayoutResult；任一fallback或diagnostics导致失败。来源复用既有status信号：当前唯一backend为ELK，success只由fromElkGraph在校验真实输出后发出，测试显式断言source=elk及真实路由，不新增package公开字段。 / Every current browser test observes real Worker results and fails on fallback/diagnostics. Source derives from the existing success signal of the sole ELK backend; explicit ELK and route assertions add no public field.
+
+test:e2e同时执行dev和production preview套件，已有ci:verify的浏览器门禁因此覆盖两种模式。P3_FORCE_FALLBACK=1只在测试观察器中将timeout改为0，触发既有真实fallback，供负控证明测试必须失败。 / Both modes run through the existing CI browser gate. The test-only negative control sets the existing timeout to zero and must fail.
+
+步骤3验证：Web typecheck 0/0；正常dev19/preview19通过。P3_FORCE_FALLBACK=1的同一ELK用例exit1，实际诊断LAYOUT_TIMEOUT，明确Expected success / Received fallback，自动守卫也失败；此为预期负控而非被忽略的产品失败。初版preview配置合并启动了重复同端口server，分类为测试配置错误，已改为覆盖配置并回归。证据见step3-browser.txt和negative-browser.txt。 / Typecheck and both 19-test suites passed. The forced real timeout exited 1 with success-versus-fallback assertions in both the test and automatic guard. This expected negative control is retained. A duplicate-server test configuration error was fixed and regressed.

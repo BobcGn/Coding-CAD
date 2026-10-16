@@ -20,9 +20,8 @@ export default defineConfig({
   },
   projects: [{ name: "chrome", use: { ...devices["Desktop Chrome"], channel: "chrome" } }],
   webServer: {
-    // vite dev serves SvelteKit server routes (needed for the Workspace API),
-    // unlike pnpm preview which is a static production preview.
-    command: "pnpm dev --host 127.0.0.1 --port 4173",
+    // Default dev suite; preview runs the same server-route workflows separately.
+    command: "pnpm dev --host 127.0.0.1 --port 4173 --strictPort",
     port: 4173,
     reuseExistingServer: false,
     env: { CODING_CAD_WORKSPACE_ROOT: workspaceRoot }

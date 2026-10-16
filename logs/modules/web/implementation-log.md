@@ -313,3 +313,11 @@ Motivation: reconcile conflicting current status without rewriting historical im
 步骤5文档验证：git diff --check、15模块workspace边界检查、change-record通过；退出报告/审计/主计划/Roadmap共16个本地链接目标存在。最终源码CI见10-final-source-ci.txt，最新Web计数57/9/18。 / Step 5 document checks passed: diff whitespace, 15-module workspace boundary, change-record, and 16 local link targets. Final source CI is in 10-final-source-ci.txt with Web counts 57/9/18.
 
 最终文档交付检查：5个收尾提交的Conventional Commits检查、secret scan、workspace检查及diff检查通过；4173端口无监听。见11-final-document-checks.txt。 / Final documentation delivery checks passed for all five closeout commit messages, secret scan, workspace and diff checks; port 4173 has no listener. See 11-final-document-checks.txt.
+
+## 2026-10-16 - ELK Step 3 Hard Gate / ELK步骤3硬门禁
+
+每个现有浏览器用例都使用自动solverGuard，观察实际solver-only Worker的LayoutResult；任一fallback或diagnostics导致失败。来源复用既有status信号：当前唯一backend为ELK，success只由fromElkGraph在校验真实输出后发出，测试显式断言source=elk及真实路由，不新增package公开字段。 / Every current browser test observes real Worker results and fails on fallback/diagnostics. Source derives from the existing success signal of the sole ELK backend; explicit ELK and route assertions add no public field.
+
+test:e2e同时执行dev和production preview套件，已有ci:verify的浏览器门禁因此覆盖两种模式。P3_FORCE_FALLBACK=1只在测试观察器中将timeout改为0，触发既有真实fallback，供负控证明测试必须失败。 / Both modes run through the existing CI browser gate. The test-only negative control sets the existing timeout to zero and must fail.
+
+步骤3验证：Web typecheck 0/0；正常dev19/preview19通过。P3_FORCE_FALLBACK=1的同一ELK用例exit1，实际诊断LAYOUT_TIMEOUT，明确Expected success / Received fallback，自动守卫也失败；此为预期负控而非被忽略的产品失败。初版preview配置合并启动了重复同端口server，分类为测试配置错误，已改为覆盖配置并回归。证据见step3-browser.txt和negative-browser.txt。 / Typecheck and both 19-test suites passed. The forced real timeout exited 1 with success-versus-fallback assertions in both the test and automatic guard. This expected negative control is retained. A duplicate-server test configuration error was fixed and regressed.

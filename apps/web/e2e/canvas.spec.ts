@@ -1,4 +1,5 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, type Page } from "@playwright/test";
+import { test } from "./layout-fixture.js";
 
 async function approve(page: Page): Promise<void> {
   await page.getByLabel("Review rationale").fill("Candidate meets requirements.");
