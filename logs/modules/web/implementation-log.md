@@ -339,3 +339,12 @@ test:e2e同时执行dev和production preview套件，已有ci:verify的浏览器
 依据步骤4当前源码的顺序8项验证、普通release双模式solver观察、边界检查与截图，同步退出报告/计划/roadmap/架构说明和当前日志，关闭TODO-016/WEB-001。阶段3按定义范围满足退出条件；未声称合并、远程CI、生产部署或任意图普遍质量。 / Current ordered source gates, ordinary-release worker observations, boundary checks and screenshots support closing the defined Phase 3 scope. Reports, plans and current logs are synchronized without merge/hosted-CI/deployment/general-graph claims.
 
 保留补丁升级、固定viewport、复杂大图/多平台未验证与审批历史范围限制；交叉/rank/耗时未新增硬阈值。五步提交支持逆序revert，原未跟踪PR草稿不触碰。 / Patch upgrades, fixed viewport, unverified graph/platform cases and approval-audit scope remain explicit. No new quality thresholds were invented. Five commits support reverse-order rollback; the untracked draft is untouched.
+
+## 2026-10-16 - Phase 3 PR dependency audit repair / 阶段3 PR依赖审计修复
+
+PR #3首次远端CI在额外security:audit步骤报告7high，本地旧ci:verify未包含此项。已获用户授权定向安全修复；pnpm10深层update未移动间接锁定版本，采用仅匹配已锁漏洞版本的overrides：undici8.10.0→8.10.2、devalue5.9.0→5.9.3、source-map-js1.2.1→1.2.2；均在父依赖允许的semver范围。 / The initial remote audit found seven high findings absent from the old local gate. The authorized narrow fix uses overrides matching only vulnerable locked versions after pnpm10's targeted update left the lock unchanged. All patches fit parent ranges.
+
+本地ci:verify新增同一审计，保留high阈值；不忽略告警，不更换ELK/patch/worker/API。当前验证进行中，证据位于logs/validation/p3-security-closeout/；正式通过以实际命令与远端结果为准。 / Local CI now includes the same unchanged audit threshold. ELK, its patch, worker and API remain unchanged. Verification is in progress; evidence and actual results determine acceptance.
+
+
+本轮最终验证：冻结安装、源码build、安全high门禁及含审计的强制ci:verify均exit0；Web58unit/9integration/dev21/preview21，所有Turbo阶段0cached。pnpm audit --json仍exit1，因剩余2moderate/1low；不将其误标为零漏洞或环境错误。证据见logs/validation/p3-security-closeout/report.md；远端以PR Checks为准。 / Final local gates pass with forced source builds and all browser guards. Unfiltered JSON audit exits1 for remaining low/moderate findings, not a zero-vulnerability claim or environment error. Hosted status remains independently observable.

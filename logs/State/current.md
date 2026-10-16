@@ -29,3 +29,12 @@ Schema编辑器、持久化审批历史、Brownfield、Ghost presentation、完�
 elkjs补丁与0.12.0绑定，升级须回归；chunk/adapter-auto警告仍在。新增节点可能超出固定viewport，需pan/zoom，不能声称自动适配。 / The version-pinned patch requires upgrade regression; chunk/deployment-adapter warnings remain. New nodes may require pan/zoom in the fixed viewport.
 
 证据、五步提交和逆序revert见[退出报告](../../docs/phase-3-exit-report.md)及logs/validation/p3-closeout/elk-browser/。历史implementation-log与旧失败输出保留为历史，不代表当前结论。 / See the exit report and evidence directory for separate commits and reverse-order reverts; historical failure logs remain historical.
+
+## 2026-10-16 PR #3 Security Gate Follow-up / PR #3安全门禁后续
+
+首次远端CI在依赖审计失败，不是本地ELK测试失败。用户授权定向更新三个补丁，并将同一high阈值审计加入ci:verify；锁文件仅移动undici8.10.0→8.10.2、devalue5.9.0→5.9.3、source-map-js1.2.1→1.2.2。ELK补丁hash、solver、Worker和公开API不变。 / The first remote failure was dependency auditing, not an ELK regression. The authorized narrow patch and local gate alignment preserve ELK and all layout boundaries.
+
+修复后审计high/critical=0；仍有2moderate（vitest及其mocker）与1low（cookie），没有忽略或声明零漏洞。安全门禁保持high阈值。最新验证及PR结果分别见logs/validation/p3-security-closeout/与PR #3 Checks；历史本地CI结果不代替远端验收。 / High/critical findings are zero; two moderate and one low remain without suppression. The unchanged gate threshold applies. New local evidence and PR checks are distinct.
+
+
+本轮最终验证：冻结安装、源码build、安全high门禁及含审计的强制ci:verify均exit0；Web58unit/9integration/dev21/preview21，所有Turbo阶段0cached。pnpm audit --json仍exit1，因剩余2moderate/1low；不将其误标为零漏洞或环境错误。证据见logs/validation/p3-security-closeout/report.md；远端以PR Checks为准。 / Final local gates pass with forced source builds and all browser guards. Unfiltered JSON audit exits1 for remaining low/moderate findings, not a zero-vulnerability claim or environment error. Hosted status remains independently observable.

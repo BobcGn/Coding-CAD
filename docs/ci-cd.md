@@ -20,9 +20,9 @@ Run the same deterministic checks locally before pushing:
 pnpm ci:verify
 ```
 
-This command runs workspace structure checks, type checks, change-record checks, secret scanning, unit tests, integration tests, end-to-end tests, and build verification.
+This command first runs dependency auditing at the same high-severity threshold as GitHub Actions, then workspace structure checks, type checks, change-record checks, secret scanning, unit tests, integration tests, end-to-end tests, and build verification. Audit data requires registry access and may change over time.
 
-该命令会执行 workspace 结构检查、类型检查、变更记录检查、硬编码敏感信息扫描、单元测试、集成测试、端到端测试和构建验证。
+该命令先按与GitHub Actions相同的high阈值执行依赖审计，再执行workspace结构、类型、变更记录、敏感信息、单元/集成/端到端测试及构建验证。审计需要访问registry，结果会随漏洞数据库变化。
 
 ## GitHub Actions / GitHub Actions
 

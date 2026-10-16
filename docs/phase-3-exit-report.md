@@ -106,8 +106,15 @@ elkjs补丁固定在0.12.0，升级须回归补丁与双模式测试；大chunk/
 | 2 Pinned minimal patch / 最小补丁 | f67be3e | git revert f67be3e |
 | 3 Hard browser gate / 硬门禁 | 99964a7 | git revert 99964a7 |
 | 4 Quality/stability/source checks / 质量稳定性验收 | a93891f | git revert a93891f |
-| 5 Documentation / 文档同步 | This report's commit / 本报告所在提交 | Revert this commit / 回退该提交 |
+| 5 Documentation / 文档同步 | ecd7e27 | git revert ecd7e27 |
 
 每步独立提交；整轮回退按5→1逆序，任意顺序可能需处理依赖/文档冲突。回退步骤2会恢复已知ELK缺陷，保留步骤3时门禁应变红，不应降低断言。 / Revert in reverse dependency order; reverting the patch restores the known defect and should fail the retained hard gate.
 
 前轮收尾基线与回退仍可查：Review5e2ebdc、Remove/Connect8a17817、Inspectorb608fce、lifecycle e243537、旧退出报告2e4a500。旧报告“不满足”是修复前的正确历史结论，本报告以新证据更新，不覆盖原日志。 / Prior closeout commits remain recoverable; the historical blocked report was correct before this repair.
+
+
+## 9. PR Security Audit Follow-up / PR安全审计后续
+
+原PR #3远端运行38896801517在security:audit失败；旧本地ci:verify未含审计，不能称远端CI通过。用户随后批准修复，三项间接补丁版本与本地审计门禁已更新，high/critical为0；保留2moderate/1low并不降低门禁。ELK与D-010不变。 / The initial hosted run failed auditing omitted by the former local gate. Authorized dependency patches and gate alignment remove high/critical findings while retaining two moderate and one low without suppression. ELK and D-010 are unchanged.
+
+本次独立修复、验证、剩余风险及回退见[安全修复记录](../logs/validation/p3-security-closeout/report.md)。最新远端状态以[PR #3 Checks](https://github.com/BobcGn/Coding-CAD/pull/3/checks)为准，不能从本地命令推断。 / See the separate repair record; current hosted status is established by PR checks, not inferred from local commands.

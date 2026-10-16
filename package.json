@@ -8,7 +8,7 @@
   "scripts": {
     "build": "turbo build",
     "check:changelog": "node scripts/ci/check-change-record.mjs",
-    "ci:verify": "pnpm lint && pnpm check:changelog && pnpm security:secrets && pnpm commitlint && pnpm test:unit && pnpm test:integration && pnpm test:e2e && pnpm build",
+    "ci:verify": "pnpm security:audit && pnpm lint && pnpm check:changelog && pnpm security:secrets && pnpm commitlint && pnpm test:unit && pnpm test:integration && pnpm test:e2e && pnpm build",
     "commitlint": "node scripts/ci/check-commit-messages.mjs",
     "lint": "pnpm lint:workspace && pnpm typecheck",
     "lint:workspace": "node scripts/ci/check-workspace.mjs",

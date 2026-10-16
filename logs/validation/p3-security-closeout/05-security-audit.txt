@@ -1,0 +1,6 @@
+
+> coding-cad@0.1.0 security:audit /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD
+> pnpm audit --audit-level high
+
+3 vulnerabilities found
+Severity: 1 low | 2 moderate

@@ -1,0 +1,42 @@
+[
+  {
+    "step": "03-frozen-install",
+    "command": "pnpm install --frozen-lockfile",
+    "exit": 0,
+    "seconds": 0.23,
+    "CI": "true",
+    "TURBO_FORCE": "true"
+  },
+  {
+    "step": "04-source-build",
+    "command": "pnpm build",
+    "exit": 0,
+    "seconds": 12.69,
+    "CI": "true",
+    "TURBO_FORCE": "true"
+  },
+  {
+    "step": "05-security-audit",
+    "command": "pnpm security:audit",
+    "exit": 0,
+    "seconds": 0.94,
+    "CI": "true",
+    "TURBO_FORCE": "true"
+  },
+  {
+    "step": "06-audit-after",
+    "command": "pnpm audit --json",
+    "exit": 1,
+    "seconds": 0.86,
+    "CI": "true",
+    "TURBO_FORCE": "true"
+  },
+  {
+    "step": "07-ci-verify",
+    "command": "pnpm ci:verify",
+    "exit": 0,
+    "seconds": 103.33,
+    "CI": "true",
+    "TURBO_FORCE": "true"
+  }
+]
