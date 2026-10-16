@@ -255,3 +255,19 @@ Motivation: replace the empty product Accept gate with existing Architecture Rev
 步骤1验证：Web 及依赖源码 build 通过；Web typecheck 为 0 errors / 0 warnings；Web unit 为 12 files / 43 tests；批准/拒绝/保存打开三个 Playwright 用例通过。构建有 chunk size 警告；未作为失败处理。完整阶段验收将在步骤4重跑。
 
 Step 1 validation: source build of Web and dependencies passed; Web typecheck had zero errors/warnings; Web unit passed 12 files / 43 tests; three approval/rejection/save-open Playwright cases passed. Chunk-size warnings are recorded, not treated as failure. Full phase validation will rerun in Step 4.
+
+## 2026-10-16 - Step 2 Product Remove/Connect / 步骤2产品删除与连接
+
+动机：补齐阶段3真实入口并消除产品编辑的自动批准路径。CommandApplication.prepare/decide 复用已有 command、Validator 与 Review；产品编辑等待 local-user 显式批准。Remove 沿用关联连接级联语义，界面先提示并要求确认；非法连接进入 Problems。候选 LayoutState 与正式 LayoutState 分离，布局复用既有 incremental API。
+
+Motivation: complete real Phase 3 controls and remove automatic product approval. CommandApplication.prepare/decide reuse existing commands, Validator, and Review; edits await explicit local-user approval. Remove retains incident-edge cascade semantics with visible confirmation; invalid connections enter Problems. Candidate and accepted LayoutState are separate; layout reuses the existing incremental API.
+
+浏览器真实点击暴露 Canvas selection 回调的响应式循环；用 untrack 隔离外层读取。移除旧 E2E 的 synthetic DOM click。另发现浏览器 ELK 返回 `_Worker is not a constructor` 并退化到 fallback；当前明确显示诊断，未把 fallback 计为 solver 成功。更换 worker/solver 接法不在本步骤擅自实施，作为阶段退出阻塞证据保留。
+
+Real browser clicks exposed a reactive loop in Canvas selection callbacks; untrack isolates parent reads. Synthetic DOM clicks were removed from E2E. Browser ELK also returns `_Worker is not a constructor` and falls back; the UI now surfaces diagnostics and does not claim solver success. Changing worker/solver integration is not silently introduced here; it remains phase-exit evidence.
+
+验证：Web typecheck 0/0；unit 12 files/47 tests、integration 3 files/9 tests 通过；5 个新增 Remove/Connect 浏览器场景通过。完整浏览器回归结果随后记录。首次 Inspector 回归暴露真实循环；修复后原测试仍假定重布局保持选择，已改为重选后验证字段，不放宽架构集合断言。
+
+Validation: Web typecheck 0/0; unit 12 files/47 tests and integration 3 files/9 tests passed; five new Remove/Connect browser cases passed. Full browser regression results follow. Initial Inspector regression exposed the real loop; after fixing it the test still assumed selection survived layout, and now reselects before checking the field without weakening architecture-set assertions.
+
+步骤2最终浏览器回归：15 passed（真实点击，串行）。 / Step 2 final browser regression: 15 passed with real clicks and one worker.

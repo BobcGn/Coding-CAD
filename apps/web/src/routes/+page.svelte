@@ -30,6 +30,16 @@
   let selectedNodeIds = $state<string[]>([]);
   let paletteItems = $state<readonly PaletteItem[]>(projectPalette().items);
   let inspector = $state<InspectorViewModel>();
+  let removeComponentId = $state("");
+  let confirmCascade = $state(false);
+  let connectionId = $state("");
+  let connectionFrom = $state("");
+  let connectionTo = $state("");
+  let connectionProtocol = $state("REST");
+  const pendingReview = $derived(shell?.proposal?.status === "draft" || shell?.proposal?.status === "in-review");
+  const removalConnections = $derived(shell?.accepted.architecture.connections.filter(
+    (edge) => edge.from === removeComponentId || edge.to === removeComponentId
+  ) ?? []);
   let reviewRationale = $state("");
   let editDescription = $state("");
   let editCapability = $state("");
@@ -67,8 +77,9 @@
       inspector = undefined;
       return;
     }
-    inspector = projectInspector(component, state.validation?.issues ?? []);
-    editDescription = inspector.description;
+    const nextInspector = projectInspector(component, state.validation?.issues ?? []);
+    inspector = nextInspector;
+    editDescription = nextInspector.description;
   }
 
   async function runInspectorCommand(command: ArchitectureCommand): Promise<void> {
@@ -101,6 +112,22 @@
       capability: editCapability.trim()
     });
     editCapability = "";
+  }
+
+  function handleRemove(): void {
+    if (removalConnections.length > 0 && !confirmCascade) {
+      errorMessage = "Confirm cascade removal of connected edges before removing this component.";
+      return;
+    }
+    void runInspectorCommand({ type: "remove-component", componentId: removeComponentId });
+    confirmCascade = false;
+  }
+
+  function handleConnect(): void {
+    void runInspectorCommand({
+      type: "connect-components",
+      connection: { id: connectionId, from: connectionFrom, to: connectionTo, protocol: connectionProtocol }
+    });
   }
 
   async function handleGenerate(): Promise<void> {
@@ -335,9 +362,13 @@
     <section class="notice" aria-live="polite">{noticeMessage}</section>
   {/if}
 
+  {#if shell?.layoutWarning}
+    <p role="status" class="warn">Layout fallback: {shell.layoutWarning}</p>
+  {/if}
+
   {#if shell?.status === "generating" || shell?.status === "layout"}
     <section class="status" aria-busy="true" aria-live="polite">Generating and laying out architecture…</section>
-  {:else if shell && projection && layout && shell.layoutState}
+  {:else if shell && projection && layout && (shell.candidateLayoutState || shell.layoutState)}
     <div class="workspace">
       <aside class="palette">
         <h2>{t("palette")}</h2>
@@ -348,7 +379,7 @@
                 type="button"
                 class="palette-item"
                 onclick={() => handleAddFromPalette(item)}
-                disabled={busy}
+                disabled={busy || pendingReview}
               >
                 <strong>{item.name}</strong>
                 <span>{item.category}</span>
@@ -356,12 +387,37 @@
             </li>
           {/each}
         </ul>
+        <section aria-label="Architecture editing">
+          <h3>Remove component</h3>
+          <label for="remove-component-id">Component to remove</label>
+          <input id="remove-component-id" bind:value={removeComponentId} list="component-ids" disabled={busy || pendingReview} />
+          <datalist id="component-ids">
+            {#each shell.accepted.architecture.components as component (component.id)}
+              <option value={component.id}>{component.name}</option>
+            {/each}
+          </datalist>
+          {#if removalConnections.length > 0}
+            <p>Removing this component also removes {removalConnections.length} connected edge(s): {removalConnections.map((edge) => edge.id).join(", ")}.</p>
+            <label><input type="checkbox" bind:checked={confirmCascade} />Confirm cascade removal</label>
+          {/if}
+          <button type="button" onclick={handleRemove} disabled={busy || pendingReview || !removeComponentId.trim()}>Remove component</button>
+          <h3>Connect components</h3>
+          <label for="connection-id">Connection id</label>
+          <input id="connection-id" bind:value={connectionId} disabled={busy || pendingReview} />
+          <label for="connection-from">Source component id</label>
+          <input id="connection-from" bind:value={connectionFrom} list="component-ids" disabled={busy || pendingReview} />
+          <label for="connection-to">Target component id</label>
+          <input id="connection-to" bind:value={connectionTo} list="component-ids" disabled={busy || pendingReview} />
+          <label for="connection-protocol">Connection protocol</label>
+          <input id="connection-protocol" bind:value={connectionProtocol} disabled={busy || pendingReview} />
+          <button type="button" onclick={handleConnect} disabled={busy || pendingReview || !connectionId.trim()}>Connect components</button>
+        </section>
       </aside>
       <section class="canvas">
         <ArchitectureCanvas
           projection={projection}
           layout={layout}
-          viewState={shell.layoutState}
+          viewState={(shell.candidate ? shell.candidateLayoutState : shell.layoutState) ?? shell.layoutState!}
           onViewStateChange={(next) => controller?.updateLayoutState(next)}
           onSelectionChange={(nodeIds) => {
             selectedNodeIds = [...nodeIds];
@@ -381,7 +437,7 @@
               <dt>Description</dt>
               <dd>
                 <textarea bind:value={editDescription} rows="2" disabled={busy}></textarea>
-                <button type="button" onclick={handleSaveDescription} disabled={busy}>Save Description</button>
+                <button type="button" onclick={handleSaveDescription} disabled={busy || pendingReview}>Save Description</button>
               </dd>
               <dt>Capabilities</dt>
               <dd>
@@ -402,14 +458,14 @@
                             capability
                           });
                         }}
-                        disabled={busy}
+                        disabled={busy || pendingReview}
                       >×</button>
                     </li>
                   {/each}
                 </ul>
                 <div class="capability-add">
                   <input bind:value={editCapability} placeholder="capability" disabled={busy} />
-                  <button type="button" onclick={handleAddCapability} disabled={busy || editCapability.trim().length === 0}>Add</button>
+                  <button type="button" onclick={handleAddCapability} disabled={busy || pendingReview || editCapability.trim().length === 0}>Add</button>
                 </div>
               </dd>
             </dl>
@@ -428,7 +484,7 @@
                   <button
                     type="button"
                     class="link"
-                    onclick={() => { selectedNodeIds = [issue.affectedComponent!]; }}
+                    onclick={() => { selectedNodeIds = [issue.affectedComponent!]; updateInspector(); }}
                   >
                     {issue.affectedComponent}
                   </button>

@@ -26,6 +26,8 @@ export interface GreenfieldShellState {
   readonly validation?: ValidationResult;
   readonly proposal?: Proposal;
   readonly layoutState?: LayoutState;
+  readonly candidateLayoutState?: LayoutState;
+  readonly layoutWarning?: string;
   readonly status: ShellStatus;
   readonly message: string;
   readonly selectedNodeIds: readonly string[];

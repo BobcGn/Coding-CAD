@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from "svelte";
   import {
     Background,
     BackgroundVariant,
@@ -56,7 +57,9 @@
   };
 
   const handleSelection: OnSelectionChange<ArchitectureFlowNode, ArchitectureFlowEdge> = ({ nodes, edges }) => {
-    onSelectionChange?.(nodes.map(({ id }) => id), edges.map(({ id }) => id));
+    // Svelte Flow may emit selection from an effect. Parent Inspector reads
+    // must not become dependencies of that effect (selection feedback loop).
+    untrack(() => onSelectionChange?.(nodes.map(({ id }) => id), edges.map(({ id }) => id)));
   };
 
   // onselectionchange can be unreliable across Svelte Flow versions, so node

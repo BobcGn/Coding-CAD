@@ -100,9 +100,10 @@ describe("P3.3 workspace shell controller", () => {
       component: { id: "kafka", name: "Kafka", type: "queue", capabilities: ["asynchronous-delivery"] }
     });
 
+    await controller.acceptCandidate("Approve adding Kafka.");
     const state = controller.state();
     assert.equal(state.status, "ready");
-    assert.ok(state.message.includes("Add component kafka"));
+    assert.equal(state.proposal?.status, "approved");
     assert.notDeepEqual(state.accepted, acceptedBefore);
     assert.ok(state.accepted.architecture.components.some((component) => component.id === "kafka"));
   });
@@ -113,6 +114,7 @@ describe("P3.3 workspace shell controller", () => {
       type: "add-component",
       component: { id: "kafka", name: "Kafka", type: "queue", capabilities: ["asynchronous-delivery"] }
     });
+    await controller.acceptCandidate("Approve adding Kafka.");
     const acceptedAfterFirst = structuredClone(controller.state().accepted);
 
     await controller.executeCommand({
@@ -125,3 +127,58 @@ describe("P3.3 workspace shell controller", () => {
     assert.deepEqual(state.accepted, acceptedAfterFirst);
   });
 });
+
+
+describe("product Remove/Connect commands", () => {
+  it("cascades connected edge removal only after explicit Review approval", async () => {
+    const controller = createController();
+    const before = controller.state().accepted;
+    await controller.executeCommand({ type: "remove-component", componentId: "ledger" });
+    expectSameAccepted(controller, before);
+    assert.ok(!controller.state().candidate!.architecture.connections.some((edge) => edge.from === "ledger" || edge.to === "ledger"));
+    assert.ok(!controller.state().candidate!.architecture.components.some((node) => node.id === "ledger"));
+    await controller.acceptCandidate("Approve documented cascade.");
+    assert.equal(controller.state().proposal?.status, "approved");
+    assert.ok(!controller.state().accepted.architecture.components.some((node) => node.id === "ledger"));
+  });
+
+  it("blocks removing a missing component and exposes a Problem without changing IR", async () => {
+    const controller = createController();
+    const before = controller.state().accepted;
+    await controller.executeCommand({ type: "remove-component", componentId: "missing" });
+    expectSameAccepted(controller, before);
+    assert.equal(controller.state().status, "error");
+    assert.ok(controller.state().validation?.issues.some((issue) => issue.severity === "ERROR"));
+  });
+
+  it("keeps invalid endpoints in Problems, blocks approval, and preserves IR", async () => {
+    const controller = createController();
+    const before = controller.state().accepted;
+    await controller.executeCommand({ type: "connect-components", connection: { id: "invalid", from: "ledger", to: "missing", protocol: "REST" } });
+    const candidate = controller.state().candidate;
+    assert.equal(controller.state().validation?.valid, false);
+    await controller.acceptCandidate("Try invalid endpoints.");
+    expectSameAccepted(controller, before);
+    assert.equal(controller.state().candidate, candidate);
+    assert.equal(controller.state().proposal?.status, "draft");
+  });
+
+  it("commits a connection only after approval and retains both models on rejection", async () => {
+    const controller = createController();
+    const before = controller.state().accepted;
+    await controller.executeCommand({ type: "connect-components", connection: { id: "new-edge", from: "gateway", to: "events", protocol: "MESSAGE" } });
+    expectSameAccepted(controller, before);
+    const candidate = controller.state().candidate;
+    controller.rejectCandidate("Do not connect.");
+    assert.equal(controller.state().candidate, candidate);
+    expectSameAccepted(controller, before);
+    await controller.executeCommand({ type: "connect-components", connection: { id: "new-edge", from: "gateway", to: "events", protocol: "MESSAGE" } });
+    await controller.acceptCandidate("Connection is required.");
+    assert.ok(controller.state().accepted.architecture.connections.some((edge) => edge.id === "new-edge"));
+  });
+});
+
+function expectSameAccepted(controller: WorkspaceShellController, before: typeof pointsSystemFixture) {
+  assert.equal(controller.state().accepted, before);
+  assert.deepEqual(controller.state().accepted, before);
+}
