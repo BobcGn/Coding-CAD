@@ -1,27 +1,31 @@
 # 当前状态 / Current State
 
 更新时间 / Updated at: 2026-10-16
+分支 / Branch: codex/phase-3-greenfield-workspace
 
 ## 结论 / Conclusion
 
-Phase 3 收尾实施与工程验证已完成，但 **未满足阶段退出条件**。P3-D1–P3-D3 已批准，本次审批语义和最小契约范围也已由用户确认；不再标记为“代码未开始”或“待三项决策”，也不再标记为“全部已验证并合并”。 / Phase 3 closeout implementation and engineering checks are complete, but **phase exit is not satisfied**. P3-D1–P3-D3 and the current approval/contract clarifications are approved. Neither “implementation not started / awaiting decisions” nor “fully verified and merged” is current.
+阶段3在当前未合并分支满足定义的退出条件。原ELK浏览器阻塞已修复并以真实Worker结果、双模式质量断言和完整源码CI验证；fallback不计成功。P3-D1–P3-D3及用户批准的local-user/必填理由、最小Contract增删范围保持有效。 / Defined Phase 3 exit criteria are satisfied on the current unmerged branch. The ELK blocker is repaired and verified by real worker results, both browser modes and full source CI. Approved product decisions remain in force.
 
 ## 已实现并验证 / Implemented and verified
 
-- requirement -> candidate -> Validator -> local-user Review -> accepted IR -> Canvas/edit/save/open 产品路径。 / The product workflow through explicit approval.
-- Add/Remove/Connect；语义 Inspector；最小 Contract 新增/移除；非法候选、拒绝、重复接受与审批异常不变量。 / Product edits, minimal contracts, and gate invariants.
-- ArchitectureProject 与候选/正式 LayoutState 分离；有效视图恢复、失效identity过滤、正式snapshot校验证据与错误恢复。 / Architecture/layout separation, valid view restore, stale-identity filtering, snapshot validation evidence and error recovery.
-- 可写源码验证：install、build 15/15、typecheck 25/25、test 30/30；Web unit 57、integration 9、Chrome E2E 18；完整本地 ci:verify 重跑 exit 0，Turbo 0 cached。 / Writable source verification passed with these task/test counts and zero cached tasks.
-- 首次ci因步骤4缺少change-record而失败，补记录后通过；保留两次输出。 / Initial CI failed for a missing Step 4 change record; the rerun passed, with both outputs retained.
+- requirement -> candidate -> Validator -> local-user Review -> accepted IR -> Canvas/edit/save/open，含无效/拒绝/异常与重复接受不变量。 / The product lifecycle and gate invariants are verified.
+- Add/Remove/Connect、Inspector最小契约与语义编辑、独立视图存储和有效位置恢复。 / Editing, minimal contracts and separate view persistence are verified.
+- 固定elkjs补丁，普通production与dev真实ELK success、3路由、无fallback/pageerror；公开API、solver版本与D-010不变。 / The pinned patch succeeds in ordinary production and dev without public API/solver/boundary changes.
+- 两fixture默认布局无重叠、容器包含正确、结果确定；真实产品描述编辑与Palette添加无关组件p95/max=0/0px，无顺序反转，满足既有48/144px预算。 / Default fixture quality and product-edit/addition movement pass existing criteria.
+- 顺序可写验证全部exit0，CI=true/TURBO_FORCE=true；build15/typecheck25/test30 task；Web unit58/integration9/dev21/preview21；完整本地CI零缓存。 / All ordered gates pass with forced source rebuilds and these task/test counts.
+- 任一次fallback使浏览器门禁失败，retries=0；预期失败负控exit1，不计为正向通过。 / Any fallback fails the browser gate with no retries; the negative control fails as expected.
 
-## 已实现未验证及阻塞 / Integrated but unproven and blocked
+## 已实现未验证 / Implemented but unverified
 
-浏览器 ELK 实际返回 `_Worker is not a constructor`，界面显示 fallback；核心增量 API 已接入，但真实浏览器的默认语义布局质量和局部稳定性尚未证明。因此 WEB-001 仍开放，阶段4未授权。 / Browser ELK returns `_Worker is not a constructor` and the UI displays fallback. The incremental API is integrated, but real-browser default semantic quality and local stability remain unproven. WEB-001 stay open; Phase 4 is not authorized.
+未验证大型图的浏览器质量、多浏览器/移动端、真实生产部署；Node既有性能fixture不替代这些证明。 / Large browser graphs, other browsers/mobile and production deployment remain unverified; Node benchmarks do not prove them.
 
-## 未实现或本次范围外 / Not implemented or out of scope
+## 未实现及范围外 / Not implemented or out of scope
 
-ELK浏览器互操作修复尚未实现；输入输出schema编辑器、持久化审批历史、Brownfield、Ghost、完整Review工作区、Handoff与Terminal未作为本次实现或验收。 / ELK interoperability is not repaired; schema editor, persistent approval history and later-phase products are outside this implementation/acceptance.
+Schema编辑器、持久化审批历史、Brownfield、Ghost presentation、完整Review workspace、Handoff与Terminal不属于本次。Phase 4没有实施或新增授权；分支未合并/变基，原未跟踪PR草稿保留。 / These extensions and later-phase products are outside this task. No Phase 4 implementation/authorization, merge or rebase occurred; the original untracked PR draft is preserved.
 
-## 证据与回退 / Evidence and rollback
+## 风险与回退 / Risks and rollback
 
-见 `docs/phase-3-exit-report.md`、`docs/audit/p3-inspector-scope.md` 和 `logs/validation/p3-closeout/`。收尾提交逐步独立；完整回退按报告中的5→1倒序，不重置分支或删除来源不明文件。历史 implementation-log 保留为当时记录，不覆盖本次事实。 / See the report, audit and raw outputs. Separate commits support reverse-order rollback without branch reset or unknown-file deletion. Historical logs remain historical and do not override this state.
+elkjs补丁与0.12.0绑定，升级须回归；chunk/adapter-auto警告仍在。新增节点可能超出固定viewport，需pan/zoom，不能声称自动适配。 / The version-pinned patch requires upgrade regression; chunk/deployment-adapter warnings remain. New nodes may require pan/zoom in the fixed viewport.
+
+证据、五步提交和逆序revert见[退出报告](../../../../docs/phase-3-exit-report.md)及logs/validation/p3-closeout/elk-browser/。历史implementation-log与旧失败输出保留为历史，不代表当前结论。 / See the exit report and evidence directory for separate commits and reverse-order reverts; historical failure logs remain historical.

@@ -333,3 +333,9 @@ test:e2e同时执行dev和production preview套件，已有ci:verify的浏览器
 正向 Playwright retries=0，防止一次真实 fallback 被后续重试通过掩盖。 / Positive Playwright suites disable retries so a fallback cannot be hidden by a later successful attempt.
 
 步骤4最终顺序验证8项均exit0，CI=true/TURBO_FORCE=true；build15/typecheck25/test30 task，Web unit58/integration9，dev21/preview21，全量CI各Turbo阶段0cached。CI性能100/150 p95=55.50ms、500/800 p95=495.19ms、worker gzip471875bytes；均通过既有预算。最终普通production重建dev/preview均ELK success、3路由、无fallback/pageerror；静态产物无验收hook，公开契约/worker transport diff为空。 / All eight ordered gates passed with forced source rebuilds and zero cached Turbo tasks. Unit58/integration9 and browser21 per mode passed. Existing performance budgets passed. Ordinary production and dev both returned real ELK success, three routes and no errors; release hooks are absent and public/transport diffs are empty.
+
+## 2026-10-16 - ELK Step 5 Exit Status / ELK步骤5退出状态
+
+依据步骤4当前源码的顺序8项验证、普通release双模式solver观察、边界检查与截图，同步退出报告/计划/roadmap/架构说明和当前日志，关闭TODO-016/WEB-001。阶段3按定义范围满足退出条件；未声称合并、远程CI、生产部署或任意图普遍质量。 / Current ordered source gates, ordinary-release worker observations, boundary checks and screenshots support closing the defined Phase 3 scope. Reports, plans and current logs are synchronized without merge/hosted-CI/deployment/general-graph claims.
+
+保留补丁升级、固定viewport、复杂大图/多平台未验证与审批历史范围限制；交叉/rank/耗时未新增硬阈值。五步提交支持逆序revert，原未跟踪PR草稿不触碰。 / Patch upgrades, fixed viewport, unverified graph/platform cases and approval-audit scope remain explicit. No new quality thresholds were invented. Five commits support reverse-order rollback; the untracked draft is untouched.

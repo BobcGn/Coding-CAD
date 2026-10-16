@@ -12,4 +12,6 @@ The user approved D-001, D-002, D-004, D-005, D-006, D-010, and the performance/
 
 ## 2026-10-16 Browser Integration Evidence / 浏览器集成证据
 
-上述Node/package历史验收不等价于浏览器solver证明。本轮Chrome实际出现 `_Worker is not a constructor` 并返回fallback；阶段3布局退出条件仍阻塞，未修改package solver/public API。见 `docs/phase-3-exit-report.md`。 / Historical Node/package acceptance is not browser proof. Actual Chrome reports the error and fallback; Phase 3 layout exit remains blocked. The solver/public API was not changed.
+原browser CJS/Worker互操作阻塞已通过固定elkjs补丁修复，独立普通production与dev均真实ELK success。公开契约、solver选择与D-010边界保持不变。Stability pass避让新增无连接节点并扩展容器，既有组件保持位置。 / The pinned patch repairs browser interoperability; ordinary production and dev return real ELK success. Public contracts, solver and worker boundary remain unchanged. Stability avoids newcomer collisions while retaining existing components.
+
+双模式两fixture的无重叠、包含、确定性及增量预算均通过；真实Palette添加无关组件移动0px。源码CI既有100/150 p95=55.50ms、500/800 p95=495.19ms、gzip471875bytes，通过原预算。大型图真实浏览器质量未验证。见docs/phase-3-exit-report.md。 / Both fixture/mode quality and movement checks pass. Existing Node performance budgets pass; large browser graph quality remains unverified. See the exit report.

@@ -48,15 +48,12 @@ This file is the single source of truth for active TODOs.
 - 当前处理 / Current handling: P2.0–P2.6、Checkpoint 3、基础 Canvas、solver-only worker 与 headless command application 已完成。
 - 解除条件 / Exit condition: 已满足；后续 Web 产品能力进入独立 Phase 3。
 
-## TODO-016: Greenfield Architecture Workspace / Greenfield 架构工作区
+## TODO-016: Phase 3 Greenfield Workspace / 阶段3工作区
 
-- 状态 / Status: Open — layout acceptance blocked / 开放，布局验收阻塞。
-- 已实现并验证：产品审批、编辑、最小契约、存储生命周期及可写源码CI。 / Implemented and verified: product gate, edits, minimal contracts, storage lifecycle and writable source CI.
-- 当前阻塞：浏览器ELK退化，默认语义布局及incremental稳定性未证明。 / Blocked: browser ELK fallback; semantic quality and incremental stability unproven.
-- P3-D1–P3-D3及本次审批/契约澄清均已确认；不授权阶段4。 / Decisions are confirmed; Phase 4 is not authorized.
-- 解除条件：修复互操作并取得实际浏览器布局验收证据，更新退出报告。 / Exit: repair interoperability, prove actual-browser layout acceptance, update the report.
-- 详见 / See: `docs/phase-3-exit-report.md`。
-
+- 状态 / Status: Closed in defined scope on current unmerged branch / 当前未合并分支按定义范围关闭。
+- 审批/编辑/Inspector/存储与真实ELK布局均已实现并验证；双模式各21项浏览器测试、Web58unit/9integration、强制源码CI通过。 / Product workflows and real ELK quality pass both browser suites and full forced source CI.
+- 原互操作阻塞已修复；fallback不计成功且触发硬失败，既有48/144px移动预算通过。 / Interoperability is repaired; fallback fails the gate and existing movement bounds pass.
+- 大图浏览器/多平台/生产部署未验证；后续阶段未实施。证据见docs/phase-3-exit-report.md。 / Large browser graphs, platform coverage and deployment remain unverified; later phases are unimplemented. See the exit report.
 ## TODO-014: Architecture Layout Contracts / Architecture Layout 契约
 
 - 状态 / Status: Phase 1 已验证 / Phase 1 verified

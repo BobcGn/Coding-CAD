@@ -6,7 +6,7 @@
 
 运行 [compare.py](compare.py) 从源码构建，在独立浏览器中分别执行真实 ELK 与 timeout=0 的真实 fallback。后者复用原异常时同一个 fallback generator，是受控对照，不是修复后自然失败；任何正向浏览器测试仍禁止 fallback。基线异常另见 [baseline-modes.json](baseline-modes.json)。 / The script source-builds and measures real ELK and a controlled real timeout fallback in each mode. It uses the same fallback generator as the historical exception. This diagnostic is separate from positive tests, which reject all fallback.
 
-完整数据 / Raw evidence: [dev](comparison-dev.json), [preview](comparison-preview.json). 指标来自既有 LayoutResult/LayoutGraph、rank constraints 与 MOVEMENT_BUDGET；[test helper](../../../../../apps/web/e2e/layout-metrics.ts) 在 app 测试层计算矩形与线段，不改变公开 API。 / Existing result/graph contracts, rank constraints and the movement budget feed app-test measurements without public API changes.
+完整数据 / Raw evidence: [dev](comparison-dev.json), [preview](comparison-preview.json). 指标来自既有 LayoutResult/LayoutGraph、rank constraints 与 MOVEMENT_BUDGET；[test helper](../../../../apps/web/e2e/layout-metrics.ts) 在 app 测试层计算矩形与线段，不改变公开 API。 / Existing result/graph contracts, rank constraints and the movement budget feed app-test measurements without public API changes.
 
 | Metric / 指标 | ELK: both fixtures/modes / 两fixture双模式 | Controlled fallback / 受控退化 |
 | --- | --- | --- |
@@ -25,7 +25,7 @@ Peer overlap excludes intentional ancestor containment; containment is checked s
 
 ## Assertions and Interpretation / 断言与解释
 
-[layout-quality.spec.ts](../../../../../apps/web/e2e/layout-quality.spec.ts) 在两模式断言：真实 ELK；输入不变；FULL重复结果一致；无重叠、正确容器包含；描述编辑后 INCREMENTAL；p95≤48px、max≤144px、无顺序反转。预算已由 [architecture-layout.md](../../../../../docs/architecture-layout.md) 与 MOVEMENT_BUDGET 规定，没有另设通过线。 / Both modes assert real ELK, immutable input, exact determinism, non-overlap, containment and approved incremental movement bounds.
+[layout-quality.spec.ts](../../../../apps/web/e2e/layout-quality.spec.ts) 在两模式断言：真实 ELK；输入不变；FULL重复结果一致；无重叠、正确容器包含；描述编辑后 INCREMENTAL；p95≤48px、max≤144px、无顺序反转。预算已由 [architecture-layout.md](../../../../docs/architecture-layout.md) 与 MOVEMENT_BUDGET 规定，没有另设通过线。 / Both modes assert real ELK, immutable input, exact determinism, non-overlap, containment and approved incremental movement bounds.
 
 产品真实 command/Validator/Review 描述编辑和 Palette 添加同时测量：无关组件 p95/max=0/0px，无顺序反转；添加后仍无重叠或越出容器。DOM矩形另验无重叠/包含，捕捉 absolute-to-parent-relative adapter错误。 / Actual product editing and palette addition measure zero movement of unaffected components and no order reversal. Addition retains non-overlap and containment; DOM geometry checks also cover coordinate projection.
 

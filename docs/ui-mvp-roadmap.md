@@ -6,9 +6,9 @@
 
 This roadmap advances by increasing risk. Each checkpoint must be accepted independently; later stages must not be marked complete while earlier Acceptance Criteria remain unmet. Technology choices and public APIs may be frozen only after the corresponding Decision receives user approval.
 
-状态词：`Pending`、`Ready`、`In Progress`、`Verified`、`Blocked by Decision`。Documentation First、Phase 1 与 Phase 2 已验证并合并；Phase 3 收尾已实施，退出因浏览器布局验收阻塞。
+状态词：`Pending`、`Ready`、`In Progress`、`Verified`、`Blocked by Decision`。Documentation First、Phase 1 与 Phase 2 已验证并合并；Phase 3 在当前未合并分支满足定义的退出条件，真实ELK双模式验收已通过。
 
-Status words: `Pending`, `Ready`, `In Progress`, `Verified`, and `Blocked by Decision`. Documentation First, Phase 1, and Phase 2 are verified and merged. Phase 3 closeout is implemented; exit is blocked by browser layout acceptance.
+Status words: `Pending`, `Ready`, `In Progress`, `Verified`, and `Blocked by Decision`. Documentation First, Phase 1, and Phase 2 are verified and merged. Phase 3 satisfies defined exit criteria on the current unmerged branch, including real ELK acceptance in both browser modes.
 
 ## Master Phase Alignment / Master Phase 对齐
 
@@ -187,7 +187,7 @@ Checkpoint 3 只验收基础 Canvas capability。Master Phase 2 还必须完成 
 
 ## Checkpoint 4 — Greenfield Project Can Display / Greenfield 项目可显示
 
-**Status / 状态:** In Progress — source CI and 18 browser workflows pass; actual ELK fallback blocks layout acceptance / 进行中——源码CI与18个浏览器流程通过；实际ELK退化阻塞布局验收
+**Status / 状态:** Verified on current unmerged branch — source CI and 21 real-ELK browser tests per mode pass / 当前未合并分支已验证——源码CI及双模式各21项真实ELK浏览器测试通过
 
 **Goal / 目标**
 
@@ -224,7 +224,7 @@ Checkpoint 3 只验收基础 Canvas capability。Master Phase 2 还必须完成 
 
 P3.0 contract/host freeze → P3.1 Workspace host bridge → P3.2 requirement-to-candidate → P3.3 workspace shell/projection → P3.4 Palette command entry → P3.5 semantic Inspector → P3.6 Save/Open lifecycle → P3.7 acceptance。
 
-每个切片已有完整 Goal、Input、Output、Acceptance Criteria、Known Risks、Non-goals 与 Exit Evidence 规格，见 [Master Plan Phase 3 详细切片规格](ui-v1-execution-plan.md)。P3-D1、P3-D2、P3-D3 均已由用户于 2026-08-15 确认；Phase 3 收尾已有源码验证，但布局退出条件仍未满足，见阶段3退出报告。 / Each slice now has complete Goal, Input, Output, Acceptance Criteria, Known Risks, Non-goals, and Exit Evidence specifications in the [Master Plan Phase 3 detailed slice specifications](ui-v1-execution-plan.md). P3-D1, P3-D2, and P3-D3 were all confirmed by the user on 2026-08-15; Phase 3 closeout has source verification, but layout exit criteria remain unmet; see the exit report.
+每个切片已有完整 Goal、Input、Output、Acceptance Criteria、Known Risks、Non-goals 与 Exit Evidence 规格，见 [Master Plan Phase 3 详细切片规格](ui-v1-execution-plan.md)。P3-D1、P3-D2、P3-D3 均已由用户于 2026-08-15 确认；Phase 3 收尾已取得源码CI与真实浏览器布局/增量证据，定义的退出条件满足，见阶段3退出报告。 / Each slice now has complete Goal, Input, Output, Acceptance Criteria, Known Risks, Non-goals, and Exit Evidence specifications in the [Master Plan Phase 3 detailed slice specifications](ui-v1-execution-plan.md). P3-D1, P3-D2, and P3-D3 were all confirmed by the user on 2026-08-15; Phase 3 closeout now satisfies defined exit criteria with source CI and real-browser layout/stability evidence; see the exit report.
 
 ## Checkpoint 5 — Brownfield Repository Can Display / Brownfield 仓库可显示
 

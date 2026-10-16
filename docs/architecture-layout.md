@@ -229,4 +229,4 @@ Checkpoint 2 does not define irreversible UI APIs or implement Ghost behavior, p
 
 ## Phase 3 Closeout Evidence / 阶段3收尾证据
 
-2026-10-16：产品审批、编辑、最小契约及Save/Open已有源码测试与完整本地CI证据；浏览器ELK返回 `_Worker is not a constructor`，fallback不代表solver成功。阶段退出仍阻塞，边界和后续阶段未变。详见[退出报告](phase-3-exit-report.md)。 / Product gate/edit/minimal-contract/Save-Open flows have source tests and passing local CI; browser ELK falls back and phase exit remains blocked. Ownership and later-phase scope are unchanged. See the report.
+2026-10-16：产品审批、编辑、最小契约及Save/Open与真实ELK浏览器布局均已有源码验证。dev/preview各21项浏览器测试禁止任何fallback；默认图无重叠、确定，编辑/添加无关组件移动0px。阶段3在已定义范围内满足退出条件；未合并或启动后续阶段。详见[退出报告](phase-3-exit-report.md)。 / Source verification now includes real browser ELK as well as product gate/edit/minimal-contract/Save-Open flows. Both 21-test suites reject fallback; default fixtures are non-overlapping and deterministic, with zero unrelated-component movement after edits/addition. Defined Phase 3 exit criteria are satisfied; no merge or later-phase execution is claimed. See the report.

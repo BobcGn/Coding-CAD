@@ -2,9 +2,9 @@
 
 ## 文档状态 / Document Status
 
-状态：Phase 2 已验证并合并；Phase 3 Greenfield Workspace 已实施收尾，退出阻塞于实际浏览器布局；见阶段3退出报告。
+状态：Phase 2 已验证并合并；Phase 3 Greenfield Workspace 已由真实ELK浏览器与完整源码CI验收，满足定义的退出条件；本分支未合并；见阶段3退出报告。
 
-Status: Phase 2 is verified and merged. Phase 3 closeout is implemented; actual-browser layout blocks exit. See the Phase 3 exit report.
+Status: Phase 2 is verified and merged. Phase 3 satisfies defined exit criteria with real ELK browser evidence and full source CI; this branch is not merged. See the Phase 3 exit report.
 
 ## Greenfield Host Boundary / Greenfield 宿主边界
 

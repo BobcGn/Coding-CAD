@@ -100,4 +100,10 @@ Phase 2 establishes Vitest, Svelte component tests, and Playwright for adapter, 
 
 ## Phase 3 Closeout Evidence / 阶段3收尾证据
 
-2026-10-16：产品审批、编辑、最小契约及Save/Open已有源码测试与完整本地CI证据；浏览器ELK返回 `_Worker is not a constructor`，fallback不代表solver成功。阶段退出仍阻塞，边界和后续阶段未变。详见[退出报告](../../docs/phase-3-exit-report.md)。 / Product gate/edit/minimal-contract/Save-Open flows have source tests and passing local CI; browser ELK falls back and phase exit remains blocked. Ownership and later-phase scope are unchanged. See the report.
+2026-10-16：产品审批、编辑、最小契约及Save/Open与真实ELK浏览器布局均已有源码验证。dev/preview各21项浏览器测试禁止任何fallback；默认图无重叠、确定，编辑/添加无关组件移动0px。阶段3在已定义范围内满足退出条件；未合并或启动后续阶段。详见[退出报告](../../docs/phase-3-exit-report.md)。 / Source verification now includes real browser ELK as well as product gate/edit/minimal-contract/Save-Open flows. Both 21-test suites reject fallback; default fixtures are non-overlapping and deterministic, with zero unrelated-component movement after edits/addition. Defined Phase 3 exit criteria are satisfied; no merge or later-phase execution is claimed. See the report.
+
+## Browser Solver Acceptance / 浏览器solver验收
+
+test:e2e先从源码构建layout-acceptance模式，再执行dev及production preview两套Playwright；每个用例全局观察真实Worker结果，要求ELK success、无diagnostics/fallback，retries=0。ci:verify复用此入口。 / test:e2e source-builds acceptance mode and runs both browser suites with a real-worker guard and no retries; ci:verify uses this entry.
+
+app-private __p3LayoutAcceptance仅DEV或显式验收模式安装，用于现有fixture/布局状态测量；普通production构建不含钩子，已另行重建并验证同样ELK成功。P3_FORCE_FALLBACK=1只用于预期失败负控。 / Private hooks exist only in development/explicit acceptance builds. A separate ordinary production build excludes them and proves ELK success. The force-fallback flag is only an expected-failing test control.

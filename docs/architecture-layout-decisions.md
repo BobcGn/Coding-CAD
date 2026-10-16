@@ -569,3 +569,9 @@ On 2026-10-16 the user explicitly approved: Accept represents local-user approva
 用户同时确认：将契约编辑作为阶段3缺口补齐，采用现有 IR Contract 的最小新增/移除显式命令与校验、测试。原 P3-D3 的 field-specific/no-generic-patch 和不扩展 IR 边界保持有效。
 
 The user also approved treating contract editing as a Phase 3 gap, using minimal explicit add/remove commands for existing IR Contracts, with validation and tests. The original P3-D3 field-specific/no-generic-patch and no-new-IR-semantics boundaries remain in force.
+
+## 2026-10-16 D-010 Implementation Evidence / D-010实施证据
+
+固定 elkjs 0.12.0 的 pnpm 补丁只调整内嵌 bundled worker 在 CommonJS 模块环境的初始化guard顺序，保留独立worker自动挂载。现有app module Worker仍仅执行solver，compiler/stability留在调用方；Worker传输与package公开契约没有diff，solver未替换。此为既有决策内的互操作修复，不是新Decision。 / A pinned elkjs 0.12.0 patch prioritizes CommonJS exports while retaining standalone-worker attachment. The existing module worker runs only the solver; compiler/stability remain caller-side. Transport/public contracts and solver selection stay unchanged. This implements the existing decision.
+
+真实浏览器双模式质量与既有48/144px、无顺序反转预算通过。交叉、rank inversion、面积、浏览器耗时只观测，未新增硬阈值；未来若新增须用户批准。证据见[退出报告](phase-3-exit-report.md)。 / Both modes pass quality and approved movement checks. Crossings, rank inversions, area and elapsed time are observations without new acceptance thresholds; future thresholds require approval. See the exit report.
