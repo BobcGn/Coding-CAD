@@ -14,6 +14,7 @@ import { CandidateFlow } from "./candidate-flow.js";
 import type { ArchitectureCommand } from "../commands/architecture-command.js";
 import { CommandApplication, type CommandPreparation } from "../commands/command-application.js";
 import {
+  WorkspaceRequestError,
   createProject as createProjectViaBridge,
   saveProject as saveProjectViaBridge,
   openProject as openProjectViaBridge
@@ -95,23 +96,30 @@ export class WorkspaceShellController implements ShellController {
       this.shell = { ...this.shell, status: "error", message: "Requirement must not be empty." };
       return;
     }
+    const before = this.shell;
+    const previousCommand = this.pendingCommand;
     this.pendingCommand = undefined;
     this.shell = { ...this.shell, status: "generating", message: "" };
-
-    const result = await this.flow.generate(requirement, this.shell.accepted);
-    if (signal?.aborted) return;
-    this.shell = {
-      ...this.shell,
-      candidate: result.candidate,
-      validation: result.validation,
-      proposal: result.proposal,
-      status: "layout",
-      message: ""
-    };
-
-    await this.layoutCandidate(result.candidate, signal);
-    if (signal?.aborted) return;
-    this.shell = { ...this.shell, status: "ready", message: "" };
+    try {
+      const result = await this.flow.generate(requirement, before.accepted);
+      if (signal?.aborted) {
+        this.pendingCommand = previousCommand;
+        this.shell = before;
+        return;
+      }
+      this.shell = {
+        ...before, candidate: result.candidate, validation: result.validation,
+        proposal: result.proposal, status: "layout", message: ""
+      };
+      await this.layoutCandidate(result.candidate, signal);
+      if (signal?.aborted) {
+        this.pendingCommand = previousCommand;
+        this.shell = before;
+      }
+    } catch (error) {
+      this.pendingCommand = previousCommand;
+      this.shell = { ...before, status: "error", message: error instanceof Error ? error.message : "Generation failed." };
+    }
   }
 
   async acceptCandidate(rationale: string): Promise<void> {
@@ -225,7 +233,8 @@ export class WorkspaceShellController implements ShellController {
       const response = await saveProjectViaBridge({ id: name, architectureJson, viewStateJson });
       version = response.version;
     } catch (error) {
-      // Workspace does not exist yet: create it, then persist the snapshot.
+      // Only a missing project permits create; never overwrite on network/server failure.
+      if (!(error instanceof WorkspaceRequestError) || error.status !== 404) throw error;
       await createProjectViaBridge({ name, architectureJson });
       const response = await saveProjectViaBridge({ id: name, architectureJson, viewStateJson });
       version = response.version;
@@ -254,7 +263,7 @@ export class WorkspaceShellController implements ShellController {
         layoutState: JSON.parse(response.viewStateJson) as LayoutState
       };
     }
-    await this.layoutCandidate(architecture);
+    await this.layoutCandidate(architecture, undefined, this.shell.layoutState);
     this.shell = {
       ...this.shell,
       status: "ready",
@@ -266,22 +275,32 @@ export class WorkspaceShellController implements ShellController {
     return this.pendingCommand === undefined ? this.flow.getProposal(id) : this.commands.getProposal(id);
   }
 
-  private async layoutCandidate(architecture: ArchitectureProject, signal?: AbortSignal): Promise<void> {
+  private async layoutCandidate(architecture: ArchitectureProject, signal?: AbortSignal, restoredState?: LayoutState): Promise<void> {
     const projection = compileArchitectureProjection(architecture);
-    this.projectionValue = projection;
     const engine = this.engineFactory();
     try {
       const { result: layout } = await layoutArchitectureGraph(projection.layoutGraph, {
         mode: "INCREMENTAL", previousState: this.shell.layoutState, signal, timeoutMs: 5_000
       }, engine);
 
+      if (signal?.aborted) return;
+      const generatedState = resetToGeneratedLayout(layout);
+      const validSaved = restoredState?.version === 1 && restoredState.direction === generatedState.direction && Array.isArray(restoredState.nodes)
+        ? restoredState.nodes.filter((node) => Number.isFinite(node.position?.x) && Number.isFinite(node.position?.y))
+        : [];
+      const prior = new Map(validSaved.map((node) => [node.id, node.position]));
+      const nextState = {
+        ...generatedState,
+        nodes: generatedState.nodes.map((node) => ({ ...node, position: prior.get(node.id) ?? node.position }))
+      };
+      this.projectionValue = projection;
       this.layoutValue = layout;
       this.shell = {
         ...this.shell,
         layoutWarning: layout.status === "fallback" ? layout.diagnostics.map((diagnostic) => diagnostic.message).join("; ") : undefined,
         ...(this.shell.candidate === undefined
-          ? { layoutState: resetToGeneratedLayout(layout) }
-          : { candidateLayoutState: resetToGeneratedLayout(layout) }),
+          ? { layoutState: nextState }
+          : { candidateLayoutState: nextState }),
         status: "ready",
         message: ""
       };

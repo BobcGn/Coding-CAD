@@ -94,7 +94,10 @@
     } catch (error) {
       errorMessage = error instanceof Error ? error.message : "Inspector command failed.";
     } finally {
+      const failure = errorMessage;
       syncFromController();
+      if (failure) errorMessage = failure;
+      busy = false;
     }
   }
 
@@ -142,7 +145,10 @@
     } catch (error) {
       errorMessage = error instanceof Error ? error.message : "Generation failed.";
     } finally {
+      const failure = errorMessage;
       syncFromController();
+      if (failure) errorMessage = failure;
+      busy = false;
     }
   }
 
@@ -182,7 +188,10 @@
     } catch (error) {
       errorMessage = error instanceof Error ? error.message : "Command failed.";
     } finally {
+      const failure = errorMessage;
       syncFromController();
+      if (failure) errorMessage = failure;
+      busy = false;
     }
   }
 
@@ -195,7 +204,10 @@
     } catch (error) {
       errorMessage = error instanceof Error ? error.message : "Save failed.";
     } finally {
+      const failure = errorMessage;
       syncFromController();
+      if (failure) errorMessage = failure;
+      busy = false;
     }
   }
 
@@ -208,7 +220,10 @@
     } catch (error) {
       errorMessage = error instanceof Error ? error.message : "Open failed.";
     } finally {
+      const failure = errorMessage;
       syncFromController();
+      if (failure) errorMessage = failure;
+      busy = false;
     }
   }
 

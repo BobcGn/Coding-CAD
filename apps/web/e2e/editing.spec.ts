@@ -128,3 +128,41 @@ test("Inspector contract add/remove use Review and preserve schema through Save/
   expect(removed.architecture.components.find((node) => node.id === "point-service")?.contracts ?? []).not.toContainEqual({ name: "GetBalance", protocol: "REST" });
   expect(await reopenFacts(page)).toEqual(removed);
 });
+
+test("Inspector type, capability and limitation controls use explicit review", async ({ page }) => {
+  await generate(page);
+  const node = page.locator(".svelte-flow__node").filter({ hasText: "PointService" });
+  await node.click();
+  await page.getByLabel("Component type", { exact: true }).selectOption("gateway");
+  await approve(page);
+  expect((await saveFacts(page)).architecture.components.find((entry) => entry.id === "point-service")?.type).toBe("gateway");
+  await node.click();
+  await page.getByPlaceholder("capability", { exact: true }).fill("rate-limiting");
+  await page.getByRole("button", { name: "Add", exact: true }).click();
+  await approve(page);
+  expect((await saveFacts(page)).architecture.components.find((entry) => entry.id === "point-service")?.capabilities).toContain("rate-limiting");
+  await node.click();
+  await page.locator(".inspector li").filter({ hasText: "rate-limiting" }).getByRole("button", { name: "Remove capability" }).click();
+  await approve(page);
+  expect((await saveFacts(page)).architecture.components.find((entry) => entry.id === "point-service")?.capabilities).not.toContain("rate-limiting");
+  await node.click();
+  await page.getByLabel("New limitation", { exact: true }).fill("no-batch-writes");
+  await page.getByRole("button", { name: "Add limitation", exact: true }).click();
+  await approve(page);
+  const facts = await saveFacts(page);
+  expect(facts.architecture.components.find((entry) => entry.id === "point-service")?.limitations).toContain("no-batch-writes");
+  expect(await reopenFacts(page)).toEqual(facts);
+});
+
+test("save and open failures remain visible and a retry preserves architecture", async ({ page }) => {
+  await generate(page);
+  const before = await saveFacts(page);
+  await page.route("**/api/workspace/**", (route) => route.fulfill({ status: 503, body: "Storage unavailable" }));
+  await page.getByRole("button", { name: "Save", exact: true }).click();
+  await expect(page.getByRole("alert")).toContainText("503");
+  await page.getByRole("button", { name: "Open", exact: true }).click();
+  await expect(page.getByRole("alert")).toContainText("503");
+  await page.unroute("**/api/workspace/**");
+  expect(await saveFacts(page)).toEqual(before);
+  expect(await reopenFacts(page)).toEqual(before);
+});

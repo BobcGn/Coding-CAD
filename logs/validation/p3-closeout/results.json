@@ -1,0 +1,56 @@
+[
+  {
+    "command": "pnpm install",
+    "exitCode": 0,
+    "seconds": 0.23,
+    "output": "logs/validation/p3-closeout/01-install.txt"
+  },
+  {
+    "command": "pnpm build",
+    "exitCode": 0,
+    "seconds": 12.91,
+    "output": "logs/validation/p3-closeout/02-build.txt"
+  },
+  {
+    "command": "pnpm typecheck",
+    "exitCode": 0,
+    "seconds": 5.78,
+    "output": "logs/validation/p3-closeout/03-typecheck.txt"
+  },
+  {
+    "command": "pnpm test",
+    "exitCode": 0,
+    "seconds": 15.81,
+    "output": "logs/validation/p3-closeout/04-test.txt"
+  },
+  {
+    "command": "pnpm --filter @coding-cad/web test:unit",
+    "exitCode": 0,
+    "seconds": 1.77,
+    "output": "logs/validation/p3-closeout/05-web-unit.txt"
+  },
+  {
+    "command": "pnpm --filter @coding-cad/web test:e2e",
+    "exitCode": 0,
+    "seconds": 15.71,
+    "output": "logs/validation/p3-closeout/06-browser.txt"
+  },
+  {
+    "command": "pnpm ci:verify",
+    "exitCode": 1,
+    "seconds": 5.69,
+    "output": "logs/validation/p3-closeout/07-ci-verify.txt"
+  },
+  {
+    "command": "pnpm ci:verify",
+    "exitCode": 0,
+    "seconds": 69.2,
+    "output": "logs/validation/p3-closeout/08-ci-verify-after-record.txt"
+  },
+  {
+    "command": "pnpm ci:verify (final lifecycle regression)",
+    "exitCode": 0,
+    "seconds": 69.44,
+    "output": "logs/validation/p3-closeout/10-final-source-ci.txt"
+  }
+]

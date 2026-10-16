@@ -281,3 +281,21 @@ Motivation: close the user-confirmed Phase 3 contract gap while preserving P3-D3
 源码 architecture-validator test 通过；Web typecheck 为 0 errors / 0 warnings。Web unit/integration/E2E 结果在后续条目与退出报告记录。 / Source architecture-validator tests passed; Web typecheck had zero errors/warnings. Web unit/integration/E2E results follow and are included in the exit report.
 
 步骤3验证：Web unit 12 files / 49 tests、integration 3 files / 9 tests、Playwright 16 passed；契约规则源码测试与 Web typecheck 通过。 / Step 3 validation: Web unit 12 files / 49 tests, integration 3 files / 9 tests, and 16 Playwright cases passed; contract-rule source tests and Web typecheck passed.
+
+## 2026-10-16 - Step 4 Phase Acceptance / 步骤4阶段验收
+
+动机：以当前源码重建和真实运行补齐生命周期、存储错误与状态不变量证据。修复生成失败/取消状态恢复、Save 服务错误不触发创建、有效已存坐标恢复及失效节点过滤；实际 server route 为正式 snapshot 记录既有 validation history。浏览器测试使用独立临时 Workspace 并清理；不复用用户开发服务器。
+
+Motivation: verify current source and close lifecycle, storage-error, and state-invariant gaps. Fixed generation error/cancellation recovery, prevented create on save server errors, restored valid saved positions while dropping stale nodes, and recorded existing validation history for accepted snapshots in the actual server route. Browser tests use and clean an isolated temporary Workspace and do not reuse a user development server.
+
+按顺序执行，CI=true、TURBO_FORCE=true：pnpm install 通过；build 15/15、typecheck 25/25、test 30/30；Web unit 14 files/56 tests；Web integration 3 files/9 tests；浏览器18 passed。原始输出在 logs/validation/p3-closeout/。首次 ci:verify 因本步骤尚未同步 change-record 而退出，分类为代码交付记录门禁（非编译/运行失败）；补充本记录后重跑，保留首次失败输出。早期 install 无TTY中止为环境问题，CI=true 后恢复；早期 Inspector 真实响应式循环为代码问题，重布局后的选择假设为测试问题，均已修复并回归。
+
+Sequential commands with CI=true and TURBO_FORCE=true: install passed; build 15/15, typecheck 25/25, test 30/30; Web unit 14 files/56 tests, integration 3 files/9 tests, browser 18 passed. Raw outputs are in logs/validation/p3-closeout/. The first ci:verify stopped because this step lacked a change record: a code-delivery record gate, not compilation/runtime failure. It is rerun after this record, retaining the initial failure output. Initial no-TTY install was environmental and recovered with CI=true; the Inspector reactive loop was a code defect, and the post-layout selection assumption was a test defect; both were repaired and regressed.
+
+未把 ELK fallback 计为 solver 成功。浏览器中 `_Worker is not a constructor` 仍可复现，默认语义布局质量与真实浏览器 incremental 稳定性未获证明；阶段3退出仍阻塞。本切片未更换 solver/worker 边界或冻结新 API。
+
+ELK fallback is not counted as solver success. Browser `_Worker is not a constructor` remains reproducible; default semantic layout quality and real-browser incremental stability are unproven. Phase 3 exit remains blocked. No solver/worker boundary or new package API is introduced.
+
+步骤4最终命令结果：补齐记录后完整 ci:verify exit 0；typecheck 25/25、unit 28/28、integration 18/18、E2E 17/17、build 15/15，全部 0 cached。Web 实际计数为 unit 56、integration 9、浏览器18。独立 Chrome 诊断得到 `Layout fallback: _Worker is not a constructor`、pageErrors=[]、5 个 Canvas 节点；截图与 JSON 已保存。这是 solver/浏览器互操作的代码缺陷，非环境权限问题，也不因 CI 成功而消失。阶段3不宣称退出。
+
+Step 4 final commands: ci:verify exited 0 after adding the record; typecheck 25/25, unit 28/28, integration 18/18, E2E 17/17, build 15/15, all with zero cached tasks. Actual Web counts are 56 unit, 9 integration, and 18 browser tests. Independent Chrome diagnostics reported `Layout fallback: _Worker is not a constructor`, pageErrors=[], and five Canvas nodes; screenshot and JSON are saved. This solver/browser interoperability code defect is not a permission issue and is not erased by passing CI. Phase 3 exit is not claimed.

@@ -1,4 +1,5 @@
 import { json, error } from "@sveltejs/kit";
+import { ArchitectureValidator } from "@coding-cad/architecture-validator";
 import { Workspace } from "@coding-cad/workspace";
 import type { ArchitectureProject } from "@coding-cad/architecture-ir";
 import type { RequestHandler } from "./$types.js";
@@ -38,13 +39,24 @@ function toProjectDto(workspace: Workspace): { id: string; name: string; created
   };
 }
 
+async function openWorkspace(id: string): Promise<Workspace> {
+  try {
+    return await Workspace.open(`${WORKSPACE_ROOT}/${encodeURIComponent(id)}`);
+  } catch (cause) {
+    if (cause instanceof Error && cause.message.startsWith("Coding CAD workspace does not exist at ")) {
+      throw error(404, "Workspace does not exist.");
+    }
+    throw cause;
+  }
+}
+
 export const GET: RequestHandler = async ({ params }) => {
   const { id } = params;
   if (typeof id !== "string" || id.length === 0) {
     throw error(400, "OpenProjectRequest requires an id.");
   }
 
-  const workspace = await Workspace.open(`${WORKSPACE_ROOT}/${encodeURIComponent(id)}`);
+  const workspace = await openWorkspace(id);
   const architectureJson = JSON.stringify(workspace.loadLatestArchitecture());
   const viewStateJson = workspace.loadViewState();
   const dto = toProjectDto(workspace);
@@ -65,9 +77,10 @@ export const PUT: RequestHandler = async ({ params, request }) => {
     throw error(400, "SaveProjectRequest requires architectureJson.");
   }
 
-  const workspace = await Workspace.open(`${WORKSPACE_ROOT}/${encodeURIComponent(id)}`);
+  const workspace = await openWorkspace(id);
   const architecture = parseArchitecture(payload.architectureJson);
   const snapshot = await workspace.saveSnapshot(architecture);
+  await workspace.recordValidation(new ArchitectureValidator().validate(architecture), snapshot.version);
   if (typeof payload.viewStateJson === "string") {
     await workspace.saveViewState(payload.viewStateJson);
   }
