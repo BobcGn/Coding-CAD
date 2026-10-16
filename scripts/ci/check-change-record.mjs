@@ -89,8 +89,10 @@ export function isImplementationLog(filePath) {
 }
 
 function findSectionIndex(entryText, keywords) {
+  // Matches markdown headers (e.g. ### 1. 做了什么), bold headers (**做了什么**), or standalone legacy labels (变更：, 验证:)
+  // Does NOT match bullet list items like "- 验证与基线..."
   const pattern = new RegExp(
-    `(?:^|\\n)[\\s#*-]*(?:\\d+[.:、\\s]*)?(?:${keywords.join("|")})`,
+    `(?:^|\\n)(?:#{1,6}|\\*{2})?[\\s]*(?:\\d+[.:、\\s]*)?(?:${keywords.join("|")})(?:\\b|\\/|\\*|:|：|\\s|$)`,
     "i"
   );
   const match = pattern.exec(entryText);

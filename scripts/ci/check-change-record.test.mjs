@@ -126,6 +126,29 @@ test("validateEntryFormat rejects monolingual entry", () => {
   assert.ok(result.errors.some((err) => err.includes("bilingual")));
 });
 
+test("validateEntryFormat does not treat list items with section keywords as headers", () => {
+  const entryWithBullets = `
+## 2026-10-16 - 列表项关键字测试 / Bullet Keyword Test
+
+### 1. 做了什么 / What
+- 验证与基线比对：更新 benchmark.ts 工具。
+- Verification and baseline comparison: updated benchmark.ts tool.
+- 为什么需要重构：为了支持 monorepo。
+- Why refactor: to support monorepos.
+
+### 2. 为什么这么做 / Why
+- 动机描述：必须保留完整的架构事实链。
+- Motivation: must preserve the full architecture truth chain.
+
+### 3. 验证结果 / Verification
+- 执行测试并通过。
+- Ran tests and passed.
+`;
+
+  const result = validateEntryFormat(entryWithBullets, { allowLegacy: false });
+  assert.equal(result.valid, true, `Expected valid entry, got: ${result.errors.join(", ")}`);
+});
+
 test("splitEntries correctly splits multiple markdown log entries", () => {
   const doc = `
 # Title
@@ -141,3 +164,4 @@ Content 2
   assert.equal(entries[0].title, "## Entry 1");
   assert.equal(entries[1].title, "## Entry 2");
 });
+
