@@ -271,3 +271,13 @@ Real browser clicks exposed a reactive loop in Canvas selection callbacks; untra
 Validation: Web typecheck 0/0; unit 12 files/47 tests and integration 3 files/9 tests passed; five new Remove/Connect browser cases passed. Full browser regression results follow. Initial Inspector regression exposed the real loop; after fixing it the test still assumed selection survived layout, and now reselects before checking the field without weakening architecture-set assertions.
 
 步骤2最终浏览器回归：15 passed（真实点击，串行）。 / Step 2 final browser regression: 15 passed with real clicks and one worker.
+
+## 2026-10-16 - Step 3 Inspector Scope / 步骤3 Inspector 范围
+
+动机：按用户澄清补齐 Phase 3 契约编辑缺口，保持 P3-D3 的 app-private field-specific/no-generic-patch 边界。新增既有 Contract 的 add/remove 命令、最小产品控件及结构校验；不扩展 IR。完整逐项审计见 `docs/audit/p3-inspector-scope.md`。类型/限制现有命令增加产品入口，但未将其专门 UI 操作宣称为已测。
+
+Motivation: close the user-confirmed Phase 3 contract gap while preserving P3-D3 app-private field-specific/no-generic-patch boundaries. Added existing-Contract add/remove commands, minimal controls and structural validation without extending IR. The audit lists each requirement and evidence. Existing type/limitation commands now have controls, but dedicated UI interaction is not claimed tested.
+
+源码 architecture-validator test 通过；Web typecheck 为 0 errors / 0 warnings。Web unit/integration/E2E 结果在后续条目与退出报告记录。 / Source architecture-validator tests passed; Web typecheck had zero errors/warnings. Web unit/integration/E2E results follow and are included in the exit report.
+
+步骤3验证：Web unit 12 files / 49 tests、integration 3 files / 9 tests、Playwright 16 passed；契约规则源码测试与 Web typecheck 通过。 / Step 3 validation: Web unit 12 files / 49 tests, integration 3 files / 9 tests, and 16 Playwright cases passed; contract-rule source tests and Web typecheck passed.

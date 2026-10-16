@@ -305,6 +305,8 @@ function describeCommand(command: ArchitectureCommand): string {
     case "inspector-update-type": return "Update type of " + command.componentId;
     case "inspector-add-capability": return "Add capability " + command.capability + " to " + command.componentId;
     case "inspector-remove-capability": return "Remove capability " + command.capability + " from " + command.componentId;
+    case "inspector-add-contract": return `Add contract ${command.contract.name} to ${command.componentId}`;
+    case "inspector-remove-contract": return `Remove contract ${command.contractName} from ${command.componentId}`;
     case "inspector-add-limitation": return "Add limitation " + command.limitation + " to " + command.componentId;
   }
   return "Unknown command";

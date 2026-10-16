@@ -176,4 +176,24 @@ assert.equal(malformedGraphResult.issues.some((issue) => issue.id.includes("miss
 assert.equal(malformedGraphResult.issues.every((issue) => issue.description.length > 0), true);
 assert.equal(malformedGraphResult.issues.every((issue) => issue.suggestion !== undefined), true);
 
+const contractProject = createPointSystem("PostgreSQL");
+const withContracts = (contracts: NonNullable<ArchitectureProject["architecture"]["components"][number]["contracts"]>): ArchitectureProject => ({
+  ...contractProject,
+  architecture: {
+    ...contractProject.architecture,
+    components: contractProject.architecture.components.map((component, index) => index === 0 ? { ...component, contracts } : component)
+  }
+});
+assert.equal(new ArchitectureValidator().validate(withContracts([{ name: "ReadBalance", protocol: "REST" }])).valid, true);
+for (const contracts of [
+  [{ name: "", protocol: "REST" as const }],
+  [{ name: "Balance", protocol: "REST" as const }, { name: "Balance", protocol: "RPC" as const }],
+  [{ name: "Balance", protocol: "INVALID" as "REST" }],
+  [{ name: "Balance", protocol: "REST" as const, inputs: [{ name: "Input", fields: [{ name: "id", type: "" }] }] }],
+  [{ name: "Balance", protocol: "REST" as const, outputs: [{ name: "Output", fields: [{ name: "id", type: "String" }, { name: "id", type: "Number" }] }] }]
+]) {
+  const result = new ArchitectureValidator().validate(withContracts(contracts));
+  assert.equal(result.valid, false);
+  assert.ok(result.issues.some((issue) => issue.id.startsWith("contract.integrity.") && issue.severity === "ERROR"));
+}
 console.log("architecture-validator tests passed");

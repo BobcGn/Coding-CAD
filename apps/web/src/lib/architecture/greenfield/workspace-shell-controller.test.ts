@@ -182,3 +182,34 @@ function expectSameAccepted(controller: WorkspaceShellController, before: typeof
   assert.equal(controller.state().accepted, before);
   assert.deepEqual(controller.state().accepted, before);
 }
+
+describe("minimal Inspector contract editing through the production gate", () => {
+  it("adds and removes an IR contract through Validator and Review", async () => {
+    const controller = createController();
+    const before = controller.state().accepted;
+    const contract = { name: "GetBalance", protocol: "REST" as const, outputs: [{ name: "Balance", fields: [{ name: "amount", type: "Integer" }] }] };
+    await controller.executeCommand({ type: "inspector-add-contract", componentId: "ledger", contract });
+    expectSameAccepted(controller, before);
+    await controller.acceptCandidate("Approve contract.");
+    assert.equal(controller.state().proposal?.status, "approved");
+    assert.deepEqual(controller.state().accepted.architecture.components.find((node) => node.id === "ledger")?.contracts, [contract]);
+    const afterAdd = controller.state().accepted;
+    await controller.executeCommand({ type: "inspector-remove-contract", componentId: "ledger", contractName: "GetBalance" });
+    expectSameAccepted(controller, afterAdd);
+    await controller.acceptCandidate("Remove obsolete contract.");
+    assert.deepEqual(controller.state().accepted.architecture.components.find((node) => node.id === "ledger")?.contracts, []);
+  });
+
+  it("blocks duplicate contract names and preserves accepted architecture", async () => {
+    const controller = createController();
+    const command = { type: "inspector-add-contract" as const, componentId: "ledger", contract: { name: "GetBalance", protocol: "REST" as const } };
+    await controller.executeCommand(command);
+    await controller.acceptCandidate("Approve first contract.");
+    const before = controller.state().accepted;
+    await controller.executeCommand(command);
+    assert.equal(controller.state().validation?.valid, false);
+    assert.ok(controller.state().validation?.issues.some((issue) => issue.id.startsWith("contract.integrity.")));
+    await controller.acceptCandidate("Try duplicate.");
+    expectSameAccepted(controller, before);
+  });
+});

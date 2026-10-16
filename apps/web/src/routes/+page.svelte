@@ -41,6 +41,9 @@
     (edge) => edge.from === removeComponentId || edge.to === removeComponentId
   ) ?? []);
   let reviewRationale = $state("");
+  let contractName = $state("");
+  let contractProtocol = $state<"REST" | "RPC" | "EVENT" | "SQL" | "MESSAGE">("REST");
+  let editLimitation = $state("");
   let editDescription = $state("");
   let editCapability = $state("");
   let noticeMessage = $state("");
@@ -433,7 +436,17 @@
               <dt>Name</dt>
               <dd>{inspector.name}</dd>
               <dt>Type</dt>
-              <dd>{inspector.type ?? "unset"}</dd>
+              <dd>
+                <select aria-label="Component type" value={inspector.type ?? ""} disabled={busy || pendingReview}
+                  onchange={(event) => {
+                    if (inspector) void runInspectorCommand({ type: "inspector-update-type", componentId: inspector.componentId, componentType: event.currentTarget.value });
+                  }}>
+                  <option value="" disabled>unset</option>
+                  {#each ["service", "database", "cache", "queue", "gateway", "storage", "external-service"] as type}
+                    <option value={type}>{type}</option>
+                  {/each}
+                </select>
+              </dd>
               <dt>Description</dt>
               <dd>
                 <textarea bind:value={editDescription} rows="2" disabled={busy}></textarea>
@@ -467,6 +480,39 @@
                   <input bind:value={editCapability} placeholder="capability" disabled={busy} />
                   <button type="button" onclick={handleAddCapability} disabled={busy || pendingReview || editCapability.trim().length === 0}>Add</button>
                 </div>
+              </dd>
+              <dt>Limitations</dt>
+              <dd>
+                <ul>{#each inspector.limitations as limitation}<li>{limitation}</li>{/each}</ul>
+                <label for="limitation">New limitation</label>
+                <input id="limitation" bind:value={editLimitation} disabled={busy || pendingReview} />
+                <button type="button" disabled={busy || pendingReview || !editLimitation.trim()}
+                  onclick={() => {
+                    if (inspector) void runInspectorCommand({ type: "inspector-add-limitation", componentId: inspector.componentId, limitation: editLimitation.trim() });
+                  }}>Add limitation</button>
+              </dd>
+              <dt>Contracts</dt>
+              <dd>
+                <ul>
+                  {#each inspector.contracts as contract, index (index)}
+                    <li>{contract.name} ({contract.protocol})
+                      <button type="button" aria-label={`Remove contract ${contract.name}`} disabled={busy || pendingReview}
+                        onclick={() => {
+                          if (inspector) void runInspectorCommand({ type: "inspector-remove-contract", componentId: inspector.componentId, contractName: contract.name });
+                        }}>Remove</button>
+                    </li>
+                  {/each}
+                </ul>
+                <label for="contract-name">Contract name</label>
+                <input id="contract-name" bind:value={contractName} disabled={busy || pendingReview} />
+                <label for="contract-protocol">Contract protocol</label>
+                <select id="contract-protocol" bind:value={contractProtocol} disabled={busy || pendingReview}>
+                  {#each ["REST", "RPC", "EVENT", "SQL", "MESSAGE"] as protocol}<option value={protocol}>{protocol}</option>{/each}
+                </select>
+                <button type="button" disabled={busy || pendingReview || !contractName.trim()}
+                  onclick={() => {
+                    if (inspector) void runInspectorCommand({ type: "inspector-add-contract", componentId: inspector.componentId, contract: { name: contractName.trim(), protocol: contractProtocol } });
+                  }}>Add contract</button>
               </dd>
             </dl>
             {#if inspector.issues.length > 0}

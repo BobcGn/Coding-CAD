@@ -106,3 +106,25 @@ test("invalid connection appears in Problems and cannot enter accepted architect
   expect(await saveFacts(page)).toEqual(before);
   expect(await reopenFacts(page)).toEqual(before);
 });
+
+test("Inspector contract add/remove use Review and preserve schema through Save/Open", async ({ page }) => {
+  await generate(page);
+  const before = await saveFacts(page);
+  await page.locator(".svelte-flow__node").filter({ hasText: "PointService" }).click();
+  await page.getByLabel("Contract name", { exact: true }).fill("GetBalance");
+  await page.getByLabel("Contract protocol", { exact: true }).selectOption("REST");
+  await page.getByRole("button", { name: "Add contract", exact: true }).click();
+  expect(await saveFacts(page)).toEqual(before);
+  await approve(page);
+  const added = await saveFacts(page);
+  const component = added.architecture.components.find((node) => node.id === "point-service")!;
+  expect(component.contracts).toContainEqual({ name: "GetBalance", protocol: "REST" });
+  expect(await reopenFacts(page)).toEqual(added);
+  await page.locator(".svelte-flow__node").filter({ hasText: "PointService" }).click();
+  await page.getByRole("button", { name: "Remove contract GetBalance", exact: true }).click();
+  expect(await saveFacts(page)).toEqual(added);
+  await approve(page);
+  const removed = await saveFacts(page);
+  expect(removed.architecture.components.find((node) => node.id === "point-service")?.contracts ?? []).not.toContainEqual({ name: "GetBalance", protocol: "REST" });
+  expect(await reopenFacts(page)).toEqual(removed);
+});
