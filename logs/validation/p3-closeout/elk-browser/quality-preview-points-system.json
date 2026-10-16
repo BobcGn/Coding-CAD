@@ -1,0 +1,1765 @@
+{
+  "full": {
+    "nodes": 5,
+    "components": 4,
+    "peerOverlaps": 0,
+    "overlapPairs": [],
+    "containmentFailures": [],
+    "routedEdges": 3,
+    "edges": 3,
+    "routedCrossings": 0,
+    "rankInversions": 0,
+    "area": 183372
+  },
+  "incremental": {
+    "nodes": 5,
+    "components": 4,
+    "peerOverlaps": 0,
+    "overlapPairs": [],
+    "containmentFailures": [],
+    "routedEdges": 0,
+    "edges": 3,
+    "routedCrossings": null,
+    "rankInversions": 0,
+    "area": 159636
+  },
+  "productMovement": {
+    "unaffectedNodes": 4,
+    "p95": 0,
+    "max": 0,
+    "orderReversals": 0
+  },
+  "additionMovement": {
+    "unaffectedNodes": 4,
+    "p95": 0,
+    "max": 0,
+    "orderReversals": 0
+  },
+  "additionQuality": {
+    "nodes": 6,
+    "components": 5,
+    "peerOverlaps": 0,
+    "overlapPairs": [],
+    "containmentFailures": [],
+    "routedEdges": 0,
+    "edges": 3,
+    "routedCrossings": null,
+    "rankInversions": 0,
+    "area": 249996
+  },
+  "renderedQuality": {
+    "nodes": 5,
+    "components": 4,
+    "peerOverlaps": 0,
+    "overlapPairs": [],
+    "containmentFailures": [],
+    "routedEdges": 0,
+    "edges": 3,
+    "routedCrossings": null,
+    "rankInversions": 0,
+    "area": 159636
+  },
+  "determinism": true,
+  "movement": {
+    "nodes": [
+      {
+        "nodeId": "group:infrastructure",
+        "distance": 0,
+        "affected": false
+      },
+      {
+        "nodeId": "database",
+        "distance": 0,
+        "affected": false
+      },
+      {
+        "nodeId": "events",
+        "distance": 0,
+        "affected": false
+      },
+      {
+        "nodeId": "gateway",
+        "distance": 0,
+        "affected": false
+      },
+      {
+        "nodeId": "ledger",
+        "distance": 0,
+        "affected": false
+      }
+    ],
+    "unaffectedP95": 0,
+    "unaffectedMax": 0,
+    "relativeOrderReversed": false,
+    "withinBudget": true
+  },
+  "durationMs": 59.899999998509884,
+  "raw": {
+    "name": "points-system",
+    "first": {
+      "projection": {
+        "classifications": [
+          {
+            "componentId": "gateway",
+            "role": "gateway",
+            "confidence": "explicit",
+            "provenance": "component.type"
+          },
+          {
+            "componentId": "ledger",
+            "role": "service",
+            "confidence": "explicit",
+            "provenance": "component.type"
+          },
+          {
+            "componentId": "database",
+            "role": "database",
+            "confidence": "explicit",
+            "provenance": "component.type"
+          },
+          {
+            "componentId": "events",
+            "role": "queue",
+            "confidence": "explicit",
+            "provenance": "component.type"
+          }
+        ],
+        "abstraction": {
+          "groups": [
+            {
+              "id": "group:infrastructure",
+              "label": "Infrastructure",
+              "kind": "infrastructure",
+              "provenance": "layout semantic role",
+              "memberIds": [
+                "database",
+                "events"
+              ]
+            }
+          ],
+          "parentByComponentId": {
+            "database": "group:infrastructure",
+            "events": "group:infrastructure"
+          }
+        },
+        "visualGraph": {
+          "nodes": [
+            {
+              "id": "group:infrastructure",
+              "sourceId": "group:infrastructure",
+              "kind": "group",
+              "label": "Infrastructure",
+              "role": "unknown",
+              "groupKind": "infrastructure",
+              "hints": {
+                "preferredRank": "application",
+                "portDirection": "bidirectional",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "gateway",
+              "sourceId": "gateway",
+              "kind": "component",
+              "label": "API Gateway",
+              "role": "gateway",
+              "classification": {
+                "componentId": "gateway",
+                "role": "gateway",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "entry",
+                "portDirection": "outgoing",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "ledger",
+              "sourceId": "ledger",
+              "kind": "component",
+              "label": "Points Ledger",
+              "role": "service",
+              "classification": {
+                "componentId": "ledger",
+                "role": "service",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "application",
+                "portDirection": "bidirectional",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "database",
+              "sourceId": "database",
+              "kind": "component",
+              "label": "Ledger Database",
+              "role": "database",
+              "parentId": "group:infrastructure",
+              "classification": {
+                "componentId": "database",
+                "role": "database",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "data",
+                "portDirection": "incoming",
+                "infrastructure": true,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "events",
+              "sourceId": "events",
+              "kind": "component",
+              "label": "Points Events",
+              "role": "queue",
+              "parentId": "group:infrastructure",
+              "classification": {
+                "componentId": "events",
+                "role": "queue",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "async",
+                "portDirection": "bidirectional",
+                "infrastructure": true,
+                "externalBoundary": false
+              }
+            }
+          ],
+          "edges": [
+            {
+              "id": "gateway-ledger",
+              "sourceId": "gateway-ledger",
+              "from": "gateway",
+              "to": "ledger",
+              "asynchronous": false
+            },
+            {
+              "id": "ledger-database",
+              "sourceId": "ledger-database",
+              "from": "ledger",
+              "to": "database",
+              "asynchronous": false
+            },
+            {
+              "id": "ledger-events",
+              "sourceId": "ledger-events",
+              "from": "ledger",
+              "to": "events",
+              "asynchronous": true
+            }
+          ]
+        },
+        "layoutGraph": {
+          "direction": "LR",
+          "nodes": [
+            {
+              "id": "group:infrastructure",
+              "sourceId": "group:infrastructure",
+              "kind": "group",
+              "label": "Infrastructure",
+              "role": "unknown",
+              "groupKind": "infrastructure",
+              "hints": {
+                "preferredRank": "application",
+                "portDirection": "bidirectional",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "gateway",
+              "sourceId": "gateway",
+              "kind": "component",
+              "label": "API Gateway",
+              "role": "gateway",
+              "classification": {
+                "componentId": "gateway",
+                "role": "gateway",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "entry",
+                "portDirection": "outgoing",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "ledger",
+              "sourceId": "ledger",
+              "kind": "component",
+              "label": "Points Ledger",
+              "role": "service",
+              "classification": {
+                "componentId": "ledger",
+                "role": "service",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "application",
+                "portDirection": "bidirectional",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "database",
+              "sourceId": "database",
+              "kind": "component",
+              "label": "Ledger Database",
+              "role": "database",
+              "parentId": "group:infrastructure",
+              "classification": {
+                "componentId": "database",
+                "role": "database",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "data",
+                "portDirection": "incoming",
+                "infrastructure": true,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "events",
+              "sourceId": "events",
+              "kind": "component",
+              "label": "Points Events",
+              "role": "queue",
+              "parentId": "group:infrastructure",
+              "classification": {
+                "componentId": "events",
+                "role": "queue",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "async",
+                "portDirection": "bidirectional",
+                "infrastructure": true,
+                "externalBoundary": false
+              }
+            }
+          ],
+          "edges": [
+            {
+              "id": "gateway-ledger",
+              "sourceId": "gateway-ledger",
+              "from": "gateway",
+              "to": "ledger",
+              "asynchronous": false
+            },
+            {
+              "id": "ledger-database",
+              "sourceId": "ledger-database",
+              "from": "ledger",
+              "to": "database",
+              "asynchronous": false
+            },
+            {
+              "id": "ledger-events",
+              "sourceId": "ledger-events",
+              "from": "ledger",
+              "to": "events",
+              "asynchronous": true
+            }
+          ],
+          "constraints": [
+            {
+              "kind": "direction",
+              "direction": "LR",
+              "strength": "required"
+            },
+            {
+              "kind": "rank",
+              "nodeId": "gateway",
+              "rank": "entry",
+              "strength": "preferred"
+            },
+            {
+              "kind": "rank",
+              "nodeId": "ledger",
+              "rank": "application",
+              "strength": "preferred"
+            },
+            {
+              "kind": "rank",
+              "nodeId": "database",
+              "rank": "data",
+              "strength": "preferred"
+            },
+            {
+              "kind": "rank",
+              "nodeId": "events",
+              "rank": "async",
+              "strength": "preferred"
+            },
+            {
+              "kind": "group",
+              "groupId": "group:infrastructure",
+              "memberIds": [
+                "database",
+                "events"
+              ],
+              "groupKind": "infrastructure",
+              "strength": "required"
+            }
+          ]
+        }
+      },
+      "requestedMode": "FULL",
+      "appliedMode": "FULL",
+      "result": {
+        "status": "success",
+        "direction": "LR",
+        "size": {
+          "width": 777,
+          "height": 236
+        },
+        "nodes": [
+          {
+            "id": "group:infrastructure",
+            "sourceId": "group:infrastructure",
+            "kind": "group",
+            "position": {
+              "x": 549,
+              "y": 24
+            },
+            "size": {
+              "width": 204,
+              "height": 188
+            }
+          },
+          {
+            "id": "database",
+            "sourceId": "database",
+            "kind": "component",
+            "position": {
+              "x": 561,
+              "y": 36
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            },
+            "parentId": "group:infrastructure"
+          },
+          {
+            "id": "events",
+            "sourceId": "events",
+            "kind": "component",
+            "position": {
+              "x": 561,
+              "y": 128
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            },
+            "parentId": "group:infrastructure"
+          },
+          {
+            "id": "gateway",
+            "sourceId": "gateway",
+            "kind": "component",
+            "position": {
+              "x": 24,
+              "y": 116
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            }
+          },
+          {
+            "id": "ledger",
+            "sourceId": "ledger",
+            "kind": "component",
+            "position": {
+              "x": 284,
+              "y": 116
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "gateway-ledger",
+            "sourceId": "gateway-ledger",
+            "from": "gateway",
+            "to": "ledger",
+            "sections": [
+              {
+                "start": {
+                  "x": 204,
+                  "y": 152
+                },
+                "end": {
+                  "x": 284,
+                  "y": 152
+                },
+                "bendPoints": []
+              }
+            ]
+          },
+          {
+            "id": "ledger-database",
+            "sourceId": "ledger-database",
+            "from": "ledger",
+            "to": "database",
+            "sections": [
+              {
+                "start": {
+                  "x": 464,
+                  "y": 140
+                },
+                "end": {
+                  "x": 561,
+                  "y": 72
+                },
+                "bendPoints": [
+                  {
+                    "x": 474,
+                    "y": 140
+                  },
+                  {
+                    "x": 474,
+                    "y": 72
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "ledger-events",
+            "sourceId": "ledger-events",
+            "from": "ledger",
+            "to": "events",
+            "sections": [
+              {
+                "start": {
+                  "x": 464,
+                  "y": 164
+                },
+                "end": {
+                  "x": 561,
+                  "y": 164
+                },
+                "bendPoints": []
+              }
+            ]
+          }
+        ],
+        "diagnostics": []
+      },
+      "state": {
+        "version": 1,
+        "direction": "LR",
+        "nodes": [
+          {
+            "id": "group:infrastructure",
+            "position": {
+              "x": 549,
+              "y": 24
+            },
+            "size": {
+              "width": 204,
+              "height": 188
+            }
+          },
+          {
+            "id": "database",
+            "position": {
+              "x": 561,
+              "y": 36
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            },
+            "parentId": "group:infrastructure"
+          },
+          {
+            "id": "events",
+            "position": {
+              "x": 561,
+              "y": 128
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            },
+            "parentId": "group:infrastructure"
+          },
+          {
+            "id": "gateway",
+            "position": {
+              "x": 24,
+              "y": 116
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            }
+          },
+          {
+            "id": "ledger",
+            "position": {
+              "x": 284,
+              "y": 116
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "gateway-ledger",
+            "from": "gateway",
+            "to": "ledger"
+          },
+          {
+            "id": "ledger-database",
+            "from": "ledger",
+            "to": "database"
+          },
+          {
+            "id": "ledger-events",
+            "from": "ledger",
+            "to": "events"
+          }
+        ]
+      },
+      "durationMs": 59.899999998509884
+    },
+    "repeated": {
+      "projection": {
+        "classifications": [
+          {
+            "componentId": "gateway",
+            "role": "gateway",
+            "confidence": "explicit",
+            "provenance": "component.type"
+          },
+          {
+            "componentId": "ledger",
+            "role": "service",
+            "confidence": "explicit",
+            "provenance": "component.type"
+          },
+          {
+            "componentId": "database",
+            "role": "database",
+            "confidence": "explicit",
+            "provenance": "component.type"
+          },
+          {
+            "componentId": "events",
+            "role": "queue",
+            "confidence": "explicit",
+            "provenance": "component.type"
+          }
+        ],
+        "abstraction": {
+          "groups": [
+            {
+              "id": "group:infrastructure",
+              "label": "Infrastructure",
+              "kind": "infrastructure",
+              "provenance": "layout semantic role",
+              "memberIds": [
+                "database",
+                "events"
+              ]
+            }
+          ],
+          "parentByComponentId": {
+            "database": "group:infrastructure",
+            "events": "group:infrastructure"
+          }
+        },
+        "visualGraph": {
+          "nodes": [
+            {
+              "id": "group:infrastructure",
+              "sourceId": "group:infrastructure",
+              "kind": "group",
+              "label": "Infrastructure",
+              "role": "unknown",
+              "groupKind": "infrastructure",
+              "hints": {
+                "preferredRank": "application",
+                "portDirection": "bidirectional",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "gateway",
+              "sourceId": "gateway",
+              "kind": "component",
+              "label": "API Gateway",
+              "role": "gateway",
+              "classification": {
+                "componentId": "gateway",
+                "role": "gateway",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "entry",
+                "portDirection": "outgoing",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "ledger",
+              "sourceId": "ledger",
+              "kind": "component",
+              "label": "Points Ledger",
+              "role": "service",
+              "classification": {
+                "componentId": "ledger",
+                "role": "service",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "application",
+                "portDirection": "bidirectional",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "database",
+              "sourceId": "database",
+              "kind": "component",
+              "label": "Ledger Database",
+              "role": "database",
+              "parentId": "group:infrastructure",
+              "classification": {
+                "componentId": "database",
+                "role": "database",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "data",
+                "portDirection": "incoming",
+                "infrastructure": true,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "events",
+              "sourceId": "events",
+              "kind": "component",
+              "label": "Points Events",
+              "role": "queue",
+              "parentId": "group:infrastructure",
+              "classification": {
+                "componentId": "events",
+                "role": "queue",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "async",
+                "portDirection": "bidirectional",
+                "infrastructure": true,
+                "externalBoundary": false
+              }
+            }
+          ],
+          "edges": [
+            {
+              "id": "gateway-ledger",
+              "sourceId": "gateway-ledger",
+              "from": "gateway",
+              "to": "ledger",
+              "asynchronous": false
+            },
+            {
+              "id": "ledger-database",
+              "sourceId": "ledger-database",
+              "from": "ledger",
+              "to": "database",
+              "asynchronous": false
+            },
+            {
+              "id": "ledger-events",
+              "sourceId": "ledger-events",
+              "from": "ledger",
+              "to": "events",
+              "asynchronous": true
+            }
+          ]
+        },
+        "layoutGraph": {
+          "direction": "LR",
+          "nodes": [
+            {
+              "id": "group:infrastructure",
+              "sourceId": "group:infrastructure",
+              "kind": "group",
+              "label": "Infrastructure",
+              "role": "unknown",
+              "groupKind": "infrastructure",
+              "hints": {
+                "preferredRank": "application",
+                "portDirection": "bidirectional",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "gateway",
+              "sourceId": "gateway",
+              "kind": "component",
+              "label": "API Gateway",
+              "role": "gateway",
+              "classification": {
+                "componentId": "gateway",
+                "role": "gateway",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "entry",
+                "portDirection": "outgoing",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "ledger",
+              "sourceId": "ledger",
+              "kind": "component",
+              "label": "Points Ledger",
+              "role": "service",
+              "classification": {
+                "componentId": "ledger",
+                "role": "service",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "application",
+                "portDirection": "bidirectional",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "database",
+              "sourceId": "database",
+              "kind": "component",
+              "label": "Ledger Database",
+              "role": "database",
+              "parentId": "group:infrastructure",
+              "classification": {
+                "componentId": "database",
+                "role": "database",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "data",
+                "portDirection": "incoming",
+                "infrastructure": true,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "events",
+              "sourceId": "events",
+              "kind": "component",
+              "label": "Points Events",
+              "role": "queue",
+              "parentId": "group:infrastructure",
+              "classification": {
+                "componentId": "events",
+                "role": "queue",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "async",
+                "portDirection": "bidirectional",
+                "infrastructure": true,
+                "externalBoundary": false
+              }
+            }
+          ],
+          "edges": [
+            {
+              "id": "gateway-ledger",
+              "sourceId": "gateway-ledger",
+              "from": "gateway",
+              "to": "ledger",
+              "asynchronous": false
+            },
+            {
+              "id": "ledger-database",
+              "sourceId": "ledger-database",
+              "from": "ledger",
+              "to": "database",
+              "asynchronous": false
+            },
+            {
+              "id": "ledger-events",
+              "sourceId": "ledger-events",
+              "from": "ledger",
+              "to": "events",
+              "asynchronous": true
+            }
+          ],
+          "constraints": [
+            {
+              "kind": "direction",
+              "direction": "LR",
+              "strength": "required"
+            },
+            {
+              "kind": "rank",
+              "nodeId": "gateway",
+              "rank": "entry",
+              "strength": "preferred"
+            },
+            {
+              "kind": "rank",
+              "nodeId": "ledger",
+              "rank": "application",
+              "strength": "preferred"
+            },
+            {
+              "kind": "rank",
+              "nodeId": "database",
+              "rank": "data",
+              "strength": "preferred"
+            },
+            {
+              "kind": "rank",
+              "nodeId": "events",
+              "rank": "async",
+              "strength": "preferred"
+            },
+            {
+              "kind": "group",
+              "groupId": "group:infrastructure",
+              "memberIds": [
+                "database",
+                "events"
+              ],
+              "groupKind": "infrastructure",
+              "strength": "required"
+            }
+          ]
+        }
+      },
+      "requestedMode": "FULL",
+      "appliedMode": "FULL",
+      "result": {
+        "status": "success",
+        "direction": "LR",
+        "size": {
+          "width": 777,
+          "height": 236
+        },
+        "nodes": [
+          {
+            "id": "group:infrastructure",
+            "sourceId": "group:infrastructure",
+            "kind": "group",
+            "position": {
+              "x": 549,
+              "y": 24
+            },
+            "size": {
+              "width": 204,
+              "height": 188
+            }
+          },
+          {
+            "id": "database",
+            "sourceId": "database",
+            "kind": "component",
+            "position": {
+              "x": 561,
+              "y": 36
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            },
+            "parentId": "group:infrastructure"
+          },
+          {
+            "id": "events",
+            "sourceId": "events",
+            "kind": "component",
+            "position": {
+              "x": 561,
+              "y": 128
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            },
+            "parentId": "group:infrastructure"
+          },
+          {
+            "id": "gateway",
+            "sourceId": "gateway",
+            "kind": "component",
+            "position": {
+              "x": 24,
+              "y": 116
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            }
+          },
+          {
+            "id": "ledger",
+            "sourceId": "ledger",
+            "kind": "component",
+            "position": {
+              "x": 284,
+              "y": 116
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "gateway-ledger",
+            "sourceId": "gateway-ledger",
+            "from": "gateway",
+            "to": "ledger",
+            "sections": [
+              {
+                "start": {
+                  "x": 204,
+                  "y": 152
+                },
+                "end": {
+                  "x": 284,
+                  "y": 152
+                },
+                "bendPoints": []
+              }
+            ]
+          },
+          {
+            "id": "ledger-database",
+            "sourceId": "ledger-database",
+            "from": "ledger",
+            "to": "database",
+            "sections": [
+              {
+                "start": {
+                  "x": 464,
+                  "y": 140
+                },
+                "end": {
+                  "x": 561,
+                  "y": 72
+                },
+                "bendPoints": [
+                  {
+                    "x": 474,
+                    "y": 140
+                  },
+                  {
+                    "x": 474,
+                    "y": 72
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "ledger-events",
+            "sourceId": "ledger-events",
+            "from": "ledger",
+            "to": "events",
+            "sections": [
+              {
+                "start": {
+                  "x": 464,
+                  "y": 164
+                },
+                "end": {
+                  "x": 561,
+                  "y": 164
+                },
+                "bendPoints": []
+              }
+            ]
+          }
+        ],
+        "diagnostics": []
+      },
+      "state": {
+        "version": 1,
+        "direction": "LR",
+        "nodes": [
+          {
+            "id": "group:infrastructure",
+            "position": {
+              "x": 549,
+              "y": 24
+            },
+            "size": {
+              "width": 204,
+              "height": 188
+            }
+          },
+          {
+            "id": "database",
+            "position": {
+              "x": 561,
+              "y": 36
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            },
+            "parentId": "group:infrastructure"
+          },
+          {
+            "id": "events",
+            "position": {
+              "x": 561,
+              "y": 128
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            },
+            "parentId": "group:infrastructure"
+          },
+          {
+            "id": "gateway",
+            "position": {
+              "x": 24,
+              "y": 116
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            }
+          },
+          {
+            "id": "ledger",
+            "position": {
+              "x": 284,
+              "y": 116
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "gateway-ledger",
+            "from": "gateway",
+            "to": "ledger"
+          },
+          {
+            "id": "ledger-database",
+            "from": "ledger",
+            "to": "database"
+          },
+          {
+            "id": "ledger-events",
+            "from": "ledger",
+            "to": "events"
+          }
+        ]
+      },
+      "durationMs": 56.100000001490116
+    },
+    "incremental": {
+      "projection": {
+        "classifications": [
+          {
+            "componentId": "gateway",
+            "role": "gateway",
+            "confidence": "explicit",
+            "provenance": "component.type"
+          },
+          {
+            "componentId": "ledger",
+            "role": "service",
+            "confidence": "explicit",
+            "provenance": "component.type"
+          },
+          {
+            "componentId": "database",
+            "role": "database",
+            "confidence": "explicit",
+            "provenance": "component.type"
+          },
+          {
+            "componentId": "events",
+            "role": "queue",
+            "confidence": "explicit",
+            "provenance": "component.type"
+          }
+        ],
+        "abstraction": {
+          "groups": [
+            {
+              "id": "group:infrastructure",
+              "label": "Infrastructure",
+              "kind": "infrastructure",
+              "provenance": "layout semantic role",
+              "memberIds": [
+                "database",
+                "events"
+              ]
+            }
+          ],
+          "parentByComponentId": {
+            "database": "group:infrastructure",
+            "events": "group:infrastructure"
+          }
+        },
+        "visualGraph": {
+          "nodes": [
+            {
+              "id": "group:infrastructure",
+              "sourceId": "group:infrastructure",
+              "kind": "group",
+              "label": "Infrastructure",
+              "role": "unknown",
+              "groupKind": "infrastructure",
+              "hints": {
+                "preferredRank": "application",
+                "portDirection": "bidirectional",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "gateway",
+              "sourceId": "gateway",
+              "kind": "component",
+              "label": "API Gateway",
+              "role": "gateway",
+              "classification": {
+                "componentId": "gateway",
+                "role": "gateway",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "entry",
+                "portDirection": "outgoing",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "ledger",
+              "sourceId": "ledger",
+              "kind": "component",
+              "label": "Points Ledger",
+              "role": "service",
+              "classification": {
+                "componentId": "ledger",
+                "role": "service",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "application",
+                "portDirection": "bidirectional",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "database",
+              "sourceId": "database",
+              "kind": "component",
+              "label": "Ledger Database",
+              "role": "database",
+              "parentId": "group:infrastructure",
+              "classification": {
+                "componentId": "database",
+                "role": "database",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "data",
+                "portDirection": "incoming",
+                "infrastructure": true,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "events",
+              "sourceId": "events",
+              "kind": "component",
+              "label": "Points Events",
+              "role": "queue",
+              "parentId": "group:infrastructure",
+              "classification": {
+                "componentId": "events",
+                "role": "queue",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "async",
+                "portDirection": "bidirectional",
+                "infrastructure": true,
+                "externalBoundary": false
+              }
+            }
+          ],
+          "edges": [
+            {
+              "id": "gateway-ledger",
+              "sourceId": "gateway-ledger",
+              "from": "gateway",
+              "to": "ledger",
+              "asynchronous": false
+            },
+            {
+              "id": "ledger-database",
+              "sourceId": "ledger-database",
+              "from": "ledger",
+              "to": "database",
+              "asynchronous": false
+            },
+            {
+              "id": "ledger-events",
+              "sourceId": "ledger-events",
+              "from": "ledger",
+              "to": "events",
+              "asynchronous": true
+            }
+          ]
+        },
+        "layoutGraph": {
+          "direction": "LR",
+          "nodes": [
+            {
+              "id": "group:infrastructure",
+              "sourceId": "group:infrastructure",
+              "kind": "group",
+              "label": "Infrastructure",
+              "role": "unknown",
+              "groupKind": "infrastructure",
+              "hints": {
+                "preferredRank": "application",
+                "portDirection": "bidirectional",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "gateway",
+              "sourceId": "gateway",
+              "kind": "component",
+              "label": "API Gateway",
+              "role": "gateway",
+              "classification": {
+                "componentId": "gateway",
+                "role": "gateway",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "entry",
+                "portDirection": "outgoing",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "ledger",
+              "sourceId": "ledger",
+              "kind": "component",
+              "label": "Points Ledger",
+              "role": "service",
+              "classification": {
+                "componentId": "ledger",
+                "role": "service",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "application",
+                "portDirection": "bidirectional",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "database",
+              "sourceId": "database",
+              "kind": "component",
+              "label": "Ledger Database",
+              "role": "database",
+              "parentId": "group:infrastructure",
+              "classification": {
+                "componentId": "database",
+                "role": "database",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "data",
+                "portDirection": "incoming",
+                "infrastructure": true,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "events",
+              "sourceId": "events",
+              "kind": "component",
+              "label": "Points Events",
+              "role": "queue",
+              "parentId": "group:infrastructure",
+              "classification": {
+                "componentId": "events",
+                "role": "queue",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "async",
+                "portDirection": "bidirectional",
+                "infrastructure": true,
+                "externalBoundary": false
+              }
+            }
+          ],
+          "edges": [
+            {
+              "id": "gateway-ledger",
+              "sourceId": "gateway-ledger",
+              "from": "gateway",
+              "to": "ledger",
+              "asynchronous": false
+            },
+            {
+              "id": "ledger-database",
+              "sourceId": "ledger-database",
+              "from": "ledger",
+              "to": "database",
+              "asynchronous": false
+            },
+            {
+              "id": "ledger-events",
+              "sourceId": "ledger-events",
+              "from": "ledger",
+              "to": "events",
+              "asynchronous": true
+            }
+          ],
+          "constraints": [
+            {
+              "kind": "direction",
+              "direction": "LR",
+              "strength": "required"
+            },
+            {
+              "kind": "rank",
+              "nodeId": "gateway",
+              "rank": "entry",
+              "strength": "preferred"
+            },
+            {
+              "kind": "rank",
+              "nodeId": "ledger",
+              "rank": "application",
+              "strength": "preferred"
+            },
+            {
+              "kind": "rank",
+              "nodeId": "database",
+              "rank": "data",
+              "strength": "preferred"
+            },
+            {
+              "kind": "rank",
+              "nodeId": "events",
+              "rank": "async",
+              "strength": "preferred"
+            },
+            {
+              "kind": "group",
+              "groupId": "group:infrastructure",
+              "memberIds": [
+                "database",
+                "events"
+              ],
+              "groupKind": "infrastructure",
+              "strength": "required"
+            }
+          ]
+        }
+      },
+      "requestedMode": "INCREMENTAL",
+      "appliedMode": "INCREMENTAL",
+      "result": {
+        "status": "success",
+        "direction": "LR",
+        "size": {
+          "width": 753,
+          "height": 212
+        },
+        "nodes": [
+          {
+            "id": "group:infrastructure",
+            "sourceId": "group:infrastructure",
+            "kind": "group",
+            "position": {
+              "x": 549,
+              "y": 24
+            },
+            "size": {
+              "width": 204,
+              "height": 188
+            }
+          },
+          {
+            "id": "database",
+            "sourceId": "database",
+            "kind": "component",
+            "position": {
+              "x": 561,
+              "y": 36
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            },
+            "parentId": "group:infrastructure"
+          },
+          {
+            "id": "events",
+            "sourceId": "events",
+            "kind": "component",
+            "position": {
+              "x": 561,
+              "y": 128
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            },
+            "parentId": "group:infrastructure"
+          },
+          {
+            "id": "gateway",
+            "sourceId": "gateway",
+            "kind": "component",
+            "position": {
+              "x": 24,
+              "y": 116
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            }
+          },
+          {
+            "id": "ledger",
+            "sourceId": "ledger",
+            "kind": "component",
+            "position": {
+              "x": 284,
+              "y": 116
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "gateway-ledger",
+            "sourceId": "gateway-ledger",
+            "from": "gateway",
+            "to": "ledger",
+            "sections": []
+          },
+          {
+            "id": "ledger-database",
+            "sourceId": "ledger-database",
+            "from": "ledger",
+            "to": "database",
+            "sections": []
+          },
+          {
+            "id": "ledger-events",
+            "sourceId": "ledger-events",
+            "from": "ledger",
+            "to": "events",
+            "sections": []
+          }
+        ],
+        "diagnostics": []
+      },
+      "state": {
+        "version": 1,
+        "direction": "LR",
+        "nodes": [
+          {
+            "id": "group:infrastructure",
+            "position": {
+              "x": 549,
+              "y": 24
+            },
+            "size": {
+              "width": 204,
+              "height": 188
+            }
+          },
+          {
+            "id": "database",
+            "position": {
+              "x": 561,
+              "y": 36
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            },
+            "parentId": "group:infrastructure"
+          },
+          {
+            "id": "events",
+            "position": {
+              "x": 561,
+              "y": 128
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            },
+            "parentId": "group:infrastructure"
+          },
+          {
+            "id": "gateway",
+            "position": {
+              "x": 24,
+              "y": 116
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            }
+          },
+          {
+            "id": "ledger",
+            "position": {
+              "x": 284,
+              "y": 116
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "gateway-ledger",
+            "from": "gateway",
+            "to": "ledger"
+          },
+          {
+            "id": "ledger-database",
+            "from": "ledger",
+            "to": "database"
+          },
+          {
+            "id": "ledger-events",
+            "from": "ledger",
+            "to": "events"
+          }
+        ]
+      },
+      "movement": {
+        "nodes": [
+          {
+            "nodeId": "group:infrastructure",
+            "distance": 0,
+            "affected": false
+          },
+          {
+            "nodeId": "database",
+            "distance": 0,
+            "affected": false
+          },
+          {
+            "nodeId": "events",
+            "distance": 0,
+            "affected": false
+          },
+          {
+            "nodeId": "gateway",
+            "distance": 0,
+            "affected": false
+          },
+          {
+            "nodeId": "ledger",
+            "distance": 0,
+            "affected": false
+          }
+        ],
+        "unaffectedP95": 0,
+        "unaffectedMax": 0,
+        "relativeOrderReversed": false,
+        "withinBudget": true
+      },
+      "durationMs": 55.5
+    },
+    "editedId": "ledger",
+    "inputImmutable": true,
+    "movementBudget": {
+      "unaffectedP95": 48,
+      "unaffectedMax": 144
+    }
+  }
+}

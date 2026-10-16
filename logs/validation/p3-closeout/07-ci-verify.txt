@@ -1,0 +1,166 @@
+
+> coding-cad@0.1.0 ci:verify /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD
+> pnpm lint && pnpm check:changelog && pnpm security:secrets && pnpm commitlint && pnpm test:unit && pnpm test:integration && pnpm test:e2e && pnpm build
+
+
+> coding-cad@0.1.0 lint /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD
+> pnpm lint:workspace && pnpm typecheck
+
+
+> coding-cad@0.1.0 lint:workspace /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD
+> node scripts/ci/check-workspace.mjs
+
+Workspace architecture check passed (15 modules).
+
+> coding-cad@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD
+> turbo typecheck
+
+
+   • Packages in scope: @coding-cad/agent-adapter, @coding-cad/architecture-agent, @coding-cad/architecture-dsl, @coding-cad/architecture-ir, @coding-cad/architecture-layout, @coding-cad/architecture-review, @coding-cad/architecture-validator, @coding-cad/cli, @coding-cad/component-registry, @coding-cad/execution-blueprint, @coding-cad/implementation-analyzer, @coding-cad/implementation-validator, @coding-cad/server, @coding-cad/web, @coding-cad/workspace
+   • Running typecheck in 15 packages
+   • Remote caching disabled
+
+@coding-cad/architecture-ir:typecheck: cache bypass, force executing 7b9006dea23907db
+@coding-cad/architecture-ir:build: cache bypass, force executing 5417e5fa04fec2d7
+@coding-cad/architecture-ir:build: 
+@coding-cad/architecture-ir:build: > @coding-cad/architecture-ir@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-ir
+@coding-cad/architecture-ir:build: > tsc -p tsconfig.json
+@coding-cad/architecture-ir:build: 
+@coding-cad/architecture-ir:typecheck: 
+@coding-cad/architecture-ir:typecheck: > @coding-cad/architecture-ir@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-ir
+@coding-cad/architecture-ir:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/architecture-ir:typecheck: 
+@coding-cad/implementation-analyzer:build: cache bypass, force executing 53840ece719ef012
+@coding-cad/architecture-dsl:typecheck: cache bypass, force executing ae8b3e240d6c1afe
+@coding-cad/architecture-layout:typecheck: cache bypass, force executing 9e69043666ca33f4
+@coding-cad/architecture-layout:build: cache bypass, force executing 0ab4b110627c83e8
+@coding-cad/component-registry:typecheck: cache bypass, force executing b528049494ba0845
+@coding-cad/architecture-dsl:build: cache bypass, force executing f6563ad7c7af6204
+@coding-cad/implementation-analyzer:typecheck: cache bypass, force executing f1789eb57a6826a1
+@coding-cad/component-registry:build: cache bypass, force executing c2719efda301d213
+@coding-cad/architecture-layout:build: 
+@coding-cad/architecture-layout:build: > @coding-cad/architecture-layout@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-layout
+@coding-cad/architecture-layout:build: > tsc -p tsconfig.json
+@coding-cad/architecture-layout:build: 
+@coding-cad/architecture-dsl:typecheck: 
+@coding-cad/architecture-dsl:typecheck: > @coding-cad/architecture-dsl@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-dsl
+@coding-cad/architecture-dsl:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/architecture-dsl:typecheck: 
+@coding-cad/architecture-dsl:build: 
+@coding-cad/architecture-dsl:build: > @coding-cad/architecture-dsl@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-dsl
+@coding-cad/architecture-dsl:build: > tsc -p tsconfig.json
+@coding-cad/architecture-dsl:build: 
+@coding-cad/component-registry:build: 
+@coding-cad/component-registry:build: > @coding-cad/component-registry@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/component-registry
+@coding-cad/component-registry:build: > tsc -p tsconfig.json
+@coding-cad/component-registry:build: 
+@coding-cad/implementation-analyzer:typecheck: 
+@coding-cad/implementation-analyzer:typecheck: > @coding-cad/implementation-analyzer@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-analyzer
+@coding-cad/implementation-analyzer:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/implementation-analyzer:typecheck: 
+@coding-cad/architecture-layout:typecheck: 
+@coding-cad/architecture-layout:typecheck: > @coding-cad/architecture-layout@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-layout
+@coding-cad/architecture-layout:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/architecture-layout:typecheck: 
+@coding-cad/component-registry:typecheck: 
+@coding-cad/component-registry:typecheck: > @coding-cad/component-registry@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/component-registry
+@coding-cad/component-registry:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/component-registry:typecheck: 
+@coding-cad/implementation-analyzer:build: 
+@coding-cad/implementation-analyzer:build: > @coding-cad/implementation-analyzer@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-analyzer
+@coding-cad/implementation-analyzer:build: > tsc -p tsconfig.json
+@coding-cad/implementation-analyzer:build: 
+@coding-cad/architecture-validator:build: cache bypass, force executing 42dbe4d634e68d33
+@coding-cad/architecture-validator:typecheck: cache bypass, force executing 9ad7729eb3213e96
+@coding-cad/architecture-validator:typecheck: 
+@coding-cad/architecture-validator:typecheck: > @coding-cad/architecture-validator@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-validator
+@coding-cad/architecture-validator:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/architecture-validator:typecheck: 
+@coding-cad/architecture-validator:build: 
+@coding-cad/architecture-validator:build: > @coding-cad/architecture-validator@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-validator
+@coding-cad/architecture-validator:build: > tsc -p tsconfig.json
+@coding-cad/architecture-validator:build: 
+@coding-cad/architecture-agent:typecheck: cache bypass, force executing 489529cf55af48ca
+@coding-cad/execution-blueprint:build: cache bypass, force executing 34a6815448bd8d97
+@coding-cad/architecture-agent:build: cache bypass, force executing 4d841935248bfa6d
+@coding-cad/execution-blueprint:typecheck: cache bypass, force executing a2f4560576b22232
+@coding-cad/server:typecheck: cache bypass, force executing adc823d4754054d2
+@coding-cad/architecture-agent:typecheck: 
+@coding-cad/architecture-agent:typecheck: > @coding-cad/architecture-agent@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-agent
+@coding-cad/architecture-agent:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/architecture-agent:typecheck: 
+@coding-cad/execution-blueprint:typecheck: 
+@coding-cad/execution-blueprint:typecheck: > @coding-cad/execution-blueprint@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/execution-blueprint
+@coding-cad/execution-blueprint:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/execution-blueprint:typecheck: 
+@coding-cad/execution-blueprint:build: 
+@coding-cad/execution-blueprint:build: > @coding-cad/execution-blueprint@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/execution-blueprint
+@coding-cad/execution-blueprint:build: > tsc -p tsconfig.json
+@coding-cad/execution-blueprint:build: 
+@coding-cad/architecture-agent:build: 
+@coding-cad/architecture-agent:build: > @coding-cad/architecture-agent@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-agent
+@coding-cad/architecture-agent:build: > tsc -p tsconfig.json
+@coding-cad/architecture-agent:build: 
+@coding-cad/server:typecheck: 
+@coding-cad/server:typecheck: > @coding-cad/server@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/server
+@coding-cad/server:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/server:typecheck: 
+@coding-cad/cli:typecheck: cache bypass, force executing 9ef8f4f805d9dde2
+@coding-cad/agent-adapter:typecheck: cache bypass, force executing 054a2420e50b09a1
+@coding-cad/workspace:build: cache bypass, force executing 13bdfd11ce2596d4
+@coding-cad/workspace:typecheck: cache bypass, force executing a8e10790b6e7f444
+@coding-cad/implementation-validator:typecheck: cache bypass, force executing b66554dd13666749
+@coding-cad/workspace:build: 
+@coding-cad/workspace:build: > @coding-cad/workspace@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/workspace
+@coding-cad/workspace:build: > tsc -p tsconfig.json
+@coding-cad/workspace:build: 
+@coding-cad/implementation-validator:typecheck: 
+@coding-cad/implementation-validator:typecheck: > @coding-cad/implementation-validator@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-validator
+@coding-cad/implementation-validator:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/implementation-validator:typecheck: 
+@coding-cad/agent-adapter:typecheck: 
+@coding-cad/agent-adapter:typecheck: > @coding-cad/agent-adapter@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/agent-adapter
+@coding-cad/agent-adapter:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/agent-adapter:typecheck: 
+@coding-cad/workspace:typecheck: 
+@coding-cad/workspace:typecheck: > @coding-cad/workspace@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/workspace
+@coding-cad/workspace:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/workspace:typecheck: 
+@coding-cad/cli:typecheck: 
+@coding-cad/cli:typecheck: > @coding-cad/cli@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/cli
+@coding-cad/cli:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/cli:typecheck: 
+@coding-cad/architecture-review:build: cache bypass, force executing 6c1273fc36233fa1
+@coding-cad/architecture-review:typecheck: cache bypass, force executing 665049facbacd749
+@coding-cad/architecture-review:typecheck: 
+@coding-cad/architecture-review:typecheck: > @coding-cad/architecture-review@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-review
+@coding-cad/architecture-review:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/architecture-review:typecheck: 
+@coding-cad/architecture-review:build: 
+@coding-cad/architecture-review:build: > @coding-cad/architecture-review@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-review
+@coding-cad/architecture-review:build: > tsc -p tsconfig.json
+@coding-cad/architecture-review:build: 
+@coding-cad/web:typecheck: cache bypass, force executing 74d1f3df837e2126
+@coding-cad/web:typecheck: 
+@coding-cad/web:typecheck: > @coding-cad/web@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/web
+@coding-cad/web:typecheck: > svelte-kit sync && svelte-check --tsconfig ./tsconfig.json
+@coding-cad/web:typecheck: 
+@coding-cad/web:typecheck: Loading svelte-check in workspace: /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/web
+@coding-cad/web:typecheck: Getting Svelte diagnostics...
+@coding-cad/web:typecheck: 
+@coding-cad/web:typecheck: svelte-check found 0 errors and 0 warnings
+
+ Tasks:    25 successful, 25 total
+Cached:    0 cached, 25 total
+  Time:    4.904s 
+
+
+> coding-cad@0.1.0 check:changelog /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD
+> node scripts/ci/check-change-record.mjs
+
+Change record check failed:
+- Production code changed without an architecture log, docs update, changelog, or changeset.
+- Production files: apps/web/src/lib/architecture/greenfield/workspace-shell-controller.ts, apps/web/src/lib/architecture/workspace/workspace-bridge.ts, apps/web/src/routes/api/workspace/[id]/+server.ts
+- Missing module records: web
+ ELIFECYCLE  Command failed with exit code 1.
+ ELIFECYCLE  Command failed with exit code 1.

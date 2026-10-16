@@ -1,0 +1,958 @@
+
+> coding-cad@0.1.0 ci:verify /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD
+> pnpm lint && pnpm check:changelog && pnpm security:secrets && pnpm commitlint && pnpm test:unit && pnpm test:integration && pnpm test:e2e && pnpm build
+
+
+> coding-cad@0.1.0 lint /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD
+> pnpm lint:workspace && pnpm typecheck
+
+
+> coding-cad@0.1.0 lint:workspace /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD
+> node scripts/ci/check-workspace.mjs
+
+Workspace architecture check passed (15 modules).
+
+> coding-cad@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD
+> turbo typecheck
+
+
+   • Packages in scope: @coding-cad/agent-adapter, @coding-cad/architecture-agent, @coding-cad/architecture-dsl, @coding-cad/architecture-ir, @coding-cad/architecture-layout, @coding-cad/architecture-review, @coding-cad/architecture-validator, @coding-cad/cli, @coding-cad/component-registry, @coding-cad/execution-blueprint, @coding-cad/implementation-analyzer, @coding-cad/implementation-validator, @coding-cad/server, @coding-cad/web, @coding-cad/workspace
+   • Running typecheck in 15 packages
+   • Remote caching disabled
+
+@coding-cad/architecture-ir:build: cache bypass, force executing 5417e5fa04fec2d7
+@coding-cad/architecture-ir:typecheck: cache bypass, force executing 7b9006dea23907db
+@coding-cad/architecture-ir:typecheck: 
+@coding-cad/architecture-ir:typecheck: > @coding-cad/architecture-ir@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-ir
+@coding-cad/architecture-ir:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/architecture-ir:typecheck: 
+@coding-cad/architecture-ir:build: 
+@coding-cad/architecture-ir:build: > @coding-cad/architecture-ir@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-ir
+@coding-cad/architecture-ir:build: > tsc -p tsconfig.json
+@coding-cad/architecture-ir:build: 
+@coding-cad/architecture-dsl:build: cache bypass, force executing f6563ad7c7af6204
+@coding-cad/implementation-analyzer:build: cache bypass, force executing 53840ece719ef012
+@coding-cad/architecture-dsl:typecheck: cache bypass, force executing ae8b3e240d6c1afe
+@coding-cad/implementation-analyzer:typecheck: cache bypass, force executing f1789eb57a6826a1
+@coding-cad/component-registry:typecheck: cache bypass, force executing b528049494ba0845
+@coding-cad/component-registry:build: cache bypass, force executing c2719efda301d213
+@coding-cad/architecture-layout:typecheck: cache bypass, force executing eb8851360fe06532
+@coding-cad/architecture-layout:build: cache bypass, force executing cfd67783e0dd827c
+@coding-cad/architecture-dsl:build: 
+@coding-cad/architecture-dsl:build: > @coding-cad/architecture-dsl@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-dsl
+@coding-cad/architecture-dsl:build: > tsc -p tsconfig.json
+@coding-cad/architecture-dsl:build: 
+@coding-cad/architecture-dsl:typecheck: 
+@coding-cad/architecture-dsl:typecheck: > @coding-cad/architecture-dsl@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-dsl
+@coding-cad/architecture-dsl:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/architecture-dsl:typecheck: 
+@coding-cad/component-registry:build: 
+@coding-cad/component-registry:build: > @coding-cad/component-registry@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/component-registry
+@coding-cad/component-registry:build: > tsc -p tsconfig.json
+@coding-cad/component-registry:build: 
+@coding-cad/component-registry:typecheck: 
+@coding-cad/component-registry:typecheck: > @coding-cad/component-registry@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/component-registry
+@coding-cad/component-registry:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/component-registry:typecheck: 
+@coding-cad/architecture-layout:build: 
+@coding-cad/architecture-layout:build: > @coding-cad/architecture-layout@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-layout
+@coding-cad/architecture-layout:build: > tsc -p tsconfig.json
+@coding-cad/architecture-layout:build: 
+@coding-cad/implementation-analyzer:build: 
+@coding-cad/implementation-analyzer:build: > @coding-cad/implementation-analyzer@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-analyzer
+@coding-cad/implementation-analyzer:build: > tsc -p tsconfig.json
+@coding-cad/implementation-analyzer:build: 
+@coding-cad/implementation-analyzer:typecheck: 
+@coding-cad/implementation-analyzer:typecheck: > @coding-cad/implementation-analyzer@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-analyzer
+@coding-cad/implementation-analyzer:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/implementation-analyzer:typecheck: 
+@coding-cad/architecture-layout:typecheck: 
+@coding-cad/architecture-layout:typecheck: > @coding-cad/architecture-layout@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-layout
+@coding-cad/architecture-layout:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/architecture-layout:typecheck: 
+@coding-cad/architecture-validator:build: cache bypass, force executing 42dbe4d634e68d33
+@coding-cad/architecture-validator:typecheck: cache bypass, force executing 9ad7729eb3213e96
+@coding-cad/architecture-validator:build: 
+@coding-cad/architecture-validator:build: > @coding-cad/architecture-validator@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-validator
+@coding-cad/architecture-validator:build: > tsc -p tsconfig.json
+@coding-cad/architecture-validator:build: 
+@coding-cad/architecture-validator:typecheck: 
+@coding-cad/architecture-validator:typecheck: > @coding-cad/architecture-validator@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-validator
+@coding-cad/architecture-validator:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/architecture-validator:typecheck: 
+@coding-cad/architecture-agent:typecheck: cache bypass, force executing 489529cf55af48ca
+@coding-cad/architecture-agent:build: cache bypass, force executing 4d841935248bfa6d
+@coding-cad/execution-blueprint:build: cache bypass, force executing 34a6815448bd8d97
+@coding-cad/execution-blueprint:typecheck: cache bypass, force executing a2f4560576b22232
+@coding-cad/server:typecheck: cache bypass, force executing adc823d4754054d2
+@coding-cad/architecture-agent:build: 
+@coding-cad/architecture-agent:build: > @coding-cad/architecture-agent@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-agent
+@coding-cad/architecture-agent:build: > tsc -p tsconfig.json
+@coding-cad/architecture-agent:build: 
+@coding-cad/architecture-agent:typecheck: 
+@coding-cad/architecture-agent:typecheck: > @coding-cad/architecture-agent@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-agent
+@coding-cad/architecture-agent:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/architecture-agent:typecheck: 
+@coding-cad/execution-blueprint:build: 
+@coding-cad/execution-blueprint:build: > @coding-cad/execution-blueprint@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/execution-blueprint
+@coding-cad/execution-blueprint:build: > tsc -p tsconfig.json
+@coding-cad/execution-blueprint:build: 
+@coding-cad/execution-blueprint:typecheck: 
+@coding-cad/execution-blueprint:typecheck: > @coding-cad/execution-blueprint@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/execution-blueprint
+@coding-cad/execution-blueprint:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/execution-blueprint:typecheck: 
+@coding-cad/server:typecheck: 
+@coding-cad/server:typecheck: > @coding-cad/server@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/server
+@coding-cad/server:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/server:typecheck: 
+@coding-cad/agent-adapter:typecheck: cache bypass, force executing 054a2420e50b09a1
+@coding-cad/workspace:typecheck: cache bypass, force executing a8e10790b6e7f444
+@coding-cad/implementation-validator:typecheck: cache bypass, force executing b66554dd13666749
+@coding-cad/workspace:build: cache bypass, force executing 13bdfd11ce2596d4
+@coding-cad/cli:typecheck: cache bypass, force executing 9ef8f4f805d9dde2
+@coding-cad/agent-adapter:typecheck: 
+@coding-cad/agent-adapter:typecheck: > @coding-cad/agent-adapter@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/agent-adapter
+@coding-cad/agent-adapter:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/agent-adapter:typecheck: 
+@coding-cad/implementation-validator:typecheck: 
+@coding-cad/implementation-validator:typecheck: > @coding-cad/implementation-validator@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-validator
+@coding-cad/implementation-validator:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/implementation-validator:typecheck: 
+@coding-cad/workspace:typecheck: 
+@coding-cad/workspace:typecheck: > @coding-cad/workspace@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/workspace
+@coding-cad/workspace:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/workspace:typecheck: 
+@coding-cad/workspace:build: 
+@coding-cad/workspace:build: > @coding-cad/workspace@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/workspace
+@coding-cad/workspace:build: > tsc -p tsconfig.json
+@coding-cad/workspace:build: 
+@coding-cad/cli:typecheck: 
+@coding-cad/cli:typecheck: > @coding-cad/cli@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/cli
+@coding-cad/cli:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/cli:typecheck: 
+@coding-cad/architecture-review:typecheck: cache bypass, force executing 665049facbacd749
+@coding-cad/architecture-review:build: cache bypass, force executing 6c1273fc36233fa1
+@coding-cad/architecture-review:build: 
+@coding-cad/architecture-review:build: > @coding-cad/architecture-review@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-review
+@coding-cad/architecture-review:build: > tsc -p tsconfig.json
+@coding-cad/architecture-review:build: 
+@coding-cad/architecture-review:typecheck: 
+@coding-cad/architecture-review:typecheck: > @coding-cad/architecture-review@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-review
+@coding-cad/architecture-review:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/architecture-review:typecheck: 
+@coding-cad/web:typecheck: cache bypass, force executing b9805968624a7c16
+@coding-cad/web:typecheck: 
+@coding-cad/web:typecheck: > @coding-cad/web@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/web
+@coding-cad/web:typecheck: > svelte-kit sync && svelte-check --tsconfig ./tsconfig.json
+@coding-cad/web:typecheck: 
+@coding-cad/web:typecheck: Loading svelte-check in workspace: /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/web
+@coding-cad/web:typecheck: Getting Svelte diagnostics...
+@coding-cad/web:typecheck: 
+@coding-cad/web:typecheck: svelte-check found 0 errors and 0 warnings
+
+ Tasks:    25 successful, 25 total
+Cached:    0 cached, 25 total
+  Time:    5.285s 
+
+
+> coding-cad@0.1.0 check:changelog /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD
+> node scripts/ci/check-change-record.mjs
+
+Change record check passed (1 production file changes).
+
+> coding-cad@0.1.0 security:secrets /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD
+> node scripts/ci/check-secrets.mjs
+
+Secret scan passed (313 files).
+
+> coding-cad@0.1.0 commitlint /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD
+> node scripts/ci/check-commit-messages.mjs
+
+Commit message check skipped: no commit range was supplied.
+Commit message check passed (0 commits).
+
+> coding-cad@0.1.0 test:unit /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD
+> turbo test:unit
+
+
+   • Packages in scope: @coding-cad/agent-adapter, @coding-cad/architecture-agent, @coding-cad/architecture-dsl, @coding-cad/architecture-ir, @coding-cad/architecture-layout, @coding-cad/architecture-review, @coding-cad/architecture-validator, @coding-cad/cli, @coding-cad/component-registry, @coding-cad/execution-blueprint, @coding-cad/implementation-analyzer, @coding-cad/implementation-validator, @coding-cad/server, @coding-cad/web, @coding-cad/workspace
+   • Running test:unit in 15 packages
+   • Remote caching disabled
+
+@coding-cad/architecture-ir:build: cache bypass, force executing 5417e5fa04fec2d7
+@coding-cad/architecture-ir:build: 
+@coding-cad/architecture-ir:build: > @coding-cad/architecture-ir@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-ir
+@coding-cad/architecture-ir:build: > tsc -p tsconfig.json
+@coding-cad/architecture-ir:build: 
+@coding-cad/architecture-ir:test:unit: cache bypass, force executing 0470bde91b24c748
+@coding-cad/architecture-layout:build: cache bypass, force executing cfd67783e0dd827c
+@coding-cad/component-registry:build: cache bypass, force executing c2719efda301d213
+@coding-cad/architecture-dsl:build: cache bypass, force executing f6563ad7c7af6204
+@coding-cad/implementation-analyzer:build: cache bypass, force executing 53840ece719ef012
+@coding-cad/architecture-layout:build: 
+@coding-cad/architecture-layout:build: > @coding-cad/architecture-layout@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-layout
+@coding-cad/architecture-layout:build: > tsc -p tsconfig.json
+@coding-cad/architecture-layout:build: 
+@coding-cad/architecture-dsl:build: 
+@coding-cad/architecture-dsl:build: > @coding-cad/architecture-dsl@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-dsl
+@coding-cad/architecture-dsl:build: > tsc -p tsconfig.json
+@coding-cad/architecture-dsl:build: 
+@coding-cad/architecture-ir:test:unit: 
+@coding-cad/architecture-ir:test:unit: > @coding-cad/architecture-ir@0.1.0 test:unit /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-ir
+@coding-cad/architecture-ir:test:unit: > tsc -p tsconfig.json && node dist/architecture-project.test.js
+@coding-cad/architecture-ir:test:unit: 
+@coding-cad/component-registry:build: 
+@coding-cad/component-registry:build: > @coding-cad/component-registry@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/component-registry
+@coding-cad/component-registry:build: > tsc -p tsconfig.json
+@coding-cad/component-registry:build: 
+@coding-cad/implementation-analyzer:build: 
+@coding-cad/implementation-analyzer:build: > @coding-cad/implementation-analyzer@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-analyzer
+@coding-cad/implementation-analyzer:build: > tsc -p tsconfig.json
+@coding-cad/implementation-analyzer:build: 
+@coding-cad/architecture-ir:test:unit: architecture-ir project tests passed
+@coding-cad/architecture-validator:build: cache bypass, force executing 42dbe4d634e68d33
+@coding-cad/component-registry:test:unit: cache bypass, force executing 0c027d2684b62aee
+@coding-cad/architecture-dsl:test:unit: cache bypass, force executing 8021e4ccef79f4ba
+@coding-cad/implementation-analyzer:test:unit: cache bypass, force executing 8d3054cfe4a50a03
+@coding-cad/architecture-layout:test:unit: cache bypass, force executing 81bfc3bdc4899dac
+@coding-cad/component-registry:test:unit: 
+@coding-cad/component-registry:test:unit: > @coding-cad/component-registry@0.1.0 test:unit /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/component-registry
+@coding-cad/component-registry:test:unit: > tsc -p tsconfig.json && node dist/registry.test.js
+@coding-cad/component-registry:test:unit: 
+@coding-cad/architecture-validator:build: 
+@coding-cad/architecture-validator:build: > @coding-cad/architecture-validator@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-validator
+@coding-cad/architecture-validator:build: > tsc -p tsconfig.json
+@coding-cad/architecture-validator:build: 
+@coding-cad/architecture-dsl:test:unit: 
+@coding-cad/architecture-dsl:test:unit: > @coding-cad/architecture-dsl@0.1.0 test:unit /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-dsl
+@coding-cad/architecture-dsl:test:unit: > tsc -p tsconfig.json && node dist/parser.test.js
+@coding-cad/architecture-dsl:test:unit: 
+@coding-cad/implementation-analyzer:test:unit: 
+@coding-cad/implementation-analyzer:test:unit: > @coding-cad/implementation-analyzer@0.1.0 test:unit /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-analyzer
+@coding-cad/implementation-analyzer:test:unit: > tsc -p tsconfig.json && node dist/analyzer.test.js
+@coding-cad/implementation-analyzer:test:unit: 
+@coding-cad/architecture-layout:test:unit: 
+@coding-cad/architecture-layout:test:unit: > @coding-cad/architecture-layout@0.1.0 test:unit /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-layout
+@coding-cad/architecture-layout:test:unit: > tsc -p tsconfig.json && node dist/compiler/passes/passes.test.js && node dist/engines/elk/elk-adapter.test.js
+@coding-cad/architecture-layout:test:unit: 
+@coding-cad/architecture-agent:build: cache bypass, force executing 4d841935248bfa6d
+@coding-cad/architecture-validator:test:unit: cache bypass, force executing ed697e8e6e316db9
+@coding-cad/execution-blueprint:build: cache bypass, force executing 34a6815448bd8d97
+@coding-cad/server:build: cache bypass, force executing 92d54ff98d8c4a7d
+@coding-cad/component-registry:test:unit: component-registry tests passed
+@coding-cad/architecture-dsl:test:unit: architecture-dsl tests passed
+@coding-cad/implementation-analyzer:test:unit: implementation-analyzer tests passed
+@coding-cad/architecture-agent:build: 
+@coding-cad/architecture-agent:build: > @coding-cad/architecture-agent@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-agent
+@coding-cad/architecture-agent:build: > tsc -p tsconfig.json
+@coding-cad/architecture-agent:build: 
+@coding-cad/architecture-validator:test:unit: 
+@coding-cad/architecture-validator:test:unit: > @coding-cad/architecture-validator@0.1.0 test:unit /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-validator
+@coding-cad/architecture-validator:test:unit: > tsc -p tsconfig.json && node dist/validator.test.js
+@coding-cad/architecture-validator:test:unit: 
+@coding-cad/server:build: 
+@coding-cad/server:build: > @coding-cad/server@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/server
+@coding-cad/server:build: > tsc -p tsconfig.json
+@coding-cad/server:build: 
+@coding-cad/execution-blueprint:build: 
+@coding-cad/execution-blueprint:build: > @coding-cad/execution-blueprint@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/execution-blueprint
+@coding-cad/execution-blueprint:build: > tsc -p tsconfig.json
+@coding-cad/execution-blueprint:build: 
+@coding-cad/architecture-layout:test:unit: architecture-layout pass tests passed
+@coding-cad/architecture-layout:test:unit: architecture-layout ELK adapter tests passed
+@coding-cad/agent-adapter:build: cache bypass, force executing 376b658a26bb8950
+@coding-cad/execution-blueprint:test:unit: cache bypass, force executing 5e7035fc871cc78d
+@coding-cad/workspace:build: cache bypass, force executing 13bdfd11ce2596d4
+@coding-cad/implementation-validator:build: cache bypass, force executing 023ffe8e82d0dab8
+@coding-cad/cli:build: cache bypass, force executing 733f2ec619f5d8d4
+@coding-cad/architecture-agent:test:unit: cache bypass, force executing 7c2206449324c52b
+@coding-cad/architecture-validator:test:unit: architecture-validator tests passed
+@coding-cad/implementation-validator:build: 
+@coding-cad/implementation-validator:build: > @coding-cad/implementation-validator@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-validator
+@coding-cad/implementation-validator:build: > tsc -p tsconfig.json
+@coding-cad/implementation-validator:build: 
+@coding-cad/workspace:build: 
+@coding-cad/workspace:build: > @coding-cad/workspace@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/workspace
+@coding-cad/workspace:build: > tsc -p tsconfig.json
+@coding-cad/workspace:build: 
+@coding-cad/agent-adapter:build: 
+@coding-cad/agent-adapter:build: > @coding-cad/agent-adapter@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/agent-adapter
+@coding-cad/agent-adapter:build: > tsc -p tsconfig.json
+@coding-cad/agent-adapter:build: 
+@coding-cad/execution-blueprint:test:unit: 
+@coding-cad/execution-blueprint:test:unit: > @coding-cad/execution-blueprint@0.1.0 test:unit /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/execution-blueprint
+@coding-cad/execution-blueprint:test:unit: > tsc -p tsconfig.json && node dist/generator.test.js
+@coding-cad/execution-blueprint:test:unit: 
+@coding-cad/architecture-agent:test:unit: 
+@coding-cad/architecture-agent:test:unit: > @coding-cad/architecture-agent@0.1.0 test:unit /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-agent
+@coding-cad/architecture-agent:test:unit: > tsc -p tsconfig.json && node dist/agent.test.js
+@coding-cad/architecture-agent:test:unit: 
+@coding-cad/cli:build: 
+@coding-cad/cli:build: > @coding-cad/cli@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/cli
+@coding-cad/cli:build: > tsc -p tsconfig.json
+@coding-cad/cli:build: 
+@coding-cad/workspace:test:unit: cache bypass, force executing d0f1701c4b232d7e
+@coding-cad/architecture-review:build: cache bypass, force executing 6c1273fc36233fa1
+@coding-cad/execution-blueprint:test:unit: execution-blueprint tests passed
+@coding-cad/agent-adapter:test:unit: cache bypass, force executing e2008e7d5f2c1e04
+@coding-cad/implementation-validator:test:unit: cache bypass, force executing e7c5b947ecde2dcf
+@coding-cad/architecture-agent:test:unit: architecture-agent tests passed
+@coding-cad/architecture-review:build: 
+@coding-cad/architecture-review:build: > @coding-cad/architecture-review@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-review
+@coding-cad/architecture-review:build: > tsc -p tsconfig.json
+@coding-cad/architecture-review:build: 
+@coding-cad/workspace:test:unit: 
+@coding-cad/workspace:test:unit: > @coding-cad/workspace@0.1.0 test:unit /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/workspace
+@coding-cad/workspace:test:unit: > tsc -p tsconfig.json && node dist/workspace.test.js
+@coding-cad/workspace:test:unit: 
+@coding-cad/agent-adapter:test:unit: 
+@coding-cad/agent-adapter:test:unit: > @coding-cad/agent-adapter@0.1.0 test:unit /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/agent-adapter
+@coding-cad/agent-adapter:test:unit: > tsc -p tsconfig.json && node dist/adapter.test.js
+@coding-cad/agent-adapter:test:unit: 
+@coding-cad/implementation-validator:test:unit: 
+@coding-cad/implementation-validator:test:unit: > @coding-cad/implementation-validator@0.1.0 test:unit /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-validator
+@coding-cad/implementation-validator:test:unit: > tsc -p tsconfig.json && node dist/validator.test.js
+@coding-cad/implementation-validator:test:unit: 
+@coding-cad/architecture-review:test:unit: cache bypass, force executing 39b517f2e0e72231
+@coding-cad/web:build: cache bypass, force executing 200caa2831851883
+@coding-cad/agent-adapter:test:unit: agent-adapter tests passed
+@coding-cad/workspace:test:unit: workspace tests passed
+@coding-cad/implementation-validator:test:unit: implementation-validator tests passed
+@coding-cad/architecture-review:test:unit: 
+@coding-cad/architecture-review:test:unit: > @coding-cad/architecture-review@0.1.0 test:unit /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-review
+@coding-cad/architecture-review:test:unit: > tsc -p tsconfig.json && node dist/architecture-review.test.js
+@coding-cad/architecture-review:test:unit: 
+@coding-cad/web:build: 
+@coding-cad/web:build: > @coding-cad/web@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/web
+@coding-cad/web:build: > vite build
+@coding-cad/web:build: 
+@coding-cad/architecture-review:test:unit: architecture-review tests passed
+@coding-cad/web:build: vite v7.3.6 building ssr environment for production...
+@coding-cad/web:build: transforming...
+@coding-cad/web:build: ✓ 663 modules transformed.
+@coding-cad/web:build: rendering chunks...
+@coding-cad/web:build: vite v7.3.6 building client environment for production...
+@coding-cad/web:build: transforming...
+@coding-cad/web:build: ✓ 589 modules transformed.
+@coding-cad/web:build: rendering chunks...
+@coding-cad/web:build: computing gzip size...
+@coding-cad/web:build: .svelte-kit/output/client/_app/version.json                                     0.03 kB │ gzip:   0.05 kB
+@coding-cad/web:build: .svelte-kit/output/client/.vite/manifest.json                                   3.73 kB │ gzip:   0.74 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/workers/layout-worker-C8QoDBj3.js      5.25 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/workers/chunks/BnfkbB9k.js         1,441.25 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/assets/2.DNN9Ork6.css                 26.14 kB │ gzip:   4.62 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/entry/start.LIBjJkF6.js                0.08 kB │ gzip:   0.09 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/DaDEMsvy.js                     0.22 kB │ gzip:   0.18 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/nodes/0.BDVOgMgN.js                    0.34 kB │ gzip:   0.26 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/nodes/1.CSf7SKq7.js                    0.51 kB │ gzip:   0.32 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/wbPk3Yxo.js                     1.37 kB │ gzip:   0.66 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/DuszAfsc.js                     1.55 kB │ gzip:   0.68 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/sikE3Fb8.js                     1.59 kB │ gzip:   0.83 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/entry/app.CMH36WH6.js                  4.14 kB │ gzip:   1.89 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/CvRJ2Vy-.js                     4.58 kB │ gzip:   2.16 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/CTH4_3T7.js                     7.77 kB │ gzip:   3.49 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/C8-dXoed.js                    31.77 kB │ gzip:  12.49 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/B_l-smd_.js                    40.14 kB │ gzip:  14.66 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/nodes/2.Dwn57Iui.js                  324.16 kB │ gzip: 105.54 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/Dg-6ZFd7.js                 1,441.31 kB │ gzip: 439.14 kB
+@coding-cad/web:build: 
+@coding-cad/web:build: (!) Some chunks are larger than 500 kB after minification. Consider:
+@coding-cad/web:build: - Using dynamic import() to code-split the application
+@coding-cad/web:build: - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+@coding-cad/web:build: - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+@coding-cad/web:build: ✓ built in 5.85s
+@coding-cad/web:build: .svelte-kit/output/server/.vite/manifest.json                                   5.03 kB
+@coding-cad/web:build: .svelte-kit/output/server/_app/immutable/assets/_page.7-zg5Xah.css             24.65 kB
+@coding-cad/web:build: .svelte-kit/output/server/entries/pages/_layout.ts.js                           0.04 kB
+@coding-cad/web:build: .svelte-kit/output/server/entries/fallbacks/layout.svelte.js                    0.16 kB
+@coding-cad/web:build: .svelte-kit/output/server/env.js                                                0.23 kB
+@coding-cad/web:build: .svelte-kit/output/server/internal.js                                           0.35 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/server.js                                      0.62 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/utils2.js                                      1.09 kB
+@coding-cad/web:build: .svelte-kit/output/server/entries/endpoints/api/workspace/_server.ts.js         1.14 kB
+@coding-cad/web:build: .svelte-kit/output/server/entries/fallbacks/error.svelte.js                     1.36 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/internal.js                                    3.22 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/exports.js                                     7.02 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/index2.js                                      9.02 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/workspace.js                                  10.24 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/uneval.js                                     17.62 kB
+@coding-cad/web:build: .svelte-kit/output/server/entries/endpoints/api/workspace/_id_/_server.ts.js   18.75 kB
+@coding-cad/web:build: .svelte-kit/output/server/remote-entry.js                                      36.79 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/index.js                                      38.52 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/utils.js                                      58.82 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/root.js                                       87.54 kB
+@coding-cad/web:build: .svelte-kit/output/server/index.js                                            134.98 kB
+@coding-cad/web:build: .svelte-kit/output/server/entries/pages/_page.svelte.js                       256.17 kB
+@coding-cad/web:build: ✓ built in 7.63s
+@coding-cad/web:build: 
+@coding-cad/web:build: Run npm run preview to preview your production build locally.
+@coding-cad/web:build: 
+@coding-cad/web:build: > Using @sveltejs/adapter-auto
+@coding-cad/web:build:   Could not detect a supported production environment. See https://svelte.dev/docs/kit/adapters to learn how to configure your app to run on the platform of your choosing
+@coding-cad/web:build:   ✔ done
+@coding-cad/web:test:unit: cache bypass, force executing e8385e03ca5a6b5c
+@coding-cad/web:test:unit: 
+@coding-cad/web:test:unit: > @coding-cad/web@0.1.0 test:unit /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/web
+@coding-cad/web:test:unit: > vitest run --exclude '**/*.integration.test.ts'
+@coding-cad/web:test:unit: 
+@coding-cad/web:test:unit: 
+@coding-cad/web:test:unit:  RUN  v4.1.10 /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/web
+@coding-cad/web:test:unit: 
+@coding-cad/web:test:unit:  ✓ src/lib/layout/adapters/svelte-flow-adapter.test.ts (2 tests) 2ms
+@coding-cad/web:test:unit:  ✓ src/lib/layout/worker/browser-worker-layout-engine.test.ts (2 tests) 3ms
+@coding-cad/web:test:unit:  ✓ src/lib/architecture/workspace/host-lifecycle.test.ts (2 tests) 83ms
+@coding-cad/web:test:unit:  ✓ src/lib/architecture/greenfield/candidate-flow.test.ts (5 tests) 4ms
+@coding-cad/web:test:unit:  ✓ src/lib/architecture/commands/command-application.test.ts (1 test) 5ms
+@coding-cad/web:test:unit:  ✓ src/lib/architecture/greenfield/lifecycle.test.ts (6 tests) 9ms
+@coding-cad/web:test:unit:  ✓ src/lib/architecture/greenfield/review-gate.test.ts (5 tests) 10ms
+@coding-cad/web:test:unit:  ✓ src/lib/architecture/greenfield/workspace-shell-controller.test.ts (14 tests) 15ms
+@coding-cad/web:test:unit:  ✓ src/lib/architecture/commands/apply-inspector-command.test.ts (7 tests) 2ms
+@coding-cad/web:test:unit:  ✓ src/lib/cad/workspace/ui-settings.test.ts (7 tests) 3ms
+@coding-cad/web:test:unit:  ✓ src/lib/cad/canvas/ArchitectureCanvas.test.svelte.ts (1 test) 40ms
+@coding-cad/web:test:unit:  ✓ src/lib/architecture/commands/apply-command.test.ts (1 test) 2ms
+@coding-cad/web:test:unit:  ✓ src/lib/architecture/state/workspace-view-state.test.ts (2 tests) 1ms
+@coding-cad/web:test:unit:  ✓ src/lib/architecture/workspace/contract.test.ts (2 tests) 1ms
+@coding-cad/web:test:unit: 
+@coding-cad/web:test:unit:  Test Files  14 passed (14)
+@coding-cad/web:test:unit:       Tests  57 passed (57)
+@coding-cad/web:test:unit:    Start at  03:30:13
+@coding-cad/web:test:unit:    Duration  1.31s (transform 1.47s, setup 1.12s, import 1.94s, tests 182ms, environment 5.65s)
+@coding-cad/web:test:unit: 
+
+ Tasks:    28 successful, 28 total
+Cached:    0 cached, 28 total
+  Time:    13.37s 
+
+
+> coding-cad@0.1.0 test:integration /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD
+> turbo test:integration
+
+
+   • Packages in scope: @coding-cad/agent-adapter, @coding-cad/architecture-agent, @coding-cad/architecture-dsl, @coding-cad/architecture-ir, @coding-cad/architecture-layout, @coding-cad/architecture-review, @coding-cad/architecture-validator, @coding-cad/cli, @coding-cad/component-registry, @coding-cad/execution-blueprint, @coding-cad/implementation-analyzer, @coding-cad/implementation-validator, @coding-cad/server, @coding-cad/web, @coding-cad/workspace
+   • Running test:integration in 15 packages
+   • Remote caching disabled
+
+@coding-cad/architecture-ir:build: cache bypass, force executing 5417e5fa04fec2d7
+@coding-cad/architecture-ir:build: 
+@coding-cad/architecture-ir:build: > @coding-cad/architecture-ir@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-ir
+@coding-cad/architecture-ir:build: > tsc -p tsconfig.json
+@coding-cad/architecture-ir:build: 
+@coding-cad/architecture-dsl:build: cache bypass, force executing f6563ad7c7af6204
+@coding-cad/component-registry:build: cache bypass, force executing c2719efda301d213
+@coding-cad/architecture-layout:build: cache bypass, force executing cfd67783e0dd827c
+@coding-cad/implementation-analyzer:build: cache bypass, force executing 53840ece719ef012
+@coding-cad/component-registry:build: 
+@coding-cad/component-registry:build: > @coding-cad/component-registry@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/component-registry
+@coding-cad/component-registry:build: > tsc -p tsconfig.json
+@coding-cad/component-registry:build: 
+@coding-cad/architecture-layout:build: 
+@coding-cad/architecture-layout:build: > @coding-cad/architecture-layout@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-layout
+@coding-cad/architecture-layout:build: > tsc -p tsconfig.json
+@coding-cad/architecture-layout:build: 
+@coding-cad/implementation-analyzer:build: 
+@coding-cad/implementation-analyzer:build: > @coding-cad/implementation-analyzer@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-analyzer
+@coding-cad/implementation-analyzer:build: > tsc -p tsconfig.json
+@coding-cad/implementation-analyzer:build: 
+@coding-cad/architecture-dsl:build: 
+@coding-cad/architecture-dsl:build: > @coding-cad/architecture-dsl@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-dsl
+@coding-cad/architecture-dsl:build: > tsc -p tsconfig.json
+@coding-cad/architecture-dsl:build: 
+@coding-cad/architecture-validator:build: cache bypass, force executing 42dbe4d634e68d33
+@coding-cad/architecture-layout:test:integration: cache bypass, force executing 340e3926738a7272
+@coding-cad/architecture-validator:build: 
+@coding-cad/architecture-validator:build: > @coding-cad/architecture-validator@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-validator
+@coding-cad/architecture-validator:build: > tsc -p tsconfig.json
+@coding-cad/architecture-validator:build: 
+@coding-cad/architecture-layout:test:integration: 
+@coding-cad/architecture-layout:test:integration: > @coding-cad/architecture-layout@0.1.0 test:integration /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-layout
+@coding-cad/architecture-layout:test:integration: > tsc -p tsconfig.json && node dist/compiler/compiler.test.js && node dist/engines/elk/elk-engine.test.js && node dist/incremental/incremental-layout.test.js && node dist/ghost/ghost-layout.test.js && node dist/engines/elk/performance-budget.test.js
+@coding-cad/architecture-layout:test:integration: 
+@coding-cad/architecture-agent:build: cache bypass, force executing 4d841935248bfa6d
+@coding-cad/execution-blueprint:build: cache bypass, force executing 34a6815448bd8d97
+@coding-cad/server:build: cache bypass, force executing 92d54ff98d8c4a7d
+@coding-cad/execution-blueprint:build: 
+@coding-cad/execution-blueprint:build: > @coding-cad/execution-blueprint@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/execution-blueprint
+@coding-cad/execution-blueprint:build: > tsc -p tsconfig.json
+@coding-cad/execution-blueprint:build: 
+@coding-cad/server:build: 
+@coding-cad/server:build: > @coding-cad/server@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/server
+@coding-cad/server:build: > tsc -p tsconfig.json
+@coding-cad/server:build: 
+@coding-cad/architecture-agent:build: 
+@coding-cad/architecture-agent:build: > @coding-cad/architecture-agent@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-agent
+@coding-cad/architecture-agent:build: > tsc -p tsconfig.json
+@coding-cad/architecture-agent:build: 
+@coding-cad/architecture-layout:test:integration: architecture-layout compiler integration tests passed
+@coding-cad/architecture-layout:test:integration: architecture-layout ELK engine integration tests passed
+@coding-cad/implementation-validator:build: cache bypass, force executing 023ffe8e82d0dab8
+@coding-cad/workspace:build: cache bypass, force executing 13bdfd11ce2596d4
+@coding-cad/agent-adapter:build: cache bypass, force executing 376b658a26bb8950
+@coding-cad/cli:build: cache bypass, force executing 733f2ec619f5d8d4
+@coding-cad/workspace:build: 
+@coding-cad/workspace:build: > @coding-cad/workspace@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/workspace
+@coding-cad/workspace:build: > tsc -p tsconfig.json
+@coding-cad/workspace:build: 
+@coding-cad/implementation-validator:build: 
+@coding-cad/implementation-validator:build: > @coding-cad/implementation-validator@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-validator
+@coding-cad/implementation-validator:build: > tsc -p tsconfig.json
+@coding-cad/implementation-validator:build: 
+@coding-cad/architecture-layout:test:integration: architecture-layout incremental stability tests passed
+@coding-cad/agent-adapter:build: 
+@coding-cad/agent-adapter:build: > @coding-cad/agent-adapter@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/agent-adapter
+@coding-cad/agent-adapter:build: > tsc -p tsconfig.json
+@coding-cad/agent-adapter:build: 
+@coding-cad/cli:build: 
+@coding-cad/cli:build: > @coding-cad/cli@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/cli
+@coding-cad/cli:build: > tsc -p tsconfig.json
+@coding-cad/cli:build: 
+@coding-cad/architecture-layout:test:integration: architecture-layout Ghost protocol tests passed
+@coding-cad/architecture-review:build: cache bypass, force executing 6c1273fc36233fa1
+@coding-cad/cli:test:integration: cache bypass, force executing 77ccb7cc430e83ec
+@coding-cad/architecture-review:build: 
+@coding-cad/architecture-review:build: > @coding-cad/architecture-review@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-review
+@coding-cad/architecture-review:build: > tsc -p tsconfig.json
+@coding-cad/architecture-review:build: 
+@coding-cad/cli:test:integration: 
+@coding-cad/cli:test:integration: > @coding-cad/cli@0.1.0 test:integration /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/cli
+@coding-cad/cli:test:integration: > tsc -p tsconfig.json && node dist/integration.test.js
+@coding-cad/cli:test:integration: 
+@coding-cad/web:build: cache bypass, force executing 200caa2831851883
+@coding-cad/cli:test:integration: core pipeline integration tests passed
+@coding-cad/web:build: 
+@coding-cad/web:build: > @coding-cad/web@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/web
+@coding-cad/web:build: > vite build
+@coding-cad/web:build: 
+@coding-cad/architecture-layout:test:integration: architecture-layout benchmark 100/150: cold=252.91ms p95-windows=56.64ms
+@coding-cad/web:build: vite v7.3.6 building ssr environment for production...
+@coding-cad/web:build: transforming...
+@coding-cad/web:build: ✓ 663 modules transformed.
+@coding-cad/web:build: rendering chunks...
+@coding-cad/web:build: vite v7.3.6 building client environment for production...
+@coding-cad/web:build: transforming...
+@coding-cad/web:build: ✓ 589 modules transformed.
+@coding-cad/web:build: rendering chunks...
+@coding-cad/web:build: computing gzip size...
+@coding-cad/web:build: .svelte-kit/output/client/_app/version.json                                     0.03 kB │ gzip:   0.05 kB
+@coding-cad/web:build: .svelte-kit/output/client/.vite/manifest.json                                   3.73 kB │ gzip:   0.74 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/workers/layout-worker-C8QoDBj3.js      5.25 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/workers/chunks/BnfkbB9k.js         1,441.25 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/assets/2.DNN9Ork6.css                 26.14 kB │ gzip:   4.62 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/entry/start.BqgZxadk.js                0.08 kB │ gzip:   0.09 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/DaDEMsvy.js                     0.22 kB │ gzip:   0.18 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/nodes/0.BDVOgMgN.js                    0.34 kB │ gzip:   0.26 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/nodes/1.CAf5E6Vm.js                    0.51 kB │ gzip:   0.32 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/wbPk3Yxo.js                     1.37 kB │ gzip:   0.66 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/DuszAfsc.js                     1.55 kB │ gzip:   0.68 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/sikE3Fb8.js                     1.59 kB │ gzip:   0.83 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/entry/app.4-yM8GFN.js                  4.14 kB │ gzip:   1.89 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/CvRJ2Vy-.js                     4.58 kB │ gzip:   2.16 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/CTH4_3T7.js                     7.77 kB │ gzip:   3.49 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/B_9hnfEg.js                    31.77 kB │ gzip:  12.49 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/B_l-smd_.js                    40.14 kB │ gzip:  14.66 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/nodes/2.Dwn57Iui.js                  324.16 kB │ gzip: 105.54 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/Dg-6ZFd7.js                 1,441.31 kB │ gzip: 439.14 kB
+@coding-cad/web:build: 
+@coding-cad/web:build: (!) Some chunks are larger than 500 kB after minification. Consider:
+@coding-cad/web:build: - Using dynamic import() to code-split the application
+@coding-cad/web:build: - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+@coding-cad/web:build: - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+@coding-cad/web:build: ✓ built in 6.10s
+@coding-cad/web:build: .svelte-kit/output/server/.vite/manifest.json                                   5.03 kB
+@coding-cad/web:build: .svelte-kit/output/server/_app/immutable/assets/_page.7-zg5Xah.css             24.65 kB
+@coding-cad/web:build: .svelte-kit/output/server/entries/pages/_layout.ts.js                           0.04 kB
+@coding-cad/web:build: .svelte-kit/output/server/entries/fallbacks/layout.svelte.js                    0.16 kB
+@coding-cad/web:build: .svelte-kit/output/server/env.js                                                0.23 kB
+@coding-cad/web:build: .svelte-kit/output/server/internal.js                                           0.35 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/server.js                                      0.62 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/utils2.js                                      1.09 kB
+@coding-cad/web:build: .svelte-kit/output/server/entries/endpoints/api/workspace/_server.ts.js         1.14 kB
+@coding-cad/web:build: .svelte-kit/output/server/entries/fallbacks/error.svelte.js                     1.36 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/internal.js                                    3.22 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/exports.js                                     7.02 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/index2.js                                      9.02 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/workspace.js                                  10.24 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/uneval.js                                     17.62 kB
+@coding-cad/web:build: .svelte-kit/output/server/entries/endpoints/api/workspace/_id_/_server.ts.js   18.75 kB
+@coding-cad/web:build: .svelte-kit/output/server/remote-entry.js                                      36.79 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/index.js                                      38.52 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/utils.js                                      58.82 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/root.js                                       87.54 kB
+@coding-cad/web:build: .svelte-kit/output/server/index.js                                            134.98 kB
+@coding-cad/web:build: .svelte-kit/output/server/entries/pages/_page.svelte.js                       256.17 kB
+@coding-cad/web:build: ✓ built in 7.93s
+@coding-cad/web:build: 
+@coding-cad/web:build: Run npm run preview to preview your production build locally.
+@coding-cad/web:build: 
+@coding-cad/web:build: > Using @sveltejs/adapter-auto
+@coding-cad/web:build:   Could not detect a supported production environment. See https://svelte.dev/docs/kit/adapters to learn how to configure your app to run on the platform of your choosing
+@coding-cad/web:build:   ✔ done
+@coding-cad/web:test:integration: cache bypass, force executing 789a213435e72475
+@coding-cad/web:test:integration: 
+@coding-cad/web:test:integration: > @coding-cad/web@0.1.0 test:integration /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/web
+@coding-cad/web:test:integration: > vitest run --config vitest.integration.config.ts
+@coding-cad/web:test:integration: 
+@coding-cad/web:test:integration: 
+@coding-cad/web:test:integration:  RUN  v4.1.10 /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/web
+@coding-cad/web:test:integration: 
+@coding-cad/web:test:integration:  ✓ src/lib/architecture/workspace/workspace-bridge.integration.test.ts (5 tests) 10ms
+@coding-cad/web:test:integration:  ✓ src/lib/architecture/commands/command-application.integration.test.ts (2 tests) 4ms
+@coding-cad/web:test:integration:  ✓ src/lib/architecture/greenfield/candidate-flow.integration.test.ts (2 tests) 4ms
+@coding-cad/web:test:integration: 
+@coding-cad/web:test:integration:  Test Files  3 passed (3)
+@coding-cad/web:test:integration:       Tests  9 passed (9)
+@coding-cad/web:test:integration:    Start at  03:30:26
+@coding-cad/web:test:integration:    Duration  159ms (transform 158ms, setup 0ms, import 218ms, tests 17ms, environment 0ms)
+@coding-cad/web:test:integration: 
+@coding-cad/architecture-layout:test:integration: architecture-layout benchmark 500/800: cold=419.20ms p95-windows=527.39ms
+@coding-cad/architecture-layout:test:integration: architecture-layout ELK worker gzip=471876 bytes
+
+ Tasks:    18 successful, 18 total
+Cached:    0 cached, 18 total
+  Time:    12.619s 
+
+
+> coding-cad@0.1.0 test:e2e /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD
+> turbo test:e2e
+
+
+   • Packages in scope: @coding-cad/agent-adapter, @coding-cad/architecture-agent, @coding-cad/architecture-dsl, @coding-cad/architecture-ir, @coding-cad/architecture-layout, @coding-cad/architecture-review, @coding-cad/architecture-validator, @coding-cad/cli, @coding-cad/component-registry, @coding-cad/execution-blueprint, @coding-cad/implementation-analyzer, @coding-cad/implementation-validator, @coding-cad/server, @coding-cad/web, @coding-cad/workspace
+   • Running test:e2e in 15 packages
+   • Remote caching disabled
+
+@coding-cad/architecture-ir:build: cache bypass, force executing 5417e5fa04fec2d7
+@coding-cad/architecture-ir:build: 
+@coding-cad/architecture-ir:build: > @coding-cad/architecture-ir@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-ir
+@coding-cad/architecture-ir:build: > tsc -p tsconfig.json
+@coding-cad/architecture-ir:build: 
+@coding-cad/component-registry:build: cache bypass, force executing c2719efda301d213
+@coding-cad/implementation-analyzer:build: cache bypass, force executing 53840ece719ef012
+@coding-cad/architecture-dsl:build: cache bypass, force executing f6563ad7c7af6204
+@coding-cad/architecture-layout:build: cache bypass, force executing cfd67783e0dd827c
+@coding-cad/implementation-analyzer:build: 
+@coding-cad/implementation-analyzer:build: > @coding-cad/implementation-analyzer@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-analyzer
+@coding-cad/implementation-analyzer:build: > tsc -p tsconfig.json
+@coding-cad/implementation-analyzer:build: 
+@coding-cad/architecture-layout:build: 
+@coding-cad/architecture-layout:build: > @coding-cad/architecture-layout@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-layout
+@coding-cad/architecture-layout:build: > tsc -p tsconfig.json
+@coding-cad/architecture-layout:build: 
+@coding-cad/component-registry:build: 
+@coding-cad/component-registry:build: > @coding-cad/component-registry@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/component-registry
+@coding-cad/component-registry:build: > tsc -p tsconfig.json
+@coding-cad/component-registry:build: 
+@coding-cad/architecture-dsl:build: 
+@coding-cad/architecture-dsl:build: > @coding-cad/architecture-dsl@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-dsl
+@coding-cad/architecture-dsl:build: > tsc -p tsconfig.json
+@coding-cad/architecture-dsl:build: 
+@coding-cad/architecture-validator:build: cache bypass, force executing 42dbe4d634e68d33
+@coding-cad/architecture-validator:build: 
+@coding-cad/architecture-validator:build: > @coding-cad/architecture-validator@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-validator
+@coding-cad/architecture-validator:build: > tsc -p tsconfig.json
+@coding-cad/architecture-validator:build: 
+@coding-cad/server:build: cache bypass, force executing 92d54ff98d8c4a7d
+@coding-cad/execution-blueprint:build: cache bypass, force executing 34a6815448bd8d97
+@coding-cad/architecture-agent:build: cache bypass, force executing 4d841935248bfa6d
+@coding-cad/architecture-agent:build: 
+@coding-cad/architecture-agent:build: > @coding-cad/architecture-agent@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-agent
+@coding-cad/architecture-agent:build: > tsc -p tsconfig.json
+@coding-cad/architecture-agent:build: 
+@coding-cad/execution-blueprint:build: 
+@coding-cad/execution-blueprint:build: > @coding-cad/execution-blueprint@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/execution-blueprint
+@coding-cad/execution-blueprint:build: > tsc -p tsconfig.json
+@coding-cad/execution-blueprint:build: 
+@coding-cad/server:build: 
+@coding-cad/server:build: > @coding-cad/server@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/server
+@coding-cad/server:build: > tsc -p tsconfig.json
+@coding-cad/server:build: 
+@coding-cad/agent-adapter:build: cache bypass, force executing 376b658a26bb8950
+@coding-cad/implementation-validator:build: cache bypass, force executing 023ffe8e82d0dab8
+@coding-cad/workspace:build: cache bypass, force executing 13bdfd11ce2596d4
+@coding-cad/cli:build: cache bypass, force executing 733f2ec619f5d8d4
+@coding-cad/agent-adapter:build: 
+@coding-cad/agent-adapter:build: > @coding-cad/agent-adapter@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/agent-adapter
+@coding-cad/agent-adapter:build: > tsc -p tsconfig.json
+@coding-cad/agent-adapter:build: 
+@coding-cad/implementation-validator:build: 
+@coding-cad/implementation-validator:build: > @coding-cad/implementation-validator@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-validator
+@coding-cad/implementation-validator:build: > tsc -p tsconfig.json
+@coding-cad/implementation-validator:build: 
+@coding-cad/workspace:build: 
+@coding-cad/workspace:build: > @coding-cad/workspace@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/workspace
+@coding-cad/workspace:build: > tsc -p tsconfig.json
+@coding-cad/workspace:build: 
+@coding-cad/cli:build: 
+@coding-cad/cli:build: > @coding-cad/cli@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/cli
+@coding-cad/cli:build: > tsc -p tsconfig.json
+@coding-cad/cli:build: 
+@coding-cad/architecture-review:build: cache bypass, force executing 6c1273fc36233fa1
+@coding-cad/cli:test:e2e: cache bypass, force executing f4e1ed4bc4673724
+@coding-cad/cli:test:e2e: 
+@coding-cad/cli:test:e2e: > @coding-cad/cli@0.1.0 test:e2e /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/cli
+@coding-cad/cli:test:e2e: > tsc -p tsconfig.json && node dist/cli.test.js
+@coding-cad/cli:test:e2e: 
+@coding-cad/architecture-review:build: 
+@coding-cad/architecture-review:build: > @coding-cad/architecture-review@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-review
+@coding-cad/architecture-review:build: > tsc -p tsconfig.json
+@coding-cad/architecture-review:build: 
+@coding-cad/web:build: cache bypass, force executing 200caa2831851883
+@coding-cad/web:build: 
+@coding-cad/web:build: > @coding-cad/web@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/web
+@coding-cad/web:build: > vite build
+@coding-cad/web:build: 
+@coding-cad/web:build: vite v7.3.6 building ssr environment for production...
+@coding-cad/cli:test:e2e: cli tests passed
+@coding-cad/web:build: transforming...
+@coding-cad/web:build: ✓ 663 modules transformed.
+@coding-cad/web:build: rendering chunks...
+@coding-cad/web:build: vite v7.3.6 building client environment for production...
+@coding-cad/web:build: transforming...
+@coding-cad/web:build: ✓ 589 modules transformed.
+@coding-cad/web:build: rendering chunks...
+@coding-cad/web:build: computing gzip size...
+@coding-cad/web:build: .svelte-kit/output/client/_app/version.json                                     0.03 kB │ gzip:   0.05 kB
+@coding-cad/web:build: .svelte-kit/output/client/.vite/manifest.json                                   3.73 kB │ gzip:   0.74 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/workers/layout-worker-C8QoDBj3.js      5.25 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/workers/chunks/BnfkbB9k.js         1,441.25 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/assets/2.DNN9Ork6.css                 26.14 kB │ gzip:   4.62 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/entry/start.luerZvMO.js                0.08 kB │ gzip:   0.09 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/DaDEMsvy.js                     0.22 kB │ gzip:   0.18 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/nodes/0.BDVOgMgN.js                    0.34 kB │ gzip:   0.26 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/nodes/1.BXhZYXwX.js                    0.51 kB │ gzip:   0.33 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/wbPk3Yxo.js                     1.37 kB │ gzip:   0.66 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/DuszAfsc.js                     1.55 kB │ gzip:   0.68 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/sikE3Fb8.js                     1.59 kB │ gzip:   0.83 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/entry/app.DxLCCqhy.js                  4.14 kB │ gzip:   1.89 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/CvRJ2Vy-.js                     4.58 kB │ gzip:   2.16 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/CTH4_3T7.js                     7.77 kB │ gzip:   3.49 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/B4TPZdcY.js                    31.77 kB │ gzip:  12.48 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/B_l-smd_.js                    40.14 kB │ gzip:  14.66 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/nodes/2.Dwn57Iui.js                  324.16 kB │ gzip: 105.54 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/Dg-6ZFd7.js                 1,441.31 kB │ gzip: 439.14 kB
+@coding-cad/web:build: 
+@coding-cad/web:build: (!) Some chunks are larger than 500 kB after minification. Consider:
+@coding-cad/web:build: - Using dynamic import() to code-split the application
+@coding-cad/web:build: - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+@coding-cad/web:build: - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+@coding-cad/web:build: ✓ built in 5.70s
+@coding-cad/web:build: .svelte-kit/output/server/.vite/manifest.json                                   5.03 kB
+@coding-cad/web:build: .svelte-kit/output/server/_app/immutable/assets/_page.7-zg5Xah.css             24.65 kB
+@coding-cad/web:build: .svelte-kit/output/server/entries/pages/_layout.ts.js                           0.04 kB
+@coding-cad/web:build: .svelte-kit/output/server/entries/fallbacks/layout.svelte.js                    0.16 kB
+@coding-cad/web:build: .svelte-kit/output/server/env.js                                                0.23 kB
+@coding-cad/web:build: .svelte-kit/output/server/internal.js                                           0.35 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/server.js                                      0.62 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/utils2.js                                      1.09 kB
+@coding-cad/web:build: .svelte-kit/output/server/entries/endpoints/api/workspace/_server.ts.js         1.14 kB
+@coding-cad/web:build: .svelte-kit/output/server/entries/fallbacks/error.svelte.js                     1.36 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/internal.js                                    3.22 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/exports.js                                     7.02 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/index2.js                                      9.02 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/workspace.js                                  10.24 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/uneval.js                                     17.62 kB
+@coding-cad/web:build: .svelte-kit/output/server/entries/endpoints/api/workspace/_id_/_server.ts.js   18.75 kB
+@coding-cad/web:build: .svelte-kit/output/server/remote-entry.js                                      36.79 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/index.js                                      38.52 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/utils.js                                      58.82 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/root.js                                       87.54 kB
+@coding-cad/web:build: .svelte-kit/output/server/index.js                                            134.98 kB
+@coding-cad/web:build: .svelte-kit/output/server/entries/pages/_page.svelte.js                       256.17 kB
+@coding-cad/web:build: ✓ built in 7.46s
+@coding-cad/web:build: 
+@coding-cad/web:build: Run npm run preview to preview your production build locally.
+@coding-cad/web:build: 
+@coding-cad/web:build: > Using @sveltejs/adapter-auto
+@coding-cad/web:build:   Could not detect a supported production environment. See https://svelte.dev/docs/kit/adapters to learn how to configure your app to run on the platform of your choosing
+@coding-cad/web:build:   ✔ done
+@coding-cad/web:test:e2e: cache bypass, force executing 5f79ae098c4088e5
+@coding-cad/web:test:e2e: 
+@coding-cad/web:test:e2e: > @coding-cad/web@0.1.0 test:e2e /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/web
+@coding-cad/web:test:e2e: > playwright test
+@coding-cad/web:test:e2e: 
+@coding-cad/web:test:e2e: [WebServer] (node:77269) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+@coding-cad/web:test:e2e: [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+@coding-cad/web:test:e2e: [WebServer] (node:77299) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+@coding-cad/web:test:e2e: [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+@coding-cad/web:test:e2e: 
+@coding-cad/web:test:e2e: Running 18 tests using 1 worker
+@coding-cad/web:test:e2e: 
+@coding-cad/web:test:e2e: (node:77312) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+@coding-cad/web:test:e2e: (Use `node --trace-warnings ...` to show where the warning was created)
+@coding-cad/web:test:e2e: [WebServer] 
+@coding-cad/web:test:e2e: [WebServer] [404] GET /favicon.ico
+@coding-cad/web:test:e2e:   ✓   1 [chrome] › e2e/canvas.spec.ts:9:1 › greenfield workspace generates, validates, and renders a navigable canvas (909ms)
+@coding-cad/web:test:e2e:   ✓   2 [chrome] › e2e/canvas.spec.ts:30:1 › palette adds a component through the command application (661ms)
+@coding-cad/web:test:e2e:   ✓   3 [chrome] › e2e/canvas.spec.ts:42:1 › save and open restore the accepted architecture and a usable view (649ms)
+@coding-cad/web:test:e2e:   ✓   4 [chrome] › e2e/canvas.spec.ts:61:1 › inspector edits a component description via explicit command (729ms)
+@coding-cad/web:test:e2e:   ✓   5 [chrome] › e2e/canvas.spec.ts:94:1 › validation problems navigate to the affected component (343ms)
+@coding-cad/web:test:e2e:   ✓   6 [chrome] › e2e/canvas.spec.ts:106:1 › rejecting a candidate keeps both architectures and records rejection (363ms)
+@coding-cad/web:test:e2e:   ✓   7 [chrome] › e2e/canvas.spec.ts:117:1 › empty requirement shows an error and blocks generation (195ms)
+@coding-cad/web:test:e2e:   ✓   8 [chrome] › e2e/canvas.spec.ts:124:1 › duplicate palette component is rejected and accepted IR is preserved (456ms)
+@coding-cad/web:test:e2e:   ✓   9 [chrome] › e2e/canvas.spec.ts:136:1 › workspace sidebar hosts project actions and a gear settings popover (310ms)
+@coding-cad/web:test:e2e:   ✓  10 [chrome] › e2e/canvas.spec.ts:161:1 › full greenfield happy path: create, validate, accept, save, open (581ms)
+@coding-cad/web:test:e2e:   ✓  11 [chrome] › e2e/editing.spec.ts:48:1 › successful removal cascades incident edges and survives Save/Open (991ms)
+@coding-cad/web:test:e2e:   ✓  12 [chrome] › e2e/editing.spec.ts:64:1 › removal without cascade confirmation is blocked and facts are unchanged (695ms)
+@coding-cad/web:test:e2e:   ✓  13 [chrome] › e2e/editing.spec.ts:74:1 › missing-component removal is blocked by existing command semantics (562ms)
+@coding-cad/web:test:e2e:   ✓  14 [chrome] › e2e/editing.spec.ts:83:1 › successful connection waits for approval and survives Save/Open (952ms)
+@coding-cad/web:test:e2e:   ✓  15 [chrome] › e2e/editing.spec.ts:97:1 › invalid connection appears in Problems and cannot enter accepted architecture (790ms)
+@coding-cad/web:test:e2e:   ✓  16 [chrome] › e2e/editing.spec.ts:110:1 › Inspector contract add/remove use Review and preserve schema through Save/Open (1.4s)
+@coding-cad/web:test:e2e:   ✓  17 [chrome] › e2e/editing.spec.ts:132:1 › Inspector type, capability and limitation controls use explicit review (1.8s)
+@coding-cad/web:test:e2e:   ✓  18 [chrome] › e2e/editing.spec.ts:157:1 › save and open failures remain visible and a retry preserves architecture (793ms)
+@coding-cad/web:test:e2e: 
+@coding-cad/web:test:e2e:   18 passed (15.0s)
+
+ Tasks:    17 successful, 17 total
+Cached:    0 cached, 17 total
+  Time:    25.793s 
+
+
+> coding-cad@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD
+> turbo build
+
+
+   • Packages in scope: @coding-cad/agent-adapter, @coding-cad/architecture-agent, @coding-cad/architecture-dsl, @coding-cad/architecture-ir, @coding-cad/architecture-layout, @coding-cad/architecture-review, @coding-cad/architecture-validator, @coding-cad/cli, @coding-cad/component-registry, @coding-cad/execution-blueprint, @coding-cad/implementation-analyzer, @coding-cad/implementation-validator, @coding-cad/server, @coding-cad/web, @coding-cad/workspace
+   • Running build in 15 packages
+   • Remote caching disabled
+
+@coding-cad/architecture-ir:build: cache bypass, force executing 5417e5fa04fec2d7
+@coding-cad/architecture-ir:build: 
+@coding-cad/architecture-ir:build: > @coding-cad/architecture-ir@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-ir
+@coding-cad/architecture-ir:build: > tsc -p tsconfig.json
+@coding-cad/architecture-ir:build: 
+@coding-cad/architecture-layout:build: cache bypass, force executing cfd67783e0dd827c
+@coding-cad/implementation-analyzer:build: cache bypass, force executing 53840ece719ef012
+@coding-cad/architecture-dsl:build: cache bypass, force executing f6563ad7c7af6204
+@coding-cad/component-registry:build: cache bypass, force executing c2719efda301d213
+@coding-cad/architecture-layout:build: 
+@coding-cad/architecture-layout:build: > @coding-cad/architecture-layout@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-layout
+@coding-cad/architecture-layout:build: > tsc -p tsconfig.json
+@coding-cad/architecture-layout:build: 
+@coding-cad/architecture-dsl:build: 
+@coding-cad/architecture-dsl:build: > @coding-cad/architecture-dsl@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-dsl
+@coding-cad/architecture-dsl:build: > tsc -p tsconfig.json
+@coding-cad/architecture-dsl:build: 
+@coding-cad/implementation-analyzer:build: 
+@coding-cad/implementation-analyzer:build: > @coding-cad/implementation-analyzer@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-analyzer
+@coding-cad/implementation-analyzer:build: > tsc -p tsconfig.json
+@coding-cad/implementation-analyzer:build: 
+@coding-cad/component-registry:build: 
+@coding-cad/component-registry:build: > @coding-cad/component-registry@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/component-registry
+@coding-cad/component-registry:build: > tsc -p tsconfig.json
+@coding-cad/component-registry:build: 
+@coding-cad/architecture-validator:build: cache bypass, force executing 42dbe4d634e68d33
+@coding-cad/architecture-validator:build: 
+@coding-cad/architecture-validator:build: > @coding-cad/architecture-validator@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-validator
+@coding-cad/architecture-validator:build: > tsc -p tsconfig.json
+@coding-cad/architecture-validator:build: 
+@coding-cad/architecture-agent:build: cache bypass, force executing 4d841935248bfa6d
+@coding-cad/execution-blueprint:build: cache bypass, force executing 34a6815448bd8d97
+@coding-cad/server:build: cache bypass, force executing 92d54ff98d8c4a7d
+@coding-cad/architecture-agent:build: 
+@coding-cad/architecture-agent:build: > @coding-cad/architecture-agent@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-agent
+@coding-cad/architecture-agent:build: > tsc -p tsconfig.json
+@coding-cad/architecture-agent:build: 
+@coding-cad/execution-blueprint:build: 
+@coding-cad/execution-blueprint:build: > @coding-cad/execution-blueprint@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/execution-blueprint
+@coding-cad/execution-blueprint:build: > tsc -p tsconfig.json
+@coding-cad/execution-blueprint:build: 
+@coding-cad/server:build: 
+@coding-cad/server:build: > @coding-cad/server@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/server
+@coding-cad/server:build: > tsc -p tsconfig.json
+@coding-cad/server:build: 
+@coding-cad/workspace:build: cache bypass, force executing 13bdfd11ce2596d4
+@coding-cad/agent-adapter:build: cache bypass, force executing 376b658a26bb8950
+@coding-cad/implementation-validator:build: cache bypass, force executing 023ffe8e82d0dab8
+@coding-cad/cli:build: cache bypass, force executing 733f2ec619f5d8d4
+@coding-cad/implementation-validator:build: 
+@coding-cad/implementation-validator:build: > @coding-cad/implementation-validator@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-validator
+@coding-cad/implementation-validator:build: > tsc -p tsconfig.json
+@coding-cad/implementation-validator:build: 
+@coding-cad/workspace:build: 
+@coding-cad/workspace:build: > @coding-cad/workspace@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/workspace
+@coding-cad/workspace:build: > tsc -p tsconfig.json
+@coding-cad/workspace:build: 
+@coding-cad/agent-adapter:build: 
+@coding-cad/agent-adapter:build: > @coding-cad/agent-adapter@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/agent-adapter
+@coding-cad/agent-adapter:build: > tsc -p tsconfig.json
+@coding-cad/agent-adapter:build: 
+@coding-cad/cli:build: 
+@coding-cad/cli:build: > @coding-cad/cli@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/cli
+@coding-cad/cli:build: > tsc -p tsconfig.json
+@coding-cad/cli:build: 
+@coding-cad/architecture-review:build: cache bypass, force executing 6c1273fc36233fa1
+@coding-cad/architecture-review:build: 
+@coding-cad/architecture-review:build: > @coding-cad/architecture-review@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-review
+@coding-cad/architecture-review:build: > tsc -p tsconfig.json
+@coding-cad/architecture-review:build: 
+@coding-cad/web:build: cache bypass, force executing 200caa2831851883
+@coding-cad/web:build: 
+@coding-cad/web:build: > @coding-cad/web@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/web
+@coding-cad/web:build: > vite build
+@coding-cad/web:build: 
+@coding-cad/web:build: vite v7.3.6 building ssr environment for production...
+@coding-cad/web:build: transforming...
+@coding-cad/web:build: ✓ 663 modules transformed.
+@coding-cad/web:build: rendering chunks...
+@coding-cad/web:build: vite v7.3.6 building client environment for production...
+@coding-cad/web:build: transforming...
+@coding-cad/web:build: ✓ 589 modules transformed.
+@coding-cad/web:build: rendering chunks...
+@coding-cad/web:build: computing gzip size...
+@coding-cad/web:build: .svelte-kit/output/client/_app/version.json                                     0.03 kB │ gzip:   0.05 kB
+@coding-cad/web:build: .svelte-kit/output/client/.vite/manifest.json                                   3.73 kB │ gzip:   0.74 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/workers/layout-worker-C8QoDBj3.js      5.25 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/workers/chunks/BnfkbB9k.js         1,441.25 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/assets/2.DNN9Ork6.css                 26.14 kB │ gzip:   4.62 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/entry/start.DijOG9lV.js                0.08 kB │ gzip:   0.09 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/DaDEMsvy.js                     0.22 kB │ gzip:   0.18 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/nodes/0.BDVOgMgN.js                    0.34 kB │ gzip:   0.26 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/nodes/1.XdB0DMDM.js                    0.51 kB │ gzip:   0.32 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/wbPk3Yxo.js                     1.37 kB │ gzip:   0.66 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/DuszAfsc.js                     1.55 kB │ gzip:   0.68 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/sikE3Fb8.js                     1.59 kB │ gzip:   0.83 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/entry/app.ot0B2NTE.js                  4.14 kB │ gzip:   1.89 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/CvRJ2Vy-.js                     4.58 kB │ gzip:   2.16 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/CTH4_3T7.js                     7.77 kB │ gzip:   3.49 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/CfAuc_Dv.js                    31.77 kB │ gzip:  12.49 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/B_l-smd_.js                    40.14 kB │ gzip:  14.66 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/nodes/2.Dwn57Iui.js                  324.16 kB │ gzip: 105.54 kB
+@coding-cad/web:build: .svelte-kit/output/client/_app/immutable/chunks/Dg-6ZFd7.js                 1,441.31 kB │ gzip: 439.14 kB
+@coding-cad/web:build: 
+@coding-cad/web:build: (!) Some chunks are larger than 500 kB after minification. Consider:
+@coding-cad/web:build: - Using dynamic import() to code-split the application
+@coding-cad/web:build: - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+@coding-cad/web:build: - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+@coding-cad/web:build: ✓ built in 5.82s
+@coding-cad/web:build: .svelte-kit/output/server/.vite/manifest.json                                   5.03 kB
+@coding-cad/web:build: .svelte-kit/output/server/_app/immutable/assets/_page.7-zg5Xah.css             24.65 kB
+@coding-cad/web:build: .svelte-kit/output/server/entries/pages/_layout.ts.js                           0.04 kB
+@coding-cad/web:build: .svelte-kit/output/server/entries/fallbacks/layout.svelte.js                    0.16 kB
+@coding-cad/web:build: .svelte-kit/output/server/env.js                                                0.23 kB
+@coding-cad/web:build: .svelte-kit/output/server/internal.js                                           0.35 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/server.js                                      0.62 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/utils2.js                                      1.09 kB
+@coding-cad/web:build: .svelte-kit/output/server/entries/endpoints/api/workspace/_server.ts.js         1.14 kB
+@coding-cad/web:build: .svelte-kit/output/server/entries/fallbacks/error.svelte.js                     1.36 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/internal.js                                    3.22 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/exports.js                                     7.02 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/index2.js                                      9.02 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/workspace.js                                  10.24 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/uneval.js                                     17.62 kB
+@coding-cad/web:build: .svelte-kit/output/server/entries/endpoints/api/workspace/_id_/_server.ts.js   18.75 kB
+@coding-cad/web:build: .svelte-kit/output/server/remote-entry.js                                      36.79 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/index.js                                      38.52 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/utils.js                                      58.82 kB
+@coding-cad/web:build: .svelte-kit/output/server/chunks/root.js                                       87.54 kB
+@coding-cad/web:build: .svelte-kit/output/server/index.js                                            134.98 kB
+@coding-cad/web:build: .svelte-kit/output/server/entries/pages/_page.svelte.js                       256.17 kB
+@coding-cad/web:build: ✓ built in 7.59s
+@coding-cad/web:build: 
+@coding-cad/web:build: Run npm run preview to preview your production build locally.
+@coding-cad/web:build: 
+@coding-cad/web:build: > Using @sveltejs/adapter-auto
+@coding-cad/web:build:   Could not detect a supported production environment. See https://svelte.dev/docs/kit/adapters to learn how to configure your app to run on the platform of your choosing
+@coding-cad/web:build:   ✔ done
+
+ Tasks:    15 successful, 15 total
+Cached:    0 cached, 15 total
+  Time:    10.568s 
+

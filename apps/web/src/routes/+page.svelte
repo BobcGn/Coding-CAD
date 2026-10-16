@@ -30,6 +30,20 @@
   let selectedNodeIds = $state<string[]>([]);
   let paletteItems = $state<readonly PaletteItem[]>(projectPalette().items);
   let inspector = $state<InspectorViewModel>();
+  let removeComponentId = $state("");
+  let confirmCascade = $state(false);
+  let connectionId = $state("");
+  let connectionFrom = $state("");
+  let connectionTo = $state("");
+  let connectionProtocol = $state("REST");
+  const pendingReview = $derived(shell?.proposal?.status === "draft" || shell?.proposal?.status === "in-review");
+  const removalConnections = $derived(shell?.accepted.architecture.connections.filter(
+    (edge) => edge.from === removeComponentId || edge.to === removeComponentId
+  ) ?? []);
+  let reviewRationale = $state("");
+  let contractName = $state("");
+  let contractProtocol = $state<"REST" | "RPC" | "EVENT" | "SQL" | "MESSAGE">("REST");
+  let editLimitation = $state("");
   let editDescription = $state("");
   let editCapability = $state("");
   let noticeMessage = $state("");
@@ -66,8 +80,9 @@
       inspector = undefined;
       return;
     }
-    inspector = projectInspector(component, state.validation?.issues ?? []);
-    editDescription = inspector.description;
+    const nextInspector = projectInspector(component, state.validation?.issues ?? []);
+    inspector = nextInspector;
+    editDescription = nextInspector.description;
   }
 
   async function runInspectorCommand(command: ArchitectureCommand): Promise<void> {
@@ -79,7 +94,10 @@
     } catch (error) {
       errorMessage = error instanceof Error ? error.message : "Inspector command failed.";
     } finally {
+      const failure = errorMessage;
       syncFromController();
+      if (failure) errorMessage = failure;
+      busy = false;
     }
   }
 
@@ -102,6 +120,22 @@
     editCapability = "";
   }
 
+  function handleRemove(): void {
+    if (removalConnections.length > 0 && !confirmCascade) {
+      errorMessage = "Confirm cascade removal of connected edges before removing this component.";
+      return;
+    }
+    void runInspectorCommand({ type: "remove-component", componentId: removeComponentId });
+    confirmCascade = false;
+  }
+
+  function handleConnect(): void {
+    void runInspectorCommand({
+      type: "connect-components",
+      connection: { id: connectionId, from: connectionFrom, to: connectionTo, protocol: connectionProtocol }
+    });
+  }
+
   async function handleGenerate(): Promise<void> {
     if (controller === undefined || busy) return;
     busy = true;
@@ -111,7 +145,10 @@
     } catch (error) {
       errorMessage = error instanceof Error ? error.message : "Generation failed.";
     } finally {
+      const failure = errorMessage;
       syncFromController();
+      if (failure) errorMessage = failure;
+      busy = false;
     }
   }
 
@@ -120,7 +157,7 @@
     busy = true;
     errorMessage = "";
     try {
-      await controller.acceptCandidate();
+      await controller.acceptCandidate(reviewRationale);
     } catch (error) {
       errorMessage = error instanceof Error ? error.message : "Accept failed.";
     } finally {
@@ -131,7 +168,7 @@
 
   function handleReject(): void {
     if (controller === undefined || busy) return;
-    controller.rejectCandidate();
+    controller.rejectCandidate(reviewRationale);
     syncFromController();
   }
 
@@ -151,7 +188,10 @@
     } catch (error) {
       errorMessage = error instanceof Error ? error.message : "Command failed.";
     } finally {
+      const failure = errorMessage;
       syncFromController();
+      if (failure) errorMessage = failure;
+      busy = false;
     }
   }
 
@@ -164,7 +204,10 @@
     } catch (error) {
       errorMessage = error instanceof Error ? error.message : "Save failed.";
     } finally {
+      const failure = errorMessage;
       syncFromController();
+      if (failure) errorMessage = failure;
+      busy = false;
     }
   }
 
@@ -177,7 +220,10 @@
     } catch (error) {
       errorMessage = error instanceof Error ? error.message : "Open failed.";
     } finally {
+      const failure = errorMessage;
       syncFromController();
+      if (failure) errorMessage = failure;
+      busy = false;
     }
   }
 
@@ -225,6 +271,9 @@
   onMount(() => {
     const next = new WorkspaceShellController(pointsSystemFixture);
     controller = next;
+    if (import.meta.env.DEV || import.meta.env.MODE === "layout-acceptance") {
+      void import("$lib/layout/testing/layout-acceptance.js").then(({ installLayoutAcceptance }) => installLayoutAcceptance(next));
+    }
     syncFromController();
     applyCurrentTheme();
     globalThis.matchMedia?.("(prefers-color-scheme: dark)")
@@ -334,9 +383,13 @@
     <section class="notice" aria-live="polite">{noticeMessage}</section>
   {/if}
 
+  {#if shell?.layoutWarning}
+    <p role="status" class="warn">Layout fallback: {shell.layoutWarning}</p>
+  {/if}
+
   {#if shell?.status === "generating" || shell?.status === "layout"}
     <section class="status" aria-busy="true" aria-live="polite">Generating and laying out architecture…</section>
-  {:else if shell && projection && layout && shell.layoutState}
+  {:else if shell && projection && layout && (shell.candidateLayoutState || shell.layoutState)}
     <div class="workspace">
       <aside class="palette">
         <h2>{t("palette")}</h2>
@@ -347,7 +400,7 @@
                 type="button"
                 class="palette-item"
                 onclick={() => handleAddFromPalette(item)}
-                disabled={busy}
+                disabled={busy || pendingReview}
               >
                 <strong>{item.name}</strong>
                 <span>{item.category}</span>
@@ -355,12 +408,37 @@
             </li>
           {/each}
         </ul>
+        <section aria-label="Architecture editing">
+          <h3>Remove component</h3>
+          <label for="remove-component-id">Component to remove</label>
+          <input id="remove-component-id" bind:value={removeComponentId} list="component-ids" disabled={busy || pendingReview} />
+          <datalist id="component-ids">
+            {#each shell.accepted.architecture.components as component (component.id)}
+              <option value={component.id}>{component.name}</option>
+            {/each}
+          </datalist>
+          {#if removalConnections.length > 0}
+            <p>Removing this component also removes {removalConnections.length} connected edge(s): {removalConnections.map((edge) => edge.id).join(", ")}.</p>
+            <label><input type="checkbox" bind:checked={confirmCascade} />Confirm cascade removal</label>
+          {/if}
+          <button type="button" onclick={handleRemove} disabled={busy || pendingReview || !removeComponentId.trim()}>Remove component</button>
+          <h3>Connect components</h3>
+          <label for="connection-id">Connection id</label>
+          <input id="connection-id" bind:value={connectionId} disabled={busy || pendingReview} />
+          <label for="connection-from">Source component id</label>
+          <input id="connection-from" bind:value={connectionFrom} list="component-ids" disabled={busy || pendingReview} />
+          <label for="connection-to">Target component id</label>
+          <input id="connection-to" bind:value={connectionTo} list="component-ids" disabled={busy || pendingReview} />
+          <label for="connection-protocol">Connection protocol</label>
+          <input id="connection-protocol" bind:value={connectionProtocol} disabled={busy || pendingReview} />
+          <button type="button" onclick={handleConnect} disabled={busy || pendingReview || !connectionId.trim()}>Connect components</button>
+        </section>
       </aside>
       <section class="canvas">
         <ArchitectureCanvas
           projection={projection}
           layout={layout}
-          viewState={shell.layoutState}
+          viewState={(shell.candidate ? shell.candidateLayoutState : shell.layoutState) ?? shell.layoutState!}
           onViewStateChange={(next) => controller?.updateLayoutState(next)}
           onSelectionChange={(nodeIds) => {
             selectedNodeIds = [...nodeIds];
@@ -376,11 +454,21 @@
               <dt>Name</dt>
               <dd>{inspector.name}</dd>
               <dt>Type</dt>
-              <dd>{inspector.type ?? "unset"}</dd>
+              <dd>
+                <select aria-label="Component type" value={inspector.type ?? ""} disabled={busy || pendingReview}
+                  onchange={(event) => {
+                    if (inspector) void runInspectorCommand({ type: "inspector-update-type", componentId: inspector.componentId, componentType: event.currentTarget.value });
+                  }}>
+                  <option value="" disabled>unset</option>
+                  {#each ["service", "database", "cache", "queue", "gateway", "storage", "external-service"] as type}
+                    <option value={type}>{type}</option>
+                  {/each}
+                </select>
+              </dd>
               <dt>Description</dt>
               <dd>
                 <textarea bind:value={editDescription} rows="2" disabled={busy}></textarea>
-                <button type="button" onclick={handleSaveDescription} disabled={busy}>Save Description</button>
+                <button type="button" onclick={handleSaveDescription} disabled={busy || pendingReview}>Save Description</button>
               </dd>
               <dt>Capabilities</dt>
               <dd>
@@ -401,15 +489,48 @@
                             capability
                           });
                         }}
-                        disabled={busy}
+                        disabled={busy || pendingReview}
                       >×</button>
                     </li>
                   {/each}
                 </ul>
                 <div class="capability-add">
                   <input bind:value={editCapability} placeholder="capability" disabled={busy} />
-                  <button type="button" onclick={handleAddCapability} disabled={busy || editCapability.trim().length === 0}>Add</button>
+                  <button type="button" onclick={handleAddCapability} disabled={busy || pendingReview || editCapability.trim().length === 0}>Add</button>
                 </div>
+              </dd>
+              <dt>Limitations</dt>
+              <dd>
+                <ul>{#each inspector.limitations as limitation}<li>{limitation}</li>{/each}</ul>
+                <label for="limitation">New limitation</label>
+                <input id="limitation" bind:value={editLimitation} disabled={busy || pendingReview} />
+                <button type="button" disabled={busy || pendingReview || !editLimitation.trim()}
+                  onclick={() => {
+                    if (inspector) void runInspectorCommand({ type: "inspector-add-limitation", componentId: inspector.componentId, limitation: editLimitation.trim() });
+                  }}>Add limitation</button>
+              </dd>
+              <dt>Contracts</dt>
+              <dd>
+                <ul>
+                  {#each inspector.contracts as contract, index (index)}
+                    <li>{contract.name} ({contract.protocol})
+                      <button type="button" aria-label={`Remove contract ${contract.name}`} disabled={busy || pendingReview}
+                        onclick={() => {
+                          if (inspector) void runInspectorCommand({ type: "inspector-remove-contract", componentId: inspector.componentId, contractName: contract.name });
+                        }}>Remove</button>
+                    </li>
+                  {/each}
+                </ul>
+                <label for="contract-name">Contract name</label>
+                <input id="contract-name" bind:value={contractName} disabled={busy || pendingReview} />
+                <label for="contract-protocol">Contract protocol</label>
+                <select id="contract-protocol" bind:value={contractProtocol} disabled={busy || pendingReview}>
+                  {#each ["REST", "RPC", "EVENT", "SQL", "MESSAGE"] as protocol}<option value={protocol}>{protocol}</option>{/each}
+                </select>
+                <button type="button" disabled={busy || pendingReview || !contractName.trim()}
+                  onclick={() => {
+                    if (inspector) void runInspectorCommand({ type: "inspector-add-contract", componentId: inspector.componentId, contract: { name: contractName.trim(), protocol: contractProtocol } });
+                  }}>Add contract</button>
               </dd>
             </dl>
             {#if inspector.issues.length > 0}
@@ -427,7 +548,7 @@
                   <button
                     type="button"
                     class="link"
-                    onclick={() => { selectedNodeIds = [issue.affectedComponent!]; }}
+                    onclick={() => { selectedNodeIds = [issue.affectedComponent!]; updateInspector(); }}
                   >
                     {issue.affectedComponent}
                   </button>
@@ -443,12 +564,14 @@
         {#if shell.candidate}
           <div class="review">
             <h2>Review</h2>
-            <p class="muted">A candidate ArchitectureProject is awaiting your decision.</p>
+            <p class="muted">Proposal status: {shell.proposal?.status}. Reviewer: local-user.</p>
+            <label for="review-rationale">Review rationale</label>
+            <textarea id="review-rationale" bind:value={reviewRationale} rows="2" disabled={busy}></textarea>
             <div class="actions">
-              <button type="button" onclick={handleAccept} disabled={busy || shell.validation?.valid === false}>
+              <button type="button" onclick={handleAccept} disabled={busy || shell.validation?.valid !== true || !reviewRationale.trim() || shell.proposal?.status === "rejected"}>
                 Accept
               </button>
-              <button type="button" onclick={handleReject} disabled={busy}>Reject</button>
+              <button type="button" onclick={handleReject} disabled={busy || !reviewRationale.trim() || shell.proposal?.status === "rejected"}>Reject</button>
             </div>
             {#if shell.validation?.valid === false}
               <p class="warn">Approval is blocked while the candidate has validation errors.</p>

@@ -71,3 +71,11 @@ D-001, D-002, D-003, D-004, D-005, D-006, D-008, D-009, and D-010 are user-appro
 - [Decision Required](../../docs/architecture-layout-decisions.md)
 - [UI MVP Roadmap](../../docs/ui-mvp-roadmap.md)
 - [UI Architecture](../../docs/ui-architecture.md)
+
+## Phase 3 Closeout Evidence / 阶段3收尾证据
+
+2026-10-16：产品审批、编辑、最小契约及Save/Open与真实ELK浏览器布局均已有源码验证。dev/preview各21项浏览器测试禁止任何fallback；默认图无重叠、确定，编辑/添加无关组件移动0px。阶段3在已定义范围内满足退出条件；未合并或启动后续阶段。详见[退出报告](../../docs/phase-3-exit-report.md)。 / Source verification now includes real browser ELK as well as product gate/edit/minimal-contract/Save-Open flows. Both 21-test suites reject fallback; default fixtures are non-overlapping and deterministic, with zero unrelated-component movement after edits/addition. Defined Phase 3 exit criteria are satisfied; no merge or later-phase execution is claimed. See the report.
+
+## Browser Interoperability Patch / 浏览器互操作补丁
+
+elkjs@0.12.0的固定pnpm补丁位于patches/elkjs@0.12.0.patch，修复browser Worker环境内嵌CJS导出缺失，保留standalone行为。升级依赖时必须重新验证补丁、Node/Worker-global回归及双模式浏览器门禁；不能仅删除补丁或把fallback算成功。公开API与D-010保持原样。 / The pinned patch restores embedded CJS exports inside browser workers without changing standalone behavior. Upgrades must revalidate the patch, isolated regression and both browser suites; fallback never counts as success. Public APIs and D-010 remain unchanged.

@@ -23,3 +23,9 @@
 - Master Plan: `docs/ui-v1-execution-plan.md`
 - Decisions: `docs/architecture-layout-decisions.md`
 - Layout design: `docs/architecture-layout.md`
+
+## 2026-10-16 Closeout / 收尾
+
+- `docs/phase-3-exit-report.md`：结果、差距、回退 / Results, gaps and rollback.
+- `docs/audit/p3-inspector-scope.md`：原文、实现与批准范围 / Original wording, implementation and approved scope.
+- `logs/validation/p3-closeout/`：原始命令输出、JSON与截图 / Raw outputs, JSON and screenshot.

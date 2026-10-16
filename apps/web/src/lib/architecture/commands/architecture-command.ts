@@ -1,4 +1,4 @@
-import type { Component, Connection } from "@coding-cad/architecture-ir";
+import type { Component, Connection, Contract } from "@coding-cad/architecture-ir";
 
 /**
  * Renderer-neutral user intent. UI events must be translated into one of
@@ -13,4 +13,6 @@ export type ArchitectureCommand =
   | { readonly type: "inspector-update-type"; readonly componentId: string; readonly componentType: string }
   | { readonly type: "inspector-add-capability"; readonly componentId: string; readonly capability: string }
   | { readonly type: "inspector-remove-capability"; readonly componentId: string; readonly capability: string }
-  | { readonly type: "inspector-add-limitation"; readonly componentId: string; readonly limitation: string };
+  | { readonly type: "inspector-add-limitation"; readonly componentId: string; readonly limitation: string }
+  | { readonly type: "inspector-add-contract"; readonly componentId: string; readonly contract: Contract }
+  | { readonly type: "inspector-remove-contract"; readonly componentId: string; readonly contractName: string };

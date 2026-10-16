@@ -89,3 +89,33 @@ GitHub Actions run `31705682848` failed because one shared-runner window measure
 实现 proposal-scoped Ghost node/edge identity、相对 accepted/proposed LayoutGraph 的新增投影与局部 placement。测试证明投影 deterministic，且不修改 accepted ArchitectureProject 或 LayoutState。没有依赖 `architecture-review`，没有实现 accept/reject、Review gate、overlay/comparison presentation 或 UI；D-007 继续只阻塞 Phase 5 产品呈现。
 
 Implemented proposal-scoped Ghost node/edge identity, added projections relative to accepted/proposed LayoutGraphs, and local placement. Tests prove the projection is deterministic and does not mutate the accepted ArchitectureProject or LayoutState. It does not depend on `architecture-review` and implements no accept/reject behavior, Review gate, overlay/comparison presentation, or UI; D-007 continues to block only Phase 5 product presentation.
+
+## 2026-10-16 - ELK Step 1 Diagnosis / ELK步骤1诊断
+
+目标：只关闭阶段3浏览器ELK阻塞，保持ELK/D-010/public API。dev与production均复现；隔离VM证明内嵌worker初始化错误优先级导致缺失CJS导出并覆盖onmessage。内存CJS-first实验成功。详细证据及候选方案见 `logs/validation/p3-closeout/elk-browser/root-cause.md`；本提交不修改产品实现。 / Diagnose only the Phase 3 browser blocker. Both modes reproduce; the VM proves missing CJS export and message-handler overwrite, while a CJS-first in-memory experiment succeeds. This commit changes no product implementation.
+
+## 2026-10-16 - ELK Step 2 Repair / ELK步骤2最小修复
+
+选择对固定elkjs 0.12.0内嵌worker的单一初始化guard做pnpm补丁：CommonJS模块优先导出，独立worker仍auto-attach。锁文件只新增补丁hash，未改solver版本、D-010责任分配或package公开API。新增隔离Worker-global回归证明原onmessage保留且实际路由生成。 / Applied a pinned one-guard pnpm patch: export CommonJS first, retain standalone worker auto-attachment. Only patch metadata changed; solver/version, D-010 and public APIs stay unchanged. Regression verifies handler ownership and real routes.
+
+源码integration与性能预算通过：100/150 p95 54.30ms、500/800 p95 513.86ms，worker gzip471875bytes。新增测试最初变量重名为测试编译错误，修正后通过。dev/preview重建后均无fallback/pageerror；进一步记录实际Worker结果，而非只看警告消失。 / Integration and existing performance budgets passed. An initial duplicate test variable was corrected. Both modes rebuilt without fallback/page errors; actual Worker results are also captured.
+
+根因与放弃方案见root-cause.md；不采用更换solver、新增物理worker、全compiler搬迁或只调default层级等方案。 / See root-cause.md for alternatives; solver replacement, another physical worker, compiler relocation and extra default normalization were not used.
+
+步骤2最终双模式证据：dev与preview的真实Worker均返回status=success、diagnostics=[]、3条已路由边，均无fallback/pageerror。见repaired-modes.json。 / Final Step 2 evidence: actual workers in dev and preview both returned success, empty diagnostics and three routed edges, with no fallback/page error.
+
+## 2026-10-16 - ELK Step 4 Browser Quality / ELK步骤4浏览器质量
+
+真实 ELK 输出暴露两个此前 fallback 掩盖的问题：Svelte Flow 子节点需要 parent-relative 坐标，LayoutState 为绝对坐标；新增无连接组件在稳定旧坐标后可能重叠。adapter 显式转换坐标，拖动反向转换；group 采用容器标签。既有 Stability pass 只移动重叠的新增组件并扩展受影响容器，保留既有组件位置；不改变 solver、D-010 或公开 API。 / Real ELK exposed parent-coordinate projection and orphan-addition overlap defects. The adapter converts absolute/relative coordinates in both directions and groups render as containers. The existing stability pass moves colliding newcomers and expands affected containers while retaining existing components; solver, D-010 and public contracts remain unchanged.
+
+浏览器质量测试使用既有默认项目与 points-system fixture，观察真实 Worker 并测量重叠、包含、路由、交叉、rank inversion、面积、确定性、增量移动。采用已有 p95≤48px、max≤144px、无顺序反转预算；不为交叉或耗时发明阈值。产品描述编辑和 Palette 添加均经过 command/Validator/Review。内部测试钩子仅 DEV 或 layout-acceptance 构建安装，普通 production 构建移除；不新增 package API。 / Browser tests measure existing fixtures using real workers and apply only the approved movement budget. Product edits and palette additions follow the command/Validator/Review path. Private acceptance hooks exist only in development or an explicit test build and are removed from ordinary production builds.
+
+定向测试已通过；新增 Palette 断言最初发现真实重叠，修复后通过。此前等待 Accept 完成不足属于测试同步问题，已等待明确完成状态。以下 verification/ 日志记录最终按顺序强制源码验证；对照 fallback 仅作为独立诊断，不允许通过正向验收守卫。 / Targeted tests passed after correcting a real overlap found by the palette assertion and a test synchronization issue. Final ordered forced source verification is recorded under verification/. Controlled fallback comparisons are separate diagnostics and never accepted by the positive guard.
+
+步骤4最终顺序验证8项均exit0，CI=true/TURBO_FORCE=true；build15/typecheck25/test30 task，Web unit58/integration9，dev21/preview21，全量CI各Turbo阶段0cached。CI性能100/150 p95=55.50ms、500/800 p95=495.19ms、worker gzip471875bytes；均通过既有预算。最终普通production重建dev/preview均ELK success、3路由、无fallback/pageerror；静态产物无验收hook，公开契约/worker transport diff为空。 / All eight ordered gates passed with forced source rebuilds and zero cached Turbo tasks. Unit58/integration9 and browser21 per mode passed. Existing performance budgets passed. Ordinary production and dev both returned real ELK success, three routes and no errors; release hooks are absent and public/transport diffs are empty.
+
+## 2026-10-16 - ELK Step 5 Exit Status / ELK步骤5退出状态
+
+依据步骤4当前源码的顺序8项验证、普通release双模式solver观察、边界检查与截图，同步退出报告/计划/roadmap/架构说明和当前日志，关闭TODO-016/WEB-001。阶段3按定义范围满足退出条件；未声称合并、远程CI、生产部署或任意图普遍质量。 / Current ordered source gates, ordinary-release worker observations, boundary checks and screenshots support closing the defined Phase 3 scope. Reports, plans and current logs are synchronized without merge/hosted-CI/deployment/general-graph claims.
+
+保留补丁升级、固定viewport、复杂大图/多平台未验证与审批历史范围限制；交叉/rank/耗时未新增硬阈值。五步提交支持逆序revert，原未跟踪PR草稿不触碰。 / Patch upgrades, fixed viewport, unverified graph/platform cases and approval-audit scope remain explicit. No new quality thresholds were invented. Five commits support reverse-order rollback; the untracked draft is untouched.

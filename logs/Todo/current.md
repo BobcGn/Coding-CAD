@@ -48,18 +48,12 @@ This file is the single source of truth for active TODOs.
 - 当前处理 / Current handling: P2.0–P2.6、Checkpoint 3、基础 Canvas、solver-only worker 与 headless command application 已完成。
 - 解除条件 / Exit condition: 已满足；后续 Web 产品能力进入独立 Phase 3。
 
-## TODO-016: Greenfield Architecture Workspace / Greenfield 架构工作区
+## TODO-016: Phase 3 Greenfield Workspace / 阶段3工作区
 
-- 状态 / Status: 已完成 / Complete
-- 当前处理 / Current handling: Phase 3（Greenfield Architecture Workspace）P3.0–P3.7 全部实现并验证；requirement -> candidate -> validate -> accept -> save/open 全流程 E2E 通过；完整 ci:verify 通过。
-- 决策门禁 / Decision gates: P3-D1、P3-D2、P3-D3（均已确认）。
-- 解除条件 / Exit condition: 已满足；后续 Greenfield 扩展与 Phase 4 Brownfield 进入独立切片。
-
-- Status: Complete
-- Current handling: Phase 3 (Greenfield Architecture Workspace) P3.0–P3.7 fully implemented and verified; the requirement -> candidate -> validate -> accept -> save/open flow passes E2E; the complete ci:verify passes.
-- Decision gates: P3-D1, P3-D2, and P3-D3 (all confirmed).
-- Exit condition: Met; later Greenfield extensions and Phase 4 Brownfield enter separate slices.
-
+- 状态 / Status: Closed in defined scope on current unmerged branch / 当前未合并分支按定义范围关闭。
+- 审批/编辑/Inspector/存储与真实ELK布局均已实现并验证；双模式各21项浏览器测试、Web58unit/9integration、强制源码CI通过。 / Product workflows and real ELK quality pass both browser suites and full forced source CI.
+- 原互操作阻塞已修复；fallback不计成功且触发硬失败，既有48/144px移动预算通过。 / Interoperability is repaired; fallback fails the gate and existing movement bounds pass.
+- 大图浏览器/多平台/生产部署未验证；后续阶段未实施。证据见docs/phase-3-exit-report.md。 / Large browser graphs, platform coverage and deployment remain unverified; later phases are unimplemented. See the exit report.
 ## TODO-014: Architecture Layout Contracts / Architecture Layout 契约
 
 - 状态 / Status: Phase 1 已验证 / Phase 1 verified

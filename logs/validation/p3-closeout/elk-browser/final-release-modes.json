@@ -1,0 +1,28 @@
+[
+  {
+    "mode": "dev",
+    "warnings": [],
+    "pageErrors": [],
+    "canvasNodes": 5,
+    "layouts": [
+      {
+        "status": "success",
+        "diagnostics": [],
+        "routedEdges": 3
+      }
+    ]
+  },
+  {
+    "mode": "preview",
+    "warnings": [],
+    "pageErrors": [],
+    "canvasNodes": 5,
+    "layouts": [
+      {
+        "status": "success",
+        "diagnostics": [],
+        "routedEdges": 3
+      }
+    ]
+  }
+]

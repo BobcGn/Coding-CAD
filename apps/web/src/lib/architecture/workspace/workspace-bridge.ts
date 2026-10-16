@@ -22,11 +22,17 @@ import type {
 
 const WORKSPACE_ENDPOINT = "/api/workspace";
 
+export class WorkspaceRequestError extends Error {
+  constructor(readonly status: number, body: string) {
+    super(`Workspace request failed (${status}): ${body}`);
+  }
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(path, init);
   if (!response.ok) {
     const body = await response.text().catch(() => "");
-    throw new Error(`Workspace request failed (${response.status}): ${body}`);
+    throw new WorkspaceRequestError(response.status, body);
   }
   return (await response.json()) as T;
 }

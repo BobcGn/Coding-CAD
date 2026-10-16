@@ -559,3 +559,19 @@ Option A: only the ELK solver runs in a worker in V1. Semantic, abstraction, Vis
 - Checkpoint 3 的 D-003、D-008、D-009 已实现并验证：drag 只更新 LayoutState，node 使用 Standard + Semantic Zoom，Svelte Flow 类型限制在 Web adapter/Canvas。 / D-003, D-008, and D-009 are implemented and verified at Checkpoint 3: drag updates only LayoutState, nodes use Standard + Semantic Zoom, and Svelte Flow types remain confined to the Web adapter/Canvas.
 - D-004 已批准 V1 延后 pin；D-006 已批准 Workspace abstraction 持有 LayoutState。D-007 仍影响后续 Ghost presentation。 / D-004 approves deferring pinning beyond V1; D-006 assigns LayoutState ownership to the Workspace abstraction. D-007 still affects later Ghost presentation.
 - Phase 3 新增 P3-D1（Workspace host boundary）、P3-D2（Greenfield generation mode）、P3-D3（Inspector command granularity）三个规划门禁，均已于 2026-08-15 由用户确认：P3-D1 采用 SvelteKit server boundary + typed app contract；P3-D2 生成零 LLM，LLM 仅限审批等下游支持；P3-D3 使用 app-private field-specific commands。它们不重编号 D-001–D-010，也不改变既有 Decision 历史。 / Phase 3 adds three planning gates — P3-D1 (Workspace host boundary), P3-D2 (Greenfield generation mode), and P3-D3 (Inspector command granularity); all three were confirmed by the user on 2026-08-15: P3-D1 adopts the SvelteKit server boundary with typed app contracts; P3-D2 assigns LLM no role in generation and limits it to downstream approval/review support; P3-D3 uses app-private field-specific commands. They do not renumber D-001 through D-010 or alter existing Decision history.
+
+## Phase 3 Closeout Clarifications / 阶段3收尾澄清
+
+2026-10-16 用户明确确认：Accept 代表本地用户批准，reviewer 固定为 `local-user`，理由由用户必填；Reject 使用现有 Review 状态机记录拒绝，并保留候选供查看。未校验通过、拒绝或审批失败时不得替换正式架构。此决定不引入认证、多审批人或完整 Review 工作区。
+
+On 2026-10-16 the user explicitly approved: Accept represents local-user approval, reviewer is fixed to `local-user`, rationale is required user input; Reject records rejection using the existing Review state machine and retains the candidate for inspection. Failed validation, rejection, or failed approval must not replace accepted architecture. No authentication, multi-reviewer flow, or full Review workspace is introduced.
+
+用户同时确认：将契约编辑作为阶段3缺口补齐，采用现有 IR Contract 的最小新增/移除显式命令与校验、测试。原 P3-D3 的 field-specific/no-generic-patch 和不扩展 IR 边界保持有效。
+
+The user also approved treating contract editing as a Phase 3 gap, using minimal explicit add/remove commands for existing IR Contracts, with validation and tests. The original P3-D3 field-specific/no-generic-patch and no-new-IR-semantics boundaries remain in force.
+
+## 2026-10-16 D-010 Implementation Evidence / D-010实施证据
+
+固定 elkjs 0.12.0 的 pnpm 补丁只调整内嵌 bundled worker 在 CommonJS 模块环境的初始化guard顺序，保留独立worker自动挂载。现有app module Worker仍仅执行solver，compiler/stability留在调用方；Worker传输与package公开契约没有diff，solver未替换。此为既有决策内的互操作修复，不是新Decision。 / A pinned elkjs 0.12.0 patch prioritizes CommonJS exports while retaining standalone-worker attachment. The existing module worker runs only the solver; compiler/stability remain caller-side. Transport/public contracts and solver selection stay unchanged. This implements the existing decision.
+
+真实浏览器双模式质量与既有48/144px、无顺序反转预算通过。交叉、rank inversion、面积、浏览器耗时只观测，未新增硬阈值；未来若新增须用户批准。证据见[退出报告](phase-3-exit-report.md)。 / Both modes pass quality and approved movement checks. Crossings, rank inversions, area and elapsed time are observations without new acceptance thresholds; future thresholds require approval. See the exit report.

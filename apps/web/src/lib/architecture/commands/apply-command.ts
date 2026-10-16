@@ -60,6 +60,16 @@ export function applyArchitectureCommand(
         capabilities: component.capabilities.filter((capability) => capability !== command.capability)
       }));
       break;
+    case "inspector-add-contract":
+      replaceComponent(components, command.componentId, (component) => ({
+        ...component, contracts: [...(component.contracts ?? []), structuredClone(command.contract)]
+      }));
+      break;
+    case "inspector-remove-contract":
+      replaceComponent(components, command.componentId, (component) => ({
+        ...component, contracts: (component.contracts ?? []).filter((contract) => contract.name !== command.contractName)
+      }));
+      break;
     case "inspector-add-limitation":
       replaceComponent(components, command.componentId, (component) => ({
         ...component,

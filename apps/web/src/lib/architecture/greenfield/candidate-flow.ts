@@ -1,6 +1,6 @@
 import { ArchitectureAgent } from "@coding-cad/architecture-agent";
 import type { ArchitectureProject } from "@coding-cad/architecture-ir";
-import { ArchitectureReview, type Proposal } from "@coding-cad/architecture-review";
+import { ArchitectureReview, type Proposal, type RecordApprovalInput } from "@coding-cad/architecture-review";
 import { ArchitectureValidator, type ValidationResult } from "@coding-cad/architecture-validator";
 
 /**
@@ -43,6 +43,25 @@ export class CandidateFlow {
     this.review = options.review ?? new ArchitectureReview({
       idGenerator: browserSafeIdGenerator
     });
+  }
+
+  getProposal(id: string): Proposal {
+    return this.review.getProposal(id);
+  }
+
+  decide(id: string, input: RecordApprovalInput): { proposal: Proposal; accepted?: ArchitectureProject } {
+    // Validate user input before submitting; reuse the existing Review state machine.
+    if (!input.reviewer.trim() || !input.rationale.trim()) {
+      throw new Error("Reviewer and approval rationale must not be empty.");
+    }
+    const current = this.review.getProposal(id);
+    if (current.status === "draft") this.review.submitProposal(id);
+    this.review.recordApproval(id, input);
+    const proposal = this.review.getProposal(id);
+    if (proposal.status !== "approved") return { proposal };
+    const accepted = this.review.getApprovedArchitecture(id);
+    this.version += 1;
+    return { proposal, accepted };
   }
 
   async generate(requirement: string, accepted: ArchitectureProject): Promise<CandidateFlowResult> {

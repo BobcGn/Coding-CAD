@@ -1,16 +1,10 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, type Page } from "@playwright/test";
+import { test } from "./layout-fixture.js";
 
-/**
- * Dispatch a native click on an element. Svelte 5 event delegation can be
- * unreliable under Playwright's synthetic clicks once a conditionally
- * rendered panel (e.g. the Inspector) is present, so tests dispatch real
- * DOM events for buttons inside dynamic panels.
- */
-async function nativeClick(page: Page, locator: ReturnType<Page["locator"]>): Promise<void> {
-  await locator.scrollIntoViewIfNeeded().catch(() => undefined);
-  await locator.evaluate((element) => {
-    element.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, view: window }));
-  });
+async function approve(page: Page): Promise<void> {
+  await page.getByLabel("Review rationale").fill("Candidate meets requirements.");
+  await page.getByRole("button", { name: "Accept", exact: true }).click();
+  await expect(page.getByText("Candidate accepted.", { exact: true })).toBeVisible();
 }
 
 test("greenfield workspace generates, validates, and renders a navigable canvas", async ({ page }) => {
@@ -39,9 +33,10 @@ test("palette adds a component through the command application", async ({ page }
   await page.getByRole("button", { name: "Generate Architecture" }).click();
   await expect(page.getByRole("heading", { name: "Palette" })).toBeVisible();
 
-  // Add Kafka from the palette; the command application accepts it.
+  await approve(page);
+  // Add Kafka from the palette, then explicitly approve the command candidate.
   await page.getByRole("button", { name: /Kafka/ }).click();
-  await expect(page.getByText(/Command accepted: Add component kafka/i)).toBeVisible();
+  await approve(page);
   await expect(page.locator(".svelte-flow__node").filter({ hasText: "Kafka" })).toBeVisible();
 });
 
@@ -49,13 +44,14 @@ test("save and open restore the accepted architecture and a usable view", async 
   await page.goto("/");
   await page.getByRole("button", { name: "Generate Architecture" }).click();
   await expect(page.getByRole("heading", { name: "Review" })).toBeVisible();
+  await page.getByLabel("Review rationale").fill("Candidate meets requirements.");
   await page.getByRole("button", { name: "Accept" }).click();
   await expect(page.getByText(/Candidate accepted/i)).toBeVisible();
 
   // Save the accepted project, then open it back.
-  await nativeClick(page, page.getByRole("button", { name: "Save" }));
+  await page.getByRole("button", { name: "Save", exact: true }).click();
   await expect(page.getByText(/Project saved/i)).toBeVisible();
-  await nativeClick(page, page.getByRole("button", { name: "Open" }));
+  await page.getByRole("button", { name: "Open", exact: true }).click();
   await expect(page.getByText(/Project opened/i)).toBeVisible();
 
   // The architecture facts are restored and the canvas renders nodes.
@@ -64,11 +60,14 @@ test("save and open restore the accepted architecture and a usable view", async 
 });
 
 test("inspector edits a component description via explicit command", async ({ page }) => {
+  const pageErrors: string[] = [];
+  page.on("pageerror", (error) => pageErrors.push(error.message));
   await page.goto("/");
   await page.getByRole("button", { name: "Generate Architecture" }).click();
   await expect(page.getByRole("heading", { name: "Review" })).toBeVisible();
 
   // Accept the candidate so edits apply to the accepted IR.
+  await page.getByLabel("Review rationale").fill("Candidate meets requirements.");
   await page.getByRole("button", { name: "Accept" }).click();
   await expect(page.getByText(/Candidate accepted/i)).toBeVisible();
 
@@ -81,17 +80,16 @@ test("inspector edits a component description via explicit command", async ({ pa
   // Edit the description and save.
   const descriptionBox = page.locator(".inspector textarea");
   await descriptionBox.fill("Core ledger service for point balances.");
-  // Dispatch a native click on the conditionally rendered Save button.
+  // Exercise an actual user click; do not dispatch synthetic DOM events.
   const saveButton = page.locator(".inspector button").filter({ hasText: "Save Description" });
-  await nativeClick(page, saveButton);
-  await page.waitForTimeout(600);
+  await saveButton.click();
+  await approve(page);
 
   // The description is committed through the command application.
-  await expect(descriptionBox).toHaveValue("Core ledger service for point balances.");
   // Re-open the inspector after the layout refresh and confirm the edit stuck.
   await pointServiceNode.click();
-  await page.waitForTimeout(400);
   await expect(page.locator(".inspector textarea")).toHaveValue("Core ledger service for point balances.");
+  expect(pageErrors).toEqual([]);
 });
 
 test("validation problems navigate to the affected component", async ({ page }) => {
@@ -106,14 +104,15 @@ test("validation problems navigate to the affected component", async ({ page }) 
   await expect(page.getByText("Selected: redis")).toBeVisible();
 });
 
-test("rejecting a candidate keeps the accepted architecture and clears review", async ({ page }) => {
+test("rejecting a candidate keeps both architectures and records rejection", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Generate Architecture" }).click();
   await expect(page.getByRole("heading", { name: "Review" })).toBeVisible();
 
+  await page.getByLabel("Review rationale").fill("Not aligned.");
   await page.getByRole("button", { name: "Reject" }).click();
   await expect(page.getByText(/rejected; accepted IR unchanged/i)).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Review" })).toBeHidden();
+  await expect(page.getByText("Proposal status: rejected. Reviewer: local-user.")).toBeVisible();
 });
 
 test("empty requirement shows an error and blocks generation", async ({ page }) => {
@@ -126,6 +125,7 @@ test("empty requirement shows an error and blocks generation", async ({ page }) 
 test("duplicate palette component is rejected and accepted IR is preserved", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Generate Architecture" }).click();
+  await page.getByLabel("Review rationale").fill("Candidate meets requirements.");
   await page.getByRole("button", { name: "Accept" }).click();
   await expect(page.getByText(/Candidate accepted/i)).toBeVisible();
 
@@ -170,6 +170,7 @@ test("full greenfield happy path: create, validate, accept, save, open", async (
   await expect(page.locator(".svelte-flow__node").filter({ hasText: "PointService" })).toBeVisible();
 
   // Edit: accept the candidate so the architecture is committed.
+  await page.getByLabel("Review rationale").fill("Candidate meets requirements.");
   await page.getByRole("button", { name: "Accept" }).click();
   await expect(page.getByText(/Candidate accepted/i)).toBeVisible();
 
@@ -177,9 +178,9 @@ test("full greenfield happy path: create, validate, accept, save, open", async (
   await expect(page.getByRole("heading", { name: "Problems" })).toBeVisible();
 
   // Save and open round-trip.
-  await nativeClick(page, page.getByRole("button", { name: "Save" }));
+  await page.getByRole("button", { name: "Save", exact: true }).click();
   await expect(page.getByText(/Project saved/i)).toBeVisible();
-  await nativeClick(page, page.getByRole("button", { name: "Open" }));
+  await page.getByRole("button", { name: "Open", exact: true }).click();
   await expect(page.getByText(/Project opened/i)).toBeVisible();
   await expect(page.locator(".svelte-flow__node").filter({ hasText: "PointService" })).toBeVisible();
 });

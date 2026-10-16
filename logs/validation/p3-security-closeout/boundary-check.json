@@ -1,0 +1,13 @@
+{
+  "patchedVersions": {
+    "undici": "8.10.2",
+    "devalue": "5.9.3",
+    "source-map-js": "1.2.2"
+  },
+  "elkPatchHashUnchanged": "2319e9e7f88e1b1348321821e4b3aba21253fa85f8cf9e5df5fa9b9fac0fb0df",
+  "productionSourceChanged": false,
+  "localNode": "v24.16.0",
+  "pnpm": "10.34.1",
+  "auditThreshold": "high, unchanged",
+  "overrides": "Match only the previous vulnerable locked versions"
+}

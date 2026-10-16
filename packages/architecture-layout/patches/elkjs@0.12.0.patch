@@ -1,0 +1,6 @@
+diff --git a/lib/elk.bundled.js b/lib/elk.bundled.js
+--- a/lib/elk.bundled.js
++++ b/lib/elk.bundled.js
+@@ -6440 +6440 @@
+-if(typeof document===kwe&&typeof self!==kwe){var i=new h(self);self.onmessage=i.saveDispatch}else if(typeof module!==kwe&&module.exports){Object.defineProperty(exports,'__esModule',{value:true});module.exports={'default':j,Worker:j}}}
++if(typeof module!==kwe&&module.exports){Object.defineProperty(exports,'__esModule',{value:true});module.exports={'default':j,Worker:j}}else if(typeof document===kwe&&typeof self!==kwe){var i=new h(self);self.onmessage=i.saveDispatch}}

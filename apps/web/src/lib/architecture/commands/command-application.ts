@@ -6,7 +6,7 @@ import {
   type LayoutEngine,
   type LayoutResult
 } from "@coding-cad/architecture-layout";
-import { ArchitectureReview, type Proposal } from "@coding-cad/architecture-review";
+import { ArchitectureReview, type Proposal, type RecordApprovalInput } from "@coding-cad/architecture-review";
 import { ArchitectureValidator, type ValidationResult } from "@coding-cad/architecture-validator";
 import type { ArchitectureCommand } from "./architecture-command.js";
 import { applyArchitectureCommand } from "./apply-command.js";
@@ -21,6 +21,13 @@ export interface CommandApplicationResult {
   readonly proposal: Proposal;
   readonly projection?: ArchitectureLayoutProjection;
   readonly layout?: LayoutResult;
+}
+
+export interface CommandPreparation {
+  readonly accepted: ArchitectureProject;
+  readonly candidate: ArchitectureProject;
+  readonly validation: ValidationResult;
+  readonly proposal: Proposal;
 }
 
 export interface CommandApplicationOptions {
@@ -42,51 +49,53 @@ export class CommandApplication {
     this.layoutEngine = options.layoutEngine ?? createLayoutEngine();
   }
 
+  prepare(accepted: ArchitectureProject, command: ArchitectureCommand): CommandPreparation {
+    const candidate = applyArchitectureCommand(accepted, command);
+    const validation = this.validator.validate(candidate);
+    const proposal = this.review.createProposal({
+      title: describeCommand(command), summary: "Architecture command candidate",
+      author: "coding-cad-web", baseVersion: this.version,
+      baseArchitecture: accepted, proposedArchitecture: candidate, validation
+    });
+    return { accepted, candidate, validation, proposal };
+  }
+
+  getProposal(id: string): Proposal {
+    return this.review.getProposal(id);
+  }
+
+  decide(prepared: CommandPreparation, input: RecordApprovalInput): CommandApplicationResult {
+    if (!input.reviewer.trim() || !input.rationale.trim()) {
+      throw new Error("Reviewer and approval rationale must not be empty.");
+    }
+    const current = this.review.getProposal(prepared.proposal.id);
+    if (current.status === "draft") this.review.submitProposal(current.id);
+    this.review.recordApproval(current.id, input);
+    const proposal = this.review.getProposal(current.id);
+    if (proposal.status !== "approved") return { ...prepared, proposal, status: "rejected" };
+    const accepted = this.review.getApprovedArchitecture(current.id);
+    this.version += 1;
+    return { ...prepared, accepted, proposal, status: "accepted" };
+  }
+
   async execute(
     accepted: ArchitectureProject,
     command: ArchitectureCommand,
     decision: HeadlessReviewDecision,
     signal?: AbortSignal
   ): Promise<CommandApplicationResult> {
-    const candidate = applyArchitectureCommand(accepted, command);
-    const validation = this.validator.validate(candidate);
-    const proposal = this.review.createProposal({
-      title: describeCommand(command),
-      summary: "Architecture command candidate",
-      author: "coding-cad-web",
-      baseVersion: this.version,
-      baseArchitecture: accepted,
-      proposedArchitecture: candidate,
-      validation
-    });
-    this.review.submitProposal(proposal.id);
-
-    const reviewDecision = decision === "approve" && validation.valid ? "approve" : "reject";
-    this.review.recordApproval(proposal.id, {
-      reviewer: "phase-2-headless-gate",
-      decision: reviewDecision,
+    const prepared = this.prepare(accepted, command);
+    const reviewDecision = decision === "approve" && prepared.validation.valid ? "approve" : "reject";
+    const result = this.decide(prepared, {
+      reviewer: "phase-2-headless-gate", decision: reviewDecision,
       rationale: reviewDecision === "approve" ? "Candidate passed validation." : "Candidate was rejected."
     });
-    const resolvedProposal = this.review.getProposal(proposal.id);
-
-    if (reviewDecision === "reject") {
-      return { status: "rejected", accepted, candidate, validation, proposal: resolvedProposal };
-    }
-
-    const nextAccepted = this.review.getApprovedArchitecture(proposal.id);
-    const projection = compileArchitectureProjection(nextAccepted);
+    if (result.status !== "accepted") return result;
+    const projection = compileArchitectureProjection(result.accepted);
     const layout = await this.layoutEngine.layout(projection.layoutGraph, { signal });
-    this.version += 1;
-    return {
-      status: "accepted",
-      accepted: nextAccepted,
-      candidate,
-      validation,
-      proposal: resolvedProposal,
-      projection,
-      layout
-    };
+    return { ...result, projection, layout };
   }
+
 }
 
 function describeCommand(command: ArchitectureCommand): string {
@@ -98,6 +107,8 @@ function describeCommand(command: ArchitectureCommand): string {
     case "inspector-update-type": return `Update type of ${command.componentId}`;
     case "inspector-add-capability": return `Add capability ${command.capability} to ${command.componentId}`;
     case "inspector-remove-capability": return `Remove capability ${command.capability} from ${command.componentId}`;
+    case "inspector-add-contract": return `Add contract ${command.contract.name} to ${command.componentId}`;
+    case "inspector-remove-contract": return `Remove contract ${command.contractName} from ${command.componentId}`;
     case "inspector-add-limitation": return `Add limitation ${command.limitation} to ${command.componentId}`;
   }
   return "Unknown command";

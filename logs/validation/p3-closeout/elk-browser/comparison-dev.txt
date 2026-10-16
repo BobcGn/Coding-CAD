@@ -1,0 +1,166 @@
+[
+  {
+    "fixture": "workspace-default",
+    "mode": "dev",
+    "elk": {
+      "status": "success",
+      "metrics": {
+        "nodes": 5,
+        "components": 4,
+        "peerOverlaps": 0,
+        "overlapPairs": [],
+        "containmentFailures": [],
+        "routedEdges": 3,
+        "edges": 3,
+        "routedCrossings": 0,
+        "rankInversions": 0,
+        "area": 183372
+      },
+      "deterministic": true,
+      "movement": {
+        "nodes": [
+          {
+            "nodeId": "group:infrastructure",
+            "distance": 0,
+            "affected": false
+          },
+          {
+            "nodeId": "postgresql",
+            "distance": 0,
+            "affected": false
+          },
+          {
+            "nodeId": "redis",
+            "distance": 0,
+            "affected": false
+          },
+          {
+            "nodeId": "rest-api",
+            "distance": 0,
+            "affected": false
+          },
+          {
+            "nodeId": "point-service",
+            "distance": 0,
+            "affected": false
+          }
+        ],
+        "unaffectedP95": 0,
+        "unaffectedMax": 0,
+        "relativeOrderReversed": false,
+        "withinBudget": true
+      },
+      "appliedMode": "INCREMENTAL"
+    },
+    "fallback": {
+      "status": "fallback",
+      "diagnostics": [
+        {
+          "code": "LAYOUT_TIMEOUT",
+          "severity": "warning",
+          "message": "Layout exceeded 0ms."
+        }
+      ],
+      "metrics": {
+        "nodes": 5,
+        "components": 4,
+        "peerOverlaps": 0,
+        "overlapPairs": [],
+        "containmentFailures": [
+          "postgresql",
+          "redis"
+        ],
+        "routedEdges": 0,
+        "edges": 3,
+        "routedCrossings": null,
+        "rankInversions": 0,
+        "area": 78624
+      },
+      "deterministic": true,
+      "appliedMode": "FULL",
+      "movement": null
+    }
+  },
+  {
+    "fixture": "points-system",
+    "mode": "dev",
+    "elk": {
+      "status": "success",
+      "metrics": {
+        "nodes": 5,
+        "components": 4,
+        "peerOverlaps": 0,
+        "overlapPairs": [],
+        "containmentFailures": [],
+        "routedEdges": 3,
+        "edges": 3,
+        "routedCrossings": 0,
+        "rankInversions": 0,
+        "area": 183372
+      },
+      "deterministic": true,
+      "movement": {
+        "nodes": [
+          {
+            "nodeId": "group:infrastructure",
+            "distance": 0,
+            "affected": false
+          },
+          {
+            "nodeId": "database",
+            "distance": 0,
+            "affected": false
+          },
+          {
+            "nodeId": "events",
+            "distance": 0,
+            "affected": false
+          },
+          {
+            "nodeId": "gateway",
+            "distance": 0,
+            "affected": false
+          },
+          {
+            "nodeId": "ledger",
+            "distance": 0,
+            "affected": false
+          }
+        ],
+        "unaffectedP95": 0,
+        "unaffectedMax": 0,
+        "relativeOrderReversed": false,
+        "withinBudget": true
+      },
+      "appliedMode": "INCREMENTAL"
+    },
+    "fallback": {
+      "status": "fallback",
+      "diagnostics": [
+        {
+          "code": "LAYOUT_TIMEOUT",
+          "severity": "warning",
+          "message": "Layout exceeded 0ms."
+        }
+      ],
+      "metrics": {
+        "nodes": 5,
+        "components": 4,
+        "peerOverlaps": 0,
+        "overlapPairs": [],
+        "containmentFailures": [
+          "database",
+          "events"
+        ],
+        "routedEdges": 0,
+        "edges": 3,
+        "routedCrossings": null,
+        "rankInversions": 1,
+        "area": 78624
+      },
+      "deterministic": true,
+      "appliedMode": "FULL",
+      "movement": null
+    }
+  }
+]

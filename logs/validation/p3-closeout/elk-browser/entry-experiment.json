@@ -1,0 +1,21 @@
+[
+  {
+    "environment": "Node original",
+    "result": "success",
+    "nodes": 2,
+    "routedEdges": 1
+  },
+  {
+    "environment": "Worker-like original",
+    "result": "error",
+    "error": "_Worker is not a constructor",
+    "messageHandlerOverwritten": true
+  },
+  {
+    "environment": "Worker-like CJS-first in-memory hypothesis",
+    "result": "success",
+    "nodes": 2,
+    "routedEdges": 1,
+    "messageHandlerOverwritten": false
+  }
+]

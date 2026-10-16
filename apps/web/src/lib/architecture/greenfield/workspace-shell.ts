@@ -26,6 +26,8 @@ export interface GreenfieldShellState {
   readonly validation?: ValidationResult;
   readonly proposal?: Proposal;
   readonly layoutState?: LayoutState;
+  readonly candidateLayoutState?: LayoutState;
+  readonly layoutWarning?: string;
   readonly status: ShellStatus;
   readonly message: string;
   readonly selectedNodeIds: readonly string[];
@@ -33,8 +35,8 @@ export interface GreenfieldShellState {
 
 export interface GreenfieldShellActions {
   generateFromRequirement(requirement: string): Promise<void>;
-  acceptCandidate(): Promise<void>;
-  rejectCandidate(): Promise<void>;
+  acceptCandidate(rationale: string): Promise<void>;
+  rejectCandidate(rationale: string): void;
   updateLayoutState(next: LayoutState): void;
   selectNodeIds(nodeIds: readonly string[]): void;
   reset(): void;

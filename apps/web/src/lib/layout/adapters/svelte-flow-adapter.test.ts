@@ -48,3 +48,26 @@ describe("Svelte Flow anti-corruption adapter", () => {
     })).toThrow(/invalid endpoint/);
   });
 });
+
+it("converts absolute child coordinates to parent-relative without changing IR/LayoutState", () => {
+  const grouped = {
+    ...projection,
+    visualGraph: {
+      ...projection.visualGraph,
+      nodes: [
+        { ...projection.visualGraph.nodes[0]!, id: "group", sourceId: "group", kind: "group" as const },
+        { ...projection.visualGraph.nodes[0]!, parentId: "group" }
+      ]
+    }
+  };
+  const result: LayoutResult = {
+    ...layout,
+    nodes: [
+      { id: "group", sourceId: "group", kind: "group", position: { x: 300, y: 100 }, size: { width: 300, height: 220 } },
+      { ...layout.nodes[0]!, parentId: "group", position: { x: 324, y: 124 } }
+    ]
+  };
+  const before = structuredClone(result);
+  expect(toSvelteFlowProjection(grouped, result).nodes[1]?.position).toEqual({ x: 24, y: 24 });
+  expect(result).toEqual(before);
+});

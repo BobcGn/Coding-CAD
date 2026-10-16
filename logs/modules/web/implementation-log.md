@@ -243,3 +243,108 @@ Pre-PR UI closeout: added a left workspace sidebar aggregating project managemen
 验证：web typecheck 0/0；unit 11 files/38 tests（新增 7 个 ui-settings 测试）；integration 3 files/9 tests；Playwright E2E 10 passed（新增侧边栏+齿轮弹窗设置测试）；完整 pnpm ci:verify 通过（unit 28/28、integration 18/18、E2E 17/17、build 15/15）。
 
 Validation: web typecheck 0/0; unit 11 files/38 tests (7 new ui-settings tests); integration 3 files/9 tests; ten Playwright E2E pass (new sidebar + gear settings dialog test); the complete pnpm ci:verify passes (unit 28/28, integration 18/18, E2E 17/17, build 15/15).
+
+## 2026-10-16 - Step 1 Review Gate / 步骤1审批门禁
+
+动机：修复产品 Accept 绕过 Architecture Review 的空实现。用户确认 local-user + 必填理由；Reject 记录拒绝且保留候选。产品复用 submitProposal/recordApproval/getApprovedArchitecture；新增真实 controller 路径测试，覆盖批准、无效候选、拒绝、重复接受与审批异常。
+
+Motivation: replace the empty product Accept gate with existing Architecture Review APIs. The user approved local-user with required rationale and retained rejected candidates. Production-controller tests cover approval, invalid candidates, rejection, duplicate acceptance, and approval exceptions.
+
+验证结果在本节后续补充；不使用已有 dist 作为源码构建证据。 / Validation results follow below; existing dist is not used as source-build evidence.
+
+步骤1验证：Web 及依赖源码 build 通过；Web typecheck 为 0 errors / 0 warnings；Web unit 为 12 files / 43 tests；批准/拒绝/保存打开三个 Playwright 用例通过。构建有 chunk size 警告；未作为失败处理。完整阶段验收将在步骤4重跑。
+
+Step 1 validation: source build of Web and dependencies passed; Web typecheck had zero errors/warnings; Web unit passed 12 files / 43 tests; three approval/rejection/save-open Playwright cases passed. Chunk-size warnings are recorded, not treated as failure. Full phase validation will rerun in Step 4.
+
+## 2026-10-16 - Step 2 Product Remove/Connect / 步骤2产品删除与连接
+
+动机：补齐阶段3真实入口并消除产品编辑的自动批准路径。CommandApplication.prepare/decide 复用已有 command、Validator 与 Review；产品编辑等待 local-user 显式批准。Remove 沿用关联连接级联语义，界面先提示并要求确认；非法连接进入 Problems。候选 LayoutState 与正式 LayoutState 分离，布局复用既有 incremental API。
+
+Motivation: complete real Phase 3 controls and remove automatic product approval. CommandApplication.prepare/decide reuse existing commands, Validator, and Review; edits await explicit local-user approval. Remove retains incident-edge cascade semantics with visible confirmation; invalid connections enter Problems. Candidate and accepted LayoutState are separate; layout reuses the existing incremental API.
+
+浏览器真实点击暴露 Canvas selection 回调的响应式循环；用 untrack 隔离外层读取。移除旧 E2E 的 synthetic DOM click。另发现浏览器 ELK 返回 `_Worker is not a constructor` 并退化到 fallback；当前明确显示诊断，未把 fallback 计为 solver 成功。更换 worker/solver 接法不在本步骤擅自实施，作为阶段退出阻塞证据保留。
+
+Real browser clicks exposed a reactive loop in Canvas selection callbacks; untrack isolates parent reads. Synthetic DOM clicks were removed from E2E. Browser ELK also returns `_Worker is not a constructor` and falls back; the UI now surfaces diagnostics and does not claim solver success. Changing worker/solver integration is not silently introduced here; it remains phase-exit evidence.
+
+验证：Web typecheck 0/0；unit 12 files/47 tests、integration 3 files/9 tests 通过；5 个新增 Remove/Connect 浏览器场景通过。完整浏览器回归结果随后记录。首次 Inspector 回归暴露真实循环；修复后原测试仍假定重布局保持选择，已改为重选后验证字段，不放宽架构集合断言。
+
+Validation: Web typecheck 0/0; unit 12 files/47 tests and integration 3 files/9 tests passed; five new Remove/Connect browser cases passed. Full browser regression results follow. Initial Inspector regression exposed the real loop; after fixing it the test still assumed selection survived layout, and now reselects before checking the field without weakening architecture-set assertions.
+
+步骤2最终浏览器回归：15 passed（真实点击，串行）。 / Step 2 final browser regression: 15 passed with real clicks and one worker.
+
+## 2026-10-16 - Step 3 Inspector Scope / 步骤3 Inspector 范围
+
+动机：按用户澄清补齐 Phase 3 契约编辑缺口，保持 P3-D3 的 app-private field-specific/no-generic-patch 边界。新增既有 Contract 的 add/remove 命令、最小产品控件及结构校验；不扩展 IR。完整逐项审计见 `docs/audit/p3-inspector-scope.md`。类型/限制现有命令增加产品入口，但未将其专门 UI 操作宣称为已测。
+
+Motivation: close the user-confirmed Phase 3 contract gap while preserving P3-D3 app-private field-specific/no-generic-patch boundaries. Added existing-Contract add/remove commands, minimal controls and structural validation without extending IR. The audit lists each requirement and evidence. Existing type/limitation commands now have controls, but dedicated UI interaction is not claimed tested.
+
+源码 architecture-validator test 通过；Web typecheck 为 0 errors / 0 warnings。Web unit/integration/E2E 结果在后续条目与退出报告记录。 / Source architecture-validator tests passed; Web typecheck had zero errors/warnings. Web unit/integration/E2E results follow and are included in the exit report.
+
+步骤3验证：Web unit 12 files / 49 tests、integration 3 files / 9 tests、Playwright 16 passed；契约规则源码测试与 Web typecheck 通过。 / Step 3 validation: Web unit 12 files / 49 tests, integration 3 files / 9 tests, and 16 Playwright cases passed; contract-rule source tests and Web typecheck passed.
+
+## 2026-10-16 - Step 4 Phase Acceptance / 步骤4阶段验收
+
+动机：以当前源码重建和真实运行补齐生命周期、存储错误与状态不变量证据。修复生成失败/取消状态恢复、Save 服务错误不触发创建、有效已存坐标恢复及失效节点过滤；实际 server route 为正式 snapshot 记录既有 validation history。浏览器测试使用独立临时 Workspace 并清理；不复用用户开发服务器。
+
+Motivation: verify current source and close lifecycle, storage-error, and state-invariant gaps. Fixed generation error/cancellation recovery, prevented create on save server errors, restored valid saved positions while dropping stale nodes, and recorded existing validation history for accepted snapshots in the actual server route. Browser tests use and clean an isolated temporary Workspace and do not reuse a user development server.
+
+按顺序执行，CI=true、TURBO_FORCE=true：pnpm install 通过；build 15/15、typecheck 25/25、test 30/30；Web unit 14 files/56 tests；Web integration 3 files/9 tests；浏览器18 passed。原始输出在 logs/validation/p3-closeout/。首次 ci:verify 因本步骤尚未同步 change-record 而退出，分类为代码交付记录门禁（非编译/运行失败）；补充本记录后重跑，保留首次失败输出。早期 install 无TTY中止为环境问题，CI=true 后恢复；早期 Inspector 真实响应式循环为代码问题，重布局后的选择假设为测试问题，均已修复并回归。
+
+Sequential commands with CI=true and TURBO_FORCE=true: install passed; build 15/15, typecheck 25/25, test 30/30; Web unit 14 files/56 tests, integration 3 files/9 tests, browser 18 passed. Raw outputs are in logs/validation/p3-closeout/. The first ci:verify stopped because this step lacked a change record: a code-delivery record gate, not compilation/runtime failure. It is rerun after this record, retaining the initial failure output. Initial no-TTY install was environmental and recovered with CI=true; the Inspector reactive loop was a code defect, and the post-layout selection assumption was a test defect; both were repaired and regressed.
+
+未把 ELK fallback 计为 solver 成功。浏览器中 `_Worker is not a constructor` 仍可复现，默认语义布局质量与真实浏览器 incremental 稳定性未获证明；阶段3退出仍阻塞。本切片未更换 solver/worker 边界或冻结新 API。
+
+ELK fallback is not counted as solver success. Browser `_Worker is not a constructor` remains reproducible; default semantic layout quality and real-browser incremental stability are unproven. Phase 3 exit remains blocked. No solver/worker boundary or new package API is introduced.
+
+步骤4最终命令结果：补齐记录后完整 ci:verify exit 0；typecheck 25/25、unit 28/28、integration 18/18、E2E 17/17、build 15/15，全部 0 cached。Web 实际计数为 unit 56、integration 9、浏览器18。独立 Chrome 诊断得到 `Layout fallback: _Worker is not a constructor`、pageErrors=[]、5 个 Canvas 节点；截图与 JSON 已保存。这是 solver/浏览器互操作的代码缺陷，非环境权限问题，也不因 CI 成功而消失。阶段3不宣称退出。
+
+Step 4 final commands: ci:verify exited 0 after adding the record; typecheck 25/25, unit 28/28, integration 18/18, E2E 17/17, build 15/15, all with zero cached tasks. Actual Web counts are 56 unit, 9 integration, and 18 browser tests. Independent Chrome diagnostics reported `Layout fallback: _Worker is not a constructor`, pageErrors=[], and five Canvas nodes; screenshot and JSON are saved. This solver/browser interoperability code defect is not a permission issue and is not erased by passing CI. Phase 3 exit is not claimed.
+
+## 2026-10-16 - Step 5 State and Exit Report / 步骤5状态与退出报告
+
+动机：修正当前文档中“已完成并合并”“代码未开始”“待三项决策”互相冲突的状态，不重写历史implementation-log。同步主计划、Roadmap、UI/Architecture/Layout说明、README与根/模块State/Todo/Links。新增双语 `docs/phase-3-exit-report.md`，保留命令成功与实际solver退化两个事实。
+
+Motivation: reconcile conflicting current status without rewriting historical implementation logs. Synchronized plan, roadmap, architecture/UI/layout notes, READMEs and root/module state, todo and links. Added the bilingual exit report, retaining both successful engineering commands and actual solver fallback.
+
+阶段3结论：不满足退出条件；不授权进入阶段4。审批与P3-D3澄清已解决，无待答复决策。浏览器ELK互操作尚未修复；若修复方案改变已批准边界/公开API/依赖须另行决策。 / Phase 3 does not satisfy exit and does not authorize Phase 4. Approval and Inspector clarifications are resolved. ELK interoperability remains unfixed; changes to approved boundaries/APIs/dependencies require separate decisions.
+
+步骤4最终增补：重新生成失败时保留待审命令的Review归属；新增回归后完整源码CI再次exit 0，Web最新57 unit / 9 integration / 18 Chrome tests，仍为零缓存。步骤4最终提交为 e243537。 / Final Step 4 addition preserves pending-command Review ownership after failed regeneration. Full source CI passed again with final counts 57/9/18 and zero cache. Final Step 4 commit: e243537.
+
+步骤5文档验证：git diff --check、15模块workspace边界检查、change-record通过；退出报告/审计/主计划/Roadmap共16个本地链接目标存在。最终源码CI见10-final-source-ci.txt，最新Web计数57/9/18。 / Step 5 document checks passed: diff whitespace, 15-module workspace boundary, change-record, and 16 local link targets. Final source CI is in 10-final-source-ci.txt with Web counts 57/9/18.
+
+最终文档交付检查：5个收尾提交的Conventional Commits检查、secret scan、workspace检查及diff检查通过；4173端口无监听。见11-final-document-checks.txt。 / Final documentation delivery checks passed for all five closeout commit messages, secret scan, workspace and diff checks; port 4173 has no listener. See 11-final-document-checks.txt.
+
+## 2026-10-16 - ELK Step 3 Hard Gate / ELK步骤3硬门禁
+
+每个现有浏览器用例都使用自动solverGuard，观察实际solver-only Worker的LayoutResult；任一fallback或diagnostics导致失败。来源复用既有status信号：当前唯一backend为ELK，success只由fromElkGraph在校验真实输出后发出，测试显式断言source=elk及真实路由，不新增package公开字段。 / Every current browser test observes real Worker results and fails on fallback/diagnostics. Source derives from the existing success signal of the sole ELK backend; explicit ELK and route assertions add no public field.
+
+test:e2e同时执行dev和production preview套件，已有ci:verify的浏览器门禁因此覆盖两种模式。P3_FORCE_FALLBACK=1只在测试观察器中将timeout改为0，触发既有真实fallback，供负控证明测试必须失败。 / Both modes run through the existing CI browser gate. The test-only negative control sets the existing timeout to zero and must fail.
+
+步骤3验证：Web typecheck 0/0；正常dev19/preview19通过。P3_FORCE_FALLBACK=1的同一ELK用例exit1，实际诊断LAYOUT_TIMEOUT，明确Expected success / Received fallback，自动守卫也失败；此为预期负控而非被忽略的产品失败。初版preview配置合并启动了重复同端口server，分类为测试配置错误，已改为覆盖配置并回归。证据见step3-browser.txt和negative-browser.txt。 / Typecheck and both 19-test suites passed. The forced real timeout exited 1 with success-versus-fallback assertions in both the test and automatic guard. This expected negative control is retained. A duplicate-server test configuration error was fixed and regressed.
+
+## 2026-10-16 - ELK Step 4 Browser Quality / ELK步骤4浏览器质量
+
+真实 ELK 输出暴露两个此前 fallback 掩盖的问题：Svelte Flow 子节点需要 parent-relative 坐标，LayoutState 为绝对坐标；新增无连接组件在稳定旧坐标后可能重叠。adapter 显式转换坐标，拖动反向转换；group 采用容器标签。既有 Stability pass 只移动重叠的新增组件并扩展受影响容器，保留既有组件位置；不改变 solver、D-010 或公开 API。 / Real ELK exposed parent-coordinate projection and orphan-addition overlap defects. The adapter converts absolute/relative coordinates in both directions and groups render as containers. The existing stability pass moves colliding newcomers and expands affected containers while retaining existing components; solver, D-010 and public contracts remain unchanged.
+
+浏览器质量测试使用既有默认项目与 points-system fixture，观察真实 Worker 并测量重叠、包含、路由、交叉、rank inversion、面积、确定性、增量移动。采用已有 p95≤48px、max≤144px、无顺序反转预算；不为交叉或耗时发明阈值。产品描述编辑和 Palette 添加均经过 command/Validator/Review。内部测试钩子仅 DEV 或 layout-acceptance 构建安装，普通 production 构建移除；不新增 package API。 / Browser tests measure existing fixtures using real workers and apply only the approved movement budget. Product edits and palette additions follow the command/Validator/Review path. Private acceptance hooks exist only in development or an explicit test build and are removed from ordinary production builds.
+
+定向测试已通过；新增 Palette 断言最初发现真实重叠，修复后通过。此前等待 Accept 完成不足属于测试同步问题，已等待明确完成状态。以下 verification/ 日志记录最终按顺序强制源码验证；对照 fallback 仅作为独立诊断，不允许通过正向验收守卫。 / Targeted tests passed after correcting a real overlap found by the palette assertion and a test synchronization issue. Final ordered forced source verification is recorded under verification/. Controlled fallback comparisons are separate diagnostics and never accepted by the positive guard.
+
+正向 Playwright retries=0，防止一次真实 fallback 被后续重试通过掩盖。 / Positive Playwright suites disable retries so a fallback cannot be hidden by a later successful attempt.
+
+步骤4最终顺序验证8项均exit0，CI=true/TURBO_FORCE=true；build15/typecheck25/test30 task，Web unit58/integration9，dev21/preview21，全量CI各Turbo阶段0cached。CI性能100/150 p95=55.50ms、500/800 p95=495.19ms、worker gzip471875bytes；均通过既有预算。最终普通production重建dev/preview均ELK success、3路由、无fallback/pageerror；静态产物无验收hook，公开契约/worker transport diff为空。 / All eight ordered gates passed with forced source rebuilds and zero cached Turbo tasks. Unit58/integration9 and browser21 per mode passed. Existing performance budgets passed. Ordinary production and dev both returned real ELK success, three routes and no errors; release hooks are absent and public/transport diffs are empty.
+
+## 2026-10-16 - ELK Step 5 Exit Status / ELK步骤5退出状态
+
+依据步骤4当前源码的顺序8项验证、普通release双模式solver观察、边界检查与截图，同步退出报告/计划/roadmap/架构说明和当前日志，关闭TODO-016/WEB-001。阶段3按定义范围满足退出条件；未声称合并、远程CI、生产部署或任意图普遍质量。 / Current ordered source gates, ordinary-release worker observations, boundary checks and screenshots support closing the defined Phase 3 scope. Reports, plans and current logs are synchronized without merge/hosted-CI/deployment/general-graph claims.
+
+保留补丁升级、固定viewport、复杂大图/多平台未验证与审批历史范围限制；交叉/rank/耗时未新增硬阈值。五步提交支持逆序revert，原未跟踪PR草稿不触碰。 / Patch upgrades, fixed viewport, unverified graph/platform cases and approval-audit scope remain explicit. No new quality thresholds were invented. Five commits support reverse-order rollback; the untracked draft is untouched.
+
+## 2026-10-16 - Phase 3 PR dependency audit repair / 阶段3 PR依赖审计修复
+
+PR #3首次远端CI在额外security:audit步骤报告7high，本地旧ci:verify未包含此项。已获用户授权定向安全修复；pnpm10深层update未移动间接锁定版本，采用仅匹配已锁漏洞版本的overrides：undici8.10.0→8.10.2、devalue5.9.0→5.9.3、source-map-js1.2.1→1.2.2；均在父依赖允许的semver范围。 / The initial remote audit found seven high findings absent from the old local gate. The authorized narrow fix uses overrides matching only vulnerable locked versions after pnpm10's targeted update left the lock unchanged. All patches fit parent ranges.
+
+本地ci:verify新增同一审计，保留high阈值；不忽略告警，不更换ELK/patch/worker/API。当前验证进行中，证据位于logs/validation/p3-security-closeout/；正式通过以实际命令与远端结果为准。 / Local CI now includes the same unchanged audit threshold. ELK, its patch, worker and API remain unchanged. Verification is in progress; evidence and actual results determine acceptance.
+
+
+本轮最终验证：冻结安装、源码build、安全high门禁及含审计的强制ci:verify均exit0；Web58unit/9integration/dev21/preview21，所有Turbo阶段0cached。pnpm audit --json仍exit1，因剩余2moderate/1low；不将其误标为零漏洞或环境错误。证据见logs/validation/p3-security-closeout/report.md；远端以PR Checks为准。 / Final local gates pass with forced source builds and all browser guards. Unfiltered JSON audit exits1 for remaining low/moderate findings, not a zero-vulnerability claim or environment error. Hosted status remains independently observable.

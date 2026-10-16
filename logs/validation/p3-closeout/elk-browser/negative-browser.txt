@@ -1,0 +1,61 @@
+$ pnpm --filter @coding-cad/web exec playwright test --grep requires ELK --retries=0
+P3_FORCE_FALLBACK=1
+
+Running 1 test using 1 worker
+
+  ✘  1 [chrome] › e2e/solver.spec.ts:4:1 › requires ELK solver success with real routes (841ms)
+
+
+  1) [chrome] › e2e/solver.spec.ts:4:1 › requires ELK solver success with real routes ──────────────
+
+    Error: [{"code":"LAYOUT_TIMEOUT","severity":"warning","message":"Layout exceeded 0ms."}]
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "success"
+    Received: "fallback"
+
+       9 |   expect(observed.length).toBeGreaterThan(0);
+      10 |   const actual = observed.at(-1)!;
+    > 11 |   expect(actual.result.status, JSON.stringify(actual.result.diagnostics)).toBe("success");
+         |                                                                           ^
+      12 |   expect(layoutSource(actual.result)).toBe("elk");
+      13 |   expect(actual.result.edges.length).toBeGreaterThan(0);
+      14 |   expect(actual.result.edges.every((edge) => edge.sections.length > 0)).toBe(true);
+        at /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/web/e2e/solver.spec.ts:11:75
+
+    Error: [{"code":"LAYOUT_TIMEOUT","severity":"warning","message":"Layout exceeded 0ms."}]
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "success"
+    Received: "fallback"
+
+       at layout-fixture.ts:60
+
+      58 |     for (const observation of layouts) {
+      59 |       expect(observation.workerUrl, "source must be the approved solver-only worker").toContain("layout-worker");
+    > 60 |       expect(observation.result.status, JSON.stringify(observation.result.diagnostics)).toBe("success");
+         |                                                                                         ^
+      61 |       expect(layoutSource(observation.result), "solver source must be ELK, never fallback").toBe("elk");
+      62 |       expect(observation.result.diagnostics).toEqual([]);
+      63 |     }
+        at Object.base.extend.solverGuard.auto (/Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/web/e2e/layout-fixture.ts:60:89)
+
+    Error Context: test-results/solver-requires-ELK-solver-success-with-real-routes-chrome/error-context.md
+
+  1 failed
+    [chrome] › e2e/solver.spec.ts:4:1 › requires ELK solver success with real routes ───────────────
+undefined
+/Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/web:
+ ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL  Command failed with exit code 1: playwright test --grep requires ELK --retries=0
+[WebServer] (node:44103) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:44198) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+(node:44208) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] 
+[WebServer] [404] GET /favicon.ico
+
+exit=1

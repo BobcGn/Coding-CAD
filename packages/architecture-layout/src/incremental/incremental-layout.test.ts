@@ -83,3 +83,32 @@ function withoutRedis(project: ArchitectureProject): ArchitectureProject {
     }
   };
 }
+
+// An orphan palette addition must not reuse a position occupied by stabilized nodes.
+const withOrphan: ArchitectureProject = {
+  ...layoutFixture,
+  architecture: {
+    ...layoutFixture.architecture,
+    components: [...layoutFixture.architecture.components, {
+      id: "orphan-queue", name: "New Queue", type: "queue", capabilities: []
+    }]
+  }
+};
+const orphanBase = await layoutArchitectureGraph(compileArchitectureProjection(layoutFixture).layoutGraph);
+const orphanAdded = await layoutArchitectureGraph(compileArchitectureProjection(withOrphan).layoutGraph, {
+  mode: "INCREMENTAL", previousState: orphanBase.state
+});
+assert.equal(orphanAdded.movement?.withinBudget, true);
+const components = orphanAdded.result.nodes.filter((node) => node.kind === "component");
+for (let i = 0; i < components.length; i++) for (let j = i + 1; j < components.length; j++) {
+  const a = components[i]!, b = components[j]!;
+  assert.ok(!(a.position.x < b.position.x + b.size.width && b.position.x < a.position.x + a.size.width
+    && a.position.y < b.position.y + b.size.height && b.position.y < a.position.y + a.size.height),
+    `Components ${a.id} and ${b.id} must not overlap after stabilization`);
+}
+for (const node of orphanAdded.result.nodes.filter((node) => node.parentId)) {
+  const parent = orphanAdded.result.nodes.find((group) => group.id === node.parentId)!;
+  assert.ok(node.position.x >= parent.position.x && node.position.y >= parent.position.y);
+  assert.ok(node.position.x + node.size.width <= parent.position.x + parent.size.width);
+  assert.ok(node.position.y + node.size.height <= parent.position.y + parent.size.height);
+}

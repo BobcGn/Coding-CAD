@@ -68,16 +68,16 @@ describe("P3.3 workspace shell controller", () => {
     assert.deepEqual(state.accepted, pointsSystemFixture);
   });
 
-  it("rejecting a candidate clears it and keeps accepted IR", async () => {
+  it("rejecting a candidate records rejection and preserves both architectures", async () => {
     const controller = createController();
     await controller.generateFromRequirement(REQUIREMENT);
     const acceptedBefore = structuredClone(pointsSystemFixture);
 
-    controller.rejectCandidate();
+    controller.rejectCandidate("Not aligned.");
     const state = controller.state();
 
-    assert.equal(state.candidate, undefined);
-    assert.equal(state.proposal, undefined);
+    assert.ok(state.candidate);
+    assert.equal(state.proposal?.status, "rejected");
     assert.deepEqual(state.accepted, acceptedBefore);
   });
 
@@ -100,9 +100,10 @@ describe("P3.3 workspace shell controller", () => {
       component: { id: "kafka", name: "Kafka", type: "queue", capabilities: ["asynchronous-delivery"] }
     });
 
+    await controller.acceptCandidate("Approve adding Kafka.");
     const state = controller.state();
     assert.equal(state.status, "ready");
-    assert.ok(state.message.includes("Add component kafka"));
+    assert.equal(state.proposal?.status, "approved");
     assert.notDeepEqual(state.accepted, acceptedBefore);
     assert.ok(state.accepted.architecture.components.some((component) => component.id === "kafka"));
   });
@@ -113,6 +114,7 @@ describe("P3.3 workspace shell controller", () => {
       type: "add-component",
       component: { id: "kafka", name: "Kafka", type: "queue", capabilities: ["asynchronous-delivery"] }
     });
+    await controller.acceptCandidate("Approve adding Kafka.");
     const acceptedAfterFirst = structuredClone(controller.state().accepted);
 
     await controller.executeCommand({
@@ -123,5 +125,91 @@ describe("P3.3 workspace shell controller", () => {
     const state = controller.state();
     assert.equal(state.status, "error");
     assert.deepEqual(state.accepted, acceptedAfterFirst);
+  });
+});
+
+
+describe("product Remove/Connect commands", () => {
+  it("cascades connected edge removal only after explicit Review approval", async () => {
+    const controller = createController();
+    const before = controller.state().accepted;
+    await controller.executeCommand({ type: "remove-component", componentId: "ledger" });
+    expectSameAccepted(controller, before);
+    assert.ok(!controller.state().candidate!.architecture.connections.some((edge) => edge.from === "ledger" || edge.to === "ledger"));
+    assert.ok(!controller.state().candidate!.architecture.components.some((node) => node.id === "ledger"));
+    await controller.acceptCandidate("Approve documented cascade.");
+    assert.equal(controller.state().proposal?.status, "approved");
+    assert.ok(!controller.state().accepted.architecture.components.some((node) => node.id === "ledger"));
+  });
+
+  it("blocks removing a missing component and exposes a Problem without changing IR", async () => {
+    const controller = createController();
+    const before = controller.state().accepted;
+    await controller.executeCommand({ type: "remove-component", componentId: "missing" });
+    expectSameAccepted(controller, before);
+    assert.equal(controller.state().status, "error");
+    assert.ok(controller.state().validation?.issues.some((issue) => issue.severity === "ERROR"));
+  });
+
+  it("keeps invalid endpoints in Problems, blocks approval, and preserves IR", async () => {
+    const controller = createController();
+    const before = controller.state().accepted;
+    await controller.executeCommand({ type: "connect-components", connection: { id: "invalid", from: "ledger", to: "missing", protocol: "REST" } });
+    const candidate = controller.state().candidate;
+    assert.equal(controller.state().validation?.valid, false);
+    await controller.acceptCandidate("Try invalid endpoints.");
+    expectSameAccepted(controller, before);
+    assert.equal(controller.state().candidate, candidate);
+    assert.equal(controller.state().proposal?.status, "draft");
+  });
+
+  it("commits a connection only after approval and retains both models on rejection", async () => {
+    const controller = createController();
+    const before = controller.state().accepted;
+    await controller.executeCommand({ type: "connect-components", connection: { id: "new-edge", from: "gateway", to: "events", protocol: "MESSAGE" } });
+    expectSameAccepted(controller, before);
+    const candidate = controller.state().candidate;
+    controller.rejectCandidate("Do not connect.");
+    assert.equal(controller.state().candidate, candidate);
+    expectSameAccepted(controller, before);
+    await controller.executeCommand({ type: "connect-components", connection: { id: "new-edge", from: "gateway", to: "events", protocol: "MESSAGE" } });
+    await controller.acceptCandidate("Connection is required.");
+    assert.ok(controller.state().accepted.architecture.connections.some((edge) => edge.id === "new-edge"));
+  });
+});
+
+function expectSameAccepted(controller: WorkspaceShellController, before: typeof pointsSystemFixture) {
+  assert.equal(controller.state().accepted, before);
+  assert.deepEqual(controller.state().accepted, before);
+}
+
+describe("minimal Inspector contract editing through the production gate", () => {
+  it("adds and removes an IR contract through Validator and Review", async () => {
+    const controller = createController();
+    const before = controller.state().accepted;
+    const contract = { name: "GetBalance", protocol: "REST" as const, outputs: [{ name: "Balance", fields: [{ name: "amount", type: "Integer" }] }] };
+    await controller.executeCommand({ type: "inspector-add-contract", componentId: "ledger", contract });
+    expectSameAccepted(controller, before);
+    await controller.acceptCandidate("Approve contract.");
+    assert.equal(controller.state().proposal?.status, "approved");
+    assert.deepEqual(controller.state().accepted.architecture.components.find((node) => node.id === "ledger")?.contracts, [contract]);
+    const afterAdd = controller.state().accepted;
+    await controller.executeCommand({ type: "inspector-remove-contract", componentId: "ledger", contractName: "GetBalance" });
+    expectSameAccepted(controller, afterAdd);
+    await controller.acceptCandidate("Remove obsolete contract.");
+    assert.deepEqual(controller.state().accepted.architecture.components.find((node) => node.id === "ledger")?.contracts, []);
+  });
+
+  it("blocks duplicate contract names and preserves accepted architecture", async () => {
+    const controller = createController();
+    const command = { type: "inspector-add-contract" as const, componentId: "ledger", contract: { name: "GetBalance", protocol: "REST" as const } };
+    await controller.executeCommand(command);
+    await controller.acceptCandidate("Approve first contract.");
+    const before = controller.state().accepted;
+    await controller.executeCommand(command);
+    assert.equal(controller.state().validation?.valid, false);
+    assert.ok(controller.state().validation?.issues.some((issue) => issue.id.startsWith("contract.integrity.")));
+    await controller.acceptCandidate("Try duplicate.");
+    expectSameAccepted(controller, before);
   });
 });

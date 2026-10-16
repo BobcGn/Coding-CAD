@@ -2,9 +2,9 @@
 
 ## Document Status / 文档状态
 
-状态：Phase 0–3 已验证并合并；P3-D1–P3-D3 已由用户于 2026-08-15 全部确认；Phase 3 Greenfield Workspace 已按 P3.0–P3.7 完成并通过完整 CI。Phase 4（Brownfield）为下一切片。
+状态：Phase 0–2 保留既有验收/合并记录；Phase 3 在当前分支满足定义的退出条件，尚未合并。P3-D1–P3-D3及本次澄清已确认；源码CI与dev/preview真实ELK验收通过。下一阶段为Phase 4，本次未启动。
 
-Status: Phases 0–3 are verified and merged. P3-D1 through P3-D3 were all confirmed by the user on 2026-08-15; the Phase 3 Greenfield Workspace is complete across P3.0–P3.7 and passes full CI. Phase 4 (Brownfield) is the next slice.
+Status: Phases 0–2 retain historical acceptance/merge records. Phase 3 satisfies defined exit criteria on the current unmerged branch. Decisions and clarifications are approved; source CI and real ELK in dev/preview pass. Phase 4 is next and has not started in this task.
 
 本文是 UI V1 从规划到 Terminal 的主执行顺序。`docs/ui-mvp-roadmap.md` 保留细粒度 capability checkpoints；本文定义跨模块 Phase 依赖、退出门槛和报告格式。发生冲突时，先遵守用户已批准的 Decision，再遵守本计划；未批准的架构冲突必须停止并询问用户。
 
@@ -49,7 +49,7 @@ The formal execution numbering remains Master Phase 0→7. The table combines th
 - `apps/web` is now a SvelteKit/Svelte 5 app with `@xyflow/svelte` isolated behind the approved app adapter; Palette, Inspector, and complete Greenfield workflows remain unimplemented. / `apps/web` 现为 SvelteKit/Svelte 5 app，`@xyflow/svelte` 被隔离在已批准的 app adapter 后；Palette、Inspector 与完整 Greenfield workflow 仍未实现。
 - Existing Architecture Agent, Validator, Review, Workspace, Blueprint, Adapter, Analyzer, and Implementation Validator packages already define the non-UI workflow boundaries. / 既有 Architecture Agent、Validator、Review、Workspace、Blueprint、Adapter、Analyzer 和 Implementation Validator package 已定义非 UI 工作流边界。
 - Canonical D-001, D-002, D-005, and D-010 were approved by the user on 2026-08-13; the remaining Decisions retain their later-phase gates. / 用户已于 2026-08-13 批准 canonical D-001、D-002、D-005、D-010；其余 Decision 保持后续 Phase 门禁。
-- Checkpoints 1–3 and Phases 1–2 passed their exit gates and are merged; Phase 3 planning is active. / Checkpoint 1–3 与 Phase 1–2 已通过退出门禁并合并；Phase 3 正在规划。
+- Checkpoints 1–3 and Phases 1–2 retain historical acceptance records; Phase 3 now has real-browser layout and full source CI evidence. / Checkpoint 1–3 与 Phase 1–2 保留历史验收记录；Phase 3 已取得真实浏览器布局与完整源码CI证据。
 
 ## Governance Difference: Decision Number Crosswalk / 治理差异：Decision 编号映射
 
@@ -340,6 +340,8 @@ Checkpoint 3 是 P2.1–P2.4 的 Canvas capability gate；P2.5 是 Master Phase 
 真实 IR 可稳定显示；headless command application 可在不破坏 accepted IR 的前提下生成、校验、接受或拒绝 candidate，并在接受后重新布局；adapter/command/component/Canvas smoke E2E 与架构不变量检查通过。完整 Greenfield 编辑 UI 仍未实现。 / Real IR displays reliably; the headless command application can generate, validate, accept, or reject a candidate without corrupting accepted IR and re-layout after acceptance; adapter, command, component, Canvas smoke E2E, and architecture-invariant checks pass. The complete Greenfield editing UI remains unimplemented.
 
 ## Phase 3 — Greenfield Architecture Workspace / Greenfield 架构工作区
+
+**2026-10-16 状态 / Status:** 阶段3定义的退出条件已满足：完整源码CI通过，dev/preview各21项禁止fallback的浏览器测试通过，默认布局与增量稳定性取得实测。P3-D1–P3-D3及本次审批/契约澄清已确认；未合并或实施后续阶段。 / Defined Phase 3 exit criteria are satisfied by source CI and real ELK quality/stability evidence in both 21-test browser suites. Decisions are approved; no merge or later-phase execution occurred. See [exit report](phase-3-exit-report.md).
 
 ### Goal / 目标
 
@@ -843,11 +845,8 @@ Every completed Phase must report the following and must not merely say “imple
 
 ## Current Phase Readiness / 当前 Phase 就绪度
 
-结论：**PHASES 0–2 VERIFIED AND MERGED — PHASE 3 PLANNED, AWAITING DECISIONS**。
+**PHASE 3 VERIFIED ON CURRENT BRANCH / 阶段3已在当前分支验证**。
 
-Conclusion: **PHASES 0–2 VERIFIED AND MERGED — PHASE 3 PLANNED, AWAITING DECISIONS**.
+P3-D1–P3-D3及本次审批/最小契约澄清均已确认；源码build/typecheck/test和完整本地CI通过。dev与production preview实际ELK成功，默认fixture无重叠且确定，编辑/Palette添加无关组件移动0px，符合既有48/144px预算；任何fallback导致浏览器门禁失败。 / Decisions are approved; source build/typecheck/test and complete local CI pass. Real ELK succeeds in dev and preview; default fixtures are deterministic and non-overlapping. Product edits/additions retain unrelated components within the approved movement budget. Any fallback fails the browser gate.
 
-- Phase 0 Decision Freeze：D-001–D-006 与 D-008–D-010 已批准；D-007 保留 Phase 5 Ghost-presentation 门禁。 / Phase 0 Decision Freeze: D-001 through D-006 and D-008 through D-010 are approved; D-007 retains its Phase 5 Ghost-presentation gate.
-- Phase 1 Semantic Layout Compiler：Checkpoint 1–2、FULL/INCREMENTAL、mental-map、movement-cost 与 Ghost core protocol 已通过 package tests、批准性能预算和完整 CI。 / Phase 1 Semantic Layout Compiler: Checkpoints 1–2, FULL/INCREMENTAL behavior, mental-map and movement-cost infrastructure, and the Ghost core protocol pass package tests, approved performance budgets, and the complete CI gate.
-- Phase 2 Svelte CAD Infrastructure：SvelteKit/Svelte 5 app、唯一 LayoutResult->Svelte Flow adapter、基础 Canvas、Standard + Semantic Zoom、LayoutState-only drag、Auto Layout reset、solver-only worker 与 headless Add/Remove/Connect command application 已实现并合并（PR #1）。 / Phase 2 Svelte CAD Infrastructure: the SvelteKit/Svelte 5 app, sole LayoutResult->Svelte Flow adapter, foundational Canvas, Standard + Semantic Zoom, LayoutState-only drag, Auto Layout reset, solver-only worker, and headless Add/Remove/Connect command application are implemented and merged (PR #1).
-- Phase 3 Greenfield Workspace：已按 P3.0–P3.7 全部完成并验证；P3-D1、P3-D2、P3-D3 已由用户于 2026-08-15 确认。Greenfield 支持 requirement -> candidate -> validate -> accept -> save/open 全流程。 / Phase 3 Greenfield Workspace: complete and verified across P3.0–P3.7; P3-D1, P3-D2, and P3-D3 were confirmed by the user on 2026-08-15. Greenfield supports the full requirement -> candidate -> validate -> accept -> save/open flow.
+完整结果、限制、提交及回退见[阶段3退出报告](phase-3-exit-report.md)。下一阶段顺序仍为Phase 4，本次未授权或启动其实施；没有合并或变基。 / See the report for evidence, limits and rollback. Phase 4 remains next; it was neither authorized nor implemented by this task. No merge or rebase occurred.

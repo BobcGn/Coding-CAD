@@ -1,0 +1,35 @@
+
+> @coding-cad/web@0.1.0 test:e2e /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/web
+> playwright test
+
+[WebServer] (node:48574) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:48598) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 18 tests using 1 worker
+
+(node:48614) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] 
+[WebServer] [404] GET /favicon.ico
+  ✓   1 [chrome] › e2e/canvas.spec.ts:9:1 › greenfield workspace generates, validates, and renders a navigable canvas (934ms)
+  ✓   2 [chrome] › e2e/canvas.spec.ts:30:1 › palette adds a component through the command application (663ms)
+  ✓   3 [chrome] › e2e/canvas.spec.ts:42:1 › save and open restore the accepted architecture and a usable view (660ms)
+  ✓   4 [chrome] › e2e/canvas.spec.ts:61:1 › inspector edits a component description via explicit command (738ms)
+  ✓   5 [chrome] › e2e/canvas.spec.ts:94:1 › validation problems navigate to the affected component (323ms)
+  ✓   6 [chrome] › e2e/canvas.spec.ts:106:1 › rejecting a candidate keeps both architectures and records rejection (342ms)
+  ✓   7 [chrome] › e2e/canvas.spec.ts:117:1 › empty requirement shows an error and blocks generation (201ms)
+  ✓   8 [chrome] › e2e/canvas.spec.ts:124:1 › duplicate palette component is rejected and accepted IR is preserved (482ms)
+  ✓   9 [chrome] › e2e/canvas.spec.ts:136:1 › workspace sidebar hosts project actions and a gear settings popover (335ms)
+  ✓  10 [chrome] › e2e/canvas.spec.ts:161:1 › full greenfield happy path: create, validate, accept, save, open (582ms)
+  ✓  11 [chrome] › e2e/editing.spec.ts:48:1 › successful removal cascades incident edges and survives Save/Open (987ms)
+  ✓  12 [chrome] › e2e/editing.spec.ts:64:1 › removal without cascade confirmation is blocked and facts are unchanged (707ms)
+  ✓  13 [chrome] › e2e/editing.spec.ts:74:1 › missing-component removal is blocked by existing command semantics (563ms)
+  ✓  14 [chrome] › e2e/editing.spec.ts:83:1 › successful connection waits for approval and survives Save/Open (957ms)
+  ✓  15 [chrome] › e2e/editing.spec.ts:97:1 › invalid connection appears in Problems and cannot enter accepted architecture (785ms)
+  ✓  16 [chrome] › e2e/editing.spec.ts:110:1 › Inspector contract add/remove use Review and preserve schema through Save/Open (1.4s)
+  ✓  17 [chrome] › e2e/editing.spec.ts:132:1 › Inspector type, capability and limitation controls use explicit review (1.8s)
+  ✓  18 [chrome] › e2e/editing.spec.ts:157:1 › save and open failures remain visible and a retry preserves architecture (870ms)
+
+  18 passed (15.1s)
