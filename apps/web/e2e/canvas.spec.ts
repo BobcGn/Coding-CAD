@@ -49,6 +49,7 @@ test("save and open restore the accepted architecture and a usable view", async 
   await page.goto("/");
   await page.getByRole("button", { name: "Generate Architecture" }).click();
   await expect(page.getByRole("heading", { name: "Review" })).toBeVisible();
+  await page.getByLabel("Review rationale").fill("Candidate meets requirements.");
   await page.getByRole("button", { name: "Accept" }).click();
   await expect(page.getByText(/Candidate accepted/i)).toBeVisible();
 
@@ -69,6 +70,7 @@ test("inspector edits a component description via explicit command", async ({ pa
   await expect(page.getByRole("heading", { name: "Review" })).toBeVisible();
 
   // Accept the candidate so edits apply to the accepted IR.
+  await page.getByLabel("Review rationale").fill("Candidate meets requirements.");
   await page.getByRole("button", { name: "Accept" }).click();
   await expect(page.getByText(/Candidate accepted/i)).toBeVisible();
 
@@ -106,14 +108,15 @@ test("validation problems navigate to the affected component", async ({ page }) 
   await expect(page.getByText("Selected: redis")).toBeVisible();
 });
 
-test("rejecting a candidate keeps the accepted architecture and clears review", async ({ page }) => {
+test("rejecting a candidate keeps both architectures and records rejection", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Generate Architecture" }).click();
   await expect(page.getByRole("heading", { name: "Review" })).toBeVisible();
 
+  await page.getByLabel("Review rationale").fill("Not aligned.");
   await page.getByRole("button", { name: "Reject" }).click();
   await expect(page.getByText(/rejected; accepted IR unchanged/i)).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Review" })).toBeHidden();
+  await expect(page.getByText("Proposal status: rejected. Reviewer: local-user.")).toBeVisible();
 });
 
 test("empty requirement shows an error and blocks generation", async ({ page }) => {
@@ -126,6 +129,7 @@ test("empty requirement shows an error and blocks generation", async ({ page }) 
 test("duplicate palette component is rejected and accepted IR is preserved", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Generate Architecture" }).click();
+  await page.getByLabel("Review rationale").fill("Candidate meets requirements.");
   await page.getByRole("button", { name: "Accept" }).click();
   await expect(page.getByText(/Candidate accepted/i)).toBeVisible();
 
@@ -170,6 +174,7 @@ test("full greenfield happy path: create, validate, accept, save, open", async (
   await expect(page.locator(".svelte-flow__node").filter({ hasText: "PointService" })).toBeVisible();
 
   // Edit: accept the candidate so the architecture is committed.
+  await page.getByLabel("Review rationale").fill("Candidate meets requirements.");
   await page.getByRole("button", { name: "Accept" }).click();
   await expect(page.getByText(/Candidate accepted/i)).toBeVisible();
 

@@ -33,8 +33,8 @@ export interface GreenfieldShellState {
 
 export interface GreenfieldShellActions {
   generateFromRequirement(requirement: string): Promise<void>;
-  acceptCandidate(): Promise<void>;
-  rejectCandidate(): Promise<void>;
+  acceptCandidate(rationale: string): Promise<void>;
+  rejectCandidate(rationale: string): void;
   updateLayoutState(next: LayoutState): void;
   selectNodeIds(nodeIds: readonly string[]): void;
   reset(): void;

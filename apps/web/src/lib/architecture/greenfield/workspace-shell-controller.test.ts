@@ -68,16 +68,16 @@ describe("P3.3 workspace shell controller", () => {
     assert.deepEqual(state.accepted, pointsSystemFixture);
   });
 
-  it("rejecting a candidate clears it and keeps accepted IR", async () => {
+  it("rejecting a candidate records rejection and preserves both architectures", async () => {
     const controller = createController();
     await controller.generateFromRequirement(REQUIREMENT);
     const acceptedBefore = structuredClone(pointsSystemFixture);
 
-    controller.rejectCandidate();
+    controller.rejectCandidate("Not aligned.");
     const state = controller.state();
 
-    assert.equal(state.candidate, undefined);
-    assert.equal(state.proposal, undefined);
+    assert.ok(state.candidate);
+    assert.equal(state.proposal?.status, "rejected");
     assert.deepEqual(state.accepted, acceptedBefore);
   });
 

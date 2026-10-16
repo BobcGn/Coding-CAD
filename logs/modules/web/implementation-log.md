@@ -243,3 +243,15 @@ Pre-PR UI closeout: added a left workspace sidebar aggregating project managemen
 验证：web typecheck 0/0；unit 11 files/38 tests（新增 7 个 ui-settings 测试）；integration 3 files/9 tests；Playwright E2E 10 passed（新增侧边栏+齿轮弹窗设置测试）；完整 pnpm ci:verify 通过（unit 28/28、integration 18/18、E2E 17/17、build 15/15）。
 
 Validation: web typecheck 0/0; unit 11 files/38 tests (7 new ui-settings tests); integration 3 files/9 tests; ten Playwright E2E pass (new sidebar + gear settings dialog test); the complete pnpm ci:verify passes (unit 28/28, integration 18/18, E2E 17/17, build 15/15).
+
+## 2026-10-16 - Step 1 Review Gate / 步骤1审批门禁
+
+动机：修复产品 Accept 绕过 Architecture Review 的空实现。用户确认 local-user + 必填理由；Reject 记录拒绝且保留候选。产品复用 submitProposal/recordApproval/getApprovedArchitecture；新增真实 controller 路径测试，覆盖批准、无效候选、拒绝、重复接受与审批异常。
+
+Motivation: replace the empty product Accept gate with existing Architecture Review APIs. The user approved local-user with required rationale and retained rejected candidates. Production-controller tests cover approval, invalid candidates, rejection, duplicate acceptance, and approval exceptions.
+
+验证结果在本节后续补充；不使用已有 dist 作为源码构建证据。 / Validation results follow below; existing dist is not used as source-build evidence.
+
+步骤1验证：Web 及依赖源码 build 通过；Web typecheck 为 0 errors / 0 warnings；Web unit 为 12 files / 43 tests；批准/拒绝/保存打开三个 Playwright 用例通过。构建有 chunk size 警告；未作为失败处理。完整阶段验收将在步骤4重跑。
+
+Step 1 validation: source build of Web and dependencies passed; Web typecheck had zero errors/warnings; Web unit passed 12 files / 43 tests; three approval/rejection/save-open Playwright cases passed. Chunk-size warnings are recorded, not treated as failure. Full phase validation will rerun in Step 4.

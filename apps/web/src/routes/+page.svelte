@@ -30,6 +30,7 @@
   let selectedNodeIds = $state<string[]>([]);
   let paletteItems = $state<readonly PaletteItem[]>(projectPalette().items);
   let inspector = $state<InspectorViewModel>();
+  let reviewRationale = $state("");
   let editDescription = $state("");
   let editCapability = $state("");
   let noticeMessage = $state("");
@@ -120,7 +121,7 @@
     busy = true;
     errorMessage = "";
     try {
-      await controller.acceptCandidate();
+      await controller.acceptCandidate(reviewRationale);
     } catch (error) {
       errorMessage = error instanceof Error ? error.message : "Accept failed.";
     } finally {
@@ -131,7 +132,7 @@
 
   function handleReject(): void {
     if (controller === undefined || busy) return;
-    controller.rejectCandidate();
+    controller.rejectCandidate(reviewRationale);
     syncFromController();
   }
 
@@ -443,12 +444,14 @@
         {#if shell.candidate}
           <div class="review">
             <h2>Review</h2>
-            <p class="muted">A candidate ArchitectureProject is awaiting your decision.</p>
+            <p class="muted">Proposal status: {shell.proposal?.status}. Reviewer: local-user.</p>
+            <label for="review-rationale">Review rationale</label>
+            <textarea id="review-rationale" bind:value={reviewRationale} rows="2" disabled={busy}></textarea>
             <div class="actions">
-              <button type="button" onclick={handleAccept} disabled={busy || shell.validation?.valid === false}>
+              <button type="button" onclick={handleAccept} disabled={busy || shell.validation?.valid !== true || !reviewRationale.trim() || shell.proposal?.status === "rejected"}>
                 Accept
               </button>
-              <button type="button" onclick={handleReject} disabled={busy}>Reject</button>
+              <button type="button" onclick={handleReject} disabled={busy || !reviewRationale.trim() || shell.proposal?.status === "rejected"}>Reject</button>
             </div>
             {#if shell.validation?.valid === false}
               <p class="warn">Approval is blocked while the candidate has validation errors.</p>

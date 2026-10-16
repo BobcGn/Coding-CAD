@@ -6,7 +6,7 @@ import {
   type LayoutResult,
   type LayoutState
 } from "@coding-cad/architecture-layout";
-import type { Proposal } from "@coding-cad/architecture-review";
+
 import { BrowserWorkerLayoutEngine } from "$lib/layout/worker/browser-worker-layout-engine.js";
 import { resetToGeneratedLayout } from "$lib/architecture/state/workspace-view-state.js";
 import { CandidateFlow } from "./candidate-flow.js";
@@ -39,8 +39,8 @@ export interface ShellController {
   projection(): ArchitectureLayoutProjection | undefined;
   layout(): LayoutResult | undefined;
   generateFromRequirement(requirement: string, signal?: AbortSignal): Promise<void>;
-  acceptCandidate(): Promise<void>;
-  rejectCandidate(): void;
+  acceptCandidate(rationale: string): Promise<void>;
+  rejectCandidate(rationale: string): void;
   executeCommand(command: ArchitectureCommand): Promise<void>;
   updateLayoutState(next: LayoutState): void;
   selectNodeIds(nodeIds: readonly string[]): void;
@@ -111,42 +111,48 @@ export class WorkspaceShellController implements ShellController {
     this.shell = { ...this.shell, status: "ready", message: "" };
   }
 
-  async acceptCandidate(): Promise<void> {
-    if (this.shell.candidate === undefined || this.shell.proposal === undefined) return;
-    const proposal = this.shell.proposal;
-    if (this.shell.validation?.valid === false) {
-      this.shell = {
-        ...this.shell,
-        status: "error",
-        message: "Candidate has validation errors; approval is blocked."
-      };
+  async acceptCandidate(rationale: string): Promise<void> {
+    const { candidate, proposal, validation } = this.shell;
+    if (candidate === undefined || proposal === undefined || proposal.status === "rejected") return;
+    if (validation?.valid !== true) {
+      this.shell = { ...this.shell, status: "error", message: "Candidate has validation errors; approval is blocked." };
       return;
     }
-    // Minimal Review gate: submit and approve with a single reviewer.
-    this.flowSubmitAndApprove(proposal);
-    this.shell = {
-      ...this.shell,
-      accepted: this.shell.candidate,
-      candidate: undefined,
-      validation: undefined,
-      proposal: undefined,
-      status: "ready",
-      message: "Candidate accepted."
-    };
-    await this.layoutCandidate(this.shell.accepted);
-    this.shell = { ...this.shell, status: "ready", message: "Candidate accepted." };
+    try {
+      const result = this.flow.decide(proposal.id, { reviewer: "local-user", decision: "approve", rationale });
+      if (result.accepted === undefined || result.proposal.status !== "approved") {
+        this.shell = { ...this.shell, proposal: result.proposal, status: "ready", message: "Approval is still pending." };
+        return;
+      }
+      this.shell = {
+        ...this.shell, accepted: result.accepted, candidate: undefined,
+        proposal: result.proposal, status: "layout", message: ""
+      };
+      await this.layoutCandidate(result.accepted);
+      this.shell = { ...this.shell, status: "ready", message: "Candidate accepted." };
+    } catch (error) {
+      this.shell = {
+        ...this.shell, proposal: this.flow.getProposal(proposal.id), status: "error",
+        message: error instanceof Error ? error.message : "Approval failed."
+      };
+    }
   }
 
-  rejectCandidate(): void {
-    if (this.shell.candidate === undefined) return;
-    this.shell = {
-      ...this.shell,
-      candidate: undefined,
-      validation: undefined,
-      proposal: undefined,
-      status: "ready",
-      message: "Candidate rejected; accepted IR unchanged."
-    };
+  rejectCandidate(rationale: string): void {
+    const { candidate, proposal } = this.shell;
+    if (candidate === undefined || proposal === undefined || proposal.status === "rejected") return;
+    try {
+      const result = this.flow.decide(proposal.id, { reviewer: "local-user", decision: "reject", rationale });
+      this.shell = {
+        ...this.shell, proposal: result.proposal, status: "ready",
+        message: "Candidate rejected; accepted IR unchanged."
+      };
+    } catch (error) {
+      this.shell = {
+        ...this.shell, proposal: this.flow.getProposal(proposal.id), status: "error",
+        message: error instanceof Error ? error.message : "Rejection failed."
+      };
+    }
   }
 
   async executeCommand(command: ArchitectureCommand): Promise<void> {
@@ -254,12 +260,6 @@ export class WorkspaceShellController implements ShellController {
       status: "ready",
       message: `Project opened: ${response.project.name}.`
     };
-  }
-
-  private flowSubmitAndApprove(proposal: Proposal): void {
-    // CandidateFlow already created the proposal; the controller's review
-    // gate is the minimal accept path. The proposal state machine in
-    // @coding-cad/architecture-review is exercised by integration tests.
   }
 
   private async layoutCandidate(architecture: ArchitectureProject, signal?: AbortSignal): Promise<void> {
