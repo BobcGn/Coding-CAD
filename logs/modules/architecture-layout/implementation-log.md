@@ -93,3 +93,13 @@ Implemented proposal-scoped Ghost node/edge identity, added projections relative
 ## 2026-10-16 - ELK Step 1 Diagnosis / ELK步骤1诊断
 
 目标：只关闭阶段3浏览器ELK阻塞，保持ELK/D-010/public API。dev与production均复现；隔离VM证明内嵌worker初始化错误优先级导致缺失CJS导出并覆盖onmessage。内存CJS-first实验成功。详细证据及候选方案见 `logs/validation/p3-closeout/elk-browser/root-cause.md`；本提交不修改产品实现。 / Diagnose only the Phase 3 browser blocker. Both modes reproduce; the VM proves missing CJS export and message-handler overwrite, while a CJS-first in-memory experiment succeeds. This commit changes no product implementation.
+
+## 2026-10-16 - ELK Step 2 Repair / ELK步骤2最小修复
+
+选择对固定elkjs 0.12.0内嵌worker的单一初始化guard做pnpm补丁：CommonJS模块优先导出，独立worker仍auto-attach。锁文件只新增补丁hash，未改solver版本、D-010责任分配或package公开API。新增隔离Worker-global回归证明原onmessage保留且实际路由生成。 / Applied a pinned one-guard pnpm patch: export CommonJS first, retain standalone worker auto-attachment. Only patch metadata changed; solver/version, D-010 and public APIs stay unchanged. Regression verifies handler ownership and real routes.
+
+源码integration与性能预算通过：100/150 p95 54.30ms、500/800 p95 513.86ms，worker gzip471875bytes。新增测试最初变量重名为测试编译错误，修正后通过。dev/preview重建后均无fallback/pageerror；进一步记录实际Worker结果，而非只看警告消失。 / Integration and existing performance budgets passed. An initial duplicate test variable was corrected. Both modes rebuilt without fallback/page errors; actual Worker results are also captured.
+
+根因与放弃方案见root-cause.md；不采用更换solver、新增物理worker、全compiler搬迁或只调default层级等方案。 / See root-cause.md for alternatives; solver replacement, another physical worker, compiler relocation and extra default normalization were not used.
+
+步骤2最终双模式证据：dev与preview的真实Worker均返回status=success、diagnostics=[]、3条已路由边，均无fallback/pageerror。见repaired-modes.json。 / Final Step 2 evidence: actual workers in dev and preview both returned success, empty diagnostics and three routed edges, with no fallback/page error.

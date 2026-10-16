@@ -18,13 +18,25 @@ const browser = await chromium.launch({ channel: "chrome", headless: true });
 try {
   const page = await browser.newPage({ viewport: { width: 1600, height: 1000 } });
   const errors = [];
+  await page.addInitScript(() => {
+    window.__elkProbeResults = [];
+    const Original = window.Worker;
+    window.Worker = class extends Original {
+      constructor(...args) {
+        super(...args);
+        this.addEventListener("message", ({ data }) => {
+          if (data?.type === "result") window.__elkProbeResults.push(data.result);
+        });
+      }
+    };
+  });
   page.on("pageerror", error => errors.push(error.message));
   await page.goto("http://127.0.0.1:4173/");
   await page.getByRole("button", { name: "Generate Architecture" }).click();
   await page.getByRole("heading", { name: "Problems" }).waitFor({ timeout: 15000 });
   const warnings = await page.getByRole("status").filter({ hasText: "Layout fallback:" }).allTextContents();
   await page.screenshot({ path: process.argv[1], fullPage: true });
-  console.log(JSON.stringify({ mode: process.argv[2], warnings, pageErrors: errors, canvasNodes: await page.locator(".svelte-flow__node").count() }, null, 2));
+  console.log(JSON.stringify({ mode: process.argv[2], warnings, pageErrors: errors, canvasNodes: await page.locator(".svelte-flow__node").count(), layouts: await page.evaluate(() => window.__elkProbeResults.map(result => ({ status: result.status, diagnostics: result.diagnostics, routedEdges: result.edges.filter(edge => edge.sections.length > 0).length }))) }, null, 2));
 } finally { await browser.close(); }
 """
 observations = []

@@ -69,3 +69,27 @@ assert.equal(runtimeResponses[0]?.type, "result");
 assert.equal(runtimeResponses[0]?.requestId, "runtime-1");
 
 console.log("architecture-layout ELK engine integration tests passed");
+
+// The same installed bundle must remain a module inside an existing Worker.
+// A standalone-worker auto-attach must not steal the host's message handler.
+const { readFile } = await import("node:fs/promises");
+const { createContext, runInContext } = await import("node:vm");
+const source = await readFile(new URL("../../../node_modules/elkjs/lib/elk.bundled.js", import.meta.url), "utf8");
+const hostHandler = () => undefined;
+const moduleRecord = { exports: {} };
+const context = createContext({
+  module: moduleRecord, exports: moduleRecord.exports, console,
+  setTimeout, clearTimeout, postMessage: () => undefined, onmessage: hostHandler
+});
+runInContext("self=globalThis", context);
+runInContext(source, context);
+assert.equal(context.onmessage, hostHandler, "ELK must not replace the existing worker handler");
+const embeddedWorkerResult = await runInContext(`new module.exports().layout({
+  id: "root", layoutOptions: { "elk.algorithm": "layered" },
+  children: [{ id: "a", width: 100, height: 60 }, { id: "b", width: 100, height: 60 }],
+  edges: [{ id: "ab", sources: ["a"], targets: ["b"] }]
+})`, context) as { children: { x: number; y: number }[]; edges: { sections?: unknown[] }[] };
+assert.equal(embeddedWorkerResult.children.length, 2);
+assert.ok(embeddedWorkerResult.children.every((node) => Number.isFinite(node.x) && Number.isFinite(node.y)));
+assert.equal(embeddedWorkerResult.edges[0]?.sections?.length, 1, "the solver must produce a real route");
+console.log("ELK embedded worker CommonJS regression passed");

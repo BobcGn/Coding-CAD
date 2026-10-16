@@ -1,3 +1,6 @@
 packages:
   - "apps/*"
   - "packages/*"
+
+patchedDependencies:
+  elkjs@0.12.0: packages/architecture-layout/patches/elkjs@0.12.0.patch
