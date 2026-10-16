@@ -17,6 +17,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "pnpm test:unit",
     "test:unit": "tsc -p tsconfig.json && node dist/analyzer.test.js",
+    "benchmark": "tsc -p tsconfig.json && node dist/benchmark.js",
     "clean": "rm -rf dist"
   },
   "dependencies": {

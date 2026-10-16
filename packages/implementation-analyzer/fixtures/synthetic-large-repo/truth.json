@@ -1,0 +1,1351 @@
+{
+  "type": "synthetic-monorepo",
+  "note": "SYNTHETIC FIXTURE - NOT A REAL REPOSITORY",
+  "packageCount": 30,
+  "moduleCount": 120,
+  "connectionCount": 147,
+  "packages": [
+    "@synthetic/pkg-00",
+    "@synthetic/pkg-01",
+    "@synthetic/pkg-02",
+    "@synthetic/pkg-03",
+    "@synthetic/pkg-04",
+    "@synthetic/pkg-05",
+    "@synthetic/pkg-06",
+    "@synthetic/pkg-07",
+    "@synthetic/pkg-08",
+    "@synthetic/pkg-09",
+    "@synthetic/pkg-10",
+    "@synthetic/pkg-11",
+    "@synthetic/pkg-12",
+    "@synthetic/pkg-13",
+    "@synthetic/pkg-14",
+    "@synthetic/pkg-15",
+    "@synthetic/pkg-16",
+    "@synthetic/pkg-17",
+    "@synthetic/pkg-18",
+    "@synthetic/pkg-19",
+    "@synthetic/pkg-20",
+    "@synthetic/pkg-21",
+    "@synthetic/pkg-22",
+    "@synthetic/pkg-23",
+    "@synthetic/pkg-24",
+    "@synthetic/pkg-25",
+    "@synthetic/pkg-26",
+    "@synthetic/pkg-27",
+    "@synthetic/pkg-28",
+    "@synthetic/pkg-29"
+  ],
+  "modules": [
+    {
+      "id": "pkg-00-alpha-service",
+      "name": "pkg00_alphaService",
+      "package": "@synthetic/pkg-00",
+      "path": "packages/pkg-00/src"
+    },
+    {
+      "id": "pkg-00-beta-service",
+      "name": "pkg00_betaService",
+      "package": "@synthetic/pkg-00",
+      "path": "packages/pkg-00/src"
+    },
+    {
+      "id": "pkg-00-gamma-service",
+      "name": "pkg00_gammaService",
+      "package": "@synthetic/pkg-00",
+      "path": "packages/pkg-00/src"
+    },
+    {
+      "id": "pkg-00-delta-service",
+      "name": "pkg00_deltaService",
+      "package": "@synthetic/pkg-00",
+      "path": "packages/pkg-00/src"
+    },
+    {
+      "id": "pkg-01-alpha-service",
+      "name": "pkg01_alphaService",
+      "package": "@synthetic/pkg-01",
+      "path": "packages/pkg-01/src"
+    },
+    {
+      "id": "pkg-01-beta-service",
+      "name": "pkg01_betaService",
+      "package": "@synthetic/pkg-01",
+      "path": "packages/pkg-01/src"
+    },
+    {
+      "id": "pkg-01-gamma-service",
+      "name": "pkg01_gammaService",
+      "package": "@synthetic/pkg-01",
+      "path": "packages/pkg-01/src"
+    },
+    {
+      "id": "pkg-01-delta-service",
+      "name": "pkg01_deltaService",
+      "package": "@synthetic/pkg-01",
+      "path": "packages/pkg-01/src"
+    },
+    {
+      "id": "pkg-02-alpha-service",
+      "name": "pkg02_alphaService",
+      "package": "@synthetic/pkg-02",
+      "path": "packages/pkg-02/src"
+    },
+    {
+      "id": "pkg-02-beta-service",
+      "name": "pkg02_betaService",
+      "package": "@synthetic/pkg-02",
+      "path": "packages/pkg-02/src"
+    },
+    {
+      "id": "pkg-02-gamma-service",
+      "name": "pkg02_gammaService",
+      "package": "@synthetic/pkg-02",
+      "path": "packages/pkg-02/src"
+    },
+    {
+      "id": "pkg-02-delta-service",
+      "name": "pkg02_deltaService",
+      "package": "@synthetic/pkg-02",
+      "path": "packages/pkg-02/src"
+    },
+    {
+      "id": "pkg-03-alpha-service",
+      "name": "pkg03_alphaService",
+      "package": "@synthetic/pkg-03",
+      "path": "packages/pkg-03/src"
+    },
+    {
+      "id": "pkg-03-beta-service",
+      "name": "pkg03_betaService",
+      "package": "@synthetic/pkg-03",
+      "path": "packages/pkg-03/src"
+    },
+    {
+      "id": "pkg-03-gamma-service",
+      "name": "pkg03_gammaService",
+      "package": "@synthetic/pkg-03",
+      "path": "packages/pkg-03/src"
+    },
+    {
+      "id": "pkg-03-delta-service",
+      "name": "pkg03_deltaService",
+      "package": "@synthetic/pkg-03",
+      "path": "packages/pkg-03/src"
+    },
+    {
+      "id": "pkg-04-alpha-service",
+      "name": "pkg04_alphaService",
+      "package": "@synthetic/pkg-04",
+      "path": "packages/pkg-04/src"
+    },
+    {
+      "id": "pkg-04-beta-service",
+      "name": "pkg04_betaService",
+      "package": "@synthetic/pkg-04",
+      "path": "packages/pkg-04/src"
+    },
+    {
+      "id": "pkg-04-gamma-service",
+      "name": "pkg04_gammaService",
+      "package": "@synthetic/pkg-04",
+      "path": "packages/pkg-04/src"
+    },
+    {
+      "id": "pkg-04-delta-service",
+      "name": "pkg04_deltaService",
+      "package": "@synthetic/pkg-04",
+      "path": "packages/pkg-04/src"
+    },
+    {
+      "id": "pkg-05-alpha-service",
+      "name": "pkg05_alphaService",
+      "package": "@synthetic/pkg-05",
+      "path": "packages/pkg-05/src"
+    },
+    {
+      "id": "pkg-05-beta-service",
+      "name": "pkg05_betaService",
+      "package": "@synthetic/pkg-05",
+      "path": "packages/pkg-05/src"
+    },
+    {
+      "id": "pkg-05-gamma-service",
+      "name": "pkg05_gammaService",
+      "package": "@synthetic/pkg-05",
+      "path": "packages/pkg-05/src"
+    },
+    {
+      "id": "pkg-05-delta-service",
+      "name": "pkg05_deltaService",
+      "package": "@synthetic/pkg-05",
+      "path": "packages/pkg-05/src"
+    },
+    {
+      "id": "pkg-06-alpha-service",
+      "name": "pkg06_alphaService",
+      "package": "@synthetic/pkg-06",
+      "path": "packages/pkg-06/src"
+    },
+    {
+      "id": "pkg-06-beta-service",
+      "name": "pkg06_betaService",
+      "package": "@synthetic/pkg-06",
+      "path": "packages/pkg-06/src"
+    },
+    {
+      "id": "pkg-06-gamma-service",
+      "name": "pkg06_gammaService",
+      "package": "@synthetic/pkg-06",
+      "path": "packages/pkg-06/src"
+    },
+    {
+      "id": "pkg-06-delta-service",
+      "name": "pkg06_deltaService",
+      "package": "@synthetic/pkg-06",
+      "path": "packages/pkg-06/src"
+    },
+    {
+      "id": "pkg-07-alpha-service",
+      "name": "pkg07_alphaService",
+      "package": "@synthetic/pkg-07",
+      "path": "packages/pkg-07/src"
+    },
+    {
+      "id": "pkg-07-beta-service",
+      "name": "pkg07_betaService",
+      "package": "@synthetic/pkg-07",
+      "path": "packages/pkg-07/src"
+    },
+    {
+      "id": "pkg-07-gamma-service",
+      "name": "pkg07_gammaService",
+      "package": "@synthetic/pkg-07",
+      "path": "packages/pkg-07/src"
+    },
+    {
+      "id": "pkg-07-delta-service",
+      "name": "pkg07_deltaService",
+      "package": "@synthetic/pkg-07",
+      "path": "packages/pkg-07/src"
+    },
+    {
+      "id": "pkg-08-alpha-service",
+      "name": "pkg08_alphaService",
+      "package": "@synthetic/pkg-08",
+      "path": "packages/pkg-08/src"
+    },
+    {
+      "id": "pkg-08-beta-service",
+      "name": "pkg08_betaService",
+      "package": "@synthetic/pkg-08",
+      "path": "packages/pkg-08/src"
+    },
+    {
+      "id": "pkg-08-gamma-service",
+      "name": "pkg08_gammaService",
+      "package": "@synthetic/pkg-08",
+      "path": "packages/pkg-08/src"
+    },
+    {
+      "id": "pkg-08-delta-service",
+      "name": "pkg08_deltaService",
+      "package": "@synthetic/pkg-08",
+      "path": "packages/pkg-08/src"
+    },
+    {
+      "id": "pkg-09-alpha-service",
+      "name": "pkg09_alphaService",
+      "package": "@synthetic/pkg-09",
+      "path": "packages/pkg-09/src"
+    },
+    {
+      "id": "pkg-09-beta-service",
+      "name": "pkg09_betaService",
+      "package": "@synthetic/pkg-09",
+      "path": "packages/pkg-09/src"
+    },
+    {
+      "id": "pkg-09-gamma-service",
+      "name": "pkg09_gammaService",
+      "package": "@synthetic/pkg-09",
+      "path": "packages/pkg-09/src"
+    },
+    {
+      "id": "pkg-09-delta-service",
+      "name": "pkg09_deltaService",
+      "package": "@synthetic/pkg-09",
+      "path": "packages/pkg-09/src"
+    },
+    {
+      "id": "pkg-10-alpha-service",
+      "name": "pkg10_alphaService",
+      "package": "@synthetic/pkg-10",
+      "path": "packages/pkg-10/src"
+    },
+    {
+      "id": "pkg-10-beta-service",
+      "name": "pkg10_betaService",
+      "package": "@synthetic/pkg-10",
+      "path": "packages/pkg-10/src"
+    },
+    {
+      "id": "pkg-10-gamma-service",
+      "name": "pkg10_gammaService",
+      "package": "@synthetic/pkg-10",
+      "path": "packages/pkg-10/src"
+    },
+    {
+      "id": "pkg-10-delta-service",
+      "name": "pkg10_deltaService",
+      "package": "@synthetic/pkg-10",
+      "path": "packages/pkg-10/src"
+    },
+    {
+      "id": "pkg-11-alpha-service",
+      "name": "pkg11_alphaService",
+      "package": "@synthetic/pkg-11",
+      "path": "packages/pkg-11/src"
+    },
+    {
+      "id": "pkg-11-beta-service",
+      "name": "pkg11_betaService",
+      "package": "@synthetic/pkg-11",
+      "path": "packages/pkg-11/src"
+    },
+    {
+      "id": "pkg-11-gamma-service",
+      "name": "pkg11_gammaService",
+      "package": "@synthetic/pkg-11",
+      "path": "packages/pkg-11/src"
+    },
+    {
+      "id": "pkg-11-delta-service",
+      "name": "pkg11_deltaService",
+      "package": "@synthetic/pkg-11",
+      "path": "packages/pkg-11/src"
+    },
+    {
+      "id": "pkg-12-alpha-service",
+      "name": "pkg12_alphaService",
+      "package": "@synthetic/pkg-12",
+      "path": "packages/pkg-12/src"
+    },
+    {
+      "id": "pkg-12-beta-service",
+      "name": "pkg12_betaService",
+      "package": "@synthetic/pkg-12",
+      "path": "packages/pkg-12/src"
+    },
+    {
+      "id": "pkg-12-gamma-service",
+      "name": "pkg12_gammaService",
+      "package": "@synthetic/pkg-12",
+      "path": "packages/pkg-12/src"
+    },
+    {
+      "id": "pkg-12-delta-service",
+      "name": "pkg12_deltaService",
+      "package": "@synthetic/pkg-12",
+      "path": "packages/pkg-12/src"
+    },
+    {
+      "id": "pkg-13-alpha-service",
+      "name": "pkg13_alphaService",
+      "package": "@synthetic/pkg-13",
+      "path": "packages/pkg-13/src"
+    },
+    {
+      "id": "pkg-13-beta-service",
+      "name": "pkg13_betaService",
+      "package": "@synthetic/pkg-13",
+      "path": "packages/pkg-13/src"
+    },
+    {
+      "id": "pkg-13-gamma-service",
+      "name": "pkg13_gammaService",
+      "package": "@synthetic/pkg-13",
+      "path": "packages/pkg-13/src"
+    },
+    {
+      "id": "pkg-13-delta-service",
+      "name": "pkg13_deltaService",
+      "package": "@synthetic/pkg-13",
+      "path": "packages/pkg-13/src"
+    },
+    {
+      "id": "pkg-14-alpha-service",
+      "name": "pkg14_alphaService",
+      "package": "@synthetic/pkg-14",
+      "path": "packages/pkg-14/src"
+    },
+    {
+      "id": "pkg-14-beta-service",
+      "name": "pkg14_betaService",
+      "package": "@synthetic/pkg-14",
+      "path": "packages/pkg-14/src"
+    },
+    {
+      "id": "pkg-14-gamma-service",
+      "name": "pkg14_gammaService",
+      "package": "@synthetic/pkg-14",
+      "path": "packages/pkg-14/src"
+    },
+    {
+      "id": "pkg-14-delta-service",
+      "name": "pkg14_deltaService",
+      "package": "@synthetic/pkg-14",
+      "path": "packages/pkg-14/src"
+    },
+    {
+      "id": "pkg-15-alpha-service",
+      "name": "pkg15_alphaService",
+      "package": "@synthetic/pkg-15",
+      "path": "packages/pkg-15/src"
+    },
+    {
+      "id": "pkg-15-beta-service",
+      "name": "pkg15_betaService",
+      "package": "@synthetic/pkg-15",
+      "path": "packages/pkg-15/src"
+    },
+    {
+      "id": "pkg-15-gamma-service",
+      "name": "pkg15_gammaService",
+      "package": "@synthetic/pkg-15",
+      "path": "packages/pkg-15/src"
+    },
+    {
+      "id": "pkg-15-delta-service",
+      "name": "pkg15_deltaService",
+      "package": "@synthetic/pkg-15",
+      "path": "packages/pkg-15/src"
+    },
+    {
+      "id": "pkg-16-alpha-service",
+      "name": "pkg16_alphaService",
+      "package": "@synthetic/pkg-16",
+      "path": "packages/pkg-16/src"
+    },
+    {
+      "id": "pkg-16-beta-service",
+      "name": "pkg16_betaService",
+      "package": "@synthetic/pkg-16",
+      "path": "packages/pkg-16/src"
+    },
+    {
+      "id": "pkg-16-gamma-service",
+      "name": "pkg16_gammaService",
+      "package": "@synthetic/pkg-16",
+      "path": "packages/pkg-16/src"
+    },
+    {
+      "id": "pkg-16-delta-service",
+      "name": "pkg16_deltaService",
+      "package": "@synthetic/pkg-16",
+      "path": "packages/pkg-16/src"
+    },
+    {
+      "id": "pkg-17-alpha-service",
+      "name": "pkg17_alphaService",
+      "package": "@synthetic/pkg-17",
+      "path": "packages/pkg-17/src"
+    },
+    {
+      "id": "pkg-17-beta-service",
+      "name": "pkg17_betaService",
+      "package": "@synthetic/pkg-17",
+      "path": "packages/pkg-17/src"
+    },
+    {
+      "id": "pkg-17-gamma-service",
+      "name": "pkg17_gammaService",
+      "package": "@synthetic/pkg-17",
+      "path": "packages/pkg-17/src"
+    },
+    {
+      "id": "pkg-17-delta-service",
+      "name": "pkg17_deltaService",
+      "package": "@synthetic/pkg-17",
+      "path": "packages/pkg-17/src"
+    },
+    {
+      "id": "pkg-18-alpha-service",
+      "name": "pkg18_alphaService",
+      "package": "@synthetic/pkg-18",
+      "path": "packages/pkg-18/src"
+    },
+    {
+      "id": "pkg-18-beta-service",
+      "name": "pkg18_betaService",
+      "package": "@synthetic/pkg-18",
+      "path": "packages/pkg-18/src"
+    },
+    {
+      "id": "pkg-18-gamma-service",
+      "name": "pkg18_gammaService",
+      "package": "@synthetic/pkg-18",
+      "path": "packages/pkg-18/src"
+    },
+    {
+      "id": "pkg-18-delta-service",
+      "name": "pkg18_deltaService",
+      "package": "@synthetic/pkg-18",
+      "path": "packages/pkg-18/src"
+    },
+    {
+      "id": "pkg-19-alpha-service",
+      "name": "pkg19_alphaService",
+      "package": "@synthetic/pkg-19",
+      "path": "packages/pkg-19/src"
+    },
+    {
+      "id": "pkg-19-beta-service",
+      "name": "pkg19_betaService",
+      "package": "@synthetic/pkg-19",
+      "path": "packages/pkg-19/src"
+    },
+    {
+      "id": "pkg-19-gamma-service",
+      "name": "pkg19_gammaService",
+      "package": "@synthetic/pkg-19",
+      "path": "packages/pkg-19/src"
+    },
+    {
+      "id": "pkg-19-delta-service",
+      "name": "pkg19_deltaService",
+      "package": "@synthetic/pkg-19",
+      "path": "packages/pkg-19/src"
+    },
+    {
+      "id": "pkg-20-alpha-service",
+      "name": "pkg20_alphaService",
+      "package": "@synthetic/pkg-20",
+      "path": "packages/pkg-20/src"
+    },
+    {
+      "id": "pkg-20-beta-service",
+      "name": "pkg20_betaService",
+      "package": "@synthetic/pkg-20",
+      "path": "packages/pkg-20/src"
+    },
+    {
+      "id": "pkg-20-gamma-service",
+      "name": "pkg20_gammaService",
+      "package": "@synthetic/pkg-20",
+      "path": "packages/pkg-20/src"
+    },
+    {
+      "id": "pkg-20-delta-service",
+      "name": "pkg20_deltaService",
+      "package": "@synthetic/pkg-20",
+      "path": "packages/pkg-20/src"
+    },
+    {
+      "id": "pkg-21-alpha-service",
+      "name": "pkg21_alphaService",
+      "package": "@synthetic/pkg-21",
+      "path": "packages/pkg-21/src"
+    },
+    {
+      "id": "pkg-21-beta-service",
+      "name": "pkg21_betaService",
+      "package": "@synthetic/pkg-21",
+      "path": "packages/pkg-21/src"
+    },
+    {
+      "id": "pkg-21-gamma-service",
+      "name": "pkg21_gammaService",
+      "package": "@synthetic/pkg-21",
+      "path": "packages/pkg-21/src"
+    },
+    {
+      "id": "pkg-21-delta-service",
+      "name": "pkg21_deltaService",
+      "package": "@synthetic/pkg-21",
+      "path": "packages/pkg-21/src"
+    },
+    {
+      "id": "pkg-22-alpha-service",
+      "name": "pkg22_alphaService",
+      "package": "@synthetic/pkg-22",
+      "path": "packages/pkg-22/src"
+    },
+    {
+      "id": "pkg-22-beta-service",
+      "name": "pkg22_betaService",
+      "package": "@synthetic/pkg-22",
+      "path": "packages/pkg-22/src"
+    },
+    {
+      "id": "pkg-22-gamma-service",
+      "name": "pkg22_gammaService",
+      "package": "@synthetic/pkg-22",
+      "path": "packages/pkg-22/src"
+    },
+    {
+      "id": "pkg-22-delta-service",
+      "name": "pkg22_deltaService",
+      "package": "@synthetic/pkg-22",
+      "path": "packages/pkg-22/src"
+    },
+    {
+      "id": "pkg-23-alpha-service",
+      "name": "pkg23_alphaService",
+      "package": "@synthetic/pkg-23",
+      "path": "packages/pkg-23/src"
+    },
+    {
+      "id": "pkg-23-beta-service",
+      "name": "pkg23_betaService",
+      "package": "@synthetic/pkg-23",
+      "path": "packages/pkg-23/src"
+    },
+    {
+      "id": "pkg-23-gamma-service",
+      "name": "pkg23_gammaService",
+      "package": "@synthetic/pkg-23",
+      "path": "packages/pkg-23/src"
+    },
+    {
+      "id": "pkg-23-delta-service",
+      "name": "pkg23_deltaService",
+      "package": "@synthetic/pkg-23",
+      "path": "packages/pkg-23/src"
+    },
+    {
+      "id": "pkg-24-alpha-service",
+      "name": "pkg24_alphaService",
+      "package": "@synthetic/pkg-24",
+      "path": "packages/pkg-24/src"
+    },
+    {
+      "id": "pkg-24-beta-service",
+      "name": "pkg24_betaService",
+      "package": "@synthetic/pkg-24",
+      "path": "packages/pkg-24/src"
+    },
+    {
+      "id": "pkg-24-gamma-service",
+      "name": "pkg24_gammaService",
+      "package": "@synthetic/pkg-24",
+      "path": "packages/pkg-24/src"
+    },
+    {
+      "id": "pkg-24-delta-service",
+      "name": "pkg24_deltaService",
+      "package": "@synthetic/pkg-24",
+      "path": "packages/pkg-24/src"
+    },
+    {
+      "id": "pkg-25-alpha-service",
+      "name": "pkg25_alphaService",
+      "package": "@synthetic/pkg-25",
+      "path": "packages/pkg-25/src"
+    },
+    {
+      "id": "pkg-25-beta-service",
+      "name": "pkg25_betaService",
+      "package": "@synthetic/pkg-25",
+      "path": "packages/pkg-25/src"
+    },
+    {
+      "id": "pkg-25-gamma-service",
+      "name": "pkg25_gammaService",
+      "package": "@synthetic/pkg-25",
+      "path": "packages/pkg-25/src"
+    },
+    {
+      "id": "pkg-25-delta-service",
+      "name": "pkg25_deltaService",
+      "package": "@synthetic/pkg-25",
+      "path": "packages/pkg-25/src"
+    },
+    {
+      "id": "pkg-26-alpha-service",
+      "name": "pkg26_alphaService",
+      "package": "@synthetic/pkg-26",
+      "path": "packages/pkg-26/src"
+    },
+    {
+      "id": "pkg-26-beta-service",
+      "name": "pkg26_betaService",
+      "package": "@synthetic/pkg-26",
+      "path": "packages/pkg-26/src"
+    },
+    {
+      "id": "pkg-26-gamma-service",
+      "name": "pkg26_gammaService",
+      "package": "@synthetic/pkg-26",
+      "path": "packages/pkg-26/src"
+    },
+    {
+      "id": "pkg-26-delta-service",
+      "name": "pkg26_deltaService",
+      "package": "@synthetic/pkg-26",
+      "path": "packages/pkg-26/src"
+    },
+    {
+      "id": "pkg-27-alpha-service",
+      "name": "pkg27_alphaService",
+      "package": "@synthetic/pkg-27",
+      "path": "packages/pkg-27/src"
+    },
+    {
+      "id": "pkg-27-beta-service",
+      "name": "pkg27_betaService",
+      "package": "@synthetic/pkg-27",
+      "path": "packages/pkg-27/src"
+    },
+    {
+      "id": "pkg-27-gamma-service",
+      "name": "pkg27_gammaService",
+      "package": "@synthetic/pkg-27",
+      "path": "packages/pkg-27/src"
+    },
+    {
+      "id": "pkg-27-delta-service",
+      "name": "pkg27_deltaService",
+      "package": "@synthetic/pkg-27",
+      "path": "packages/pkg-27/src"
+    },
+    {
+      "id": "pkg-28-alpha-service",
+      "name": "pkg28_alphaService",
+      "package": "@synthetic/pkg-28",
+      "path": "packages/pkg-28/src"
+    },
+    {
+      "id": "pkg-28-beta-service",
+      "name": "pkg28_betaService",
+      "package": "@synthetic/pkg-28",
+      "path": "packages/pkg-28/src"
+    },
+    {
+      "id": "pkg-28-gamma-service",
+      "name": "pkg28_gammaService",
+      "package": "@synthetic/pkg-28",
+      "path": "packages/pkg-28/src"
+    },
+    {
+      "id": "pkg-28-delta-service",
+      "name": "pkg28_deltaService",
+      "package": "@synthetic/pkg-28",
+      "path": "packages/pkg-28/src"
+    },
+    {
+      "id": "pkg-29-alpha-service",
+      "name": "pkg29_alphaService",
+      "package": "@synthetic/pkg-29",
+      "path": "packages/pkg-29/src"
+    },
+    {
+      "id": "pkg-29-beta-service",
+      "name": "pkg29_betaService",
+      "package": "@synthetic/pkg-29",
+      "path": "packages/pkg-29/src"
+    },
+    {
+      "id": "pkg-29-gamma-service",
+      "name": "pkg29_gammaService",
+      "package": "@synthetic/pkg-29",
+      "path": "packages/pkg-29/src"
+    },
+    {
+      "id": "pkg-29-delta-service",
+      "name": "pkg29_deltaService",
+      "package": "@synthetic/pkg-29",
+      "path": "packages/pkg-29/src"
+    }
+  ],
+  "connections": [
+    {
+      "from": "pkg-00-beta-service",
+      "to": "pkg-00-alpha-service"
+    },
+    {
+      "from": "pkg-00-gamma-service",
+      "to": "pkg-00-beta-service"
+    },
+    {
+      "from": "pkg-00-delta-service",
+      "to": "pkg-00-gamma-service"
+    },
+    {
+      "from": "pkg-01-alpha-service",
+      "to": "pkg-00-alpha-service"
+    },
+    {
+      "from": "pkg-01-beta-service",
+      "to": "pkg-01-alpha-service"
+    },
+    {
+      "from": "pkg-01-gamma-service",
+      "to": "pkg-01-beta-service"
+    },
+    {
+      "from": "pkg-01-delta-service",
+      "to": "pkg-01-gamma-service"
+    },
+    {
+      "from": "pkg-02-alpha-service",
+      "to": "pkg-01-alpha-service"
+    },
+    {
+      "from": "pkg-02-beta-service",
+      "to": "pkg-00-beta-service"
+    },
+    {
+      "from": "pkg-02-beta-service",
+      "to": "pkg-02-alpha-service"
+    },
+    {
+      "from": "pkg-02-gamma-service",
+      "to": "pkg-02-beta-service"
+    },
+    {
+      "from": "pkg-02-delta-service",
+      "to": "pkg-02-gamma-service"
+    },
+    {
+      "from": "pkg-03-alpha-service",
+      "to": "pkg-02-alpha-service"
+    },
+    {
+      "from": "pkg-03-beta-service",
+      "to": "pkg-01-beta-service"
+    },
+    {
+      "from": "pkg-03-beta-service",
+      "to": "pkg-03-alpha-service"
+    },
+    {
+      "from": "pkg-03-gamma-service",
+      "to": "pkg-03-beta-service"
+    },
+    {
+      "from": "pkg-03-delta-service",
+      "to": "pkg-03-gamma-service"
+    },
+    {
+      "from": "pkg-04-alpha-service",
+      "to": "pkg-03-alpha-service"
+    },
+    {
+      "from": "pkg-04-beta-service",
+      "to": "pkg-02-beta-service"
+    },
+    {
+      "from": "pkg-04-beta-service",
+      "to": "pkg-04-alpha-service"
+    },
+    {
+      "from": "pkg-04-gamma-service",
+      "to": "pkg-04-beta-service"
+    },
+    {
+      "from": "pkg-04-delta-service",
+      "to": "pkg-04-gamma-service"
+    },
+    {
+      "from": "pkg-05-alpha-service",
+      "to": "pkg-04-alpha-service"
+    },
+    {
+      "from": "pkg-05-beta-service",
+      "to": "pkg-03-beta-service"
+    },
+    {
+      "from": "pkg-05-beta-service",
+      "to": "pkg-05-alpha-service"
+    },
+    {
+      "from": "pkg-05-gamma-service",
+      "to": "pkg-05-beta-service"
+    },
+    {
+      "from": "pkg-05-delta-service",
+      "to": "pkg-05-gamma-service"
+    },
+    {
+      "from": "pkg-06-alpha-service",
+      "to": "pkg-05-alpha-service"
+    },
+    {
+      "from": "pkg-06-beta-service",
+      "to": "pkg-04-beta-service"
+    },
+    {
+      "from": "pkg-06-beta-service",
+      "to": "pkg-06-alpha-service"
+    },
+    {
+      "from": "pkg-06-gamma-service",
+      "to": "pkg-06-beta-service"
+    },
+    {
+      "from": "pkg-06-delta-service",
+      "to": "pkg-06-gamma-service"
+    },
+    {
+      "from": "pkg-07-alpha-service",
+      "to": "pkg-06-alpha-service"
+    },
+    {
+      "from": "pkg-07-beta-service",
+      "to": "pkg-05-beta-service"
+    },
+    {
+      "from": "pkg-07-beta-service",
+      "to": "pkg-07-alpha-service"
+    },
+    {
+      "from": "pkg-07-gamma-service",
+      "to": "pkg-07-beta-service"
+    },
+    {
+      "from": "pkg-07-delta-service",
+      "to": "pkg-07-gamma-service"
+    },
+    {
+      "from": "pkg-08-alpha-service",
+      "to": "pkg-07-alpha-service"
+    },
+    {
+      "from": "pkg-08-beta-service",
+      "to": "pkg-06-beta-service"
+    },
+    {
+      "from": "pkg-08-beta-service",
+      "to": "pkg-08-alpha-service"
+    },
+    {
+      "from": "pkg-08-gamma-service",
+      "to": "pkg-08-beta-service"
+    },
+    {
+      "from": "pkg-08-delta-service",
+      "to": "pkg-08-gamma-service"
+    },
+    {
+      "from": "pkg-09-alpha-service",
+      "to": "pkg-08-alpha-service"
+    },
+    {
+      "from": "pkg-09-beta-service",
+      "to": "pkg-07-beta-service"
+    },
+    {
+      "from": "pkg-09-beta-service",
+      "to": "pkg-09-alpha-service"
+    },
+    {
+      "from": "pkg-09-gamma-service",
+      "to": "pkg-09-beta-service"
+    },
+    {
+      "from": "pkg-09-delta-service",
+      "to": "pkg-09-gamma-service"
+    },
+    {
+      "from": "pkg-10-alpha-service",
+      "to": "pkg-09-alpha-service"
+    },
+    {
+      "from": "pkg-10-beta-service",
+      "to": "pkg-08-beta-service"
+    },
+    {
+      "from": "pkg-10-beta-service",
+      "to": "pkg-10-alpha-service"
+    },
+    {
+      "from": "pkg-10-gamma-service",
+      "to": "pkg-10-beta-service"
+    },
+    {
+      "from": "pkg-10-delta-service",
+      "to": "pkg-10-gamma-service"
+    },
+    {
+      "from": "pkg-11-alpha-service",
+      "to": "pkg-10-alpha-service"
+    },
+    {
+      "from": "pkg-11-beta-service",
+      "to": "pkg-09-beta-service"
+    },
+    {
+      "from": "pkg-11-beta-service",
+      "to": "pkg-11-alpha-service"
+    },
+    {
+      "from": "pkg-11-gamma-service",
+      "to": "pkg-11-beta-service"
+    },
+    {
+      "from": "pkg-11-delta-service",
+      "to": "pkg-11-gamma-service"
+    },
+    {
+      "from": "pkg-12-alpha-service",
+      "to": "pkg-11-alpha-service"
+    },
+    {
+      "from": "pkg-12-beta-service",
+      "to": "pkg-10-beta-service"
+    },
+    {
+      "from": "pkg-12-beta-service",
+      "to": "pkg-12-alpha-service"
+    },
+    {
+      "from": "pkg-12-gamma-service",
+      "to": "pkg-12-beta-service"
+    },
+    {
+      "from": "pkg-12-delta-service",
+      "to": "pkg-12-gamma-service"
+    },
+    {
+      "from": "pkg-13-alpha-service",
+      "to": "pkg-12-alpha-service"
+    },
+    {
+      "from": "pkg-13-beta-service",
+      "to": "pkg-11-beta-service"
+    },
+    {
+      "from": "pkg-13-beta-service",
+      "to": "pkg-13-alpha-service"
+    },
+    {
+      "from": "pkg-13-gamma-service",
+      "to": "pkg-13-beta-service"
+    },
+    {
+      "from": "pkg-13-delta-service",
+      "to": "pkg-13-gamma-service"
+    },
+    {
+      "from": "pkg-14-alpha-service",
+      "to": "pkg-13-alpha-service"
+    },
+    {
+      "from": "pkg-14-beta-service",
+      "to": "pkg-12-beta-service"
+    },
+    {
+      "from": "pkg-14-beta-service",
+      "to": "pkg-14-alpha-service"
+    },
+    {
+      "from": "pkg-14-gamma-service",
+      "to": "pkg-14-beta-service"
+    },
+    {
+      "from": "pkg-14-delta-service",
+      "to": "pkg-14-gamma-service"
+    },
+    {
+      "from": "pkg-15-alpha-service",
+      "to": "pkg-14-alpha-service"
+    },
+    {
+      "from": "pkg-15-beta-service",
+      "to": "pkg-13-beta-service"
+    },
+    {
+      "from": "pkg-15-beta-service",
+      "to": "pkg-15-alpha-service"
+    },
+    {
+      "from": "pkg-15-gamma-service",
+      "to": "pkg-15-beta-service"
+    },
+    {
+      "from": "pkg-15-delta-service",
+      "to": "pkg-15-gamma-service"
+    },
+    {
+      "from": "pkg-16-alpha-service",
+      "to": "pkg-15-alpha-service"
+    },
+    {
+      "from": "pkg-16-beta-service",
+      "to": "pkg-14-beta-service"
+    },
+    {
+      "from": "pkg-16-beta-service",
+      "to": "pkg-16-alpha-service"
+    },
+    {
+      "from": "pkg-16-gamma-service",
+      "to": "pkg-16-beta-service"
+    },
+    {
+      "from": "pkg-16-delta-service",
+      "to": "pkg-16-gamma-service"
+    },
+    {
+      "from": "pkg-17-alpha-service",
+      "to": "pkg-16-alpha-service"
+    },
+    {
+      "from": "pkg-17-beta-service",
+      "to": "pkg-15-beta-service"
+    },
+    {
+      "from": "pkg-17-beta-service",
+      "to": "pkg-17-alpha-service"
+    },
+    {
+      "from": "pkg-17-gamma-service",
+      "to": "pkg-17-beta-service"
+    },
+    {
+      "from": "pkg-17-delta-service",
+      "to": "pkg-17-gamma-service"
+    },
+    {
+      "from": "pkg-18-alpha-service",
+      "to": "pkg-17-alpha-service"
+    },
+    {
+      "from": "pkg-18-beta-service",
+      "to": "pkg-16-beta-service"
+    },
+    {
+      "from": "pkg-18-beta-service",
+      "to": "pkg-18-alpha-service"
+    },
+    {
+      "from": "pkg-18-gamma-service",
+      "to": "pkg-18-beta-service"
+    },
+    {
+      "from": "pkg-18-delta-service",
+      "to": "pkg-18-gamma-service"
+    },
+    {
+      "from": "pkg-19-alpha-service",
+      "to": "pkg-18-alpha-service"
+    },
+    {
+      "from": "pkg-19-beta-service",
+      "to": "pkg-17-beta-service"
+    },
+    {
+      "from": "pkg-19-beta-service",
+      "to": "pkg-19-alpha-service"
+    },
+    {
+      "from": "pkg-19-gamma-service",
+      "to": "pkg-19-beta-service"
+    },
+    {
+      "from": "pkg-19-delta-service",
+      "to": "pkg-19-gamma-service"
+    },
+    {
+      "from": "pkg-20-alpha-service",
+      "to": "pkg-19-alpha-service"
+    },
+    {
+      "from": "pkg-20-beta-service",
+      "to": "pkg-18-beta-service"
+    },
+    {
+      "from": "pkg-20-beta-service",
+      "to": "pkg-20-alpha-service"
+    },
+    {
+      "from": "pkg-20-gamma-service",
+      "to": "pkg-20-beta-service"
+    },
+    {
+      "from": "pkg-20-delta-service",
+      "to": "pkg-20-gamma-service"
+    },
+    {
+      "from": "pkg-21-alpha-service",
+      "to": "pkg-20-alpha-service"
+    },
+    {
+      "from": "pkg-21-beta-service",
+      "to": "pkg-19-beta-service"
+    },
+    {
+      "from": "pkg-21-beta-service",
+      "to": "pkg-21-alpha-service"
+    },
+    {
+      "from": "pkg-21-gamma-service",
+      "to": "pkg-21-beta-service"
+    },
+    {
+      "from": "pkg-21-delta-service",
+      "to": "pkg-21-gamma-service"
+    },
+    {
+      "from": "pkg-22-alpha-service",
+      "to": "pkg-21-alpha-service"
+    },
+    {
+      "from": "pkg-22-beta-service",
+      "to": "pkg-20-beta-service"
+    },
+    {
+      "from": "pkg-22-beta-service",
+      "to": "pkg-22-alpha-service"
+    },
+    {
+      "from": "pkg-22-gamma-service",
+      "to": "pkg-22-beta-service"
+    },
+    {
+      "from": "pkg-22-delta-service",
+      "to": "pkg-22-gamma-service"
+    },
+    {
+      "from": "pkg-23-alpha-service",
+      "to": "pkg-22-alpha-service"
+    },
+    {
+      "from": "pkg-23-beta-service",
+      "to": "pkg-21-beta-service"
+    },
+    {
+      "from": "pkg-23-beta-service",
+      "to": "pkg-23-alpha-service"
+    },
+    {
+      "from": "pkg-23-gamma-service",
+      "to": "pkg-23-beta-service"
+    },
+    {
+      "from": "pkg-23-delta-service",
+      "to": "pkg-23-gamma-service"
+    },
+    {
+      "from": "pkg-24-alpha-service",
+      "to": "pkg-23-alpha-service"
+    },
+    {
+      "from": "pkg-24-beta-service",
+      "to": "pkg-22-beta-service"
+    },
+    {
+      "from": "pkg-24-beta-service",
+      "to": "pkg-24-alpha-service"
+    },
+    {
+      "from": "pkg-24-gamma-service",
+      "to": "pkg-24-beta-service"
+    },
+    {
+      "from": "pkg-24-delta-service",
+      "to": "pkg-24-gamma-service"
+    },
+    {
+      "from": "pkg-25-alpha-service",
+      "to": "pkg-24-alpha-service"
+    },
+    {
+      "from": "pkg-25-beta-service",
+      "to": "pkg-23-beta-service"
+    },
+    {
+      "from": "pkg-25-beta-service",
+      "to": "pkg-25-alpha-service"
+    },
+    {
+      "from": "pkg-25-gamma-service",
+      "to": "pkg-25-beta-service"
+    },
+    {
+      "from": "pkg-25-delta-service",
+      "to": "pkg-25-gamma-service"
+    },
+    {
+      "from": "pkg-26-alpha-service",
+      "to": "pkg-25-alpha-service"
+    },
+    {
+      "from": "pkg-26-beta-service",
+      "to": "pkg-24-beta-service"
+    },
+    {
+      "from": "pkg-26-beta-service",
+      "to": "pkg-26-alpha-service"
+    },
+    {
+      "from": "pkg-26-gamma-service",
+      "to": "pkg-26-beta-service"
+    },
+    {
+      "from": "pkg-26-delta-service",
+      "to": "pkg-26-gamma-service"
+    },
+    {
+      "from": "pkg-27-alpha-service",
+      "to": "pkg-26-alpha-service"
+    },
+    {
+      "from": "pkg-27-beta-service",
+      "to": "pkg-25-beta-service"
+    },
+    {
+      "from": "pkg-27-beta-service",
+      "to": "pkg-27-alpha-service"
+    },
+    {
+      "from": "pkg-27-gamma-service",
+      "to": "pkg-27-beta-service"
+    },
+    {
+      "from": "pkg-27-delta-service",
+      "to": "pkg-27-gamma-service"
+    },
+    {
+      "from": "pkg-28-alpha-service",
+      "to": "pkg-27-alpha-service"
+    },
+    {
+      "from": "pkg-28-beta-service",
+      "to": "pkg-26-beta-service"
+    },
+    {
+      "from": "pkg-28-beta-service",
+      "to": "pkg-28-alpha-service"
+    },
+    {
+      "from": "pkg-28-gamma-service",
+      "to": "pkg-28-beta-service"
+    },
+    {
+      "from": "pkg-28-delta-service",
+      "to": "pkg-28-gamma-service"
+    },
+    {
+      "from": "pkg-29-alpha-service",
+      "to": "pkg-28-alpha-service"
+    },
+    {
+      "from": "pkg-29-beta-service",
+      "to": "pkg-27-beta-service"
+    },
+    {
+      "from": "pkg-29-beta-service",
+      "to": "pkg-29-alpha-service"
+    },
+    {
+      "from": "pkg-29-gamma-service",
+      "to": "pkg-29-beta-service"
+    },
+    {
+      "from": "pkg-29-delta-service",
+      "to": "pkg-29-gamma-service"
+    }
+  ]
+}

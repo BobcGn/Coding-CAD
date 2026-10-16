@@ -1,0 +1,47 @@
+{
+  "type": "single-repo",
+  "modules": [
+    {
+      "id": "logger-service",
+      "name": "LoggerService",
+      "path": "src/core"
+    },
+    {
+      "id": "auth-service",
+      "name": "AuthService",
+      "path": "src/auth"
+    },
+    {
+      "id": "order-service",
+      "name": "OrderService",
+      "path": "src/order"
+    },
+    {
+      "id": "payment-service",
+      "name": "PaymentService",
+      "path": "src/payment"
+    }
+  ],
+  "connections": [
+    {
+      "from": "auth-service",
+      "to": "logger-service",
+      "type": "module-import"
+    },
+    {
+      "from": "order-service",
+      "to": "auth-service",
+      "type": "module-import"
+    },
+    {
+      "from": "order-service",
+      "to": "logger-service",
+      "type": "module-import"
+    },
+    {
+      "from": "payment-service",
+      "to": "order-service",
+      "type": "module-import"
+    }
+  ]
+}

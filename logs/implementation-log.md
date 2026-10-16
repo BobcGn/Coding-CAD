@@ -961,3 +961,35 @@ PR #3首次远端CI在额外security:audit步骤报告7high，本地旧ci:verify
 - 负控验证 / Negative control: 临时构造缺失“为什么这么做 / Why”字段的变更记录条目，执行 `pnpm check:changelog` 准确失败（exit 1）并提示缺失 Section 2；恢复合规内容后重测通过。
 - 状态分类 / Status: 已实现并验证（步骤 0 全部范围）。
 - 风险与回退 / Risks & Rollback: 回退本步骤可执行 `git revert <step-0-commit>`。
+
+## 2026-10-16 - 阶段 4 步骤 1：真值基准与当前基线 / Phase 4 Step 1: Ground Truth Benchmarks and Baseline
+
+### 1. 做了什么 / What
+- 依据 `packages/README.md` 与各 `package.json` 声明，整理本仓库黄金真值文件 `packages/implementation-analyzer/fixtures/coding-cad-golden.json`，并如实记录两者差异（layout 依赖状态、review devDependencies、apps 依赖展开）。
+- 新增两个小型 TS 测试夹具：`small-monorepo`（pnpm workspace 结构，3 模块 3 依赖边）与 `small-single-repo`（标准 src/ 结构，4 模块 4 依赖边），均配置人工标注的 `truth.json`。
+- 新增合成大型夹具 `synthetic-large-repo`（30 个包、120 个模块、147 条依赖边），文件头与 README 显式标注 SYNTHETIC，严禁表述为真实仓库结果。
+- 实现基准测试脚本 `packages/implementation-analyzer/src/benchmark.ts`，支持计算模块与依赖边的精准率（Precision）、召回率（Recall）、证据分类（declared/resolved/inferred），并在零检测时触发明确 FAIL 提示。
+- 在修改 Analyzer 之前运行全套基准，并将修改前基线持久化至 `logs/validation/p4-baseline/analyzer-baseline-before.json` 与 `baseline-report-before.md`。
+- Added `coding-cad-golden.json` comparing README and package.json declarations with all discrepancies documented.
+- Added two small TypeScript fixtures (`small-monorepo` and `small-single-repo`) with human-annotated `truth.json`.
+- Added synthetic large fixture `synthetic-large-repo` (30 packages, 120 modules, 147 connections) explicitly labeled as SYNTHETIC.
+- Implemented benchmark harness in `benchmark.ts` measuring Precision, Recall, and evidence breakdown with zero-detection failure alerts.
+- Captured pre-change baseline into `logs/validation/p4-baseline/`.
+
+### 2. 为什么这么做 / Why
+- 动机：确立客观、可度量、防篡改的真值比对基线，确保 Analyzer 的重构以真实指标驱动，而不是凭主观印象推测提取质量。
+- 备选方案与取舍：考虑过直接修改 Analyzer 边改边测，但缺少修改前的客观基线数字就无法确切证明改进幅度，也无法满足门禁要求。因此本步骤严格限制为“只新增测试、fixture 与基准脚本，不修改 Analyzer 实现”。
+- Motivation: Establish an objective, reproducible ground truth baseline before touching analyzer logic, preventing unverified quality claims.
+- Tradeoffs: Strictly decoupled fixture and benchmark creation from analyzer implementation to capture true pre-change failure baselines (e.g. 0 modules on monorepos).
+
+### 3. 验证结果 / Verification
+- 运行基准脚本 / Benchmark command: `pnpm --filter @coding-cad/implementation-analyzer benchmark` 执行完成并输出基线报告。
+- 实测基线数据 / Baseline metrics (修改前 / Pre-change):
+  - Coding-CAD 本仓库: 2 检测 / 15 期望，精准率 0.0%，召回率 0.0%，边 0/37，判定 FAIL（零连接 / 错误识别根目录）。
+  - small-monorepo: 0 检测 / 3 期望，精准率 0.0%，召回率 0.0%，边 0/3，判定 FAIL（0 模块 0 连接）。
+  - small-single-repo: 4 检测 / 4 期望，精准率 100.0%，召回率 100.0%，边 4/4，精准率 100.0%，召回率 100.0%，判定 PASS。
+  - synthetic-large-repo: 0 检测 / 120 期望，精准率 0.0%，召回率 0.0%，边 0/147，判定 FAIL（0 模块 0 连接）。
+- 既有单元测试 / Existing unit tests: `pnpm --filter @coding-cad/implementation-analyzer test:unit` 全部通过。
+- 门禁检查 / CI check: `pnpm check:changelog` 与 `pnpm lint:workspace` 全部通过。
+- 状态分类 / Status: 已实现并验证（步骤 1 全部范围）。
+- 风险与回退 / Risks & Rollback: 回退本步骤可执行 `git revert <step-1-commit>`。

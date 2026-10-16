@@ -1,0 +1,9 @@
+{
+  "name": "@synthetic/pkg-19",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "dependencies": {
+    "@synthetic/pkg-18": "workspace:*",
+    "@synthetic/pkg-17": "workspace:*"
+  }
+}

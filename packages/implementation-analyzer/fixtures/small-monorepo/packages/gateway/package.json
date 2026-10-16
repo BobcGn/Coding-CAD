@@ -1,0 +1,9 @@
+{
+  "name": "@small-monorepo/gateway",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "dependencies": {
+    "@small-monorepo/auth": "workspace:*",
+    "@small-monorepo/billing": "workspace:*"
+  }
+}
