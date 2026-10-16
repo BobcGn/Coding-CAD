@@ -89,3 +89,7 @@ GitHub Actions run `31705682848` failed because one shared-runner window measure
 实现 proposal-scoped Ghost node/edge identity、相对 accepted/proposed LayoutGraph 的新增投影与局部 placement。测试证明投影 deterministic，且不修改 accepted ArchitectureProject 或 LayoutState。没有依赖 `architecture-review`，没有实现 accept/reject、Review gate、overlay/comparison presentation 或 UI；D-007 继续只阻塞 Phase 5 产品呈现。
 
 Implemented proposal-scoped Ghost node/edge identity, added projections relative to accepted/proposed LayoutGraphs, and local placement. Tests prove the projection is deterministic and does not mutate the accepted ArchitectureProject or LayoutState. It does not depend on `architecture-review` and implements no accept/reject behavior, Review gate, overlay/comparison presentation, or UI; D-007 continues to block only Phase 5 product presentation.
+
+## 2026-10-16 - ELK Step 1 Diagnosis / ELK步骤1诊断
+
+目标：只关闭阶段3浏览器ELK阻塞，保持ELK/D-010/public API。dev与production均复现；隔离VM证明内嵌worker初始化错误优先级导致缺失CJS导出并覆盖onmessage。内存CJS-first实验成功。详细证据及候选方案见 `logs/validation/p3-closeout/elk-browser/root-cause.md`；本提交不修改产品实现。 / Diagnose only the Phase 3 browser blocker. Both modes reproduce; the VM proves missing CJS export and message-handler overwrite, while a CJS-first in-memory experiment succeeds. This commit changes no product implementation.

@@ -1,0 +1,18 @@
+[
+  {
+    "mode": "dev",
+    "warnings": [
+      "Layout fallback: _Worker is not a constructor"
+    ],
+    "pageErrors": [],
+    "canvasNodes": 5
+  },
+  {
+    "mode": "preview",
+    "warnings": [
+      "Layout fallback: H8 is not a constructor"
+    ],
+    "pageErrors": [],
+    "canvasNodes": 5
+  }
+]

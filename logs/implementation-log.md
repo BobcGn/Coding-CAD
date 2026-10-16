@@ -888,3 +888,7 @@ Motivation: reconcile conflicting current status without rewriting historical im
 步骤5文档验证：git diff --check、15模块workspace边界检查、change-record通过；退出报告/审计/主计划/Roadmap共16个本地链接目标存在。最终源码CI见10-final-source-ci.txt，最新Web计数57/9/18。 / Step 5 document checks passed: diff whitespace, 15-module workspace boundary, change-record, and 16 local link targets. Final source CI is in 10-final-source-ci.txt with Web counts 57/9/18.
 
 最终文档交付检查：5个收尾提交的Conventional Commits检查、secret scan、workspace检查及diff检查通过；4173端口无监听。见11-final-document-checks.txt。 / Final documentation delivery checks passed for all five closeout commit messages, secret scan, workspace and diff checks; port 4173 has no listener. See 11-final-document-checks.txt.
+
+## 2026-10-16 - ELK Step 1 Diagnosis / ELK步骤1诊断
+
+目标：只关闭阶段3浏览器ELK阻塞，保持ELK/D-010/public API。dev与production均复现；隔离VM证明内嵌worker初始化错误优先级导致缺失CJS导出并覆盖onmessage。内存CJS-first实验成功。详细证据及候选方案见 `logs/validation/p3-closeout/elk-browser/root-cause.md`；本提交不修改产品实现。 / Diagnose only the Phase 3 browser blocker. Both modes reproduce; the VM proves missing CJS export and message-handler overwrite, while a CJS-first in-memory experiment succeeds. This commit changes no product implementation.
