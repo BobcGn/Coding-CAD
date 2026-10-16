@@ -53,7 +53,11 @@
   const handleDragStop: NodeTargetEventWithPointer<MouseEvent | TouchEvent, ArchitectureFlowNode> = ({ nodes }) => {
     const moved = nodes[0];
     if (moved === undefined) return;
-    onViewStateChange?.(persistDraggedPosition(viewState, moved.id, moved.position));
+    const parent = viewState.nodes.find((node) => node.id === moved.parentId);
+    const absolute = parent === undefined ? moved.position : {
+      x: moved.position.x + parent.position.x, y: moved.position.y + parent.position.y
+    };
+    onViewStateChange?.(persistDraggedPosition(viewState, moved.id, absolute));
   };
 
   const handleSelection: OnSelectionChange<ArchitectureFlowNode, ArchitectureFlowEdge> = ({ nodes, edges }) => {

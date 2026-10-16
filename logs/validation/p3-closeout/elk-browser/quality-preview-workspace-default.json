@@ -1,0 +1,1810 @@
+{
+  "full": {
+    "nodes": 5,
+    "components": 4,
+    "peerOverlaps": 0,
+    "overlapPairs": [],
+    "containmentFailures": [],
+    "routedEdges": 3,
+    "edges": 3,
+    "routedCrossings": 0,
+    "rankInversions": 0,
+    "area": 183372
+  },
+  "incremental": {
+    "nodes": 5,
+    "components": 4,
+    "peerOverlaps": 0,
+    "overlapPairs": [],
+    "containmentFailures": [],
+    "routedEdges": 0,
+    "edges": 3,
+    "routedCrossings": null,
+    "rankInversions": 0,
+    "area": 159636
+  },
+  "productMovement": {
+    "unaffectedNodes": 4,
+    "p95": 0,
+    "max": 0,
+    "orderReversals": 0
+  },
+  "additionMovement": {
+    "unaffectedNodes": 4,
+    "p95": 0,
+    "max": 0,
+    "orderReversals": 0
+  },
+  "additionQuality": {
+    "nodes": 6,
+    "components": 5,
+    "peerOverlaps": 0,
+    "overlapPairs": [],
+    "containmentFailures": [],
+    "routedEdges": 0,
+    "edges": 3,
+    "routedCrossings": null,
+    "rankInversions": 0,
+    "area": 249996
+  },
+  "renderedQuality": {
+    "nodes": 5,
+    "components": 4,
+    "peerOverlaps": 0,
+    "overlapPairs": [],
+    "containmentFailures": [],
+    "routedEdges": 0,
+    "edges": 3,
+    "routedCrossings": null,
+    "rankInversions": 0,
+    "area": 159636
+  },
+  "determinism": true,
+  "movement": {
+    "nodes": [
+      {
+        "nodeId": "group:infrastructure",
+        "distance": 0,
+        "affected": false
+      },
+      {
+        "nodeId": "postgresql",
+        "distance": 0,
+        "affected": false
+      },
+      {
+        "nodeId": "redis",
+        "distance": 0,
+        "affected": false
+      },
+      {
+        "nodeId": "rest-api",
+        "distance": 0,
+        "affected": false
+      },
+      {
+        "nodeId": "point-service",
+        "distance": 0,
+        "affected": false
+      }
+    ],
+    "unaffectedP95": 0,
+    "unaffectedMax": 0,
+    "relativeOrderReversed": false,
+    "withinBudget": true
+  },
+  "durationMs": 58.79999999701977,
+  "raw": {
+    "name": "workspace-default",
+    "first": {
+      "projection": {
+        "classifications": [
+          {
+            "componentId": "rest-api",
+            "role": "gateway",
+            "confidence": "explicit",
+            "provenance": "component.type"
+          },
+          {
+            "componentId": "point-service",
+            "role": "service",
+            "confidence": "explicit",
+            "provenance": "component.type"
+          },
+          {
+            "componentId": "postgresql",
+            "role": "database",
+            "confidence": "explicit",
+            "provenance": "component.type"
+          },
+          {
+            "componentId": "redis",
+            "role": "cache",
+            "confidence": "explicit",
+            "provenance": "component.type"
+          }
+        ],
+        "abstraction": {
+          "groups": [
+            {
+              "id": "group:infrastructure",
+              "label": "Infrastructure",
+              "kind": "infrastructure",
+              "provenance": "layout semantic role",
+              "memberIds": [
+                "postgresql",
+                "redis"
+              ]
+            }
+          ],
+          "parentByComponentId": {
+            "postgresql": "group:infrastructure",
+            "redis": "group:infrastructure"
+          }
+        },
+        "visualGraph": {
+          "nodes": [
+            {
+              "id": "group:infrastructure",
+              "sourceId": "group:infrastructure",
+              "kind": "group",
+              "label": "Infrastructure",
+              "role": "unknown",
+              "groupKind": "infrastructure",
+              "hints": {
+                "preferredRank": "application",
+                "portDirection": "bidirectional",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "rest-api",
+              "sourceId": "rest-api",
+              "kind": "component",
+              "label": "REST API",
+              "role": "gateway",
+              "classification": {
+                "componentId": "rest-api",
+                "role": "gateway",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "entry",
+                "portDirection": "outgoing",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "point-service",
+              "sourceId": "point-service",
+              "kind": "component",
+              "label": "PointService",
+              "role": "service",
+              "classification": {
+                "componentId": "point-service",
+                "role": "service",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "application",
+                "portDirection": "bidirectional",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "postgresql",
+              "sourceId": "postgresql",
+              "kind": "component",
+              "label": "PostgreSQL",
+              "role": "database",
+              "parentId": "group:infrastructure",
+              "classification": {
+                "componentId": "postgresql",
+                "role": "database",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "data",
+                "portDirection": "incoming",
+                "infrastructure": true,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "redis",
+              "sourceId": "redis",
+              "kind": "component",
+              "label": "Redis",
+              "role": "cache",
+              "parentId": "group:infrastructure",
+              "classification": {
+                "componentId": "redis",
+                "role": "cache",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "data",
+                "portDirection": "incoming",
+                "infrastructure": true,
+                "externalBoundary": false
+              }
+            }
+          ],
+          "edges": [
+            {
+              "id": "rest-api-to-point-service",
+              "sourceId": "rest-api-to-point-service",
+              "from": "rest-api",
+              "to": "point-service",
+              "label": "Expose point commands and queries to external callers.",
+              "asynchronous": false
+            },
+            {
+              "id": "point-service-to-postgresql",
+              "sourceId": "point-service-to-postgresql",
+              "from": "point-service",
+              "to": "postgresql",
+              "label": "Persist point accounts and point transactions in the system of record.",
+              "asynchronous": false
+            },
+            {
+              "id": "point-service-to-redis",
+              "sourceId": "point-service-to-redis",
+              "from": "point-service",
+              "to": "redis",
+              "label": "Read and refresh derived point summaries for fast query paths.",
+              "asynchronous": false
+            }
+          ]
+        },
+        "layoutGraph": {
+          "direction": "LR",
+          "nodes": [
+            {
+              "id": "group:infrastructure",
+              "sourceId": "group:infrastructure",
+              "kind": "group",
+              "label": "Infrastructure",
+              "role": "unknown",
+              "groupKind": "infrastructure",
+              "hints": {
+                "preferredRank": "application",
+                "portDirection": "bidirectional",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "rest-api",
+              "sourceId": "rest-api",
+              "kind": "component",
+              "label": "REST API",
+              "role": "gateway",
+              "classification": {
+                "componentId": "rest-api",
+                "role": "gateway",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "entry",
+                "portDirection": "outgoing",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "point-service",
+              "sourceId": "point-service",
+              "kind": "component",
+              "label": "PointService",
+              "role": "service",
+              "classification": {
+                "componentId": "point-service",
+                "role": "service",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "application",
+                "portDirection": "bidirectional",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "postgresql",
+              "sourceId": "postgresql",
+              "kind": "component",
+              "label": "PostgreSQL",
+              "role": "database",
+              "parentId": "group:infrastructure",
+              "classification": {
+                "componentId": "postgresql",
+                "role": "database",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "data",
+                "portDirection": "incoming",
+                "infrastructure": true,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "redis",
+              "sourceId": "redis",
+              "kind": "component",
+              "label": "Redis",
+              "role": "cache",
+              "parentId": "group:infrastructure",
+              "classification": {
+                "componentId": "redis",
+                "role": "cache",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "data",
+                "portDirection": "incoming",
+                "infrastructure": true,
+                "externalBoundary": false
+              }
+            }
+          ],
+          "edges": [
+            {
+              "id": "rest-api-to-point-service",
+              "sourceId": "rest-api-to-point-service",
+              "from": "rest-api",
+              "to": "point-service",
+              "label": "Expose point commands and queries to external callers.",
+              "asynchronous": false
+            },
+            {
+              "id": "point-service-to-postgresql",
+              "sourceId": "point-service-to-postgresql",
+              "from": "point-service",
+              "to": "postgresql",
+              "label": "Persist point accounts and point transactions in the system of record.",
+              "asynchronous": false
+            },
+            {
+              "id": "point-service-to-redis",
+              "sourceId": "point-service-to-redis",
+              "from": "point-service",
+              "to": "redis",
+              "label": "Read and refresh derived point summaries for fast query paths.",
+              "asynchronous": false
+            }
+          ],
+          "constraints": [
+            {
+              "kind": "direction",
+              "direction": "LR",
+              "strength": "required"
+            },
+            {
+              "kind": "rank",
+              "nodeId": "rest-api",
+              "rank": "entry",
+              "strength": "preferred"
+            },
+            {
+              "kind": "rank",
+              "nodeId": "point-service",
+              "rank": "application",
+              "strength": "preferred"
+            },
+            {
+              "kind": "rank",
+              "nodeId": "postgresql",
+              "rank": "data",
+              "strength": "preferred"
+            },
+            {
+              "kind": "rank",
+              "nodeId": "redis",
+              "rank": "data",
+              "strength": "preferred"
+            },
+            {
+              "kind": "group",
+              "groupId": "group:infrastructure",
+              "memberIds": [
+                "postgresql",
+                "redis"
+              ],
+              "groupKind": "infrastructure",
+              "strength": "required"
+            },
+            {
+              "kind": "proximity",
+              "nodeIds": [
+                "point-service",
+                "redis"
+              ],
+              "reason": "ownership",
+              "strength": "preferred"
+            }
+          ]
+        }
+      },
+      "requestedMode": "FULL",
+      "appliedMode": "FULL",
+      "result": {
+        "status": "success",
+        "direction": "LR",
+        "size": {
+          "width": 777,
+          "height": 236
+        },
+        "nodes": [
+          {
+            "id": "group:infrastructure",
+            "sourceId": "group:infrastructure",
+            "kind": "group",
+            "position": {
+              "x": 549,
+              "y": 24
+            },
+            "size": {
+              "width": 204,
+              "height": 188
+            }
+          },
+          {
+            "id": "postgresql",
+            "sourceId": "postgresql",
+            "kind": "component",
+            "position": {
+              "x": 561,
+              "y": 36
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            },
+            "parentId": "group:infrastructure"
+          },
+          {
+            "id": "redis",
+            "sourceId": "redis",
+            "kind": "component",
+            "position": {
+              "x": 561,
+              "y": 128
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            },
+            "parentId": "group:infrastructure"
+          },
+          {
+            "id": "rest-api",
+            "sourceId": "rest-api",
+            "kind": "component",
+            "position": {
+              "x": 24,
+              "y": 116
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            }
+          },
+          {
+            "id": "point-service",
+            "sourceId": "point-service",
+            "kind": "component",
+            "position": {
+              "x": 284,
+              "y": 116
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "rest-api-to-point-service",
+            "sourceId": "rest-api-to-point-service",
+            "from": "rest-api",
+            "to": "point-service",
+            "sections": [
+              {
+                "start": {
+                  "x": 204,
+                  "y": 152
+                },
+                "end": {
+                  "x": 284,
+                  "y": 152
+                },
+                "bendPoints": []
+              }
+            ]
+          },
+          {
+            "id": "point-service-to-postgresql",
+            "sourceId": "point-service-to-postgresql",
+            "from": "point-service",
+            "to": "postgresql",
+            "sections": [
+              {
+                "start": {
+                  "x": 464,
+                  "y": 140
+                },
+                "end": {
+                  "x": 561,
+                  "y": 72
+                },
+                "bendPoints": [
+                  {
+                    "x": 474,
+                    "y": 140
+                  },
+                  {
+                    "x": 474,
+                    "y": 72
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "point-service-to-redis",
+            "sourceId": "point-service-to-redis",
+            "from": "point-service",
+            "to": "redis",
+            "sections": [
+              {
+                "start": {
+                  "x": 464,
+                  "y": 164
+                },
+                "end": {
+                  "x": 561,
+                  "y": 164
+                },
+                "bendPoints": []
+              }
+            ]
+          }
+        ],
+        "diagnostics": []
+      },
+      "state": {
+        "version": 1,
+        "direction": "LR",
+        "nodes": [
+          {
+            "id": "group:infrastructure",
+            "position": {
+              "x": 549,
+              "y": 24
+            },
+            "size": {
+              "width": 204,
+              "height": 188
+            }
+          },
+          {
+            "id": "postgresql",
+            "position": {
+              "x": 561,
+              "y": 36
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            },
+            "parentId": "group:infrastructure"
+          },
+          {
+            "id": "redis",
+            "position": {
+              "x": 561,
+              "y": 128
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            },
+            "parentId": "group:infrastructure"
+          },
+          {
+            "id": "rest-api",
+            "position": {
+              "x": 24,
+              "y": 116
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            }
+          },
+          {
+            "id": "point-service",
+            "position": {
+              "x": 284,
+              "y": 116
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "rest-api-to-point-service",
+            "from": "rest-api",
+            "to": "point-service"
+          },
+          {
+            "id": "point-service-to-postgresql",
+            "from": "point-service",
+            "to": "postgresql"
+          },
+          {
+            "id": "point-service-to-redis",
+            "from": "point-service",
+            "to": "redis"
+          }
+        ]
+      },
+      "durationMs": 58.79999999701977
+    },
+    "repeated": {
+      "projection": {
+        "classifications": [
+          {
+            "componentId": "rest-api",
+            "role": "gateway",
+            "confidence": "explicit",
+            "provenance": "component.type"
+          },
+          {
+            "componentId": "point-service",
+            "role": "service",
+            "confidence": "explicit",
+            "provenance": "component.type"
+          },
+          {
+            "componentId": "postgresql",
+            "role": "database",
+            "confidence": "explicit",
+            "provenance": "component.type"
+          },
+          {
+            "componentId": "redis",
+            "role": "cache",
+            "confidence": "explicit",
+            "provenance": "component.type"
+          }
+        ],
+        "abstraction": {
+          "groups": [
+            {
+              "id": "group:infrastructure",
+              "label": "Infrastructure",
+              "kind": "infrastructure",
+              "provenance": "layout semantic role",
+              "memberIds": [
+                "postgresql",
+                "redis"
+              ]
+            }
+          ],
+          "parentByComponentId": {
+            "postgresql": "group:infrastructure",
+            "redis": "group:infrastructure"
+          }
+        },
+        "visualGraph": {
+          "nodes": [
+            {
+              "id": "group:infrastructure",
+              "sourceId": "group:infrastructure",
+              "kind": "group",
+              "label": "Infrastructure",
+              "role": "unknown",
+              "groupKind": "infrastructure",
+              "hints": {
+                "preferredRank": "application",
+                "portDirection": "bidirectional",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "rest-api",
+              "sourceId": "rest-api",
+              "kind": "component",
+              "label": "REST API",
+              "role": "gateway",
+              "classification": {
+                "componentId": "rest-api",
+                "role": "gateway",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "entry",
+                "portDirection": "outgoing",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "point-service",
+              "sourceId": "point-service",
+              "kind": "component",
+              "label": "PointService",
+              "role": "service",
+              "classification": {
+                "componentId": "point-service",
+                "role": "service",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "application",
+                "portDirection": "bidirectional",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "postgresql",
+              "sourceId": "postgresql",
+              "kind": "component",
+              "label": "PostgreSQL",
+              "role": "database",
+              "parentId": "group:infrastructure",
+              "classification": {
+                "componentId": "postgresql",
+                "role": "database",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "data",
+                "portDirection": "incoming",
+                "infrastructure": true,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "redis",
+              "sourceId": "redis",
+              "kind": "component",
+              "label": "Redis",
+              "role": "cache",
+              "parentId": "group:infrastructure",
+              "classification": {
+                "componentId": "redis",
+                "role": "cache",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "data",
+                "portDirection": "incoming",
+                "infrastructure": true,
+                "externalBoundary": false
+              }
+            }
+          ],
+          "edges": [
+            {
+              "id": "rest-api-to-point-service",
+              "sourceId": "rest-api-to-point-service",
+              "from": "rest-api",
+              "to": "point-service",
+              "label": "Expose point commands and queries to external callers.",
+              "asynchronous": false
+            },
+            {
+              "id": "point-service-to-postgresql",
+              "sourceId": "point-service-to-postgresql",
+              "from": "point-service",
+              "to": "postgresql",
+              "label": "Persist point accounts and point transactions in the system of record.",
+              "asynchronous": false
+            },
+            {
+              "id": "point-service-to-redis",
+              "sourceId": "point-service-to-redis",
+              "from": "point-service",
+              "to": "redis",
+              "label": "Read and refresh derived point summaries for fast query paths.",
+              "asynchronous": false
+            }
+          ]
+        },
+        "layoutGraph": {
+          "direction": "LR",
+          "nodes": [
+            {
+              "id": "group:infrastructure",
+              "sourceId": "group:infrastructure",
+              "kind": "group",
+              "label": "Infrastructure",
+              "role": "unknown",
+              "groupKind": "infrastructure",
+              "hints": {
+                "preferredRank": "application",
+                "portDirection": "bidirectional",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "rest-api",
+              "sourceId": "rest-api",
+              "kind": "component",
+              "label": "REST API",
+              "role": "gateway",
+              "classification": {
+                "componentId": "rest-api",
+                "role": "gateway",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "entry",
+                "portDirection": "outgoing",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "point-service",
+              "sourceId": "point-service",
+              "kind": "component",
+              "label": "PointService",
+              "role": "service",
+              "classification": {
+                "componentId": "point-service",
+                "role": "service",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "application",
+                "portDirection": "bidirectional",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "postgresql",
+              "sourceId": "postgresql",
+              "kind": "component",
+              "label": "PostgreSQL",
+              "role": "database",
+              "parentId": "group:infrastructure",
+              "classification": {
+                "componentId": "postgresql",
+                "role": "database",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "data",
+                "portDirection": "incoming",
+                "infrastructure": true,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "redis",
+              "sourceId": "redis",
+              "kind": "component",
+              "label": "Redis",
+              "role": "cache",
+              "parentId": "group:infrastructure",
+              "classification": {
+                "componentId": "redis",
+                "role": "cache",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "data",
+                "portDirection": "incoming",
+                "infrastructure": true,
+                "externalBoundary": false
+              }
+            }
+          ],
+          "edges": [
+            {
+              "id": "rest-api-to-point-service",
+              "sourceId": "rest-api-to-point-service",
+              "from": "rest-api",
+              "to": "point-service",
+              "label": "Expose point commands and queries to external callers.",
+              "asynchronous": false
+            },
+            {
+              "id": "point-service-to-postgresql",
+              "sourceId": "point-service-to-postgresql",
+              "from": "point-service",
+              "to": "postgresql",
+              "label": "Persist point accounts and point transactions in the system of record.",
+              "asynchronous": false
+            },
+            {
+              "id": "point-service-to-redis",
+              "sourceId": "point-service-to-redis",
+              "from": "point-service",
+              "to": "redis",
+              "label": "Read and refresh derived point summaries for fast query paths.",
+              "asynchronous": false
+            }
+          ],
+          "constraints": [
+            {
+              "kind": "direction",
+              "direction": "LR",
+              "strength": "required"
+            },
+            {
+              "kind": "rank",
+              "nodeId": "rest-api",
+              "rank": "entry",
+              "strength": "preferred"
+            },
+            {
+              "kind": "rank",
+              "nodeId": "point-service",
+              "rank": "application",
+              "strength": "preferred"
+            },
+            {
+              "kind": "rank",
+              "nodeId": "postgresql",
+              "rank": "data",
+              "strength": "preferred"
+            },
+            {
+              "kind": "rank",
+              "nodeId": "redis",
+              "rank": "data",
+              "strength": "preferred"
+            },
+            {
+              "kind": "group",
+              "groupId": "group:infrastructure",
+              "memberIds": [
+                "postgresql",
+                "redis"
+              ],
+              "groupKind": "infrastructure",
+              "strength": "required"
+            },
+            {
+              "kind": "proximity",
+              "nodeIds": [
+                "point-service",
+                "redis"
+              ],
+              "reason": "ownership",
+              "strength": "preferred"
+            }
+          ]
+        }
+      },
+      "requestedMode": "FULL",
+      "appliedMode": "FULL",
+      "result": {
+        "status": "success",
+        "direction": "LR",
+        "size": {
+          "width": 777,
+          "height": 236
+        },
+        "nodes": [
+          {
+            "id": "group:infrastructure",
+            "sourceId": "group:infrastructure",
+            "kind": "group",
+            "position": {
+              "x": 549,
+              "y": 24
+            },
+            "size": {
+              "width": 204,
+              "height": 188
+            }
+          },
+          {
+            "id": "postgresql",
+            "sourceId": "postgresql",
+            "kind": "component",
+            "position": {
+              "x": 561,
+              "y": 36
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            },
+            "parentId": "group:infrastructure"
+          },
+          {
+            "id": "redis",
+            "sourceId": "redis",
+            "kind": "component",
+            "position": {
+              "x": 561,
+              "y": 128
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            },
+            "parentId": "group:infrastructure"
+          },
+          {
+            "id": "rest-api",
+            "sourceId": "rest-api",
+            "kind": "component",
+            "position": {
+              "x": 24,
+              "y": 116
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            }
+          },
+          {
+            "id": "point-service",
+            "sourceId": "point-service",
+            "kind": "component",
+            "position": {
+              "x": 284,
+              "y": 116
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "rest-api-to-point-service",
+            "sourceId": "rest-api-to-point-service",
+            "from": "rest-api",
+            "to": "point-service",
+            "sections": [
+              {
+                "start": {
+                  "x": 204,
+                  "y": 152
+                },
+                "end": {
+                  "x": 284,
+                  "y": 152
+                },
+                "bendPoints": []
+              }
+            ]
+          },
+          {
+            "id": "point-service-to-postgresql",
+            "sourceId": "point-service-to-postgresql",
+            "from": "point-service",
+            "to": "postgresql",
+            "sections": [
+              {
+                "start": {
+                  "x": 464,
+                  "y": 140
+                },
+                "end": {
+                  "x": 561,
+                  "y": 72
+                },
+                "bendPoints": [
+                  {
+                    "x": 474,
+                    "y": 140
+                  },
+                  {
+                    "x": 474,
+                    "y": 72
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "point-service-to-redis",
+            "sourceId": "point-service-to-redis",
+            "from": "point-service",
+            "to": "redis",
+            "sections": [
+              {
+                "start": {
+                  "x": 464,
+                  "y": 164
+                },
+                "end": {
+                  "x": 561,
+                  "y": 164
+                },
+                "bendPoints": []
+              }
+            ]
+          }
+        ],
+        "diagnostics": []
+      },
+      "state": {
+        "version": 1,
+        "direction": "LR",
+        "nodes": [
+          {
+            "id": "group:infrastructure",
+            "position": {
+              "x": 549,
+              "y": 24
+            },
+            "size": {
+              "width": 204,
+              "height": 188
+            }
+          },
+          {
+            "id": "postgresql",
+            "position": {
+              "x": 561,
+              "y": 36
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            },
+            "parentId": "group:infrastructure"
+          },
+          {
+            "id": "redis",
+            "position": {
+              "x": 561,
+              "y": 128
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            },
+            "parentId": "group:infrastructure"
+          },
+          {
+            "id": "rest-api",
+            "position": {
+              "x": 24,
+              "y": 116
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            }
+          },
+          {
+            "id": "point-service",
+            "position": {
+              "x": 284,
+              "y": 116
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "rest-api-to-point-service",
+            "from": "rest-api",
+            "to": "point-service"
+          },
+          {
+            "id": "point-service-to-postgresql",
+            "from": "point-service",
+            "to": "postgresql"
+          },
+          {
+            "id": "point-service-to-redis",
+            "from": "point-service",
+            "to": "redis"
+          }
+        ]
+      },
+      "durationMs": 55.600000001490116
+    },
+    "incremental": {
+      "projection": {
+        "classifications": [
+          {
+            "componentId": "rest-api",
+            "role": "gateway",
+            "confidence": "explicit",
+            "provenance": "component.type"
+          },
+          {
+            "componentId": "point-service",
+            "role": "service",
+            "confidence": "explicit",
+            "provenance": "component.type"
+          },
+          {
+            "componentId": "postgresql",
+            "role": "database",
+            "confidence": "explicit",
+            "provenance": "component.type"
+          },
+          {
+            "componentId": "redis",
+            "role": "cache",
+            "confidence": "explicit",
+            "provenance": "component.type"
+          }
+        ],
+        "abstraction": {
+          "groups": [
+            {
+              "id": "group:infrastructure",
+              "label": "Infrastructure",
+              "kind": "infrastructure",
+              "provenance": "layout semantic role",
+              "memberIds": [
+                "postgresql",
+                "redis"
+              ]
+            }
+          ],
+          "parentByComponentId": {
+            "postgresql": "group:infrastructure",
+            "redis": "group:infrastructure"
+          }
+        },
+        "visualGraph": {
+          "nodes": [
+            {
+              "id": "group:infrastructure",
+              "sourceId": "group:infrastructure",
+              "kind": "group",
+              "label": "Infrastructure",
+              "role": "unknown",
+              "groupKind": "infrastructure",
+              "hints": {
+                "preferredRank": "application",
+                "portDirection": "bidirectional",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "rest-api",
+              "sourceId": "rest-api",
+              "kind": "component",
+              "label": "REST API",
+              "role": "gateway",
+              "classification": {
+                "componentId": "rest-api",
+                "role": "gateway",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "entry",
+                "portDirection": "outgoing",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "point-service",
+              "sourceId": "point-service",
+              "kind": "component",
+              "label": "PointService",
+              "role": "service",
+              "classification": {
+                "componentId": "point-service",
+                "role": "service",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "application",
+                "portDirection": "bidirectional",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "postgresql",
+              "sourceId": "postgresql",
+              "kind": "component",
+              "label": "PostgreSQL",
+              "role": "database",
+              "parentId": "group:infrastructure",
+              "classification": {
+                "componentId": "postgresql",
+                "role": "database",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "data",
+                "portDirection": "incoming",
+                "infrastructure": true,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "redis",
+              "sourceId": "redis",
+              "kind": "component",
+              "label": "Redis",
+              "role": "cache",
+              "parentId": "group:infrastructure",
+              "classification": {
+                "componentId": "redis",
+                "role": "cache",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "data",
+                "portDirection": "incoming",
+                "infrastructure": true,
+                "externalBoundary": false
+              }
+            }
+          ],
+          "edges": [
+            {
+              "id": "rest-api-to-point-service",
+              "sourceId": "rest-api-to-point-service",
+              "from": "rest-api",
+              "to": "point-service",
+              "label": "Expose point commands and queries to external callers.",
+              "asynchronous": false
+            },
+            {
+              "id": "point-service-to-postgresql",
+              "sourceId": "point-service-to-postgresql",
+              "from": "point-service",
+              "to": "postgresql",
+              "label": "Persist point accounts and point transactions in the system of record.",
+              "asynchronous": false
+            },
+            {
+              "id": "point-service-to-redis",
+              "sourceId": "point-service-to-redis",
+              "from": "point-service",
+              "to": "redis",
+              "label": "Read and refresh derived point summaries for fast query paths.",
+              "asynchronous": false
+            }
+          ]
+        },
+        "layoutGraph": {
+          "direction": "LR",
+          "nodes": [
+            {
+              "id": "group:infrastructure",
+              "sourceId": "group:infrastructure",
+              "kind": "group",
+              "label": "Infrastructure",
+              "role": "unknown",
+              "groupKind": "infrastructure",
+              "hints": {
+                "preferredRank": "application",
+                "portDirection": "bidirectional",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "rest-api",
+              "sourceId": "rest-api",
+              "kind": "component",
+              "label": "REST API",
+              "role": "gateway",
+              "classification": {
+                "componentId": "rest-api",
+                "role": "gateway",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "entry",
+                "portDirection": "outgoing",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "point-service",
+              "sourceId": "point-service",
+              "kind": "component",
+              "label": "PointService",
+              "role": "service",
+              "classification": {
+                "componentId": "point-service",
+                "role": "service",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "application",
+                "portDirection": "bidirectional",
+                "infrastructure": false,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "postgresql",
+              "sourceId": "postgresql",
+              "kind": "component",
+              "label": "PostgreSQL",
+              "role": "database",
+              "parentId": "group:infrastructure",
+              "classification": {
+                "componentId": "postgresql",
+                "role": "database",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "data",
+                "portDirection": "incoming",
+                "infrastructure": true,
+                "externalBoundary": false
+              }
+            },
+            {
+              "id": "redis",
+              "sourceId": "redis",
+              "kind": "component",
+              "label": "Redis",
+              "role": "cache",
+              "parentId": "group:infrastructure",
+              "classification": {
+                "componentId": "redis",
+                "role": "cache",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              "hints": {
+                "preferredRank": "data",
+                "portDirection": "incoming",
+                "infrastructure": true,
+                "externalBoundary": false
+              }
+            }
+          ],
+          "edges": [
+            {
+              "id": "rest-api-to-point-service",
+              "sourceId": "rest-api-to-point-service",
+              "from": "rest-api",
+              "to": "point-service",
+              "label": "Expose point commands and queries to external callers.",
+              "asynchronous": false
+            },
+            {
+              "id": "point-service-to-postgresql",
+              "sourceId": "point-service-to-postgresql",
+              "from": "point-service",
+              "to": "postgresql",
+              "label": "Persist point accounts and point transactions in the system of record.",
+              "asynchronous": false
+            },
+            {
+              "id": "point-service-to-redis",
+              "sourceId": "point-service-to-redis",
+              "from": "point-service",
+              "to": "redis",
+              "label": "Read and refresh derived point summaries for fast query paths.",
+              "asynchronous": false
+            }
+          ],
+          "constraints": [
+            {
+              "kind": "direction",
+              "direction": "LR",
+              "strength": "required"
+            },
+            {
+              "kind": "rank",
+              "nodeId": "rest-api",
+              "rank": "entry",
+              "strength": "preferred"
+            },
+            {
+              "kind": "rank",
+              "nodeId": "point-service",
+              "rank": "application",
+              "strength": "preferred"
+            },
+            {
+              "kind": "rank",
+              "nodeId": "postgresql",
+              "rank": "data",
+              "strength": "preferred"
+            },
+            {
+              "kind": "rank",
+              "nodeId": "redis",
+              "rank": "data",
+              "strength": "preferred"
+            },
+            {
+              "kind": "group",
+              "groupId": "group:infrastructure",
+              "memberIds": [
+                "postgresql",
+                "redis"
+              ],
+              "groupKind": "infrastructure",
+              "strength": "required"
+            },
+            {
+              "kind": "proximity",
+              "nodeIds": [
+                "point-service",
+                "redis"
+              ],
+              "reason": "ownership",
+              "strength": "preferred"
+            }
+          ]
+        }
+      },
+      "requestedMode": "INCREMENTAL",
+      "appliedMode": "INCREMENTAL",
+      "result": {
+        "status": "success",
+        "direction": "LR",
+        "size": {
+          "width": 753,
+          "height": 212
+        },
+        "nodes": [
+          {
+            "id": "group:infrastructure",
+            "sourceId": "group:infrastructure",
+            "kind": "group",
+            "position": {
+              "x": 549,
+              "y": 24
+            },
+            "size": {
+              "width": 204,
+              "height": 188
+            }
+          },
+          {
+            "id": "postgresql",
+            "sourceId": "postgresql",
+            "kind": "component",
+            "position": {
+              "x": 561,
+              "y": 36
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            },
+            "parentId": "group:infrastructure"
+          },
+          {
+            "id": "redis",
+            "sourceId": "redis",
+            "kind": "component",
+            "position": {
+              "x": 561,
+              "y": 128
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            },
+            "parentId": "group:infrastructure"
+          },
+          {
+            "id": "rest-api",
+            "sourceId": "rest-api",
+            "kind": "component",
+            "position": {
+              "x": 24,
+              "y": 116
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            }
+          },
+          {
+            "id": "point-service",
+            "sourceId": "point-service",
+            "kind": "component",
+            "position": {
+              "x": 284,
+              "y": 116
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "rest-api-to-point-service",
+            "sourceId": "rest-api-to-point-service",
+            "from": "rest-api",
+            "to": "point-service",
+            "sections": []
+          },
+          {
+            "id": "point-service-to-postgresql",
+            "sourceId": "point-service-to-postgresql",
+            "from": "point-service",
+            "to": "postgresql",
+            "sections": []
+          },
+          {
+            "id": "point-service-to-redis",
+            "sourceId": "point-service-to-redis",
+            "from": "point-service",
+            "to": "redis",
+            "sections": []
+          }
+        ],
+        "diagnostics": []
+      },
+      "state": {
+        "version": 1,
+        "direction": "LR",
+        "nodes": [
+          {
+            "id": "group:infrastructure",
+            "position": {
+              "x": 549,
+              "y": 24
+            },
+            "size": {
+              "width": 204,
+              "height": 188
+            }
+          },
+          {
+            "id": "postgresql",
+            "position": {
+              "x": 561,
+              "y": 36
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            },
+            "parentId": "group:infrastructure"
+          },
+          {
+            "id": "redis",
+            "position": {
+              "x": 561,
+              "y": 128
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            },
+            "parentId": "group:infrastructure"
+          },
+          {
+            "id": "rest-api",
+            "position": {
+              "x": 24,
+              "y": 116
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            }
+          },
+          {
+            "id": "point-service",
+            "position": {
+              "x": 284,
+              "y": 116
+            },
+            "size": {
+              "width": 180,
+              "height": 72
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "rest-api-to-point-service",
+            "from": "rest-api",
+            "to": "point-service"
+          },
+          {
+            "id": "point-service-to-postgresql",
+            "from": "point-service",
+            "to": "postgresql"
+          },
+          {
+            "id": "point-service-to-redis",
+            "from": "point-service",
+            "to": "redis"
+          }
+        ]
+      },
+      "movement": {
+        "nodes": [
+          {
+            "nodeId": "group:infrastructure",
+            "distance": 0,
+            "affected": false
+          },
+          {
+            "nodeId": "postgresql",
+            "distance": 0,
+            "affected": false
+          },
+          {
+            "nodeId": "redis",
+            "distance": 0,
+            "affected": false
+          },
+          {
+            "nodeId": "rest-api",
+            "distance": 0,
+            "affected": false
+          },
+          {
+            "nodeId": "point-service",
+            "distance": 0,
+            "affected": false
+          }
+        ],
+        "unaffectedP95": 0,
+        "unaffectedMax": 0,
+        "relativeOrderReversed": false,
+        "withinBudget": true
+      },
+      "durationMs": 56.399999998509884
+    },
+    "editedId": "point-service",
+    "inputImmutable": true,
+    "movementBudget": {
+      "unaffectedP95": 48,
+      "unaffectedMax": 144
+    }
+  }
+}

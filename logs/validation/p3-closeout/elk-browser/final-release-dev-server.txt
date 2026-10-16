@@ -1,0 +1,11 @@
+
+> @coding-cad/web@0.1.0 dev /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/web
+> vite dev --host 127.0.0.1 --port 4173 --strictPort
+
+
+  VITE v7.3.6  ready in 225 ms
+
+  ➜  Local:   http://127.0.0.1:4173/
+
+[1;31m[404] GET /favicon.ico[0m
+ ELIFECYCLE  Command failed.

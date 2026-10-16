@@ -8,11 +8,13 @@ process.env.CODING_CAD_E2E_WORKSPACE_ROOT = workspaceRoot;
 
 export default defineConfig({
   testDir: "./e2e",
+  metadata: { layoutMode: "dev" },
   fullyParallel: false,
   workers: 1,
   globalSetup: "./e2e/workspace-setup.ts",
   forbidOnly: Boolean(process.env.CI),
-  retries: process.env.CI ? 2 : 0,
+  // A fallback on any attempt must keep the CI gate red.
+  retries: 0,
   reporter: "list",
   use: {
     baseURL: "http://127.0.0.1:4173",

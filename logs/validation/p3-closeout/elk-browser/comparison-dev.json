@@ -1,0 +1,5653 @@
+[
+  {
+    "fixture": "workspace-default",
+    "mode": "dev",
+    "elk": {
+      "status": "success",
+      "metrics": {
+        "nodes": 5,
+        "components": 4,
+        "peerOverlaps": 0,
+        "overlapPairs": [],
+        "containmentFailures": [],
+        "routedEdges": 3,
+        "edges": 3,
+        "routedCrossings": 0,
+        "rankInversions": 0,
+        "area": 183372
+      },
+      "deterministic": true,
+      "movement": {
+        "nodes": [
+          {
+            "nodeId": "group:infrastructure",
+            "distance": 0,
+            "affected": false
+          },
+          {
+            "nodeId": "postgresql",
+            "distance": 0,
+            "affected": false
+          },
+          {
+            "nodeId": "redis",
+            "distance": 0,
+            "affected": false
+          },
+          {
+            "nodeId": "rest-api",
+            "distance": 0,
+            "affected": false
+          },
+          {
+            "nodeId": "point-service",
+            "distance": 0,
+            "affected": false
+          }
+        ],
+        "unaffectedP95": 0,
+        "unaffectedMax": 0,
+        "relativeOrderReversed": false,
+        "withinBudget": true
+      },
+      "appliedMode": "INCREMENTAL"
+    },
+    "fallback": {
+      "status": "fallback",
+      "diagnostics": [
+        {
+          "code": "LAYOUT_TIMEOUT",
+          "severity": "warning",
+          "message": "Layout exceeded 0ms."
+        }
+      ],
+      "metrics": {
+        "nodes": 5,
+        "components": 4,
+        "peerOverlaps": 0,
+        "overlapPairs": [],
+        "containmentFailures": [
+          "postgresql",
+          "redis"
+        ],
+        "routedEdges": 0,
+        "edges": 3,
+        "routedCrossings": null,
+        "rankInversions": 0,
+        "area": 78624
+      },
+      "deterministic": true,
+      "appliedMode": "FULL",
+      "movement": null
+    },
+    "raw": {
+      "elk": {
+        "name": "workspace-default",
+        "first": {
+          "projection": {
+            "classifications": [
+              {
+                "componentId": "rest-api",
+                "role": "gateway",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              {
+                "componentId": "point-service",
+                "role": "service",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              {
+                "componentId": "postgresql",
+                "role": "database",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              {
+                "componentId": "redis",
+                "role": "cache",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              }
+            ],
+            "abstraction": {
+              "groups": [
+                {
+                  "id": "group:infrastructure",
+                  "label": "Infrastructure",
+                  "kind": "infrastructure",
+                  "provenance": "layout semantic role",
+                  "memberIds": [
+                    "postgresql",
+                    "redis"
+                  ]
+                }
+              ],
+              "parentByComponentId": {
+                "postgresql": "group:infrastructure",
+                "redis": "group:infrastructure"
+              }
+            },
+            "visualGraph": {
+              "nodes": [
+                {
+                  "id": "group:infrastructure",
+                  "sourceId": "group:infrastructure",
+                  "kind": "group",
+                  "label": "Infrastructure",
+                  "role": "unknown",
+                  "groupKind": "infrastructure",
+                  "hints": {
+                    "preferredRank": "application",
+                    "portDirection": "bidirectional",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "rest-api",
+                  "sourceId": "rest-api",
+                  "kind": "component",
+                  "label": "REST API",
+                  "role": "gateway",
+                  "classification": {
+                    "componentId": "rest-api",
+                    "role": "gateway",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "entry",
+                    "portDirection": "outgoing",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "point-service",
+                  "sourceId": "point-service",
+                  "kind": "component",
+                  "label": "PointService",
+                  "role": "service",
+                  "classification": {
+                    "componentId": "point-service",
+                    "role": "service",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "application",
+                    "portDirection": "bidirectional",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "postgresql",
+                  "sourceId": "postgresql",
+                  "kind": "component",
+                  "label": "PostgreSQL",
+                  "role": "database",
+                  "parentId": "group:infrastructure",
+                  "classification": {
+                    "componentId": "postgresql",
+                    "role": "database",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "data",
+                    "portDirection": "incoming",
+                    "infrastructure": true,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "redis",
+                  "sourceId": "redis",
+                  "kind": "component",
+                  "label": "Redis",
+                  "role": "cache",
+                  "parentId": "group:infrastructure",
+                  "classification": {
+                    "componentId": "redis",
+                    "role": "cache",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "data",
+                    "portDirection": "incoming",
+                    "infrastructure": true,
+                    "externalBoundary": false
+                  }
+                }
+              ],
+              "edges": [
+                {
+                  "id": "rest-api-to-point-service",
+                  "sourceId": "rest-api-to-point-service",
+                  "from": "rest-api",
+                  "to": "point-service",
+                  "label": "Expose point commands and queries to external callers.",
+                  "asynchronous": false
+                },
+                {
+                  "id": "point-service-to-postgresql",
+                  "sourceId": "point-service-to-postgresql",
+                  "from": "point-service",
+                  "to": "postgresql",
+                  "label": "Persist point accounts and point transactions in the system of record.",
+                  "asynchronous": false
+                },
+                {
+                  "id": "point-service-to-redis",
+                  "sourceId": "point-service-to-redis",
+                  "from": "point-service",
+                  "to": "redis",
+                  "label": "Read and refresh derived point summaries for fast query paths.",
+                  "asynchronous": false
+                }
+              ]
+            },
+            "layoutGraph": {
+              "direction": "LR",
+              "nodes": [
+                {
+                  "id": "group:infrastructure",
+                  "sourceId": "group:infrastructure",
+                  "kind": "group",
+                  "label": "Infrastructure",
+                  "role": "unknown",
+                  "groupKind": "infrastructure",
+                  "hints": {
+                    "preferredRank": "application",
+                    "portDirection": "bidirectional",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "rest-api",
+                  "sourceId": "rest-api",
+                  "kind": "component",
+                  "label": "REST API",
+                  "role": "gateway",
+                  "classification": {
+                    "componentId": "rest-api",
+                    "role": "gateway",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "entry",
+                    "portDirection": "outgoing",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "point-service",
+                  "sourceId": "point-service",
+                  "kind": "component",
+                  "label": "PointService",
+                  "role": "service",
+                  "classification": {
+                    "componentId": "point-service",
+                    "role": "service",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "application",
+                    "portDirection": "bidirectional",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "postgresql",
+                  "sourceId": "postgresql",
+                  "kind": "component",
+                  "label": "PostgreSQL",
+                  "role": "database",
+                  "parentId": "group:infrastructure",
+                  "classification": {
+                    "componentId": "postgresql",
+                    "role": "database",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "data",
+                    "portDirection": "incoming",
+                    "infrastructure": true,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "redis",
+                  "sourceId": "redis",
+                  "kind": "component",
+                  "label": "Redis",
+                  "role": "cache",
+                  "parentId": "group:infrastructure",
+                  "classification": {
+                    "componentId": "redis",
+                    "role": "cache",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "data",
+                    "portDirection": "incoming",
+                    "infrastructure": true,
+                    "externalBoundary": false
+                  }
+                }
+              ],
+              "edges": [
+                {
+                  "id": "rest-api-to-point-service",
+                  "sourceId": "rest-api-to-point-service",
+                  "from": "rest-api",
+                  "to": "point-service",
+                  "label": "Expose point commands and queries to external callers.",
+                  "asynchronous": false
+                },
+                {
+                  "id": "point-service-to-postgresql",
+                  "sourceId": "point-service-to-postgresql",
+                  "from": "point-service",
+                  "to": "postgresql",
+                  "label": "Persist point accounts and point transactions in the system of record.",
+                  "asynchronous": false
+                },
+                {
+                  "id": "point-service-to-redis",
+                  "sourceId": "point-service-to-redis",
+                  "from": "point-service",
+                  "to": "redis",
+                  "label": "Read and refresh derived point summaries for fast query paths.",
+                  "asynchronous": false
+                }
+              ],
+              "constraints": [
+                {
+                  "kind": "direction",
+                  "direction": "LR",
+                  "strength": "required"
+                },
+                {
+                  "kind": "rank",
+                  "nodeId": "rest-api",
+                  "rank": "entry",
+                  "strength": "preferred"
+                },
+                {
+                  "kind": "rank",
+                  "nodeId": "point-service",
+                  "rank": "application",
+                  "strength": "preferred"
+                },
+                {
+                  "kind": "rank",
+                  "nodeId": "postgresql",
+                  "rank": "data",
+                  "strength": "preferred"
+                },
+                {
+                  "kind": "rank",
+                  "nodeId": "redis",
+                  "rank": "data",
+                  "strength": "preferred"
+                },
+                {
+                  "kind": "group",
+                  "groupId": "group:infrastructure",
+                  "memberIds": [
+                    "postgresql",
+                    "redis"
+                  ],
+                  "groupKind": "infrastructure",
+                  "strength": "required"
+                },
+                {
+                  "kind": "proximity",
+                  "nodeIds": [
+                    "point-service",
+                    "redis"
+                  ],
+                  "reason": "ownership",
+                  "strength": "preferred"
+                }
+              ]
+            }
+          },
+          "requestedMode": "FULL",
+          "appliedMode": "FULL",
+          "result": {
+            "status": "success",
+            "direction": "LR",
+            "size": {
+              "width": 777,
+              "height": 236
+            },
+            "nodes": [
+              {
+                "id": "group:infrastructure",
+                "sourceId": "group:infrastructure",
+                "kind": "group",
+                "position": {
+                  "x": 549,
+                  "y": 24
+                },
+                "size": {
+                  "width": 204,
+                  "height": 188
+                }
+              },
+              {
+                "id": "postgresql",
+                "sourceId": "postgresql",
+                "kind": "component",
+                "position": {
+                  "x": 561,
+                  "y": 36
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                },
+                "parentId": "group:infrastructure"
+              },
+              {
+                "id": "redis",
+                "sourceId": "redis",
+                "kind": "component",
+                "position": {
+                  "x": 561,
+                  "y": 128
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                },
+                "parentId": "group:infrastructure"
+              },
+              {
+                "id": "rest-api",
+                "sourceId": "rest-api",
+                "kind": "component",
+                "position": {
+                  "x": 24,
+                  "y": 116
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                }
+              },
+              {
+                "id": "point-service",
+                "sourceId": "point-service",
+                "kind": "component",
+                "position": {
+                  "x": 284,
+                  "y": 116
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                }
+              }
+            ],
+            "edges": [
+              {
+                "id": "rest-api-to-point-service",
+                "sourceId": "rest-api-to-point-service",
+                "from": "rest-api",
+                "to": "point-service",
+                "sections": [
+                  {
+                    "start": {
+                      "x": 204,
+                      "y": 152
+                    },
+                    "end": {
+                      "x": 284,
+                      "y": 152
+                    },
+                    "bendPoints": []
+                  }
+                ]
+              },
+              {
+                "id": "point-service-to-postgresql",
+                "sourceId": "point-service-to-postgresql",
+                "from": "point-service",
+                "to": "postgresql",
+                "sections": [
+                  {
+                    "start": {
+                      "x": 464,
+                      "y": 140
+                    },
+                    "end": {
+                      "x": 561,
+                      "y": 72
+                    },
+                    "bendPoints": [
+                      {
+                        "x": 474,
+                        "y": 140
+                      },
+                      {
+                        "x": 474,
+                        "y": 72
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "point-service-to-redis",
+                "sourceId": "point-service-to-redis",
+                "from": "point-service",
+                "to": "redis",
+                "sections": [
+                  {
+                    "start": {
+                      "x": 464,
+                      "y": 164
+                    },
+                    "end": {
+                      "x": 561,
+                      "y": 164
+                    },
+                    "bendPoints": []
+                  }
+                ]
+              }
+            ],
+            "diagnostics": []
+          },
+          "state": {
+            "version": 1,
+            "direction": "LR",
+            "nodes": [
+              {
+                "id": "group:infrastructure",
+                "position": {
+                  "x": 549,
+                  "y": 24
+                },
+                "size": {
+                  "width": 204,
+                  "height": 188
+                }
+              },
+              {
+                "id": "postgresql",
+                "position": {
+                  "x": 561,
+                  "y": 36
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                },
+                "parentId": "group:infrastructure"
+              },
+              {
+                "id": "redis",
+                "position": {
+                  "x": 561,
+                  "y": 128
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                },
+                "parentId": "group:infrastructure"
+              },
+              {
+                "id": "rest-api",
+                "position": {
+                  "x": 24,
+                  "y": 116
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                }
+              },
+              {
+                "id": "point-service",
+                "position": {
+                  "x": 284,
+                  "y": 116
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                }
+              }
+            ],
+            "edges": [
+              {
+                "id": "rest-api-to-point-service",
+                "from": "rest-api",
+                "to": "point-service"
+              },
+              {
+                "id": "point-service-to-postgresql",
+                "from": "point-service",
+                "to": "postgresql"
+              },
+              {
+                "id": "point-service-to-redis",
+                "from": "point-service",
+                "to": "redis"
+              }
+            ]
+          },
+          "durationMs": 65.70000000298023
+        },
+        "repeated": {
+          "projection": {
+            "classifications": [
+              {
+                "componentId": "rest-api",
+                "role": "gateway",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              {
+                "componentId": "point-service",
+                "role": "service",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              {
+                "componentId": "postgresql",
+                "role": "database",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              {
+                "componentId": "redis",
+                "role": "cache",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              }
+            ],
+            "abstraction": {
+              "groups": [
+                {
+                  "id": "group:infrastructure",
+                  "label": "Infrastructure",
+                  "kind": "infrastructure",
+                  "provenance": "layout semantic role",
+                  "memberIds": [
+                    "postgresql",
+                    "redis"
+                  ]
+                }
+              ],
+              "parentByComponentId": {
+                "postgresql": "group:infrastructure",
+                "redis": "group:infrastructure"
+              }
+            },
+            "visualGraph": {
+              "nodes": [
+                {
+                  "id": "group:infrastructure",
+                  "sourceId": "group:infrastructure",
+                  "kind": "group",
+                  "label": "Infrastructure",
+                  "role": "unknown",
+                  "groupKind": "infrastructure",
+                  "hints": {
+                    "preferredRank": "application",
+                    "portDirection": "bidirectional",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "rest-api",
+                  "sourceId": "rest-api",
+                  "kind": "component",
+                  "label": "REST API",
+                  "role": "gateway",
+                  "classification": {
+                    "componentId": "rest-api",
+                    "role": "gateway",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "entry",
+                    "portDirection": "outgoing",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "point-service",
+                  "sourceId": "point-service",
+                  "kind": "component",
+                  "label": "PointService",
+                  "role": "service",
+                  "classification": {
+                    "componentId": "point-service",
+                    "role": "service",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "application",
+                    "portDirection": "bidirectional",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "postgresql",
+                  "sourceId": "postgresql",
+                  "kind": "component",
+                  "label": "PostgreSQL",
+                  "role": "database",
+                  "parentId": "group:infrastructure",
+                  "classification": {
+                    "componentId": "postgresql",
+                    "role": "database",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "data",
+                    "portDirection": "incoming",
+                    "infrastructure": true,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "redis",
+                  "sourceId": "redis",
+                  "kind": "component",
+                  "label": "Redis",
+                  "role": "cache",
+                  "parentId": "group:infrastructure",
+                  "classification": {
+                    "componentId": "redis",
+                    "role": "cache",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "data",
+                    "portDirection": "incoming",
+                    "infrastructure": true,
+                    "externalBoundary": false
+                  }
+                }
+              ],
+              "edges": [
+                {
+                  "id": "rest-api-to-point-service",
+                  "sourceId": "rest-api-to-point-service",
+                  "from": "rest-api",
+                  "to": "point-service",
+                  "label": "Expose point commands and queries to external callers.",
+                  "asynchronous": false
+                },
+                {
+                  "id": "point-service-to-postgresql",
+                  "sourceId": "point-service-to-postgresql",
+                  "from": "point-service",
+                  "to": "postgresql",
+                  "label": "Persist point accounts and point transactions in the system of record.",
+                  "asynchronous": false
+                },
+                {
+                  "id": "point-service-to-redis",
+                  "sourceId": "point-service-to-redis",
+                  "from": "point-service",
+                  "to": "redis",
+                  "label": "Read and refresh derived point summaries for fast query paths.",
+                  "asynchronous": false
+                }
+              ]
+            },
+            "layoutGraph": {
+              "direction": "LR",
+              "nodes": [
+                {
+                  "id": "group:infrastructure",
+                  "sourceId": "group:infrastructure",
+                  "kind": "group",
+                  "label": "Infrastructure",
+                  "role": "unknown",
+                  "groupKind": "infrastructure",
+                  "hints": {
+                    "preferredRank": "application",
+                    "portDirection": "bidirectional",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "rest-api",
+                  "sourceId": "rest-api",
+                  "kind": "component",
+                  "label": "REST API",
+                  "role": "gateway",
+                  "classification": {
+                    "componentId": "rest-api",
+                    "role": "gateway",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "entry",
+                    "portDirection": "outgoing",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "point-service",
+                  "sourceId": "point-service",
+                  "kind": "component",
+                  "label": "PointService",
+                  "role": "service",
+                  "classification": {
+                    "componentId": "point-service",
+                    "role": "service",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "application",
+                    "portDirection": "bidirectional",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "postgresql",
+                  "sourceId": "postgresql",
+                  "kind": "component",
+                  "label": "PostgreSQL",
+                  "role": "database",
+                  "parentId": "group:infrastructure",
+                  "classification": {
+                    "componentId": "postgresql",
+                    "role": "database",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "data",
+                    "portDirection": "incoming",
+                    "infrastructure": true,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "redis",
+                  "sourceId": "redis",
+                  "kind": "component",
+                  "label": "Redis",
+                  "role": "cache",
+                  "parentId": "group:infrastructure",
+                  "classification": {
+                    "componentId": "redis",
+                    "role": "cache",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "data",
+                    "portDirection": "incoming",
+                    "infrastructure": true,
+                    "externalBoundary": false
+                  }
+                }
+              ],
+              "edges": [
+                {
+                  "id": "rest-api-to-point-service",
+                  "sourceId": "rest-api-to-point-service",
+                  "from": "rest-api",
+                  "to": "point-service",
+                  "label": "Expose point commands and queries to external callers.",
+                  "asynchronous": false
+                },
+                {
+                  "id": "point-service-to-postgresql",
+                  "sourceId": "point-service-to-postgresql",
+                  "from": "point-service",
+                  "to": "postgresql",
+                  "label": "Persist point accounts and point transactions in the system of record.",
+                  "asynchronous": false
+                },
+                {
+                  "id": "point-service-to-redis",
+                  "sourceId": "point-service-to-redis",
+                  "from": "point-service",
+                  "to": "redis",
+                  "label": "Read and refresh derived point summaries for fast query paths.",
+                  "asynchronous": false
+                }
+              ],
+              "constraints": [
+                {
+                  "kind": "direction",
+                  "direction": "LR",
+                  "strength": "required"
+                },
+                {
+                  "kind": "rank",
+                  "nodeId": "rest-api",
+                  "rank": "entry",
+                  "strength": "preferred"
+                },
+                {
+                  "kind": "rank",
+                  "nodeId": "point-service",
+                  "rank": "application",
+                  "strength": "preferred"
+                },
+                {
+                  "kind": "rank",
+                  "nodeId": "postgresql",
+                  "rank": "data",
+                  "strength": "preferred"
+                },
+                {
+                  "kind": "rank",
+                  "nodeId": "redis",
+                  "rank": "data",
+                  "strength": "preferred"
+                },
+                {
+                  "kind": "group",
+                  "groupId": "group:infrastructure",
+                  "memberIds": [
+                    "postgresql",
+                    "redis"
+                  ],
+                  "groupKind": "infrastructure",
+                  "strength": "required"
+                },
+                {
+                  "kind": "proximity",
+                  "nodeIds": [
+                    "point-service",
+                    "redis"
+                  ],
+                  "reason": "ownership",
+                  "strength": "preferred"
+                }
+              ]
+            }
+          },
+          "requestedMode": "FULL",
+          "appliedMode": "FULL",
+          "result": {
+            "status": "success",
+            "direction": "LR",
+            "size": {
+              "width": 777,
+              "height": 236
+            },
+            "nodes": [
+              {
+                "id": "group:infrastructure",
+                "sourceId": "group:infrastructure",
+                "kind": "group",
+                "position": {
+                  "x": 549,
+                  "y": 24
+                },
+                "size": {
+                  "width": 204,
+                  "height": 188
+                }
+              },
+              {
+                "id": "postgresql",
+                "sourceId": "postgresql",
+                "kind": "component",
+                "position": {
+                  "x": 561,
+                  "y": 36
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                },
+                "parentId": "group:infrastructure"
+              },
+              {
+                "id": "redis",
+                "sourceId": "redis",
+                "kind": "component",
+                "position": {
+                  "x": 561,
+                  "y": 128
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                },
+                "parentId": "group:infrastructure"
+              },
+              {
+                "id": "rest-api",
+                "sourceId": "rest-api",
+                "kind": "component",
+                "position": {
+                  "x": 24,
+                  "y": 116
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                }
+              },
+              {
+                "id": "point-service",
+                "sourceId": "point-service",
+                "kind": "component",
+                "position": {
+                  "x": 284,
+                  "y": 116
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                }
+              }
+            ],
+            "edges": [
+              {
+                "id": "rest-api-to-point-service",
+                "sourceId": "rest-api-to-point-service",
+                "from": "rest-api",
+                "to": "point-service",
+                "sections": [
+                  {
+                    "start": {
+                      "x": 204,
+                      "y": 152
+                    },
+                    "end": {
+                      "x": 284,
+                      "y": 152
+                    },
+                    "bendPoints": []
+                  }
+                ]
+              },
+              {
+                "id": "point-service-to-postgresql",
+                "sourceId": "point-service-to-postgresql",
+                "from": "point-service",
+                "to": "postgresql",
+                "sections": [
+                  {
+                    "start": {
+                      "x": 464,
+                      "y": 140
+                    },
+                    "end": {
+                      "x": 561,
+                      "y": 72
+                    },
+                    "bendPoints": [
+                      {
+                        "x": 474,
+                        "y": 140
+                      },
+                      {
+                        "x": 474,
+                        "y": 72
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "point-service-to-redis",
+                "sourceId": "point-service-to-redis",
+                "from": "point-service",
+                "to": "redis",
+                "sections": [
+                  {
+                    "start": {
+                      "x": 464,
+                      "y": 164
+                    },
+                    "end": {
+                      "x": 561,
+                      "y": 164
+                    },
+                    "bendPoints": []
+                  }
+                ]
+              }
+            ],
+            "diagnostics": []
+          },
+          "state": {
+            "version": 1,
+            "direction": "LR",
+            "nodes": [
+              {
+                "id": "group:infrastructure",
+                "position": {
+                  "x": 549,
+                  "y": 24
+                },
+                "size": {
+                  "width": 204,
+                  "height": 188
+                }
+              },
+              {
+                "id": "postgresql",
+                "position": {
+                  "x": 561,
+                  "y": 36
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                },
+                "parentId": "group:infrastructure"
+              },
+              {
+                "id": "redis",
+                "position": {
+                  "x": 561,
+                  "y": 128
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                },
+                "parentId": "group:infrastructure"
+              },
+              {
+                "id": "rest-api",
+                "position": {
+                  "x": 24,
+                  "y": 116
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                }
+              },
+              {
+                "id": "point-service",
+                "position": {
+                  "x": 284,
+                  "y": 116
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                }
+              }
+            ],
+            "edges": [
+              {
+                "id": "rest-api-to-point-service",
+                "from": "rest-api",
+                "to": "point-service"
+              },
+              {
+                "id": "point-service-to-postgresql",
+                "from": "point-service",
+                "to": "postgresql"
+              },
+              {
+                "id": "point-service-to-redis",
+                "from": "point-service",
+                "to": "redis"
+              }
+            ]
+          },
+          "durationMs": 63.79999999701977
+        },
+        "incremental": {
+          "projection": {
+            "classifications": [
+              {
+                "componentId": "rest-api",
+                "role": "gateway",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              {
+                "componentId": "point-service",
+                "role": "service",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              {
+                "componentId": "postgresql",
+                "role": "database",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              {
+                "componentId": "redis",
+                "role": "cache",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              }
+            ],
+            "abstraction": {
+              "groups": [
+                {
+                  "id": "group:infrastructure",
+                  "label": "Infrastructure",
+                  "kind": "infrastructure",
+                  "provenance": "layout semantic role",
+                  "memberIds": [
+                    "postgresql",
+                    "redis"
+                  ]
+                }
+              ],
+              "parentByComponentId": {
+                "postgresql": "group:infrastructure",
+                "redis": "group:infrastructure"
+              }
+            },
+            "visualGraph": {
+              "nodes": [
+                {
+                  "id": "group:infrastructure",
+                  "sourceId": "group:infrastructure",
+                  "kind": "group",
+                  "label": "Infrastructure",
+                  "role": "unknown",
+                  "groupKind": "infrastructure",
+                  "hints": {
+                    "preferredRank": "application",
+                    "portDirection": "bidirectional",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "rest-api",
+                  "sourceId": "rest-api",
+                  "kind": "component",
+                  "label": "REST API",
+                  "role": "gateway",
+                  "classification": {
+                    "componentId": "rest-api",
+                    "role": "gateway",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "entry",
+                    "portDirection": "outgoing",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "point-service",
+                  "sourceId": "point-service",
+                  "kind": "component",
+                  "label": "PointService",
+                  "role": "service",
+                  "classification": {
+                    "componentId": "point-service",
+                    "role": "service",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "application",
+                    "portDirection": "bidirectional",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "postgresql",
+                  "sourceId": "postgresql",
+                  "kind": "component",
+                  "label": "PostgreSQL",
+                  "role": "database",
+                  "parentId": "group:infrastructure",
+                  "classification": {
+                    "componentId": "postgresql",
+                    "role": "database",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "data",
+                    "portDirection": "incoming",
+                    "infrastructure": true,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "redis",
+                  "sourceId": "redis",
+                  "kind": "component",
+                  "label": "Redis",
+                  "role": "cache",
+                  "parentId": "group:infrastructure",
+                  "classification": {
+                    "componentId": "redis",
+                    "role": "cache",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "data",
+                    "portDirection": "incoming",
+                    "infrastructure": true,
+                    "externalBoundary": false
+                  }
+                }
+              ],
+              "edges": [
+                {
+                  "id": "rest-api-to-point-service",
+                  "sourceId": "rest-api-to-point-service",
+                  "from": "rest-api",
+                  "to": "point-service",
+                  "label": "Expose point commands and queries to external callers.",
+                  "asynchronous": false
+                },
+                {
+                  "id": "point-service-to-postgresql",
+                  "sourceId": "point-service-to-postgresql",
+                  "from": "point-service",
+                  "to": "postgresql",
+                  "label": "Persist point accounts and point transactions in the system of record.",
+                  "asynchronous": false
+                },
+                {
+                  "id": "point-service-to-redis",
+                  "sourceId": "point-service-to-redis",
+                  "from": "point-service",
+                  "to": "redis",
+                  "label": "Read and refresh derived point summaries for fast query paths.",
+                  "asynchronous": false
+                }
+              ]
+            },
+            "layoutGraph": {
+              "direction": "LR",
+              "nodes": [
+                {
+                  "id": "group:infrastructure",
+                  "sourceId": "group:infrastructure",
+                  "kind": "group",
+                  "label": "Infrastructure",
+                  "role": "unknown",
+                  "groupKind": "infrastructure",
+                  "hints": {
+                    "preferredRank": "application",
+                    "portDirection": "bidirectional",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "rest-api",
+                  "sourceId": "rest-api",
+                  "kind": "component",
+                  "label": "REST API",
+                  "role": "gateway",
+                  "classification": {
+                    "componentId": "rest-api",
+                    "role": "gateway",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "entry",
+                    "portDirection": "outgoing",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "point-service",
+                  "sourceId": "point-service",
+                  "kind": "component",
+                  "label": "PointService",
+                  "role": "service",
+                  "classification": {
+                    "componentId": "point-service",
+                    "role": "service",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "application",
+                    "portDirection": "bidirectional",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "postgresql",
+                  "sourceId": "postgresql",
+                  "kind": "component",
+                  "label": "PostgreSQL",
+                  "role": "database",
+                  "parentId": "group:infrastructure",
+                  "classification": {
+                    "componentId": "postgresql",
+                    "role": "database",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "data",
+                    "portDirection": "incoming",
+                    "infrastructure": true,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "redis",
+                  "sourceId": "redis",
+                  "kind": "component",
+                  "label": "Redis",
+                  "role": "cache",
+                  "parentId": "group:infrastructure",
+                  "classification": {
+                    "componentId": "redis",
+                    "role": "cache",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "data",
+                    "portDirection": "incoming",
+                    "infrastructure": true,
+                    "externalBoundary": false
+                  }
+                }
+              ],
+              "edges": [
+                {
+                  "id": "rest-api-to-point-service",
+                  "sourceId": "rest-api-to-point-service",
+                  "from": "rest-api",
+                  "to": "point-service",
+                  "label": "Expose point commands and queries to external callers.",
+                  "asynchronous": false
+                },
+                {
+                  "id": "point-service-to-postgresql",
+                  "sourceId": "point-service-to-postgresql",
+                  "from": "point-service",
+                  "to": "postgresql",
+                  "label": "Persist point accounts and point transactions in the system of record.",
+                  "asynchronous": false
+                },
+                {
+                  "id": "point-service-to-redis",
+                  "sourceId": "point-service-to-redis",
+                  "from": "point-service",
+                  "to": "redis",
+                  "label": "Read and refresh derived point summaries for fast query paths.",
+                  "asynchronous": false
+                }
+              ],
+              "constraints": [
+                {
+                  "kind": "direction",
+                  "direction": "LR",
+                  "strength": "required"
+                },
+                {
+                  "kind": "rank",
+                  "nodeId": "rest-api",
+                  "rank": "entry",
+                  "strength": "preferred"
+                },
+                {
+                  "kind": "rank",
+                  "nodeId": "point-service",
+                  "rank": "application",
+                  "strength": "preferred"
+                },
+                {
+                  "kind": "rank",
+                  "nodeId": "postgresql",
+                  "rank": "data",
+                  "strength": "preferred"
+                },
+                {
+                  "kind": "rank",
+                  "nodeId": "redis",
+                  "rank": "data",
+                  "strength": "preferred"
+                },
+                {
+                  "kind": "group",
+                  "groupId": "group:infrastructure",
+                  "memberIds": [
+                    "postgresql",
+                    "redis"
+                  ],
+                  "groupKind": "infrastructure",
+                  "strength": "required"
+                },
+                {
+                  "kind": "proximity",
+                  "nodeIds": [
+                    "point-service",
+                    "redis"
+                  ],
+                  "reason": "ownership",
+                  "strength": "preferred"
+                }
+              ]
+            }
+          },
+          "requestedMode": "INCREMENTAL",
+          "appliedMode": "INCREMENTAL",
+          "result": {
+            "status": "success",
+            "direction": "LR",
+            "size": {
+              "width": 753,
+              "height": 212
+            },
+            "nodes": [
+              {
+                "id": "group:infrastructure",
+                "sourceId": "group:infrastructure",
+                "kind": "group",
+                "position": {
+                  "x": 549,
+                  "y": 24
+                },
+                "size": {
+                  "width": 204,
+                  "height": 188
+                }
+              },
+              {
+                "id": "postgresql",
+                "sourceId": "postgresql",
+                "kind": "component",
+                "position": {
+                  "x": 561,
+                  "y": 36
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                },
+                "parentId": "group:infrastructure"
+              },
+              {
+                "id": "redis",
+                "sourceId": "redis",
+                "kind": "component",
+                "position": {
+                  "x": 561,
+                  "y": 128
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                },
+                "parentId": "group:infrastructure"
+              },
+              {
+                "id": "rest-api",
+                "sourceId": "rest-api",
+                "kind": "component",
+                "position": {
+                  "x": 24,
+                  "y": 116
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                }
+              },
+              {
+                "id": "point-service",
+                "sourceId": "point-service",
+                "kind": "component",
+                "position": {
+                  "x": 284,
+                  "y": 116
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                }
+              }
+            ],
+            "edges": [
+              {
+                "id": "rest-api-to-point-service",
+                "sourceId": "rest-api-to-point-service",
+                "from": "rest-api",
+                "to": "point-service",
+                "sections": []
+              },
+              {
+                "id": "point-service-to-postgresql",
+                "sourceId": "point-service-to-postgresql",
+                "from": "point-service",
+                "to": "postgresql",
+                "sections": []
+              },
+              {
+                "id": "point-service-to-redis",
+                "sourceId": "point-service-to-redis",
+                "from": "point-service",
+                "to": "redis",
+                "sections": []
+              }
+            ],
+            "diagnostics": []
+          },
+          "state": {
+            "version": 1,
+            "direction": "LR",
+            "nodes": [
+              {
+                "id": "group:infrastructure",
+                "position": {
+                  "x": 549,
+                  "y": 24
+                },
+                "size": {
+                  "width": 204,
+                  "height": 188
+                }
+              },
+              {
+                "id": "postgresql",
+                "position": {
+                  "x": 561,
+                  "y": 36
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                },
+                "parentId": "group:infrastructure"
+              },
+              {
+                "id": "redis",
+                "position": {
+                  "x": 561,
+                  "y": 128
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                },
+                "parentId": "group:infrastructure"
+              },
+              {
+                "id": "rest-api",
+                "position": {
+                  "x": 24,
+                  "y": 116
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                }
+              },
+              {
+                "id": "point-service",
+                "position": {
+                  "x": 284,
+                  "y": 116
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                }
+              }
+            ],
+            "edges": [
+              {
+                "id": "rest-api-to-point-service",
+                "from": "rest-api",
+                "to": "point-service"
+              },
+              {
+                "id": "point-service-to-postgresql",
+                "from": "point-service",
+                "to": "postgresql"
+              },
+              {
+                "id": "point-service-to-redis",
+                "from": "point-service",
+                "to": "redis"
+              }
+            ]
+          },
+          "movement": {
+            "nodes": [
+              {
+                "nodeId": "group:infrastructure",
+                "distance": 0,
+                "affected": false
+              },
+              {
+                "nodeId": "postgresql",
+                "distance": 0,
+                "affected": false
+              },
+              {
+                "nodeId": "redis",
+                "distance": 0,
+                "affected": false
+              },
+              {
+                "nodeId": "rest-api",
+                "distance": 0,
+                "affected": false
+              },
+              {
+                "nodeId": "point-service",
+                "distance": 0,
+                "affected": false
+              }
+            ],
+            "unaffectedP95": 0,
+            "unaffectedMax": 0,
+            "relativeOrderReversed": false,
+            "withinBudget": true
+          },
+          "durationMs": 64.19999999552965
+        },
+        "editedId": "point-service",
+        "inputImmutable": true,
+        "movementBudget": {
+          "unaffectedP95": 48,
+          "unaffectedMax": 144
+        }
+      },
+      "fallback": {
+        "projection": {
+          "classifications": [
+            {
+              "componentId": "rest-api",
+              "role": "gateway",
+              "confidence": "explicit",
+              "provenance": "component.type"
+            },
+            {
+              "componentId": "point-service",
+              "role": "service",
+              "confidence": "explicit",
+              "provenance": "component.type"
+            },
+            {
+              "componentId": "postgresql",
+              "role": "database",
+              "confidence": "explicit",
+              "provenance": "component.type"
+            },
+            {
+              "componentId": "redis",
+              "role": "cache",
+              "confidence": "explicit",
+              "provenance": "component.type"
+            }
+          ],
+          "abstraction": {
+            "groups": [
+              {
+                "id": "group:infrastructure",
+                "label": "Infrastructure",
+                "kind": "infrastructure",
+                "provenance": "layout semantic role",
+                "memberIds": [
+                  "postgresql",
+                  "redis"
+                ]
+              }
+            ],
+            "parentByComponentId": {
+              "postgresql": "group:infrastructure",
+              "redis": "group:infrastructure"
+            }
+          },
+          "visualGraph": {
+            "nodes": [
+              {
+                "id": "group:infrastructure",
+                "sourceId": "group:infrastructure",
+                "kind": "group",
+                "label": "Infrastructure",
+                "role": "unknown",
+                "groupKind": "infrastructure",
+                "hints": {
+                  "preferredRank": "application",
+                  "portDirection": "bidirectional",
+                  "infrastructure": false,
+                  "externalBoundary": false
+                }
+              },
+              {
+                "id": "rest-api",
+                "sourceId": "rest-api",
+                "kind": "component",
+                "label": "REST API",
+                "role": "gateway",
+                "classification": {
+                  "componentId": "rest-api",
+                  "role": "gateway",
+                  "confidence": "explicit",
+                  "provenance": "component.type"
+                },
+                "hints": {
+                  "preferredRank": "entry",
+                  "portDirection": "outgoing",
+                  "infrastructure": false,
+                  "externalBoundary": false
+                }
+              },
+              {
+                "id": "point-service",
+                "sourceId": "point-service",
+                "kind": "component",
+                "label": "PointService",
+                "role": "service",
+                "classification": {
+                  "componentId": "point-service",
+                  "role": "service",
+                  "confidence": "explicit",
+                  "provenance": "component.type"
+                },
+                "hints": {
+                  "preferredRank": "application",
+                  "portDirection": "bidirectional",
+                  "infrastructure": false,
+                  "externalBoundary": false
+                }
+              },
+              {
+                "id": "postgresql",
+                "sourceId": "postgresql",
+                "kind": "component",
+                "label": "PostgreSQL",
+                "role": "database",
+                "parentId": "group:infrastructure",
+                "classification": {
+                  "componentId": "postgresql",
+                  "role": "database",
+                  "confidence": "explicit",
+                  "provenance": "component.type"
+                },
+                "hints": {
+                  "preferredRank": "data",
+                  "portDirection": "incoming",
+                  "infrastructure": true,
+                  "externalBoundary": false
+                }
+              },
+              {
+                "id": "redis",
+                "sourceId": "redis",
+                "kind": "component",
+                "label": "Redis",
+                "role": "cache",
+                "parentId": "group:infrastructure",
+                "classification": {
+                  "componentId": "redis",
+                  "role": "cache",
+                  "confidence": "explicit",
+                  "provenance": "component.type"
+                },
+                "hints": {
+                  "preferredRank": "data",
+                  "portDirection": "incoming",
+                  "infrastructure": true,
+                  "externalBoundary": false
+                }
+              }
+            ],
+            "edges": [
+              {
+                "id": "rest-api-to-point-service",
+                "sourceId": "rest-api-to-point-service",
+                "from": "rest-api",
+                "to": "point-service",
+                "label": "Expose point commands and queries to external callers.",
+                "asynchronous": false
+              },
+              {
+                "id": "point-service-to-postgresql",
+                "sourceId": "point-service-to-postgresql",
+                "from": "point-service",
+                "to": "postgresql",
+                "label": "Persist point accounts and point transactions in the system of record.",
+                "asynchronous": false
+              },
+              {
+                "id": "point-service-to-redis",
+                "sourceId": "point-service-to-redis",
+                "from": "point-service",
+                "to": "redis",
+                "label": "Read and refresh derived point summaries for fast query paths.",
+                "asynchronous": false
+              }
+            ]
+          },
+          "layoutGraph": {
+            "direction": "LR",
+            "nodes": [
+              {
+                "id": "group:infrastructure",
+                "sourceId": "group:infrastructure",
+                "kind": "group",
+                "label": "Infrastructure",
+                "role": "unknown",
+                "groupKind": "infrastructure",
+                "hints": {
+                  "preferredRank": "application",
+                  "portDirection": "bidirectional",
+                  "infrastructure": false,
+                  "externalBoundary": false
+                }
+              },
+              {
+                "id": "rest-api",
+                "sourceId": "rest-api",
+                "kind": "component",
+                "label": "REST API",
+                "role": "gateway",
+                "classification": {
+                  "componentId": "rest-api",
+                  "role": "gateway",
+                  "confidence": "explicit",
+                  "provenance": "component.type"
+                },
+                "hints": {
+                  "preferredRank": "entry",
+                  "portDirection": "outgoing",
+                  "infrastructure": false,
+                  "externalBoundary": false
+                }
+              },
+              {
+                "id": "point-service",
+                "sourceId": "point-service",
+                "kind": "component",
+                "label": "PointService",
+                "role": "service",
+                "classification": {
+                  "componentId": "point-service",
+                  "role": "service",
+                  "confidence": "explicit",
+                  "provenance": "component.type"
+                },
+                "hints": {
+                  "preferredRank": "application",
+                  "portDirection": "bidirectional",
+                  "infrastructure": false,
+                  "externalBoundary": false
+                }
+              },
+              {
+                "id": "postgresql",
+                "sourceId": "postgresql",
+                "kind": "component",
+                "label": "PostgreSQL",
+                "role": "database",
+                "parentId": "group:infrastructure",
+                "classification": {
+                  "componentId": "postgresql",
+                  "role": "database",
+                  "confidence": "explicit",
+                  "provenance": "component.type"
+                },
+                "hints": {
+                  "preferredRank": "data",
+                  "portDirection": "incoming",
+                  "infrastructure": true,
+                  "externalBoundary": false
+                }
+              },
+              {
+                "id": "redis",
+                "sourceId": "redis",
+                "kind": "component",
+                "label": "Redis",
+                "role": "cache",
+                "parentId": "group:infrastructure",
+                "classification": {
+                  "componentId": "redis",
+                  "role": "cache",
+                  "confidence": "explicit",
+                  "provenance": "component.type"
+                },
+                "hints": {
+                  "preferredRank": "data",
+                  "portDirection": "incoming",
+                  "infrastructure": true,
+                  "externalBoundary": false
+                }
+              }
+            ],
+            "edges": [
+              {
+                "id": "rest-api-to-point-service",
+                "sourceId": "rest-api-to-point-service",
+                "from": "rest-api",
+                "to": "point-service",
+                "label": "Expose point commands and queries to external callers.",
+                "asynchronous": false
+              },
+              {
+                "id": "point-service-to-postgresql",
+                "sourceId": "point-service-to-postgresql",
+                "from": "point-service",
+                "to": "postgresql",
+                "label": "Persist point accounts and point transactions in the system of record.",
+                "asynchronous": false
+              },
+              {
+                "id": "point-service-to-redis",
+                "sourceId": "point-service-to-redis",
+                "from": "point-service",
+                "to": "redis",
+                "label": "Read and refresh derived point summaries for fast query paths.",
+                "asynchronous": false
+              }
+            ],
+            "constraints": [
+              {
+                "kind": "direction",
+                "direction": "LR",
+                "strength": "required"
+              },
+              {
+                "kind": "rank",
+                "nodeId": "rest-api",
+                "rank": "entry",
+                "strength": "preferred"
+              },
+              {
+                "kind": "rank",
+                "nodeId": "point-service",
+                "rank": "application",
+                "strength": "preferred"
+              },
+              {
+                "kind": "rank",
+                "nodeId": "postgresql",
+                "rank": "data",
+                "strength": "preferred"
+              },
+              {
+                "kind": "rank",
+                "nodeId": "redis",
+                "rank": "data",
+                "strength": "preferred"
+              },
+              {
+                "kind": "group",
+                "groupId": "group:infrastructure",
+                "memberIds": [
+                  "postgresql",
+                  "redis"
+                ],
+                "groupKind": "infrastructure",
+                "strength": "required"
+              },
+              {
+                "kind": "proximity",
+                "nodeIds": [
+                  "point-service",
+                  "redis"
+                ],
+                "reason": "ownership",
+                "strength": "preferred"
+              }
+            ]
+          }
+        },
+        "requestedMode": "FULL",
+        "appliedMode": "FULL",
+        "result": {
+          "status": "fallback",
+          "direction": "LR",
+          "size": {
+            "width": 1092,
+            "height": 72
+          },
+          "nodes": [
+            {
+              "id": "group:infrastructure",
+              "sourceId": "group:infrastructure",
+              "kind": "group",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              }
+            },
+            {
+              "id": "rest-api",
+              "sourceId": "rest-api",
+              "kind": "component",
+              "position": {
+                "x": 228,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              }
+            },
+            {
+              "id": "point-service",
+              "sourceId": "point-service",
+              "kind": "component",
+              "position": {
+                "x": 456,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              }
+            },
+            {
+              "id": "postgresql",
+              "sourceId": "postgresql",
+              "kind": "component",
+              "position": {
+                "x": 684,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              },
+              "parentId": "group:infrastructure"
+            },
+            {
+              "id": "redis",
+              "sourceId": "redis",
+              "kind": "component",
+              "position": {
+                "x": 912,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              },
+              "parentId": "group:infrastructure"
+            }
+          ],
+          "edges": [
+            {
+              "id": "rest-api-to-point-service",
+              "sourceId": "rest-api-to-point-service",
+              "from": "rest-api",
+              "to": "point-service",
+              "sections": []
+            },
+            {
+              "id": "point-service-to-postgresql",
+              "sourceId": "point-service-to-postgresql",
+              "from": "point-service",
+              "to": "postgresql",
+              "sections": []
+            },
+            {
+              "id": "point-service-to-redis",
+              "sourceId": "point-service-to-redis",
+              "from": "point-service",
+              "to": "redis",
+              "sections": []
+            }
+          ],
+          "diagnostics": [
+            {
+              "code": "LAYOUT_TIMEOUT",
+              "severity": "warning",
+              "message": "Layout exceeded 0ms."
+            }
+          ]
+        },
+        "state": {
+          "version": 1,
+          "direction": "LR",
+          "nodes": [
+            {
+              "id": "group:infrastructure",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              }
+            },
+            {
+              "id": "rest-api",
+              "position": {
+                "x": 228,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              }
+            },
+            {
+              "id": "point-service",
+              "position": {
+                "x": 456,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              }
+            },
+            {
+              "id": "postgresql",
+              "position": {
+                "x": 684,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              },
+              "parentId": "group:infrastructure"
+            },
+            {
+              "id": "redis",
+              "position": {
+                "x": 912,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              },
+              "parentId": "group:infrastructure"
+            }
+          ],
+          "edges": [
+            {
+              "id": "rest-api-to-point-service",
+              "from": "rest-api",
+              "to": "point-service"
+            },
+            {
+              "id": "point-service-to-postgresql",
+              "from": "point-service",
+              "to": "postgresql"
+            },
+            {
+              "id": "point-service-to-redis",
+              "from": "point-service",
+              "to": "redis"
+            }
+          ]
+        },
+        "durationMs": 6.399999998509884
+      },
+      "fallbackRepeated": {
+        "projection": {
+          "classifications": [
+            {
+              "componentId": "rest-api",
+              "role": "gateway",
+              "confidence": "explicit",
+              "provenance": "component.type"
+            },
+            {
+              "componentId": "point-service",
+              "role": "service",
+              "confidence": "explicit",
+              "provenance": "component.type"
+            },
+            {
+              "componentId": "postgresql",
+              "role": "database",
+              "confidence": "explicit",
+              "provenance": "component.type"
+            },
+            {
+              "componentId": "redis",
+              "role": "cache",
+              "confidence": "explicit",
+              "provenance": "component.type"
+            }
+          ],
+          "abstraction": {
+            "groups": [
+              {
+                "id": "group:infrastructure",
+                "label": "Infrastructure",
+                "kind": "infrastructure",
+                "provenance": "layout semantic role",
+                "memberIds": [
+                  "postgresql",
+                  "redis"
+                ]
+              }
+            ],
+            "parentByComponentId": {
+              "postgresql": "group:infrastructure",
+              "redis": "group:infrastructure"
+            }
+          },
+          "visualGraph": {
+            "nodes": [
+              {
+                "id": "group:infrastructure",
+                "sourceId": "group:infrastructure",
+                "kind": "group",
+                "label": "Infrastructure",
+                "role": "unknown",
+                "groupKind": "infrastructure",
+                "hints": {
+                  "preferredRank": "application",
+                  "portDirection": "bidirectional",
+                  "infrastructure": false,
+                  "externalBoundary": false
+                }
+              },
+              {
+                "id": "rest-api",
+                "sourceId": "rest-api",
+                "kind": "component",
+                "label": "REST API",
+                "role": "gateway",
+                "classification": {
+                  "componentId": "rest-api",
+                  "role": "gateway",
+                  "confidence": "explicit",
+                  "provenance": "component.type"
+                },
+                "hints": {
+                  "preferredRank": "entry",
+                  "portDirection": "outgoing",
+                  "infrastructure": false,
+                  "externalBoundary": false
+                }
+              },
+              {
+                "id": "point-service",
+                "sourceId": "point-service",
+                "kind": "component",
+                "label": "PointService",
+                "role": "service",
+                "classification": {
+                  "componentId": "point-service",
+                  "role": "service",
+                  "confidence": "explicit",
+                  "provenance": "component.type"
+                },
+                "hints": {
+                  "preferredRank": "application",
+                  "portDirection": "bidirectional",
+                  "infrastructure": false,
+                  "externalBoundary": false
+                }
+              },
+              {
+                "id": "postgresql",
+                "sourceId": "postgresql",
+                "kind": "component",
+                "label": "PostgreSQL",
+                "role": "database",
+                "parentId": "group:infrastructure",
+                "classification": {
+                  "componentId": "postgresql",
+                  "role": "database",
+                  "confidence": "explicit",
+                  "provenance": "component.type"
+                },
+                "hints": {
+                  "preferredRank": "data",
+                  "portDirection": "incoming",
+                  "infrastructure": true,
+                  "externalBoundary": false
+                }
+              },
+              {
+                "id": "redis",
+                "sourceId": "redis",
+                "kind": "component",
+                "label": "Redis",
+                "role": "cache",
+                "parentId": "group:infrastructure",
+                "classification": {
+                  "componentId": "redis",
+                  "role": "cache",
+                  "confidence": "explicit",
+                  "provenance": "component.type"
+                },
+                "hints": {
+                  "preferredRank": "data",
+                  "portDirection": "incoming",
+                  "infrastructure": true,
+                  "externalBoundary": false
+                }
+              }
+            ],
+            "edges": [
+              {
+                "id": "rest-api-to-point-service",
+                "sourceId": "rest-api-to-point-service",
+                "from": "rest-api",
+                "to": "point-service",
+                "label": "Expose point commands and queries to external callers.",
+                "asynchronous": false
+              },
+              {
+                "id": "point-service-to-postgresql",
+                "sourceId": "point-service-to-postgresql",
+                "from": "point-service",
+                "to": "postgresql",
+                "label": "Persist point accounts and point transactions in the system of record.",
+                "asynchronous": false
+              },
+              {
+                "id": "point-service-to-redis",
+                "sourceId": "point-service-to-redis",
+                "from": "point-service",
+                "to": "redis",
+                "label": "Read and refresh derived point summaries for fast query paths.",
+                "asynchronous": false
+              }
+            ]
+          },
+          "layoutGraph": {
+            "direction": "LR",
+            "nodes": [
+              {
+                "id": "group:infrastructure",
+                "sourceId": "group:infrastructure",
+                "kind": "group",
+                "label": "Infrastructure",
+                "role": "unknown",
+                "groupKind": "infrastructure",
+                "hints": {
+                  "preferredRank": "application",
+                  "portDirection": "bidirectional",
+                  "infrastructure": false,
+                  "externalBoundary": false
+                }
+              },
+              {
+                "id": "rest-api",
+                "sourceId": "rest-api",
+                "kind": "component",
+                "label": "REST API",
+                "role": "gateway",
+                "classification": {
+                  "componentId": "rest-api",
+                  "role": "gateway",
+                  "confidence": "explicit",
+                  "provenance": "component.type"
+                },
+                "hints": {
+                  "preferredRank": "entry",
+                  "portDirection": "outgoing",
+                  "infrastructure": false,
+                  "externalBoundary": false
+                }
+              },
+              {
+                "id": "point-service",
+                "sourceId": "point-service",
+                "kind": "component",
+                "label": "PointService",
+                "role": "service",
+                "classification": {
+                  "componentId": "point-service",
+                  "role": "service",
+                  "confidence": "explicit",
+                  "provenance": "component.type"
+                },
+                "hints": {
+                  "preferredRank": "application",
+                  "portDirection": "bidirectional",
+                  "infrastructure": false,
+                  "externalBoundary": false
+                }
+              },
+              {
+                "id": "postgresql",
+                "sourceId": "postgresql",
+                "kind": "component",
+                "label": "PostgreSQL",
+                "role": "database",
+                "parentId": "group:infrastructure",
+                "classification": {
+                  "componentId": "postgresql",
+                  "role": "database",
+                  "confidence": "explicit",
+                  "provenance": "component.type"
+                },
+                "hints": {
+                  "preferredRank": "data",
+                  "portDirection": "incoming",
+                  "infrastructure": true,
+                  "externalBoundary": false
+                }
+              },
+              {
+                "id": "redis",
+                "sourceId": "redis",
+                "kind": "component",
+                "label": "Redis",
+                "role": "cache",
+                "parentId": "group:infrastructure",
+                "classification": {
+                  "componentId": "redis",
+                  "role": "cache",
+                  "confidence": "explicit",
+                  "provenance": "component.type"
+                },
+                "hints": {
+                  "preferredRank": "data",
+                  "portDirection": "incoming",
+                  "infrastructure": true,
+                  "externalBoundary": false
+                }
+              }
+            ],
+            "edges": [
+              {
+                "id": "rest-api-to-point-service",
+                "sourceId": "rest-api-to-point-service",
+                "from": "rest-api",
+                "to": "point-service",
+                "label": "Expose point commands and queries to external callers.",
+                "asynchronous": false
+              },
+              {
+                "id": "point-service-to-postgresql",
+                "sourceId": "point-service-to-postgresql",
+                "from": "point-service",
+                "to": "postgresql",
+                "label": "Persist point accounts and point transactions in the system of record.",
+                "asynchronous": false
+              },
+              {
+                "id": "point-service-to-redis",
+                "sourceId": "point-service-to-redis",
+                "from": "point-service",
+                "to": "redis",
+                "label": "Read and refresh derived point summaries for fast query paths.",
+                "asynchronous": false
+              }
+            ],
+            "constraints": [
+              {
+                "kind": "direction",
+                "direction": "LR",
+                "strength": "required"
+              },
+              {
+                "kind": "rank",
+                "nodeId": "rest-api",
+                "rank": "entry",
+                "strength": "preferred"
+              },
+              {
+                "kind": "rank",
+                "nodeId": "point-service",
+                "rank": "application",
+                "strength": "preferred"
+              },
+              {
+                "kind": "rank",
+                "nodeId": "postgresql",
+                "rank": "data",
+                "strength": "preferred"
+              },
+              {
+                "kind": "rank",
+                "nodeId": "redis",
+                "rank": "data",
+                "strength": "preferred"
+              },
+              {
+                "kind": "group",
+                "groupId": "group:infrastructure",
+                "memberIds": [
+                  "postgresql",
+                  "redis"
+                ],
+                "groupKind": "infrastructure",
+                "strength": "required"
+              },
+              {
+                "kind": "proximity",
+                "nodeIds": [
+                  "point-service",
+                  "redis"
+                ],
+                "reason": "ownership",
+                "strength": "preferred"
+              }
+            ]
+          }
+        },
+        "requestedMode": "FULL",
+        "appliedMode": "FULL",
+        "result": {
+          "status": "fallback",
+          "direction": "LR",
+          "size": {
+            "width": 1092,
+            "height": 72
+          },
+          "nodes": [
+            {
+              "id": "group:infrastructure",
+              "sourceId": "group:infrastructure",
+              "kind": "group",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              }
+            },
+            {
+              "id": "rest-api",
+              "sourceId": "rest-api",
+              "kind": "component",
+              "position": {
+                "x": 228,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              }
+            },
+            {
+              "id": "point-service",
+              "sourceId": "point-service",
+              "kind": "component",
+              "position": {
+                "x": 456,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              }
+            },
+            {
+              "id": "postgresql",
+              "sourceId": "postgresql",
+              "kind": "component",
+              "position": {
+                "x": 684,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              },
+              "parentId": "group:infrastructure"
+            },
+            {
+              "id": "redis",
+              "sourceId": "redis",
+              "kind": "component",
+              "position": {
+                "x": 912,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              },
+              "parentId": "group:infrastructure"
+            }
+          ],
+          "edges": [
+            {
+              "id": "rest-api-to-point-service",
+              "sourceId": "rest-api-to-point-service",
+              "from": "rest-api",
+              "to": "point-service",
+              "sections": []
+            },
+            {
+              "id": "point-service-to-postgresql",
+              "sourceId": "point-service-to-postgresql",
+              "from": "point-service",
+              "to": "postgresql",
+              "sections": []
+            },
+            {
+              "id": "point-service-to-redis",
+              "sourceId": "point-service-to-redis",
+              "from": "point-service",
+              "to": "redis",
+              "sections": []
+            }
+          ],
+          "diagnostics": [
+            {
+              "code": "LAYOUT_TIMEOUT",
+              "severity": "warning",
+              "message": "Layout exceeded 0ms."
+            }
+          ]
+        },
+        "state": {
+          "version": 1,
+          "direction": "LR",
+          "nodes": [
+            {
+              "id": "group:infrastructure",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              }
+            },
+            {
+              "id": "rest-api",
+              "position": {
+                "x": 228,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              }
+            },
+            {
+              "id": "point-service",
+              "position": {
+                "x": 456,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              }
+            },
+            {
+              "id": "postgresql",
+              "position": {
+                "x": 684,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              },
+              "parentId": "group:infrastructure"
+            },
+            {
+              "id": "redis",
+              "position": {
+                "x": 912,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              },
+              "parentId": "group:infrastructure"
+            }
+          ],
+          "edges": [
+            {
+              "id": "rest-api-to-point-service",
+              "from": "rest-api",
+              "to": "point-service"
+            },
+            {
+              "id": "point-service-to-postgresql",
+              "from": "point-service",
+              "to": "postgresql"
+            },
+            {
+              "id": "point-service-to-redis",
+              "from": "point-service",
+              "to": "redis"
+            }
+          ]
+        },
+        "durationMs": 5.300000004470348
+      }
+    }
+  },
+  {
+    "fixture": "points-system",
+    "mode": "dev",
+    "elk": {
+      "status": "success",
+      "metrics": {
+        "nodes": 5,
+        "components": 4,
+        "peerOverlaps": 0,
+        "overlapPairs": [],
+        "containmentFailures": [],
+        "routedEdges": 3,
+        "edges": 3,
+        "routedCrossings": 0,
+        "rankInversions": 0,
+        "area": 183372
+      },
+      "deterministic": true,
+      "movement": {
+        "nodes": [
+          {
+            "nodeId": "group:infrastructure",
+            "distance": 0,
+            "affected": false
+          },
+          {
+            "nodeId": "database",
+            "distance": 0,
+            "affected": false
+          },
+          {
+            "nodeId": "events",
+            "distance": 0,
+            "affected": false
+          },
+          {
+            "nodeId": "gateway",
+            "distance": 0,
+            "affected": false
+          },
+          {
+            "nodeId": "ledger",
+            "distance": 0,
+            "affected": false
+          }
+        ],
+        "unaffectedP95": 0,
+        "unaffectedMax": 0,
+        "relativeOrderReversed": false,
+        "withinBudget": true
+      },
+      "appliedMode": "INCREMENTAL"
+    },
+    "fallback": {
+      "status": "fallback",
+      "diagnostics": [
+        {
+          "code": "LAYOUT_TIMEOUT",
+          "severity": "warning",
+          "message": "Layout exceeded 0ms."
+        }
+      ],
+      "metrics": {
+        "nodes": 5,
+        "components": 4,
+        "peerOverlaps": 0,
+        "overlapPairs": [],
+        "containmentFailures": [
+          "database",
+          "events"
+        ],
+        "routedEdges": 0,
+        "edges": 3,
+        "routedCrossings": null,
+        "rankInversions": 1,
+        "area": 78624
+      },
+      "deterministic": true,
+      "appliedMode": "FULL",
+      "movement": null
+    },
+    "raw": {
+      "elk": {
+        "name": "points-system",
+        "first": {
+          "projection": {
+            "classifications": [
+              {
+                "componentId": "gateway",
+                "role": "gateway",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              {
+                "componentId": "ledger",
+                "role": "service",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              {
+                "componentId": "database",
+                "role": "database",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              {
+                "componentId": "events",
+                "role": "queue",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              }
+            ],
+            "abstraction": {
+              "groups": [
+                {
+                  "id": "group:infrastructure",
+                  "label": "Infrastructure",
+                  "kind": "infrastructure",
+                  "provenance": "layout semantic role",
+                  "memberIds": [
+                    "database",
+                    "events"
+                  ]
+                }
+              ],
+              "parentByComponentId": {
+                "database": "group:infrastructure",
+                "events": "group:infrastructure"
+              }
+            },
+            "visualGraph": {
+              "nodes": [
+                {
+                  "id": "group:infrastructure",
+                  "sourceId": "group:infrastructure",
+                  "kind": "group",
+                  "label": "Infrastructure",
+                  "role": "unknown",
+                  "groupKind": "infrastructure",
+                  "hints": {
+                    "preferredRank": "application",
+                    "portDirection": "bidirectional",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "gateway",
+                  "sourceId": "gateway",
+                  "kind": "component",
+                  "label": "API Gateway",
+                  "role": "gateway",
+                  "classification": {
+                    "componentId": "gateway",
+                    "role": "gateway",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "entry",
+                    "portDirection": "outgoing",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "ledger",
+                  "sourceId": "ledger",
+                  "kind": "component",
+                  "label": "Points Ledger",
+                  "role": "service",
+                  "classification": {
+                    "componentId": "ledger",
+                    "role": "service",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "application",
+                    "portDirection": "bidirectional",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "database",
+                  "sourceId": "database",
+                  "kind": "component",
+                  "label": "Ledger Database",
+                  "role": "database",
+                  "parentId": "group:infrastructure",
+                  "classification": {
+                    "componentId": "database",
+                    "role": "database",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "data",
+                    "portDirection": "incoming",
+                    "infrastructure": true,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "events",
+                  "sourceId": "events",
+                  "kind": "component",
+                  "label": "Points Events",
+                  "role": "queue",
+                  "parentId": "group:infrastructure",
+                  "classification": {
+                    "componentId": "events",
+                    "role": "queue",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "async",
+                    "portDirection": "bidirectional",
+                    "infrastructure": true,
+                    "externalBoundary": false
+                  }
+                }
+              ],
+              "edges": [
+                {
+                  "id": "gateway-ledger",
+                  "sourceId": "gateway-ledger",
+                  "from": "gateway",
+                  "to": "ledger",
+                  "asynchronous": false
+                },
+                {
+                  "id": "ledger-database",
+                  "sourceId": "ledger-database",
+                  "from": "ledger",
+                  "to": "database",
+                  "asynchronous": false
+                },
+                {
+                  "id": "ledger-events",
+                  "sourceId": "ledger-events",
+                  "from": "ledger",
+                  "to": "events",
+                  "asynchronous": true
+                }
+              ]
+            },
+            "layoutGraph": {
+              "direction": "LR",
+              "nodes": [
+                {
+                  "id": "group:infrastructure",
+                  "sourceId": "group:infrastructure",
+                  "kind": "group",
+                  "label": "Infrastructure",
+                  "role": "unknown",
+                  "groupKind": "infrastructure",
+                  "hints": {
+                    "preferredRank": "application",
+                    "portDirection": "bidirectional",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "gateway",
+                  "sourceId": "gateway",
+                  "kind": "component",
+                  "label": "API Gateway",
+                  "role": "gateway",
+                  "classification": {
+                    "componentId": "gateway",
+                    "role": "gateway",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "entry",
+                    "portDirection": "outgoing",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "ledger",
+                  "sourceId": "ledger",
+                  "kind": "component",
+                  "label": "Points Ledger",
+                  "role": "service",
+                  "classification": {
+                    "componentId": "ledger",
+                    "role": "service",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "application",
+                    "portDirection": "bidirectional",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "database",
+                  "sourceId": "database",
+                  "kind": "component",
+                  "label": "Ledger Database",
+                  "role": "database",
+                  "parentId": "group:infrastructure",
+                  "classification": {
+                    "componentId": "database",
+                    "role": "database",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "data",
+                    "portDirection": "incoming",
+                    "infrastructure": true,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "events",
+                  "sourceId": "events",
+                  "kind": "component",
+                  "label": "Points Events",
+                  "role": "queue",
+                  "parentId": "group:infrastructure",
+                  "classification": {
+                    "componentId": "events",
+                    "role": "queue",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "async",
+                    "portDirection": "bidirectional",
+                    "infrastructure": true,
+                    "externalBoundary": false
+                  }
+                }
+              ],
+              "edges": [
+                {
+                  "id": "gateway-ledger",
+                  "sourceId": "gateway-ledger",
+                  "from": "gateway",
+                  "to": "ledger",
+                  "asynchronous": false
+                },
+                {
+                  "id": "ledger-database",
+                  "sourceId": "ledger-database",
+                  "from": "ledger",
+                  "to": "database",
+                  "asynchronous": false
+                },
+                {
+                  "id": "ledger-events",
+                  "sourceId": "ledger-events",
+                  "from": "ledger",
+                  "to": "events",
+                  "asynchronous": true
+                }
+              ],
+              "constraints": [
+                {
+                  "kind": "direction",
+                  "direction": "LR",
+                  "strength": "required"
+                },
+                {
+                  "kind": "rank",
+                  "nodeId": "gateway",
+                  "rank": "entry",
+                  "strength": "preferred"
+                },
+                {
+                  "kind": "rank",
+                  "nodeId": "ledger",
+                  "rank": "application",
+                  "strength": "preferred"
+                },
+                {
+                  "kind": "rank",
+                  "nodeId": "database",
+                  "rank": "data",
+                  "strength": "preferred"
+                },
+                {
+                  "kind": "rank",
+                  "nodeId": "events",
+                  "rank": "async",
+                  "strength": "preferred"
+                },
+                {
+                  "kind": "group",
+                  "groupId": "group:infrastructure",
+                  "memberIds": [
+                    "database",
+                    "events"
+                  ],
+                  "groupKind": "infrastructure",
+                  "strength": "required"
+                }
+              ]
+            }
+          },
+          "requestedMode": "FULL",
+          "appliedMode": "FULL",
+          "result": {
+            "status": "success",
+            "direction": "LR",
+            "size": {
+              "width": 777,
+              "height": 236
+            },
+            "nodes": [
+              {
+                "id": "group:infrastructure",
+                "sourceId": "group:infrastructure",
+                "kind": "group",
+                "position": {
+                  "x": 549,
+                  "y": 24
+                },
+                "size": {
+                  "width": 204,
+                  "height": 188
+                }
+              },
+              {
+                "id": "database",
+                "sourceId": "database",
+                "kind": "component",
+                "position": {
+                  "x": 561,
+                  "y": 36
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                },
+                "parentId": "group:infrastructure"
+              },
+              {
+                "id": "events",
+                "sourceId": "events",
+                "kind": "component",
+                "position": {
+                  "x": 561,
+                  "y": 128
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                },
+                "parentId": "group:infrastructure"
+              },
+              {
+                "id": "gateway",
+                "sourceId": "gateway",
+                "kind": "component",
+                "position": {
+                  "x": 24,
+                  "y": 116
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                }
+              },
+              {
+                "id": "ledger",
+                "sourceId": "ledger",
+                "kind": "component",
+                "position": {
+                  "x": 284,
+                  "y": 116
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                }
+              }
+            ],
+            "edges": [
+              {
+                "id": "gateway-ledger",
+                "sourceId": "gateway-ledger",
+                "from": "gateway",
+                "to": "ledger",
+                "sections": [
+                  {
+                    "start": {
+                      "x": 204,
+                      "y": 152
+                    },
+                    "end": {
+                      "x": 284,
+                      "y": 152
+                    },
+                    "bendPoints": []
+                  }
+                ]
+              },
+              {
+                "id": "ledger-database",
+                "sourceId": "ledger-database",
+                "from": "ledger",
+                "to": "database",
+                "sections": [
+                  {
+                    "start": {
+                      "x": 464,
+                      "y": 140
+                    },
+                    "end": {
+                      "x": 561,
+                      "y": 72
+                    },
+                    "bendPoints": [
+                      {
+                        "x": 474,
+                        "y": 140
+                      },
+                      {
+                        "x": 474,
+                        "y": 72
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "ledger-events",
+                "sourceId": "ledger-events",
+                "from": "ledger",
+                "to": "events",
+                "sections": [
+                  {
+                    "start": {
+                      "x": 464,
+                      "y": 164
+                    },
+                    "end": {
+                      "x": 561,
+                      "y": 164
+                    },
+                    "bendPoints": []
+                  }
+                ]
+              }
+            ],
+            "diagnostics": []
+          },
+          "state": {
+            "version": 1,
+            "direction": "LR",
+            "nodes": [
+              {
+                "id": "group:infrastructure",
+                "position": {
+                  "x": 549,
+                  "y": 24
+                },
+                "size": {
+                  "width": 204,
+                  "height": 188
+                }
+              },
+              {
+                "id": "database",
+                "position": {
+                  "x": 561,
+                  "y": 36
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                },
+                "parentId": "group:infrastructure"
+              },
+              {
+                "id": "events",
+                "position": {
+                  "x": 561,
+                  "y": 128
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                },
+                "parentId": "group:infrastructure"
+              },
+              {
+                "id": "gateway",
+                "position": {
+                  "x": 24,
+                  "y": 116
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                }
+              },
+              {
+                "id": "ledger",
+                "position": {
+                  "x": 284,
+                  "y": 116
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                }
+              }
+            ],
+            "edges": [
+              {
+                "id": "gateway-ledger",
+                "from": "gateway",
+                "to": "ledger"
+              },
+              {
+                "id": "ledger-database",
+                "from": "ledger",
+                "to": "database"
+              },
+              {
+                "id": "ledger-events",
+                "from": "ledger",
+                "to": "events"
+              }
+            ]
+          },
+          "durationMs": 63.899999998509884
+        },
+        "repeated": {
+          "projection": {
+            "classifications": [
+              {
+                "componentId": "gateway",
+                "role": "gateway",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              {
+                "componentId": "ledger",
+                "role": "service",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              {
+                "componentId": "database",
+                "role": "database",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              {
+                "componentId": "events",
+                "role": "queue",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              }
+            ],
+            "abstraction": {
+              "groups": [
+                {
+                  "id": "group:infrastructure",
+                  "label": "Infrastructure",
+                  "kind": "infrastructure",
+                  "provenance": "layout semantic role",
+                  "memberIds": [
+                    "database",
+                    "events"
+                  ]
+                }
+              ],
+              "parentByComponentId": {
+                "database": "group:infrastructure",
+                "events": "group:infrastructure"
+              }
+            },
+            "visualGraph": {
+              "nodes": [
+                {
+                  "id": "group:infrastructure",
+                  "sourceId": "group:infrastructure",
+                  "kind": "group",
+                  "label": "Infrastructure",
+                  "role": "unknown",
+                  "groupKind": "infrastructure",
+                  "hints": {
+                    "preferredRank": "application",
+                    "portDirection": "bidirectional",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "gateway",
+                  "sourceId": "gateway",
+                  "kind": "component",
+                  "label": "API Gateway",
+                  "role": "gateway",
+                  "classification": {
+                    "componentId": "gateway",
+                    "role": "gateway",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "entry",
+                    "portDirection": "outgoing",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "ledger",
+                  "sourceId": "ledger",
+                  "kind": "component",
+                  "label": "Points Ledger",
+                  "role": "service",
+                  "classification": {
+                    "componentId": "ledger",
+                    "role": "service",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "application",
+                    "portDirection": "bidirectional",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "database",
+                  "sourceId": "database",
+                  "kind": "component",
+                  "label": "Ledger Database",
+                  "role": "database",
+                  "parentId": "group:infrastructure",
+                  "classification": {
+                    "componentId": "database",
+                    "role": "database",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "data",
+                    "portDirection": "incoming",
+                    "infrastructure": true,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "events",
+                  "sourceId": "events",
+                  "kind": "component",
+                  "label": "Points Events",
+                  "role": "queue",
+                  "parentId": "group:infrastructure",
+                  "classification": {
+                    "componentId": "events",
+                    "role": "queue",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "async",
+                    "portDirection": "bidirectional",
+                    "infrastructure": true,
+                    "externalBoundary": false
+                  }
+                }
+              ],
+              "edges": [
+                {
+                  "id": "gateway-ledger",
+                  "sourceId": "gateway-ledger",
+                  "from": "gateway",
+                  "to": "ledger",
+                  "asynchronous": false
+                },
+                {
+                  "id": "ledger-database",
+                  "sourceId": "ledger-database",
+                  "from": "ledger",
+                  "to": "database",
+                  "asynchronous": false
+                },
+                {
+                  "id": "ledger-events",
+                  "sourceId": "ledger-events",
+                  "from": "ledger",
+                  "to": "events",
+                  "asynchronous": true
+                }
+              ]
+            },
+            "layoutGraph": {
+              "direction": "LR",
+              "nodes": [
+                {
+                  "id": "group:infrastructure",
+                  "sourceId": "group:infrastructure",
+                  "kind": "group",
+                  "label": "Infrastructure",
+                  "role": "unknown",
+                  "groupKind": "infrastructure",
+                  "hints": {
+                    "preferredRank": "application",
+                    "portDirection": "bidirectional",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "gateway",
+                  "sourceId": "gateway",
+                  "kind": "component",
+                  "label": "API Gateway",
+                  "role": "gateway",
+                  "classification": {
+                    "componentId": "gateway",
+                    "role": "gateway",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "entry",
+                    "portDirection": "outgoing",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "ledger",
+                  "sourceId": "ledger",
+                  "kind": "component",
+                  "label": "Points Ledger",
+                  "role": "service",
+                  "classification": {
+                    "componentId": "ledger",
+                    "role": "service",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "application",
+                    "portDirection": "bidirectional",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "database",
+                  "sourceId": "database",
+                  "kind": "component",
+                  "label": "Ledger Database",
+                  "role": "database",
+                  "parentId": "group:infrastructure",
+                  "classification": {
+                    "componentId": "database",
+                    "role": "database",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "data",
+                    "portDirection": "incoming",
+                    "infrastructure": true,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "events",
+                  "sourceId": "events",
+                  "kind": "component",
+                  "label": "Points Events",
+                  "role": "queue",
+                  "parentId": "group:infrastructure",
+                  "classification": {
+                    "componentId": "events",
+                    "role": "queue",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "async",
+                    "portDirection": "bidirectional",
+                    "infrastructure": true,
+                    "externalBoundary": false
+                  }
+                }
+              ],
+              "edges": [
+                {
+                  "id": "gateway-ledger",
+                  "sourceId": "gateway-ledger",
+                  "from": "gateway",
+                  "to": "ledger",
+                  "asynchronous": false
+                },
+                {
+                  "id": "ledger-database",
+                  "sourceId": "ledger-database",
+                  "from": "ledger",
+                  "to": "database",
+                  "asynchronous": false
+                },
+                {
+                  "id": "ledger-events",
+                  "sourceId": "ledger-events",
+                  "from": "ledger",
+                  "to": "events",
+                  "asynchronous": true
+                }
+              ],
+              "constraints": [
+                {
+                  "kind": "direction",
+                  "direction": "LR",
+                  "strength": "required"
+                },
+                {
+                  "kind": "rank",
+                  "nodeId": "gateway",
+                  "rank": "entry",
+                  "strength": "preferred"
+                },
+                {
+                  "kind": "rank",
+                  "nodeId": "ledger",
+                  "rank": "application",
+                  "strength": "preferred"
+                },
+                {
+                  "kind": "rank",
+                  "nodeId": "database",
+                  "rank": "data",
+                  "strength": "preferred"
+                },
+                {
+                  "kind": "rank",
+                  "nodeId": "events",
+                  "rank": "async",
+                  "strength": "preferred"
+                },
+                {
+                  "kind": "group",
+                  "groupId": "group:infrastructure",
+                  "memberIds": [
+                    "database",
+                    "events"
+                  ],
+                  "groupKind": "infrastructure",
+                  "strength": "required"
+                }
+              ]
+            }
+          },
+          "requestedMode": "FULL",
+          "appliedMode": "FULL",
+          "result": {
+            "status": "success",
+            "direction": "LR",
+            "size": {
+              "width": 777,
+              "height": 236
+            },
+            "nodes": [
+              {
+                "id": "group:infrastructure",
+                "sourceId": "group:infrastructure",
+                "kind": "group",
+                "position": {
+                  "x": 549,
+                  "y": 24
+                },
+                "size": {
+                  "width": 204,
+                  "height": 188
+                }
+              },
+              {
+                "id": "database",
+                "sourceId": "database",
+                "kind": "component",
+                "position": {
+                  "x": 561,
+                  "y": 36
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                },
+                "parentId": "group:infrastructure"
+              },
+              {
+                "id": "events",
+                "sourceId": "events",
+                "kind": "component",
+                "position": {
+                  "x": 561,
+                  "y": 128
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                },
+                "parentId": "group:infrastructure"
+              },
+              {
+                "id": "gateway",
+                "sourceId": "gateway",
+                "kind": "component",
+                "position": {
+                  "x": 24,
+                  "y": 116
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                }
+              },
+              {
+                "id": "ledger",
+                "sourceId": "ledger",
+                "kind": "component",
+                "position": {
+                  "x": 284,
+                  "y": 116
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                }
+              }
+            ],
+            "edges": [
+              {
+                "id": "gateway-ledger",
+                "sourceId": "gateway-ledger",
+                "from": "gateway",
+                "to": "ledger",
+                "sections": [
+                  {
+                    "start": {
+                      "x": 204,
+                      "y": 152
+                    },
+                    "end": {
+                      "x": 284,
+                      "y": 152
+                    },
+                    "bendPoints": []
+                  }
+                ]
+              },
+              {
+                "id": "ledger-database",
+                "sourceId": "ledger-database",
+                "from": "ledger",
+                "to": "database",
+                "sections": [
+                  {
+                    "start": {
+                      "x": 464,
+                      "y": 140
+                    },
+                    "end": {
+                      "x": 561,
+                      "y": 72
+                    },
+                    "bendPoints": [
+                      {
+                        "x": 474,
+                        "y": 140
+                      },
+                      {
+                        "x": 474,
+                        "y": 72
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "ledger-events",
+                "sourceId": "ledger-events",
+                "from": "ledger",
+                "to": "events",
+                "sections": [
+                  {
+                    "start": {
+                      "x": 464,
+                      "y": 164
+                    },
+                    "end": {
+                      "x": 561,
+                      "y": 164
+                    },
+                    "bendPoints": []
+                  }
+                ]
+              }
+            ],
+            "diagnostics": []
+          },
+          "state": {
+            "version": 1,
+            "direction": "LR",
+            "nodes": [
+              {
+                "id": "group:infrastructure",
+                "position": {
+                  "x": 549,
+                  "y": 24
+                },
+                "size": {
+                  "width": 204,
+                  "height": 188
+                }
+              },
+              {
+                "id": "database",
+                "position": {
+                  "x": 561,
+                  "y": 36
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                },
+                "parentId": "group:infrastructure"
+              },
+              {
+                "id": "events",
+                "position": {
+                  "x": 561,
+                  "y": 128
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                },
+                "parentId": "group:infrastructure"
+              },
+              {
+                "id": "gateway",
+                "position": {
+                  "x": 24,
+                  "y": 116
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                }
+              },
+              {
+                "id": "ledger",
+                "position": {
+                  "x": 284,
+                  "y": 116
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                }
+              }
+            ],
+            "edges": [
+              {
+                "id": "gateway-ledger",
+                "from": "gateway",
+                "to": "ledger"
+              },
+              {
+                "id": "ledger-database",
+                "from": "ledger",
+                "to": "database"
+              },
+              {
+                "id": "ledger-events",
+                "from": "ledger",
+                "to": "events"
+              }
+            ]
+          },
+          "durationMs": 63.600000001490116
+        },
+        "incremental": {
+          "projection": {
+            "classifications": [
+              {
+                "componentId": "gateway",
+                "role": "gateway",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              {
+                "componentId": "ledger",
+                "role": "service",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              {
+                "componentId": "database",
+                "role": "database",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              },
+              {
+                "componentId": "events",
+                "role": "queue",
+                "confidence": "explicit",
+                "provenance": "component.type"
+              }
+            ],
+            "abstraction": {
+              "groups": [
+                {
+                  "id": "group:infrastructure",
+                  "label": "Infrastructure",
+                  "kind": "infrastructure",
+                  "provenance": "layout semantic role",
+                  "memberIds": [
+                    "database",
+                    "events"
+                  ]
+                }
+              ],
+              "parentByComponentId": {
+                "database": "group:infrastructure",
+                "events": "group:infrastructure"
+              }
+            },
+            "visualGraph": {
+              "nodes": [
+                {
+                  "id": "group:infrastructure",
+                  "sourceId": "group:infrastructure",
+                  "kind": "group",
+                  "label": "Infrastructure",
+                  "role": "unknown",
+                  "groupKind": "infrastructure",
+                  "hints": {
+                    "preferredRank": "application",
+                    "portDirection": "bidirectional",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "gateway",
+                  "sourceId": "gateway",
+                  "kind": "component",
+                  "label": "API Gateway",
+                  "role": "gateway",
+                  "classification": {
+                    "componentId": "gateway",
+                    "role": "gateway",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "entry",
+                    "portDirection": "outgoing",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "ledger",
+                  "sourceId": "ledger",
+                  "kind": "component",
+                  "label": "Points Ledger",
+                  "role": "service",
+                  "classification": {
+                    "componentId": "ledger",
+                    "role": "service",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "application",
+                    "portDirection": "bidirectional",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "database",
+                  "sourceId": "database",
+                  "kind": "component",
+                  "label": "Ledger Database",
+                  "role": "database",
+                  "parentId": "group:infrastructure",
+                  "classification": {
+                    "componentId": "database",
+                    "role": "database",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "data",
+                    "portDirection": "incoming",
+                    "infrastructure": true,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "events",
+                  "sourceId": "events",
+                  "kind": "component",
+                  "label": "Points Events",
+                  "role": "queue",
+                  "parentId": "group:infrastructure",
+                  "classification": {
+                    "componentId": "events",
+                    "role": "queue",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "async",
+                    "portDirection": "bidirectional",
+                    "infrastructure": true,
+                    "externalBoundary": false
+                  }
+                }
+              ],
+              "edges": [
+                {
+                  "id": "gateway-ledger",
+                  "sourceId": "gateway-ledger",
+                  "from": "gateway",
+                  "to": "ledger",
+                  "asynchronous": false
+                },
+                {
+                  "id": "ledger-database",
+                  "sourceId": "ledger-database",
+                  "from": "ledger",
+                  "to": "database",
+                  "asynchronous": false
+                },
+                {
+                  "id": "ledger-events",
+                  "sourceId": "ledger-events",
+                  "from": "ledger",
+                  "to": "events",
+                  "asynchronous": true
+                }
+              ]
+            },
+            "layoutGraph": {
+              "direction": "LR",
+              "nodes": [
+                {
+                  "id": "group:infrastructure",
+                  "sourceId": "group:infrastructure",
+                  "kind": "group",
+                  "label": "Infrastructure",
+                  "role": "unknown",
+                  "groupKind": "infrastructure",
+                  "hints": {
+                    "preferredRank": "application",
+                    "portDirection": "bidirectional",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "gateway",
+                  "sourceId": "gateway",
+                  "kind": "component",
+                  "label": "API Gateway",
+                  "role": "gateway",
+                  "classification": {
+                    "componentId": "gateway",
+                    "role": "gateway",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "entry",
+                    "portDirection": "outgoing",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "ledger",
+                  "sourceId": "ledger",
+                  "kind": "component",
+                  "label": "Points Ledger",
+                  "role": "service",
+                  "classification": {
+                    "componentId": "ledger",
+                    "role": "service",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "application",
+                    "portDirection": "bidirectional",
+                    "infrastructure": false,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "database",
+                  "sourceId": "database",
+                  "kind": "component",
+                  "label": "Ledger Database",
+                  "role": "database",
+                  "parentId": "group:infrastructure",
+                  "classification": {
+                    "componentId": "database",
+                    "role": "database",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "data",
+                    "portDirection": "incoming",
+                    "infrastructure": true,
+                    "externalBoundary": false
+                  }
+                },
+                {
+                  "id": "events",
+                  "sourceId": "events",
+                  "kind": "component",
+                  "label": "Points Events",
+                  "role": "queue",
+                  "parentId": "group:infrastructure",
+                  "classification": {
+                    "componentId": "events",
+                    "role": "queue",
+                    "confidence": "explicit",
+                    "provenance": "component.type"
+                  },
+                  "hints": {
+                    "preferredRank": "async",
+                    "portDirection": "bidirectional",
+                    "infrastructure": true,
+                    "externalBoundary": false
+                  }
+                }
+              ],
+              "edges": [
+                {
+                  "id": "gateway-ledger",
+                  "sourceId": "gateway-ledger",
+                  "from": "gateway",
+                  "to": "ledger",
+                  "asynchronous": false
+                },
+                {
+                  "id": "ledger-database",
+                  "sourceId": "ledger-database",
+                  "from": "ledger",
+                  "to": "database",
+                  "asynchronous": false
+                },
+                {
+                  "id": "ledger-events",
+                  "sourceId": "ledger-events",
+                  "from": "ledger",
+                  "to": "events",
+                  "asynchronous": true
+                }
+              ],
+              "constraints": [
+                {
+                  "kind": "direction",
+                  "direction": "LR",
+                  "strength": "required"
+                },
+                {
+                  "kind": "rank",
+                  "nodeId": "gateway",
+                  "rank": "entry",
+                  "strength": "preferred"
+                },
+                {
+                  "kind": "rank",
+                  "nodeId": "ledger",
+                  "rank": "application",
+                  "strength": "preferred"
+                },
+                {
+                  "kind": "rank",
+                  "nodeId": "database",
+                  "rank": "data",
+                  "strength": "preferred"
+                },
+                {
+                  "kind": "rank",
+                  "nodeId": "events",
+                  "rank": "async",
+                  "strength": "preferred"
+                },
+                {
+                  "kind": "group",
+                  "groupId": "group:infrastructure",
+                  "memberIds": [
+                    "database",
+                    "events"
+                  ],
+                  "groupKind": "infrastructure",
+                  "strength": "required"
+                }
+              ]
+            }
+          },
+          "requestedMode": "INCREMENTAL",
+          "appliedMode": "INCREMENTAL",
+          "result": {
+            "status": "success",
+            "direction": "LR",
+            "size": {
+              "width": 753,
+              "height": 212
+            },
+            "nodes": [
+              {
+                "id": "group:infrastructure",
+                "sourceId": "group:infrastructure",
+                "kind": "group",
+                "position": {
+                  "x": 549,
+                  "y": 24
+                },
+                "size": {
+                  "width": 204,
+                  "height": 188
+                }
+              },
+              {
+                "id": "database",
+                "sourceId": "database",
+                "kind": "component",
+                "position": {
+                  "x": 561,
+                  "y": 36
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                },
+                "parentId": "group:infrastructure"
+              },
+              {
+                "id": "events",
+                "sourceId": "events",
+                "kind": "component",
+                "position": {
+                  "x": 561,
+                  "y": 128
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                },
+                "parentId": "group:infrastructure"
+              },
+              {
+                "id": "gateway",
+                "sourceId": "gateway",
+                "kind": "component",
+                "position": {
+                  "x": 24,
+                  "y": 116
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                }
+              },
+              {
+                "id": "ledger",
+                "sourceId": "ledger",
+                "kind": "component",
+                "position": {
+                  "x": 284,
+                  "y": 116
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                }
+              }
+            ],
+            "edges": [
+              {
+                "id": "gateway-ledger",
+                "sourceId": "gateway-ledger",
+                "from": "gateway",
+                "to": "ledger",
+                "sections": []
+              },
+              {
+                "id": "ledger-database",
+                "sourceId": "ledger-database",
+                "from": "ledger",
+                "to": "database",
+                "sections": []
+              },
+              {
+                "id": "ledger-events",
+                "sourceId": "ledger-events",
+                "from": "ledger",
+                "to": "events",
+                "sections": []
+              }
+            ],
+            "diagnostics": []
+          },
+          "state": {
+            "version": 1,
+            "direction": "LR",
+            "nodes": [
+              {
+                "id": "group:infrastructure",
+                "position": {
+                  "x": 549,
+                  "y": 24
+                },
+                "size": {
+                  "width": 204,
+                  "height": 188
+                }
+              },
+              {
+                "id": "database",
+                "position": {
+                  "x": 561,
+                  "y": 36
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                },
+                "parentId": "group:infrastructure"
+              },
+              {
+                "id": "events",
+                "position": {
+                  "x": 561,
+                  "y": 128
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                },
+                "parentId": "group:infrastructure"
+              },
+              {
+                "id": "gateway",
+                "position": {
+                  "x": 24,
+                  "y": 116
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                }
+              },
+              {
+                "id": "ledger",
+                "position": {
+                  "x": 284,
+                  "y": 116
+                },
+                "size": {
+                  "width": 180,
+                  "height": 72
+                }
+              }
+            ],
+            "edges": [
+              {
+                "id": "gateway-ledger",
+                "from": "gateway",
+                "to": "ledger"
+              },
+              {
+                "id": "ledger-database",
+                "from": "ledger",
+                "to": "database"
+              },
+              {
+                "id": "ledger-events",
+                "from": "ledger",
+                "to": "events"
+              }
+            ]
+          },
+          "movement": {
+            "nodes": [
+              {
+                "nodeId": "group:infrastructure",
+                "distance": 0,
+                "affected": false
+              },
+              {
+                "nodeId": "database",
+                "distance": 0,
+                "affected": false
+              },
+              {
+                "nodeId": "events",
+                "distance": 0,
+                "affected": false
+              },
+              {
+                "nodeId": "gateway",
+                "distance": 0,
+                "affected": false
+              },
+              {
+                "nodeId": "ledger",
+                "distance": 0,
+                "affected": false
+              }
+            ],
+            "unaffectedP95": 0,
+            "unaffectedMax": 0,
+            "relativeOrderReversed": false,
+            "withinBudget": true
+          },
+          "durationMs": 63.100000001490116
+        },
+        "editedId": "ledger",
+        "inputImmutable": true,
+        "movementBudget": {
+          "unaffectedP95": 48,
+          "unaffectedMax": 144
+        }
+      },
+      "fallback": {
+        "projection": {
+          "classifications": [
+            {
+              "componentId": "gateway",
+              "role": "gateway",
+              "confidence": "explicit",
+              "provenance": "component.type"
+            },
+            {
+              "componentId": "ledger",
+              "role": "service",
+              "confidence": "explicit",
+              "provenance": "component.type"
+            },
+            {
+              "componentId": "database",
+              "role": "database",
+              "confidence": "explicit",
+              "provenance": "component.type"
+            },
+            {
+              "componentId": "events",
+              "role": "queue",
+              "confidence": "explicit",
+              "provenance": "component.type"
+            }
+          ],
+          "abstraction": {
+            "groups": [
+              {
+                "id": "group:infrastructure",
+                "label": "Infrastructure",
+                "kind": "infrastructure",
+                "provenance": "layout semantic role",
+                "memberIds": [
+                  "database",
+                  "events"
+                ]
+              }
+            ],
+            "parentByComponentId": {
+              "database": "group:infrastructure",
+              "events": "group:infrastructure"
+            }
+          },
+          "visualGraph": {
+            "nodes": [
+              {
+                "id": "group:infrastructure",
+                "sourceId": "group:infrastructure",
+                "kind": "group",
+                "label": "Infrastructure",
+                "role": "unknown",
+                "groupKind": "infrastructure",
+                "hints": {
+                  "preferredRank": "application",
+                  "portDirection": "bidirectional",
+                  "infrastructure": false,
+                  "externalBoundary": false
+                }
+              },
+              {
+                "id": "gateway",
+                "sourceId": "gateway",
+                "kind": "component",
+                "label": "API Gateway",
+                "role": "gateway",
+                "classification": {
+                  "componentId": "gateway",
+                  "role": "gateway",
+                  "confidence": "explicit",
+                  "provenance": "component.type"
+                },
+                "hints": {
+                  "preferredRank": "entry",
+                  "portDirection": "outgoing",
+                  "infrastructure": false,
+                  "externalBoundary": false
+                }
+              },
+              {
+                "id": "ledger",
+                "sourceId": "ledger",
+                "kind": "component",
+                "label": "Points Ledger",
+                "role": "service",
+                "classification": {
+                  "componentId": "ledger",
+                  "role": "service",
+                  "confidence": "explicit",
+                  "provenance": "component.type"
+                },
+                "hints": {
+                  "preferredRank": "application",
+                  "portDirection": "bidirectional",
+                  "infrastructure": false,
+                  "externalBoundary": false
+                }
+              },
+              {
+                "id": "database",
+                "sourceId": "database",
+                "kind": "component",
+                "label": "Ledger Database",
+                "role": "database",
+                "parentId": "group:infrastructure",
+                "classification": {
+                  "componentId": "database",
+                  "role": "database",
+                  "confidence": "explicit",
+                  "provenance": "component.type"
+                },
+                "hints": {
+                  "preferredRank": "data",
+                  "portDirection": "incoming",
+                  "infrastructure": true,
+                  "externalBoundary": false
+                }
+              },
+              {
+                "id": "events",
+                "sourceId": "events",
+                "kind": "component",
+                "label": "Points Events",
+                "role": "queue",
+                "parentId": "group:infrastructure",
+                "classification": {
+                  "componentId": "events",
+                  "role": "queue",
+                  "confidence": "explicit",
+                  "provenance": "component.type"
+                },
+                "hints": {
+                  "preferredRank": "async",
+                  "portDirection": "bidirectional",
+                  "infrastructure": true,
+                  "externalBoundary": false
+                }
+              }
+            ],
+            "edges": [
+              {
+                "id": "gateway-ledger",
+                "sourceId": "gateway-ledger",
+                "from": "gateway",
+                "to": "ledger",
+                "asynchronous": false
+              },
+              {
+                "id": "ledger-database",
+                "sourceId": "ledger-database",
+                "from": "ledger",
+                "to": "database",
+                "asynchronous": false
+              },
+              {
+                "id": "ledger-events",
+                "sourceId": "ledger-events",
+                "from": "ledger",
+                "to": "events",
+                "asynchronous": true
+              }
+            ]
+          },
+          "layoutGraph": {
+            "direction": "LR",
+            "nodes": [
+              {
+                "id": "group:infrastructure",
+                "sourceId": "group:infrastructure",
+                "kind": "group",
+                "label": "Infrastructure",
+                "role": "unknown",
+                "groupKind": "infrastructure",
+                "hints": {
+                  "preferredRank": "application",
+                  "portDirection": "bidirectional",
+                  "infrastructure": false,
+                  "externalBoundary": false
+                }
+              },
+              {
+                "id": "gateway",
+                "sourceId": "gateway",
+                "kind": "component",
+                "label": "API Gateway",
+                "role": "gateway",
+                "classification": {
+                  "componentId": "gateway",
+                  "role": "gateway",
+                  "confidence": "explicit",
+                  "provenance": "component.type"
+                },
+                "hints": {
+                  "preferredRank": "entry",
+                  "portDirection": "outgoing",
+                  "infrastructure": false,
+                  "externalBoundary": false
+                }
+              },
+              {
+                "id": "ledger",
+                "sourceId": "ledger",
+                "kind": "component",
+                "label": "Points Ledger",
+                "role": "service",
+                "classification": {
+                  "componentId": "ledger",
+                  "role": "service",
+                  "confidence": "explicit",
+                  "provenance": "component.type"
+                },
+                "hints": {
+                  "preferredRank": "application",
+                  "portDirection": "bidirectional",
+                  "infrastructure": false,
+                  "externalBoundary": false
+                }
+              },
+              {
+                "id": "database",
+                "sourceId": "database",
+                "kind": "component",
+                "label": "Ledger Database",
+                "role": "database",
+                "parentId": "group:infrastructure",
+                "classification": {
+                  "componentId": "database",
+                  "role": "database",
+                  "confidence": "explicit",
+                  "provenance": "component.type"
+                },
+                "hints": {
+                  "preferredRank": "data",
+                  "portDirection": "incoming",
+                  "infrastructure": true,
+                  "externalBoundary": false
+                }
+              },
+              {
+                "id": "events",
+                "sourceId": "events",
+                "kind": "component",
+                "label": "Points Events",
+                "role": "queue",
+                "parentId": "group:infrastructure",
+                "classification": {
+                  "componentId": "events",
+                  "role": "queue",
+                  "confidence": "explicit",
+                  "provenance": "component.type"
+                },
+                "hints": {
+                  "preferredRank": "async",
+                  "portDirection": "bidirectional",
+                  "infrastructure": true,
+                  "externalBoundary": false
+                }
+              }
+            ],
+            "edges": [
+              {
+                "id": "gateway-ledger",
+                "sourceId": "gateway-ledger",
+                "from": "gateway",
+                "to": "ledger",
+                "asynchronous": false
+              },
+              {
+                "id": "ledger-database",
+                "sourceId": "ledger-database",
+                "from": "ledger",
+                "to": "database",
+                "asynchronous": false
+              },
+              {
+                "id": "ledger-events",
+                "sourceId": "ledger-events",
+                "from": "ledger",
+                "to": "events",
+                "asynchronous": true
+              }
+            ],
+            "constraints": [
+              {
+                "kind": "direction",
+                "direction": "LR",
+                "strength": "required"
+              },
+              {
+                "kind": "rank",
+                "nodeId": "gateway",
+                "rank": "entry",
+                "strength": "preferred"
+              },
+              {
+                "kind": "rank",
+                "nodeId": "ledger",
+                "rank": "application",
+                "strength": "preferred"
+              },
+              {
+                "kind": "rank",
+                "nodeId": "database",
+                "rank": "data",
+                "strength": "preferred"
+              },
+              {
+                "kind": "rank",
+                "nodeId": "events",
+                "rank": "async",
+                "strength": "preferred"
+              },
+              {
+                "kind": "group",
+                "groupId": "group:infrastructure",
+                "memberIds": [
+                  "database",
+                  "events"
+                ],
+                "groupKind": "infrastructure",
+                "strength": "required"
+              }
+            ]
+          }
+        },
+        "requestedMode": "FULL",
+        "appliedMode": "FULL",
+        "result": {
+          "status": "fallback",
+          "direction": "LR",
+          "size": {
+            "width": 1092,
+            "height": 72
+          },
+          "nodes": [
+            {
+              "id": "group:infrastructure",
+              "sourceId": "group:infrastructure",
+              "kind": "group",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              }
+            },
+            {
+              "id": "gateway",
+              "sourceId": "gateway",
+              "kind": "component",
+              "position": {
+                "x": 228,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              }
+            },
+            {
+              "id": "ledger",
+              "sourceId": "ledger",
+              "kind": "component",
+              "position": {
+                "x": 456,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              }
+            },
+            {
+              "id": "database",
+              "sourceId": "database",
+              "kind": "component",
+              "position": {
+                "x": 684,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              },
+              "parentId": "group:infrastructure"
+            },
+            {
+              "id": "events",
+              "sourceId": "events",
+              "kind": "component",
+              "position": {
+                "x": 912,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              },
+              "parentId": "group:infrastructure"
+            }
+          ],
+          "edges": [
+            {
+              "id": "gateway-ledger",
+              "sourceId": "gateway-ledger",
+              "from": "gateway",
+              "to": "ledger",
+              "sections": []
+            },
+            {
+              "id": "ledger-database",
+              "sourceId": "ledger-database",
+              "from": "ledger",
+              "to": "database",
+              "sections": []
+            },
+            {
+              "id": "ledger-events",
+              "sourceId": "ledger-events",
+              "from": "ledger",
+              "to": "events",
+              "sections": []
+            }
+          ],
+          "diagnostics": [
+            {
+              "code": "LAYOUT_TIMEOUT",
+              "severity": "warning",
+              "message": "Layout exceeded 0ms."
+            }
+          ]
+        },
+        "state": {
+          "version": 1,
+          "direction": "LR",
+          "nodes": [
+            {
+              "id": "group:infrastructure",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              }
+            },
+            {
+              "id": "gateway",
+              "position": {
+                "x": 228,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              }
+            },
+            {
+              "id": "ledger",
+              "position": {
+                "x": 456,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              }
+            },
+            {
+              "id": "database",
+              "position": {
+                "x": 684,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              },
+              "parentId": "group:infrastructure"
+            },
+            {
+              "id": "events",
+              "position": {
+                "x": 912,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              },
+              "parentId": "group:infrastructure"
+            }
+          ],
+          "edges": [
+            {
+              "id": "gateway-ledger",
+              "from": "gateway",
+              "to": "ledger"
+            },
+            {
+              "id": "ledger-database",
+              "from": "ledger",
+              "to": "database"
+            },
+            {
+              "id": "ledger-events",
+              "from": "ledger",
+              "to": "events"
+            }
+          ]
+        },
+        "durationMs": 5.100000001490116
+      },
+      "fallbackRepeated": {
+        "projection": {
+          "classifications": [
+            {
+              "componentId": "gateway",
+              "role": "gateway",
+              "confidence": "explicit",
+              "provenance": "component.type"
+            },
+            {
+              "componentId": "ledger",
+              "role": "service",
+              "confidence": "explicit",
+              "provenance": "component.type"
+            },
+            {
+              "componentId": "database",
+              "role": "database",
+              "confidence": "explicit",
+              "provenance": "component.type"
+            },
+            {
+              "componentId": "events",
+              "role": "queue",
+              "confidence": "explicit",
+              "provenance": "component.type"
+            }
+          ],
+          "abstraction": {
+            "groups": [
+              {
+                "id": "group:infrastructure",
+                "label": "Infrastructure",
+                "kind": "infrastructure",
+                "provenance": "layout semantic role",
+                "memberIds": [
+                  "database",
+                  "events"
+                ]
+              }
+            ],
+            "parentByComponentId": {
+              "database": "group:infrastructure",
+              "events": "group:infrastructure"
+            }
+          },
+          "visualGraph": {
+            "nodes": [
+              {
+                "id": "group:infrastructure",
+                "sourceId": "group:infrastructure",
+                "kind": "group",
+                "label": "Infrastructure",
+                "role": "unknown",
+                "groupKind": "infrastructure",
+                "hints": {
+                  "preferredRank": "application",
+                  "portDirection": "bidirectional",
+                  "infrastructure": false,
+                  "externalBoundary": false
+                }
+              },
+              {
+                "id": "gateway",
+                "sourceId": "gateway",
+                "kind": "component",
+                "label": "API Gateway",
+                "role": "gateway",
+                "classification": {
+                  "componentId": "gateway",
+                  "role": "gateway",
+                  "confidence": "explicit",
+                  "provenance": "component.type"
+                },
+                "hints": {
+                  "preferredRank": "entry",
+                  "portDirection": "outgoing",
+                  "infrastructure": false,
+                  "externalBoundary": false
+                }
+              },
+              {
+                "id": "ledger",
+                "sourceId": "ledger",
+                "kind": "component",
+                "label": "Points Ledger",
+                "role": "service",
+                "classification": {
+                  "componentId": "ledger",
+                  "role": "service",
+                  "confidence": "explicit",
+                  "provenance": "component.type"
+                },
+                "hints": {
+                  "preferredRank": "application",
+                  "portDirection": "bidirectional",
+                  "infrastructure": false,
+                  "externalBoundary": false
+                }
+              },
+              {
+                "id": "database",
+                "sourceId": "database",
+                "kind": "component",
+                "label": "Ledger Database",
+                "role": "database",
+                "parentId": "group:infrastructure",
+                "classification": {
+                  "componentId": "database",
+                  "role": "database",
+                  "confidence": "explicit",
+                  "provenance": "component.type"
+                },
+                "hints": {
+                  "preferredRank": "data",
+                  "portDirection": "incoming",
+                  "infrastructure": true,
+                  "externalBoundary": false
+                }
+              },
+              {
+                "id": "events",
+                "sourceId": "events",
+                "kind": "component",
+                "label": "Points Events",
+                "role": "queue",
+                "parentId": "group:infrastructure",
+                "classification": {
+                  "componentId": "events",
+                  "role": "queue",
+                  "confidence": "explicit",
+                  "provenance": "component.type"
+                },
+                "hints": {
+                  "preferredRank": "async",
+                  "portDirection": "bidirectional",
+                  "infrastructure": true,
+                  "externalBoundary": false
+                }
+              }
+            ],
+            "edges": [
+              {
+                "id": "gateway-ledger",
+                "sourceId": "gateway-ledger",
+                "from": "gateway",
+                "to": "ledger",
+                "asynchronous": false
+              },
+              {
+                "id": "ledger-database",
+                "sourceId": "ledger-database",
+                "from": "ledger",
+                "to": "database",
+                "asynchronous": false
+              },
+              {
+                "id": "ledger-events",
+                "sourceId": "ledger-events",
+                "from": "ledger",
+                "to": "events",
+                "asynchronous": true
+              }
+            ]
+          },
+          "layoutGraph": {
+            "direction": "LR",
+            "nodes": [
+              {
+                "id": "group:infrastructure",
+                "sourceId": "group:infrastructure",
+                "kind": "group",
+                "label": "Infrastructure",
+                "role": "unknown",
+                "groupKind": "infrastructure",
+                "hints": {
+                  "preferredRank": "application",
+                  "portDirection": "bidirectional",
+                  "infrastructure": false,
+                  "externalBoundary": false
+                }
+              },
+              {
+                "id": "gateway",
+                "sourceId": "gateway",
+                "kind": "component",
+                "label": "API Gateway",
+                "role": "gateway",
+                "classification": {
+                  "componentId": "gateway",
+                  "role": "gateway",
+                  "confidence": "explicit",
+                  "provenance": "component.type"
+                },
+                "hints": {
+                  "preferredRank": "entry",
+                  "portDirection": "outgoing",
+                  "infrastructure": false,
+                  "externalBoundary": false
+                }
+              },
+              {
+                "id": "ledger",
+                "sourceId": "ledger",
+                "kind": "component",
+                "label": "Points Ledger",
+                "role": "service",
+                "classification": {
+                  "componentId": "ledger",
+                  "role": "service",
+                  "confidence": "explicit",
+                  "provenance": "component.type"
+                },
+                "hints": {
+                  "preferredRank": "application",
+                  "portDirection": "bidirectional",
+                  "infrastructure": false,
+                  "externalBoundary": false
+                }
+              },
+              {
+                "id": "database",
+                "sourceId": "database",
+                "kind": "component",
+                "label": "Ledger Database",
+                "role": "database",
+                "parentId": "group:infrastructure",
+                "classification": {
+                  "componentId": "database",
+                  "role": "database",
+                  "confidence": "explicit",
+                  "provenance": "component.type"
+                },
+                "hints": {
+                  "preferredRank": "data",
+                  "portDirection": "incoming",
+                  "infrastructure": true,
+                  "externalBoundary": false
+                }
+              },
+              {
+                "id": "events",
+                "sourceId": "events",
+                "kind": "component",
+                "label": "Points Events",
+                "role": "queue",
+                "parentId": "group:infrastructure",
+                "classification": {
+                  "componentId": "events",
+                  "role": "queue",
+                  "confidence": "explicit",
+                  "provenance": "component.type"
+                },
+                "hints": {
+                  "preferredRank": "async",
+                  "portDirection": "bidirectional",
+                  "infrastructure": true,
+                  "externalBoundary": false
+                }
+              }
+            ],
+            "edges": [
+              {
+                "id": "gateway-ledger",
+                "sourceId": "gateway-ledger",
+                "from": "gateway",
+                "to": "ledger",
+                "asynchronous": false
+              },
+              {
+                "id": "ledger-database",
+                "sourceId": "ledger-database",
+                "from": "ledger",
+                "to": "database",
+                "asynchronous": false
+              },
+              {
+                "id": "ledger-events",
+                "sourceId": "ledger-events",
+                "from": "ledger",
+                "to": "events",
+                "asynchronous": true
+              }
+            ],
+            "constraints": [
+              {
+                "kind": "direction",
+                "direction": "LR",
+                "strength": "required"
+              },
+              {
+                "kind": "rank",
+                "nodeId": "gateway",
+                "rank": "entry",
+                "strength": "preferred"
+              },
+              {
+                "kind": "rank",
+                "nodeId": "ledger",
+                "rank": "application",
+                "strength": "preferred"
+              },
+              {
+                "kind": "rank",
+                "nodeId": "database",
+                "rank": "data",
+                "strength": "preferred"
+              },
+              {
+                "kind": "rank",
+                "nodeId": "events",
+                "rank": "async",
+                "strength": "preferred"
+              },
+              {
+                "kind": "group",
+                "groupId": "group:infrastructure",
+                "memberIds": [
+                  "database",
+                  "events"
+                ],
+                "groupKind": "infrastructure",
+                "strength": "required"
+              }
+            ]
+          }
+        },
+        "requestedMode": "FULL",
+        "appliedMode": "FULL",
+        "result": {
+          "status": "fallback",
+          "direction": "LR",
+          "size": {
+            "width": 1092,
+            "height": 72
+          },
+          "nodes": [
+            {
+              "id": "group:infrastructure",
+              "sourceId": "group:infrastructure",
+              "kind": "group",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              }
+            },
+            {
+              "id": "gateway",
+              "sourceId": "gateway",
+              "kind": "component",
+              "position": {
+                "x": 228,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              }
+            },
+            {
+              "id": "ledger",
+              "sourceId": "ledger",
+              "kind": "component",
+              "position": {
+                "x": 456,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              }
+            },
+            {
+              "id": "database",
+              "sourceId": "database",
+              "kind": "component",
+              "position": {
+                "x": 684,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              },
+              "parentId": "group:infrastructure"
+            },
+            {
+              "id": "events",
+              "sourceId": "events",
+              "kind": "component",
+              "position": {
+                "x": 912,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              },
+              "parentId": "group:infrastructure"
+            }
+          ],
+          "edges": [
+            {
+              "id": "gateway-ledger",
+              "sourceId": "gateway-ledger",
+              "from": "gateway",
+              "to": "ledger",
+              "sections": []
+            },
+            {
+              "id": "ledger-database",
+              "sourceId": "ledger-database",
+              "from": "ledger",
+              "to": "database",
+              "sections": []
+            },
+            {
+              "id": "ledger-events",
+              "sourceId": "ledger-events",
+              "from": "ledger",
+              "to": "events",
+              "sections": []
+            }
+          ],
+          "diagnostics": [
+            {
+              "code": "LAYOUT_TIMEOUT",
+              "severity": "warning",
+              "message": "Layout exceeded 0ms."
+            }
+          ]
+        },
+        "state": {
+          "version": 1,
+          "direction": "LR",
+          "nodes": [
+            {
+              "id": "group:infrastructure",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              }
+            },
+            {
+              "id": "gateway",
+              "position": {
+                "x": 228,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              }
+            },
+            {
+              "id": "ledger",
+              "position": {
+                "x": 456,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              }
+            },
+            {
+              "id": "database",
+              "position": {
+                "x": 684,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              },
+              "parentId": "group:infrastructure"
+            },
+            {
+              "id": "events",
+              "position": {
+                "x": 912,
+                "y": 0
+              },
+              "size": {
+                "width": 180,
+                "height": 72
+              },
+              "parentId": "group:infrastructure"
+            }
+          ],
+          "edges": [
+            {
+              "id": "gateway-ledger",
+              "from": "gateway",
+              "to": "ledger"
+            },
+            {
+              "id": "ledger-database",
+              "from": "ledger",
+              "to": "database"
+            },
+            {
+              "id": "ledger-events",
+              "from": "ledger",
+              "to": "events"
+            }
+          ]
+        },
+        "durationMs": 4.700000002980232
+      }
+    }
+  }
+]

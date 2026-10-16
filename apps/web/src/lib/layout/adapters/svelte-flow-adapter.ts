@@ -10,6 +10,7 @@ export interface ArchitectureNodeData extends Record<string, unknown> {
   readonly label: string;
   readonly role: LayoutSemanticRole;
   readonly compactLabel: string;
+  readonly kind?: "component" | "group";
 }
 
 export type ArchitectureFlowNode = Node<ArchitectureNodeData, "architecture">;
@@ -29,19 +30,26 @@ export function toSvelteFlowProjection(
   const visualById = new Map(projection.visualGraph.nodes.map((node) => [node.id, node]));
   const positionById = new Map(viewState?.nodes.map((node) => [node.id, node.position]) ?? []);
 
+  const resultById = new Map(result.nodes.map((node) => [node.id, node]));
   const nodes = result.nodes.map<ArchitectureFlowNode>((node) => {
     const visual = visualById.get(node.id);
     if (visual === undefined) throw new Error(`Layout node ${node.id} has no visual source.`);
     const position = positionById.get(node.id) ?? node.position;
+    const parentPosition = node.parentId === undefined ? undefined
+      : positionById.get(node.parentId) ?? resultById.get(node.parentId)?.position;
+    // LayoutResult/LayoutState are absolute; Svelte Flow children are parent-relative.
+    const flowPosition = parentPosition === undefined ? position : {
+      x: position.x - parentPosition.x, y: position.y - parentPosition.y
+    };
     return {
       id: node.id,
       type: "architecture",
-      position: { ...position },
+      position: { ...flowPosition },
       width: node.size.width,
       height: node.size.height,
       parentId: node.parentId,
       ariaLabel: `${visual.label}, ${visual.role}`,
-      data: { label: visual.label, compactLabel: visual.label.slice(0, 2).toUpperCase(), role: visual.role }
+      data: { label: visual.label, compactLabel: visual.label.slice(0, 2).toUpperCase(), role: visual.role, kind: node.kind }
     };
   });
 

@@ -5,7 +5,10 @@
   let { data }: { data: ArchitectureNodeData } = $props();
 </script>
 
-<article class="architecture-node" data-role={data.role} aria-label={`${data.label}, ${data.role}`}>
+<article class="architecture-node" class:group={data.kind === "group"} data-role={data.role} aria-label={`${data.label}, ${data.role}`}>
+  {#if data.kind === "group"}
+    <span class="group-label">{data.label}</span>
+  {:else}
   <Handle type="target" position={Position.Left} />
   <span class="compact" aria-hidden="true">{data.compactLabel}</span>
   <div class="standard">
@@ -13,6 +16,7 @@
     <span>{data.role}</span>
   </div>
   <Handle type="source" position={Position.Right} />
+  {/if}
 </article>
 
 <style>
@@ -30,6 +34,9 @@
     color: #0f172a;
     box-shadow: 0 8px 20px rgb(15 23 42 / 10%);
   }
+
+  .group { position: relative; background: rgb(226 232 240 / 35%); border-style: dashed; box-shadow: none; }
+  .group-label { position: absolute; top: 3px; left: 8px; font-size: 11px; color: #475569; }
 
   .standard {
     display: grid;

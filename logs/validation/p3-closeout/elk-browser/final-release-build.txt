@@ -1,0 +1,81 @@
+Scope: 10 of 16 workspace projects
+packages/architecture-ir build$ tsc -p tsconfig.json
+packages/architecture-ir build: Done
+packages/component-registry build$ tsc -p tsconfig.json
+packages/architecture-dsl build$ tsc -p tsconfig.json
+packages/architecture-layout build$ tsc -p tsconfig.json
+packages/component-registry build: Done
+packages/architecture-dsl build: Done
+packages/architecture-layout build: Done
+packages/architecture-validator build$ tsc -p tsconfig.json
+packages/architecture-validator build: Done
+packages/architecture-agent build$ tsc -p tsconfig.json
+packages/execution-blueprint build$ tsc -p tsconfig.json
+packages/execution-blueprint build: Done
+packages/architecture-agent build: Done
+packages/workspace build$ tsc -p tsconfig.json
+packages/workspace build: Done
+packages/architecture-review build$ tsc -p tsconfig.json
+packages/architecture-review build: Done
+apps/web build$ vite build
+apps/web build: vite v7.3.6 building ssr environment for production...
+apps/web build: transforming...
+apps/web build: ✓ 663 modules transformed.
+apps/web build: rendering chunks...
+apps/web build: vite v7.3.6 building client environment for production...
+apps/web build: transforming...
+apps/web build: ✓ 589 modules transformed.
+apps/web build: rendering chunks...
+apps/web build: computing gzip size...
+apps/web build: .svelte-kit/output/client/_app/version.json                                     0.03 kB │ gzip:   0.05 kB
+apps/web build: .svelte-kit/output/client/.vite/manifest.json                                   3.73 kB │ gzip:   0.74 kB
+apps/web build: .svelte-kit/output/client/_app/immutable/workers/layout-worker-Bwz_iYRG.js      5.25 kB
+apps/web build: .svelte-kit/output/client/_app/immutable/workers/chunks/Cl9yntJ2.js         1,441.25 kB
+apps/web build: .svelte-kit/output/client/_app/immutable/assets/2.BEoj7r0K.css                 26.33 kB │ gzip:   4.67 kB
+apps/web build: .svelte-kit/output/client/_app/immutable/entry/start.vRrkNXs0.js                0.08 kB │ gzip:   0.09 kB
+apps/web build: .svelte-kit/output/client/_app/immutable/chunks/DaDEMsvy.js                     0.22 kB │ gzip:   0.18 kB
+apps/web build: .svelte-kit/output/client/_app/immutable/nodes/0.BDVOgMgN.js                    0.34 kB │ gzip:   0.26 kB
+apps/web build: .svelte-kit/output/client/_app/immutable/nodes/1.BDTwZ335.js                    0.51 kB │ gzip:   0.32 kB
+apps/web build: .svelte-kit/output/client/_app/immutable/chunks/wbPk3Yxo.js                     1.37 kB │ gzip:   0.66 kB
+apps/web build: .svelte-kit/output/client/_app/immutable/chunks/DuszAfsc.js                     1.55 kB │ gzip:   0.68 kB
+apps/web build: .svelte-kit/output/client/_app/immutable/chunks/sikE3Fb8.js                     1.59 kB │ gzip:   0.83 kB
+apps/web build: .svelte-kit/output/client/_app/immutable/entry/app.BP_A3zEH.js                  4.14 kB │ gzip:   1.89 kB
+apps/web build: .svelte-kit/output/client/_app/immutable/chunks/CvRJ2Vy-.js                     4.58 kB │ gzip:   2.16 kB
+apps/web build: .svelte-kit/output/client/_app/immutable/chunks/CTH4_3T7.js                     7.77 kB │ gzip:   3.49 kB
+apps/web build: .svelte-kit/output/client/_app/immutable/chunks/Bl0a4wMg.js                    31.77 kB │ gzip:  12.49 kB
+apps/web build: .svelte-kit/output/client/_app/immutable/chunks/B_l-smd_.js                    40.14 kB │ gzip:  14.66 kB
+apps/web build: .svelte-kit/output/client/_app/immutable/nodes/2.B8wKEKfr.js                  326.21 kB │ gzip: 106.17 kB
+apps/web build: .svelte-kit/output/client/_app/immutable/chunks/D_IaZ538.js                 1,441.31 kB │ gzip: 439.14 kB
+apps/web build: ✓ built in 5.87s
+apps/web build: (!) Some chunks are larger than 500 kB after minification. Consider:
+apps/web build: - Using dynamic import() to code-split the application
+apps/web build: - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+apps/web build: - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+apps/web build: .svelte-kit/output/server/.vite/manifest.json                                   5.03 kB
+apps/web build: .svelte-kit/output/server/_app/immutable/assets/_page.7-zg5Xah.css             24.65 kB
+apps/web build: .svelte-kit/output/server/entries/pages/_layout.ts.js                           0.04 kB
+apps/web build: .svelte-kit/output/server/entries/fallbacks/layout.svelte.js                    0.16 kB
+apps/web build: .svelte-kit/output/server/env.js                                                0.23 kB
+apps/web build: .svelte-kit/output/server/internal.js                                           0.35 kB
+apps/web build: .svelte-kit/output/server/chunks/server.js                                      0.62 kB
+apps/web build: .svelte-kit/output/server/chunks/utils2.js                                      1.09 kB
+apps/web build: .svelte-kit/output/server/entries/endpoints/api/workspace/_server.ts.js         1.14 kB
+apps/web build: .svelte-kit/output/server/entries/fallbacks/error.svelte.js                     1.36 kB
+apps/web build: .svelte-kit/output/server/chunks/internal.js                                    3.22 kB
+apps/web build: .svelte-kit/output/server/chunks/exports.js                                     7.02 kB
+apps/web build: .svelte-kit/output/server/chunks/index2.js                                      9.02 kB
+apps/web build: .svelte-kit/output/server/chunks/workspace.js                                  10.24 kB
+apps/web build: .svelte-kit/output/server/chunks/uneval.js                                     17.62 kB
+apps/web build: .svelte-kit/output/server/entries/endpoints/api/workspace/_id_/_server.ts.js   18.75 kB
+apps/web build: .svelte-kit/output/server/remote-entry.js                                      36.79 kB
+apps/web build: .svelte-kit/output/server/chunks/index.js                                      38.52 kB
+apps/web build: .svelte-kit/output/server/chunks/utils.js                                      58.82 kB
+apps/web build: .svelte-kit/output/server/chunks/root.js                                       87.54 kB
+apps/web build: .svelte-kit/output/server/index.js                                            134.98 kB
+apps/web build: .svelte-kit/output/server/entries/pages/_page.svelte.js                       256.17 kB
+apps/web build: ✓ built in 7.70s
+apps/web build: Run npm run preview to preview your production build locally.
+apps/web build: > Using @sveltejs/adapter-auto
+apps/web build:   Could not detect a supported production environment. See https://svelte.dev/docs/kit/adapters to learn how to configure your app to run on the platform of your choosing
+apps/web build:   ✔ done
+apps/web build: Done

@@ -271,6 +271,9 @@
   onMount(() => {
     const next = new WorkspaceShellController(pointsSystemFixture);
     controller = next;
+    if (import.meta.env.DEV || import.meta.env.MODE === "layout-acceptance") {
+      void import("$lib/layout/testing/layout-acceptance.js").then(({ installLayoutAcceptance }) => installLayoutAcceptance(next));
+    }
     syncFromController();
     applyCurrentTheme();
     globalThis.matchMedia?.("(prefers-color-scheme: dark)")

@@ -1,0 +1,98 @@
+[
+  {
+    "step": "01-install",
+    "command": "pnpm install",
+    "exitCode": 0,
+    "seconds": 0.23,
+    "log": "01-install.txt",
+    "environment": {
+      "CI": "true",
+      "TURBO_FORCE": "true"
+    },
+    "failureCategory": null
+  },
+  {
+    "step": "02-build",
+    "command": "pnpm build",
+    "exitCode": 0,
+    "seconds": 12.39,
+    "log": "02-build.txt",
+    "environment": {
+      "CI": "true",
+      "TURBO_FORCE": "true"
+    },
+    "failureCategory": null
+  },
+  {
+    "step": "03-typecheck",
+    "command": "pnpm typecheck",
+    "exitCode": 0,
+    "seconds": 5.7,
+    "log": "03-typecheck.txt",
+    "environment": {
+      "CI": "true",
+      "TURBO_FORCE": "true"
+    },
+    "failureCategory": null
+  },
+  {
+    "step": "04-test",
+    "command": "pnpm test",
+    "exitCode": 0,
+    "seconds": 15.49,
+    "log": "04-test.txt",
+    "environment": {
+      "CI": "true",
+      "TURBO_FORCE": "true"
+    },
+    "failureCategory": null
+  },
+  {
+    "step": "05-web-unit",
+    "command": "pnpm --filter @coding-cad/web test:unit",
+    "exitCode": 0,
+    "seconds": 1.73,
+    "log": "05-web-unit.txt",
+    "environment": {
+      "CI": "true",
+      "TURBO_FORCE": "true"
+    },
+    "failureCategory": null
+  },
+  {
+    "step": "06-web-integration",
+    "command": "pnpm --filter @coding-cad/web test:integration",
+    "exitCode": 0,
+    "seconds": 0.46,
+    "log": "06-web-integration.txt",
+    "environment": {
+      "CI": "true",
+      "TURBO_FORCE": "true"
+    },
+    "failureCategory": null
+  },
+  {
+    "step": "07-browser",
+    "command": "pnpm --filter @coding-cad/web test:e2e",
+    "exitCode": 0,
+    "seconds": 46.88,
+    "log": "07-browser.txt",
+    "environment": {
+      "CI": "true",
+      "TURBO_FORCE": "true"
+    },
+    "failureCategory": null
+  },
+  {
+    "step": "08-ci",
+    "command": "pnpm ci:verify",
+    "exitCode": 0,
+    "seconds": 101.06,
+    "log": "08-ci.txt",
+    "environment": {
+      "CI": "true",
+      "TURBO_FORCE": "true"
+    },
+    "failureCategory": null
+  }
+]

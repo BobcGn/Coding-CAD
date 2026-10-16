@@ -1,0 +1,13 @@
+
+> @coding-cad/web@0.1.0 test:unit /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/web
+> vitest run --exclude '**/*.integration.test.ts'
+
+
+ RUN  v4.1.10 /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/web
+
+
+ Test Files  14 passed (14)
+      Tests  58 passed (58)
+   Start at  07:28:43
+   Duration  1.23s (transform 1.41s, setup 1.14s, import 1.85s, tests 175ms, environment 5.24s)
+
