@@ -87,9 +87,9 @@ The terminal manages only operating-system processes and PTYs. Coding Agents rem
 
 ## 测试计划 / Test Plan
 
-Phase 2 已建立 Vitest、Svelte component tests 与 Playwright，并覆盖 adapter、command、state ownership、worker transport 和 Canvas smoke E2E。Greenfield、Brownfield、Inspector、Ghost accept/reject、Review 与 Blueprint handoff 仍按后续 Checkpoint 添加。
+Phase 2 已建立 Vitest、Svelte component tests 与 Playwright，并覆盖 adapter、command、state ownership、worker transport 和 Canvas smoke E2E。当前Greenfield、Inspector与最小Review已有测试；Brownfield、Ghost与Handoff仍按后续Checkpoint添加。
 
-Phase 2 establishes Vitest, Svelte component tests, and Playwright for adapter, command, state-ownership, worker-transport, and Canvas smoke E2E coverage. Greenfield, Brownfield, Inspector, Ghost accept/reject, Review, and Blueprint handoff tests remain scoped to later Checkpoints.
+Phase 2 establishes Vitest, Svelte component tests, and Playwright for adapter, command, state-ownership, worker-transport, and Canvas smoke E2E coverage. Greenfield, Inspector and minimal Review now have tests; Brownfield, Ghost and Handoff remain later-Checkpoint scope.
 
 ## 详细文档 / Detailed Documentation
 
@@ -97,3 +97,7 @@ Phase 2 establishes Vitest, Svelte component tests, and Playwright for adapter, 
 - [Architecture Layout Design](../../docs/architecture-layout.md)
 - [Decision Required](../../docs/architecture-layout-decisions.md)
 - [UI MVP Roadmap](../../docs/ui-mvp-roadmap.md)
+
+## Phase 3 Closeout Evidence / 阶段3收尾证据
+
+2026-10-16：产品审批、编辑、最小契约及Save/Open已有源码测试与完整本地CI证据；浏览器ELK返回 `_Worker is not a constructor`，fallback不代表solver成功。阶段退出仍阻塞，边界和后续阶段未变。详见[退出报告](../../docs/phase-3-exit-report.md)。 / Product gate/edit/minimal-contract/Save-Open flows have source tests and passing local CI; browser ELK falls back and phase exit remains blocked. Ownership and later-phase scope are unchanged. See the report.

@@ -94,3 +94,7 @@ Early validator rules focus on architectural misuse:
 这些规则刻意保持简单。目标是先建立验证接口和诊断形态，而不是第一天就编码所有技术决策。
 
 These rules are intentionally simple. The goal is to establish the validation surface, not to encode every technology decision on day one.
+
+## Phase 3 Closeout Evidence / 阶段3收尾证据
+
+2026-10-16：产品审批、编辑、最小契约及Save/Open已有源码测试与完整本地CI证据；浏览器ELK返回 `_Worker is not a constructor`，fallback不代表solver成功。阶段退出仍阻塞，边界和后续阶段未变。详见[退出报告](phase-3-exit-report.md)。 / Product gate/edit/minimal-contract/Save-Open flows have source tests and passing local CI; browser ELK falls back and phase exit remains blocked. Ownership and later-phase scope are unchanged. See the report.

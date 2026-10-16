@@ -226,3 +226,7 @@ Checkpoint 2 does not define irreversible UI APIs or implement Ghost behavior, p
 - [UI Architecture](./ui-architecture.md)
 - [Architecture Layout Decisions](./architecture-layout-decisions.md)
 - [UI MVP Roadmap](./ui-mvp-roadmap.md)
+
+## Phase 3 Closeout Evidence / 阶段3收尾证据
+
+2026-10-16：产品审批、编辑、最小契约及Save/Open已有源码测试与完整本地CI证据；浏览器ELK返回 `_Worker is not a constructor`，fallback不代表solver成功。阶段退出仍阻塞，边界和后续阶段未变。详见[退出报告](phase-3-exit-report.md)。 / Product gate/edit/minimal-contract/Save-Open flows have source tests and passing local CI; browser ELK falls back and phase exit remains blocked. Ownership and later-phase scope are unchanged. See the report.

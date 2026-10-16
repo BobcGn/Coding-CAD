@@ -20,9 +20,9 @@
 | No generic patch / 禁止通用 patch | 已实现；命令为显式联合类型 / Explicit command union already implemented | 同上；没有任意字段 patch / Same files; no arbitrary-field patch |
 | No new IR semantics / 不扩展 IR | 已实现 / Implemented | `packages/architecture-ir/src/contract.ts` unchanged; uses existing Contract / 使用既有 Contract |
 | Description editing / 描述编辑 | 已实现并有命令、产品 E2E 测试，但旧 synthetic click 掩盖响应式异常 / Command and E2E existed, synthetic click hid a reactive exception | `+page.svelte`, `canvas.spec.ts`; now real clicks and pageerror assertions / 现用真实点击及异常断言 |
-| Type editing / 类型编辑 | 命令有测试，UI 只读 / Tested command, read-only UI | Type selector now emits existing command; pure command tested; dedicated UI interaction not separately tested / 现有类型选择器走既有命令；独立 UI 操作尚无专门测试 |
+| Type editing / 类型编辑 | 命令有测试，UI 只读 / Tested command, read-only UI | Type selector now emits existing command; pure command tested; dedicated UI interaction is now covered by editing.spec.ts / 现有类型选择器走既有命令，editing.spec.ts 已覆盖实际控件 |
 | Capability add/remove / 能力新增移除 | 已实现并有命令测试 / Implemented with command tests | `apply-inspector-command.test.ts`, `+page.svelte`; product approvals share the tested gate / 产品共用已测门禁 |
-| Limitation add / 限制新增 | 命令有测试，UI 未提供 / Tested command, no UI | Now displays limitations and exposes existing add command; dedicated UI interaction not separately tested / 现有展示和新增入口；独立 UI 操作尚无专门测试 |
+| Limitation add / 限制新增 | 命令有测试，UI 未提供 / Tested command, no UI | Now displays limitations and exposes existing add command; dedicated UI interaction covered by editing.spec.ts / 现有展示和新增入口且有真实控件E2E |
 | Contract projection / 契约投影 | View model 已实现，UI 未显示 / Implemented view model, absent UI | `greenfield/inspector.ts`, `+page.svelte` displays contracts / 现显示契约 |
 | Contract add/remove / 契约新增移除 | 未实现 / Not implemented | Two explicit commands; structural Validator rule; controller approval tests and Save/Open E2E / 两条命令、结构规则、controller 审批与往返 E2E |
 | Validation issue projection/navigation / 问题投影导航 | 已实现并有测试，导航仅更改选择 / Implemented and tested | `projectInspector`, `canvas.spec.ts`; now also refreshes Inspector on problem navigation / 现同时刷新 Inspector |
@@ -43,3 +43,5 @@ Two app-private commands add/remove existing Contracts. The minimal UI adds name
 ## Validation / 验证
 
 源码编译与实际命令结果记录在 `logs/modules/web/implementation-log.md` 和阶段3退出报告；不把“存在测试”写成“当前测试通过”。 / Source-build command results are recorded in the Web implementation log and Phase 3 exit report; test presence is not treated as a passing run.
+
+步骤4最终补充：类型、能力新增/移除、限制新增的真实控件均由 editing.spec.ts 验证，Web unit 57 / integration 9 / Chrome 18 与完整源码CI通过。 / Step 4 adds actual-control coverage for type, capability add/remove and limitation add; Web unit 57 / integration 9 / Chrome 18 and full source CI pass.

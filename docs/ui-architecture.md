@@ -2,13 +2,13 @@
 
 ## 文档状态 / Document Status
 
-状态：Phase 2 已验证并合并；Phase 3 Greenfield Workspace 正在规划，代码尚未开始。
+状态：Phase 2 已验证并合并；Phase 3 Greenfield Workspace 已实施收尾，退出阻塞于实际浏览器布局；见阶段3退出报告。
 
-Status: Phase 2 is verified and merged. The Phase 3 Greenfield Workspace is being planned and implementation has not started.
+Status: Phase 2 is verified and merged. Phase 3 closeout is implemented; actual-browser layout blocks exit. See the Phase 3 exit report.
 
 ## Greenfield Host Boundary / Greenfield 宿主边界
 
-Phase 3 必须把浏览器交互与 Node-only Workspace 持久化隔开。推荐的待批准路径是： / Phase 3 must separate browser interaction from Node-only Workspace persistence. The recommended path, pending approval, is:
+Phase 3 必须把浏览器交互与 Node-only Workspace 持久化隔开。P3-D1已批准并实现的路径是： / Phase 3 must separate browser interaction from Node-only Workspace persistence. The P3-D1-approved, implemented path is:
 
 ```text
 Svelte UI
@@ -18,7 +18,7 @@ Svelte UI
   -> workspace-internal storage
 ```
 
-浏览器不得导入 `node:*`、`FileWorkspaceStorage` 或 workspace 磁盘格式。ArchitectureProject snapshot、validation/review evidence、LayoutState 与 ephemeral UI state 必须保持不同生命周期；具体 storage contract 在 P3-D1 确认前不得冻结。 / The browser must not import `node:*`, `FileWorkspaceStorage`, or the workspace disk format. ArchitectureProject snapshots, validation/review evidence, LayoutState, and ephemeral UI state must retain distinct lifecycles; no concrete storage contract may be frozen before P3-D1 is confirmed.
+浏览器不得导入 `node:*`、`FileWorkspaceStorage` 或 workspace 磁盘格式。ArchitectureProject snapshot、validation/review evidence、LayoutState 与 ephemeral UI state 必须保持不同生命周期；P3-D1已确认，当前使用typed app contract，未冻结最终磁盘格式。 / The browser must not import `node:*`, `FileWorkspaceStorage`, or the workspace disk format. ArchitectureProject snapshots, validation/review evidence, LayoutState, and ephemeral UI state must retain distinct lifecycles; P3-D1 is confirmed; the typed app contract is implemented without freezing a final disk format.
 
 Phase 3 只提供 candidate accept/reject 的最小 Review gate。完整 Review UI、comment、multi-approval、impact analysis 与 Ghost presentation 留给 Phase 5。 / Phase 3 provides only a minimal candidate accept/reject Review gate. The complete Review UI, comments, multi-approval, impact analysis, and Ghost presentation remain in Phase 5.
 
@@ -176,7 +176,7 @@ Reject only removes the Ghost projection and does not modify the accepted Archit
 
 - Unit/adapter：Vitest 验证 commands、stores 和 `LayoutResult -> Svelte Flow` 映射；不复制 compiler 测试。 / Unit/adapter: Vitest verifies commands, stores, and `LayoutResult -> Svelte Flow` mapping without duplicating compiler tests.
 - Component：Svelte component tests 验证 Canvas node、Inspector、Problems、Review 与 Handoff 的渲染和交互。 / Component: Svelte component tests verify rendering and interaction for Canvas nodes, Inspector, Problems, Review, and Handoff.
-- E2E：Playwright 覆盖 Greenfield workspace、Brownfield import、Canvas interaction、Inspector、Ghost accept/reject、Review flow 和 Blueprint handoff。 / E2E: Playwright covers Greenfield workspace, Brownfield import, Canvas interaction, Inspector, Ghost accept/reject, Review flow, and Blueprint handoff.
+- E2E：当前覆盖Greenfield、Canvas、Inspector及最小Review；Brownfield、Ghost、完整Review与Handoff按后续阶段验收。 / E2E currently covers Greenfield, Canvas, Inspector and minimal Review; Brownfield, Ghost, complete Review and Handoff are later-phase acceptance.
 - Accessibility：键盘导航、焦点、缩放替代、screen-reader labels 和问题导航。 / Accessibility: keyboard navigation, focus, zoom alternatives, screen-reader labels, and issue navigation.
 - Performance：大图首次显示、增量更新、取消、worker failure 和恢复。 / Performance: initial display of large graphs, incremental updates, cancellation, worker failure, and recovery.
 
@@ -186,7 +186,7 @@ Phase 2 establishes Vitest, Svelte component testing, and Playwright under expli
 
 ## 非目标 / Non-goals
 
-- Phase 2 已完成 SvelteKit/Canvas 基础设施；本阶段结论不授权继续实现 Phase 3 Palette、Inspector 或完整 Greenfield workflow。 / Phase 2 has completed the SvelteKit/Canvas infrastructure; this conclusion does not authorize Phase 3 Palette, Inspector, or complete Greenfield workflows.
+- Phase 2 已完成 SvelteKit/Canvas 基础设施；该历史结论不替代当前 Phase 3 退出报告。 / Phase 2 has completed the SvelteKit/Canvas infrastructure; that historical conclusion does not replace the current Phase 3 exit report.
 - UI 不实现 Architecture Agent、Validator、Layout compiler 或 Agent runtime 的业务规则。 / The UI does not implement business rules belonging to Architecture Agent, Validators, the Layout compiler, or an Agent runtime.
 - Canvas 不是自由绘图或图形设计工具。 / The Canvas is not a free-form drawing or graphic-design tool.
 - Terminal 不在早期 UI checkpoints 范围内。 / The Terminal is outside early UI checkpoints.

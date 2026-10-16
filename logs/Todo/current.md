@@ -50,15 +50,12 @@ This file is the single source of truth for active TODOs.
 
 ## TODO-016: Greenfield Architecture Workspace / Greenfield 架构工作区
 
-- 状态 / Status: 已完成 / Complete
-- 当前处理 / Current handling: Phase 3（Greenfield Architecture Workspace）P3.0–P3.7 全部实现并验证；requirement -> candidate -> validate -> accept -> save/open 全流程 E2E 通过；完整 ci:verify 通过。
-- 决策门禁 / Decision gates: P3-D1、P3-D2、P3-D3（均已确认）。
-- 解除条件 / Exit condition: 已满足；后续 Greenfield 扩展与 Phase 4 Brownfield 进入独立切片。
-
-- Status: Complete
-- Current handling: Phase 3 (Greenfield Architecture Workspace) P3.0–P3.7 fully implemented and verified; the requirement -> candidate -> validate -> accept -> save/open flow passes E2E; the complete ci:verify passes.
-- Decision gates: P3-D1, P3-D2, and P3-D3 (all confirmed).
-- Exit condition: Met; later Greenfield extensions and Phase 4 Brownfield enter separate slices.
+- 状态 / Status: Open — layout acceptance blocked / 开放，布局验收阻塞。
+- 已实现并验证：产品审批、编辑、最小契约、存储生命周期及可写源码CI。 / Implemented and verified: product gate, edits, minimal contracts, storage lifecycle and writable source CI.
+- 当前阻塞：浏览器ELK退化，默认语义布局及incremental稳定性未证明。 / Blocked: browser ELK fallback; semantic quality and incremental stability unproven.
+- P3-D1–P3-D3及本次审批/契约澄清均已确认；不授权阶段4。 / Decisions are confirmed; Phase 4 is not authorized.
+- 解除条件：修复互操作并取得实际浏览器布局验收证据，更新退出报告。 / Exit: repair interoperability, prove actual-browser layout acceptance, update the report.
+- 详见 / See: `docs/phase-3-exit-report.md`。
 
 ## TODO-014: Architecture Layout Contracts / Architecture Layout 契约
 

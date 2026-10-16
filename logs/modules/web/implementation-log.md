@@ -299,3 +299,17 @@ ELK fallback is not counted as solver success. Browser `_Worker is not a constru
 步骤4最终命令结果：补齐记录后完整 ci:verify exit 0；typecheck 25/25、unit 28/28、integration 18/18、E2E 17/17、build 15/15，全部 0 cached。Web 实际计数为 unit 56、integration 9、浏览器18。独立 Chrome 诊断得到 `Layout fallback: _Worker is not a constructor`、pageErrors=[]、5 个 Canvas 节点；截图与 JSON 已保存。这是 solver/浏览器互操作的代码缺陷，非环境权限问题，也不因 CI 成功而消失。阶段3不宣称退出。
 
 Step 4 final commands: ci:verify exited 0 after adding the record; typecheck 25/25, unit 28/28, integration 18/18, E2E 17/17, build 15/15, all with zero cached tasks. Actual Web counts are 56 unit, 9 integration, and 18 browser tests. Independent Chrome diagnostics reported `Layout fallback: _Worker is not a constructor`, pageErrors=[], and five Canvas nodes; screenshot and JSON are saved. This solver/browser interoperability code defect is not a permission issue and is not erased by passing CI. Phase 3 exit is not claimed.
+
+## 2026-10-16 - Step 5 State and Exit Report / 步骤5状态与退出报告
+
+动机：修正当前文档中“已完成并合并”“代码未开始”“待三项决策”互相冲突的状态，不重写历史implementation-log。同步主计划、Roadmap、UI/Architecture/Layout说明、README与根/模块State/Todo/Links。新增双语 `docs/phase-3-exit-report.md`，保留命令成功与实际solver退化两个事实。
+
+Motivation: reconcile conflicting current status without rewriting historical implementation logs. Synchronized plan, roadmap, architecture/UI/layout notes, READMEs and root/module state, todo and links. Added the bilingual exit report, retaining both successful engineering commands and actual solver fallback.
+
+阶段3结论：不满足退出条件；不授权进入阶段4。审批与P3-D3澄清已解决，无待答复决策。浏览器ELK互操作尚未修复；若修复方案改变已批准边界/公开API/依赖须另行决策。 / Phase 3 does not satisfy exit and does not authorize Phase 4. Approval and Inspector clarifications are resolved. ELK interoperability remains unfixed; changes to approved boundaries/APIs/dependencies require separate decisions.
+
+步骤4最终增补：重新生成失败时保留待审命令的Review归属；新增回归后完整源码CI再次exit 0，Web最新57 unit / 9 integration / 18 Chrome tests，仍为零缓存。步骤4最终提交为 e243537。 / Final Step 4 addition preserves pending-command Review ownership after failed regeneration. Full source CI passed again with final counts 57/9/18 and zero cache. Final Step 4 commit: e243537.
+
+步骤5文档验证：git diff --check、15模块workspace边界检查、change-record通过；退出报告/审计/主计划/Roadmap共16个本地链接目标存在。最终源码CI见10-final-source-ci.txt，最新Web计数57/9/18。 / Step 5 document checks passed: diff whitespace, 15-module workspace boundary, change-record, and 16 local link targets. Final source CI is in 10-final-source-ci.txt with Web counts 57/9/18.
+
+最终文档交付检查：5个收尾提交的Conventional Commits检查、secret scan、workspace检查及diff检查通过；4173端口无监听。见11-final-document-checks.txt。 / Final documentation delivery checks passed for all five closeout commit messages, secret scan, workspace and diff checks; port 4173 has no listener. See 11-final-document-checks.txt.

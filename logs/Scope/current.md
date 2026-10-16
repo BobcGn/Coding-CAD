@@ -1,31 +1,9 @@
 # 当前范围 / Current Scope
 
-更新时间 / Updated at: 2026-08-16 00:10 CST (Asia/Shanghai)
+更新时间 / Updated at: 2026-10-16
 
-## 本轮目标 / Current Objective
+本轮仅收尾阶段3验收缺口，并出具真实退出报告。审批、编辑、Inspector、存储生命周期与源码工程验证已有证据；浏览器ELK退化阻止阶段退出。 / This run closes only Phase 3 acceptance gaps and issues a factual exit report. Gate/edit/Inspector/storage/source verification has evidence; browser ELK fallback blocks phase exit.
 
-Phase 3（Greenfield Architecture Workspace）已全部完成：P3.0–P3.7 实现与验收通过，完整 pnpm ci:verify 通过。下一步为 Phase 4（Brownfield Architecture Workspace）规划。
+不改变阶段顺序，不新增package，不启动Agent，不进入Brownfield、Ghost、完整Review工作区或Terminal。ArchitectureProject保持唯一事实源；Layout/View State独立；Adapter仍只渲染Blueprint。 / No phase reorder, new package, Agent launch or later-phase implementation. ArchitectureProject remains the sole source of truth; view state stays independent and Adapter renders only Blueprint.
 
-Phase 3 (Greenfield Architecture Workspace) is fully complete: P3.0–P3.7 implementation and acceptance pass, and the complete pnpm ci:verify passes. The next slice is Phase 4 (Brownfield Architecture Workspace) planning.
-
-## 边界 / Boundaries
-
-- Phase 3 已收尾；不进入 Phase 4 实现。
-- 保留 ArchitectureProject 唯一事实来源、browser-safe server boundary（P3-D1）与生成零 LLM（P3-D2）。
-- 不实现 Brownfield、Ghost、完整 Review、Handoff、Terminal 或真实 LLM Provider。
-
-- Phase 3 is closed; no Phase 4 implementation begins.
-- Preserve ArchitectureProject as the sole source of truth, the browser-safe server boundary (P3-D1), and zero-LLM generation (P3-D2).
-- Do not implement Brownfield, Ghost, complete Review, Handoff, Terminal, or a real LLM Provider.
-
-## 验收标准 / Acceptance Criteria
-
-- P3.0–P3.7 全部切片实现并验证。
-- Greenfield requirement -> candidate -> validate -> accept -> save/open 全流程 E2E 通过。
-- 完整 pnpm ci:verify 通过（typecheck 25/25、unit 28/28、integration 18/18、E2E 17/17、build 15/15）。
-- 文档与根级/模块级日志同步。
-
-- All P3.0–P3.7 slices are implemented and verified.
-- The Greenfield requirement -> candidate -> validate -> accept -> save/open flow passes E2E.
-- The complete pnpm ci:verify passes (typecheck 25/25, unit 28/28, integration 18/18, E2E 17/17, build 15/15).
-- Documents and root/module logs are aligned.
+具体证据、未验证项与回退见 `docs/phase-3-exit-report.md`。 / Evidence, gaps and rollback are in the exit report.

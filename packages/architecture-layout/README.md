@@ -71,3 +71,7 @@ D-001, D-002, D-003, D-004, D-005, D-006, D-008, D-009, and D-010 are user-appro
 - [Decision Required](../../docs/architecture-layout-decisions.md)
 - [UI MVP Roadmap](../../docs/ui-mvp-roadmap.md)
 - [UI Architecture](../../docs/ui-architecture.md)
+
+## Phase 3 Closeout Evidence / 阶段3收尾证据
+
+2026-10-16：产品审批、编辑、最小契约及Save/Open已有源码测试与完整本地CI证据；浏览器ELK返回 `_Worker is not a constructor`，fallback不代表solver成功。阶段退出仍阻塞，边界和后续阶段未变。详见[退出报告](../../docs/phase-3-exit-report.md)。 / Product gate/edit/minimal-contract/Save-Open flows have source tests and passing local CI; browser ELK falls back and phase exit remains blocked. Ownership and later-phase scope are unchanged. See the report.

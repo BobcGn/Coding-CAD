@@ -876,3 +876,15 @@ Status: Verified; Phase 3 UI closeout complete.
 提 PR 前完成两项 UI 收尾：左侧工作区侧边栏聚合项目管理功能；个人设置整合到侧边栏左下角齿轮图标弹窗（语言 + 主题亮/暗/跟随系统），设置持久化到浏览器 localStorage，不进入架构/磁盘格式。完整 pnpm ci:verify 通过。
 
 Completed two pre-PR UI closeouts: the left workspace sidebar aggregates project management, and personal settings are collapsed behind a gear-icon dialog in the sidebar bottom-left (language + light/dark/system theme), persisted to browser localStorage without entering architecture or disk formats. The complete pnpm ci:verify passes.
+
+## 2026-10-16 - Step 5 State and Exit Report / 步骤5状态与退出报告
+
+动机：修正当前文档中“已完成并合并”“代码未开始”“待三项决策”互相冲突的状态，不重写历史implementation-log。同步主计划、Roadmap、UI/Architecture/Layout说明、README与根/模块State/Todo/Links。新增双语 `docs/phase-3-exit-report.md`，保留命令成功与实际solver退化两个事实。
+
+Motivation: reconcile conflicting current status without rewriting historical implementation logs. Synchronized plan, roadmap, architecture/UI/layout notes, READMEs and root/module state, todo and links. Added the bilingual exit report, retaining both successful engineering commands and actual solver fallback.
+
+阶段3结论：不满足退出条件；不授权进入阶段4。审批与P3-D3澄清已解决，无待答复决策。浏览器ELK互操作尚未修复；若修复方案改变已批准边界/公开API/依赖须另行决策。 / Phase 3 does not satisfy exit and does not authorize Phase 4. Approval and Inspector clarifications are resolved. ELK interoperability remains unfixed; changes to approved boundaries/APIs/dependencies require separate decisions.
+
+步骤5文档验证：git diff --check、15模块workspace边界检查、change-record通过；退出报告/审计/主计划/Roadmap共16个本地链接目标存在。最终源码CI见10-final-source-ci.txt，最新Web计数57/9/18。 / Step 5 document checks passed: diff whitespace, 15-module workspace boundary, change-record, and 16 local link targets. Final source CI is in 10-final-source-ci.txt with Web counts 57/9/18.
+
+最终文档交付检查：5个收尾提交的Conventional Commits检查、secret scan、workspace检查及diff检查通过；4173端口无监听。见11-final-document-checks.txt。 / Final documentation delivery checks passed for all five closeout commit messages, secret scan, workspace and diff checks; port 4173 has no listener. See 11-final-document-checks.txt.

@@ -49,7 +49,7 @@ The formal execution numbering remains Master Phase 0→7. The table combines th
 - `apps/web` is now a SvelteKit/Svelte 5 app with `@xyflow/svelte` isolated behind the approved app adapter; Palette, Inspector, and complete Greenfield workflows remain unimplemented. / `apps/web` 现为 SvelteKit/Svelte 5 app，`@xyflow/svelte` 被隔离在已批准的 app adapter 后；Palette、Inspector 与完整 Greenfield workflow 仍未实现。
 - Existing Architecture Agent, Validator, Review, Workspace, Blueprint, Adapter, Analyzer, and Implementation Validator packages already define the non-UI workflow boundaries. / 既有 Architecture Agent、Validator、Review、Workspace、Blueprint、Adapter、Analyzer 和 Implementation Validator package 已定义非 UI 工作流边界。
 - Canonical D-001, D-002, D-005, and D-010 were approved by the user on 2026-08-13; the remaining Decisions retain their later-phase gates. / 用户已于 2026-08-13 批准 canonical D-001、D-002、D-005、D-010；其余 Decision 保持后续 Phase 门禁。
-- Checkpoints 1–3 and Phases 1–2 passed their exit gates and are merged; Phase 3 planning is active. / Checkpoint 1–3 与 Phase 1–2 已通过退出门禁并合并；Phase 3 正在规划。
+- Checkpoints 1–3 and Phases 1–2 retain historical acceptance records; Phase 3 closeout is implemented but layout acceptance remains blocked. / Checkpoint 1–3 与 Phase 1–2 保留历史验收记录；Phase 3 已实施收尾但布局验收仍阻塞。
 
 ## Governance Difference: Decision Number Crosswalk / 治理差异：Decision 编号映射
 
@@ -340,6 +340,8 @@ Checkpoint 3 是 P2.1–P2.4 的 Canvas capability gate；P2.5 是 Master Phase 
 真实 IR 可稳定显示；headless command application 可在不破坏 accepted IR 的前提下生成、校验、接受或拒绝 candidate，并在接受后重新布局；adapter/command/component/Canvas smoke E2E 与架构不变量检查通过。完整 Greenfield 编辑 UI 仍未实现。 / Real IR displays reliably; the headless command application can generate, validate, accept, or reject a candidate without corrupting accepted IR and re-layout after acceptance; adapter, command, component, Canvas smoke E2E, and architecture-invariant checks pass. The complete Greenfield editing UI remains unimplemented.
 
 ## Phase 3 — Greenfield Architecture Workspace / Greenfield 架构工作区
+
+**2026-10-16 状态 / Status:** 工程验收已完成，阶段退出阻塞于浏览器ELK fallback及默认语义布局/局部稳定性证据。P3-D1–P3-D3及本次审批/最小契约澄清均已确认。 / Engineering checks are complete; phase exit is blocked by browser ELK fallback and missing default semantic-quality/local-stability proof. Decisions are confirmed. See [exit report](phase-3-exit-report.md).
 
 ### Goal / 目标
 
@@ -843,11 +845,8 @@ Every completed Phase must report the following and must not merely say “imple
 
 ## Current Phase Readiness / 当前 Phase 就绪度
 
-结论：**PHASES 0–2 VERIFIED AND MERGED — PHASE 3 PLANNED, AWAITING DECISIONS**。
+**PHASE 3 CLOSEOUT IMPLEMENTED — EXIT BLOCKED BY BROWSER LAYOUT / 阶段3收尾已实施，退出阻塞于浏览器布局**。
 
-Conclusion: **PHASES 0–2 VERIFIED AND MERGED — PHASE 3 PLANNED, AWAITING DECISIONS**.
+P3-D1–P3-D3已批准，审批身份/理由及最小契约范围已于本次明确确认；不是待实现或待这三项决策。源码build/typecheck/test及完整本地CI通过，但真实Chrome报告ELK fallback，因此不能标为全部Verified，不能进入Phase 4。 / Decisions and current clarifications are approved; this is neither unstarted implementation nor awaiting those decisions. Source build/typecheck/test and local CI pass, but actual Chrome reports ELK fallback, so full Verified status and Phase 4 entry are not established.
 
-- Phase 0 Decision Freeze：D-001–D-006 与 D-008–D-010 已批准；D-007 保留 Phase 5 Ghost-presentation 门禁。 / Phase 0 Decision Freeze: D-001 through D-006 and D-008 through D-010 are approved; D-007 retains its Phase 5 Ghost-presentation gate.
-- Phase 1 Semantic Layout Compiler：Checkpoint 1–2、FULL/INCREMENTAL、mental-map、movement-cost 与 Ghost core protocol 已通过 package tests、批准性能预算和完整 CI。 / Phase 1 Semantic Layout Compiler: Checkpoints 1–2, FULL/INCREMENTAL behavior, mental-map and movement-cost infrastructure, and the Ghost core protocol pass package tests, approved performance budgets, and the complete CI gate.
-- Phase 2 Svelte CAD Infrastructure：SvelteKit/Svelte 5 app、唯一 LayoutResult->Svelte Flow adapter、基础 Canvas、Standard + Semantic Zoom、LayoutState-only drag、Auto Layout reset、solver-only worker 与 headless Add/Remove/Connect command application 已实现并合并（PR #1）。 / Phase 2 Svelte CAD Infrastructure: the SvelteKit/Svelte 5 app, sole LayoutResult->Svelte Flow adapter, foundational Canvas, Standard + Semantic Zoom, LayoutState-only drag, Auto Layout reset, solver-only worker, and headless Add/Remove/Connect command application are implemented and merged (PR #1).
-- Phase 3 Greenfield Workspace：已按 P3.0–P3.7 全部完成并验证；P3-D1、P3-D2、P3-D3 已由用户于 2026-08-15 确认。Greenfield 支持 requirement -> candidate -> validate -> accept -> save/open 全流程。 / Phase 3 Greenfield Workspace: complete and verified across P3.0–P3.7; P3-D1, P3-D2, and P3-D3 were confirmed by the user on 2026-08-15. Greenfield supports the full requirement -> candidate -> validate -> accept -> save/open flow.
+完整结果、差距、提交及回退见[阶段3退出报告](phase-3-exit-report.md)。历史阶段记录不代替当前浏览器证据。 / See the report for results, gaps, commits and rollback. Historical records do not substitute for current browser evidence.

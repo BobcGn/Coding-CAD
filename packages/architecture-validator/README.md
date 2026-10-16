@@ -134,3 +134,7 @@ The first phase does not implement AI Agent, DSL Parser, UI, or Code Generator.
   Verifies rule execution, severity, graph integrity, and explainable suggestions.
 - `pnpm test:integration`：验证 DSL、IR、Registry 与 Validator 的跨层组合。  
   Verifies cross-layer composition of DSL, IR, Registry, and Validator.
+
+## Phase 3 Contract Integrity / 阶段3契约结构
+
+2026-10-16 按用户确认的最小契约编辑范围新增 contract.integrity 内置规则，检查名称非空/唯一、既有协议集合及schema字段结构；只分析现有IR，不推断接口实现或证明运行时兼容。源码测试见 `src/validator.test.ts`，完整证据见 `../../docs/phase-3-exit-report.md`。 / Added contract.integrity for the user-approved minimal contract scope. It checks names, existing protocols and schema fields without changing IR or claiming runtime compatibility. Source tests and the exit report provide evidence.

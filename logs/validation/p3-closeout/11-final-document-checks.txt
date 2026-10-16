@@ -1,0 +1,28 @@
+$ git diff --check
+
+
+exit=0
+$ node scripts/ci/check-commit-messages.mjs --from 55b0662 --to HEAD
+Commit message check passed (5 commits).
+
+
+exit=0
+$ pnpm security:secrets
+
+> coding-cad@0.1.0 security:secrets /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD
+> node scripts/ci/check-secrets.mjs
+
+Secret scan passed (313 files).
+
+
+exit=0
+$ pnpm lint:workspace
+
+> coding-cad@0.1.0 lint:workspace /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD
+> node scripts/ci/check-workspace.mjs
+
+Workspace architecture check passed (15 modules).
+
+
+exit=0
+Port 4173: no listener; verification servers stopped.

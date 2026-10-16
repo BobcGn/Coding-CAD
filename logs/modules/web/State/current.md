@@ -1,23 +1,27 @@
 # 当前状态 / Current State
 
-更新时间 / Updated at: 2026-08-15 22:40 CST (Asia/Shanghai)
+更新时间 / Updated at: 2026-10-16
 
-状态：Phase 2 已验证并合并；Phase 3 详细规划进行中，代码尚未开始。
+## 结论 / Conclusion
 
-Status: Phase 2 is verified and merged; detailed Phase 3 planning is in progress and implementation has not started.
+Phase 3 收尾实施与工程验证已完成，但 **未满足阶段退出条件**。P3-D1–P3-D3 已批准，本次审批语义和最小契约范围也已由用户确认；不再标记为“代码未开始”或“待三项决策”，也不再标记为“全部已验证并合并”。 / Phase 3 closeout implementation and engineering checks are complete, but **phase exit is not satisfied**. P3-D1–P3-D3 and the current approval/contract clarifications are approved. Neither “implementation not started / awaiting decisions” nor “fully verified and merged” is current.
 
-`apps/web` 已是 SvelteKit/Svelte 5 app：唯一 LayoutResult->Svelte Flow adapter、基础 Canvas、Standard + Semantic Zoom、LayoutState-only drag、Auto Layout reset、solver-only worker 与 headless Add/Remove/Connect command application 已实现。Palette、Inspector、完整 Greenfield workflow、Save/Open 与持久化仍属 Phase 3。
+## 已实现并验证 / Implemented and verified
 
-`apps/web` is now a SvelteKit/Svelte 5 app: the sole LayoutResult->Svelte Flow adapter, foundational Canvas, Standard + Semantic Zoom, LayoutState-only drag, Auto Layout reset, solver-only worker, and headless Add/Remove/Connect command application are implemented. Palette, Inspector, the complete Greenfield workflow, Save/Open, and persistence remain Phase 3 work.
+- requirement -> candidate -> Validator -> local-user Review -> accepted IR -> Canvas/edit/save/open 产品路径。 / The product workflow through explicit approval.
+- Add/Remove/Connect；语义 Inspector；最小 Contract 新增/移除；非法候选、拒绝、重复接受与审批异常不变量。 / Product edits, minimal contracts, and gate invariants.
+- ArchitectureProject 与候选/正式 LayoutState 分离；有效视图恢复、失效identity过滤、正式snapshot校验证据与错误恢复。 / Architecture/layout separation, valid view restore, stale-identity filtering, snapshot validation evidence and error recovery.
+- 可写源码验证：install、build 15/15、typecheck 25/25、test 30/30；Web unit 57、integration 9、Chrome E2E 18；完整本地 ci:verify 重跑 exit 0，Turbo 0 cached。 / Writable source verification passed with these task/test counts and zero cached tasks.
+- 首次ci因步骤4缺少change-record而失败，补记录后通过；保留两次输出。 / Initial CI failed for a missing Step 4 change record; the rerun passed, with both outputs retained.
 
-## 验证 / Validation
+## 已实现未验证及阻塞 / Integrated but unproven and blocked
 
-Phase 2 定向验收通过：typecheck 0/0；unit 6 files/9 tests；integration 1 file/2 tests；Playwright Chrome E2E 1 passed；build 主页面约 65.71 KiB gzip，ELK 位于独立 worker chunk。完整 workspace CI 证据记录在根实施日志。
+浏览器 ELK 实际返回 `_Worker is not a constructor`，界面显示 fallback；核心增量 API 已接入，但真实浏览器的默认语义布局质量和局部稳定性尚未证明。因此 WEB-001 仍开放，阶段4未授权。 / Browser ELK returns `_Worker is not a constructor` and the UI displays fallback. The incremental API is integrated, but real-browser default semantic quality and local stability remain unproven. WEB-001 stay open; Phase 4 is not authorized.
 
-Phase 2 targeted acceptance passes: typecheck 0/0; unit 6 files/9 tests; integration 1 file/2 tests; one Playwright Chrome E2E; main-page build about 65.71 KiB gzip with ELK in a separate worker chunk. Full workspace CI evidence is recorded in the root implementation log.
+## 未实现或本次范围外 / Not implemented or out of scope
 
-## 回退点 / Rollback Point
+ELK浏览器互操作修复尚未实现；输入输出schema编辑器、持久化审批历史、Brownfield、Ghost、完整Review工作区、Handoff与Terminal未作为本次实现或验收。 / ELK interoperability is not repaired; schema editor, persistent approval history and later-phase products are outside this implementation/acceptance.
 
-Phase 3 尚未实现代码；回退只需丢弃本分支未合并的规划文档改动并保留已验证的 Phase 0–2 与 Decision 历史。
+## 证据与回退 / Evidence and rollback
 
-Phase 3 has no implemented code; rolling back only requires discarding unmerged planning-document changes on this branch while keeping verified Phases 0–2 and Decision history.
+见 `docs/phase-3-exit-report.md`、`docs/audit/p3-inspector-scope.md` 和 `logs/validation/p3-closeout/`。收尾提交逐步独立；完整回退按报告中的5→1倒序，不重置分支或删除来源不明文件。历史 implementation-log 保留为当时记录，不覆盖本次事实。 / See the report, audit and raw outputs. Separate commits support reverse-order rollback without branch reset or unknown-file deletion. Historical logs remain historical and do not override this state.
