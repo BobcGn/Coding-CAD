@@ -1,0 +1,29 @@
+
+> @coding-cad/web@0.1.0 test:unit /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/web
+> vitest run --exclude '**/*.integration.test.ts'
+
+
+ RUN  v4.1.10 /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/web
+
+ ✓ src/lib/architecture/workspace/host-lifecycle.test.ts (2 tests) 69ms
+ ✓ src/lib/architecture/greenfield/candidate-flow.test.ts (5 tests) 6ms
+ ✓ src/lib/architecture/handoff/execution-handoff.test.ts (7 tests) 6ms
+ ✓ src/lib/architecture/commands/command-application.test.ts (1 test) 4ms
+ ✓ src/lib/architecture/greenfield/workspace-shell-controller.test.ts (17 tests) 12ms
+ ✓ src/lib/architecture/greenfield/review-gate.test.ts (5 tests) 11ms
+ ✓ src/lib/architecture/greenfield/lifecycle.test.ts (6 tests) 16ms
+ ✓ src/routes/api/workspace/analyze-repository/server.test.ts (19 tests) 273ms
+ ✓ src/lib/cad/canvas/ArchitectureCanvas.test.svelte.ts (2 tests) 74ms
+ ✓ src/lib/cad/workspace/ui-settings.test.ts (7 tests) 3ms
+ ✓ src/lib/architecture/commands/apply-inspector-command.test.ts (7 tests) 3ms
+ ✓ src/lib/architecture/commands/apply-command.test.ts (1 test) 4ms
+ ✓ src/lib/layout/adapters/svelte-flow-adapter.test.ts (4 tests) 6ms
+ ✓ src/lib/layout/worker/browser-worker-layout-engine.test.ts (2 tests) 2ms
+ ✓ src/lib/architecture/state/workspace-view-state.test.ts (2 tests) 2ms
+ ✓ src/lib/architecture/workspace/contract.test.ts (2 tests) 1ms
+
+ Test Files  16 passed (16)
+      Tests  89 passed (89)
+   Start at  05:14:35
+   Duration  1.64s (transform 2.17s, setup 1.54s, import 2.98s, tests 490ms, environment 7.28s)
+

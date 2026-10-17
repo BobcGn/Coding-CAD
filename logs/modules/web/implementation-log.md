@@ -500,5 +500,66 @@ PR #3首次远端CI在额外security:audit步骤报告7high，本地旧ci:verify
 - 风险与回退方式：
   - 回退方式：`git revert <commit-hash>`。
 
+## 2026-10-17 - 阶段 5 步骤 5.1：Execution Handoff 产品化 / Phase 5 Step 5.1: Execution Handoff Productization
+
+### 1. 做了什么 / What
+- 架构执行交接核心逻辑（`apps/web/src/lib/architecture/handoff/execution-handoff.ts`）：
+  - 实现基于已批准正式架构生成 Execution Blueprint 与 Generic / Codex / Claude 3 种 Guide 的纯函数流水线；
+  - 实现架构快照指纹键（`createHandoffSnapshotKey`）与过期判定（`isHandoffStale`），正式架构发生变动后即刻将 Handoff 标为过期；
+  - 基于官方 `@coding-cad/implementation-analyzer/codec` 实现反演证据类型化解码与 `inferred` 证据通知检测（`checkHasInferredEvidence`）；
+  - 实现任务与约束来源双向回溯（`TaskProvenance`、`ConstraintProvenance`），将 Blueprint 任务和约束准确关联到正式架构的组件与连接 ID；
+  - 实现一键复制（字面逐字一致）与文件导出功能（`formatHandoffExport`、`getHandoffExportFilename`），并在导出的 Markdown / JSON 头部内嵌来源快照标识与 ISO 生成时间戳；
+  - 严格防御空架构或校验失败的架构，严禁生成空文档冒充成功；当存在未审批候选时，界面明确提示“尚有未批准的候选，Handoff 基于已批准的正式架构”。
+- 界面交互组件（`apps/web/src/lib/cad/handoff/ExecutionHandoffModal.svelte` 与 `apps/web/src/routes/+page.svelte`）：
+  - 提供 Blueprint 与 3 种 Agent Guide 选项卡切换预览；
+  - 在侧边栏新增“Execution Handoff”入口按钮；
+  - 支持点击任务关联的组件 ID 立即定位并在画布上高亮聚焦（`focusComponent`）；
+  - 在检测到架构变更时展示显式警告横幅与“重新生成”按钮。
+- 基线配置与合规测试更新（`apps/web/src/lib/architecture/compliance/baseline-presets.ts`、`packages/implementation-analyzer/fixtures/coding-cad-golden.json`、`packages/implementation-validator/fixtures/coding-cad-expected.json`、`packages/implementation-validator/fixtures/coding-cad-drifted.json`）：
+  - 同步 Coding-CAD 架构基线对 `@coding-cad/execution-blueprint` 与 `@coding-cad/agent-adapter` 的合法依赖关系，维护全仓合规门禁一致性。
+
+- Core Handoff Pipeline (`apps/web/src/lib/architecture/handoff/execution-handoff.ts`):
+  - Pure function pipeline generating Execution Blueprint and 3 Agent Guides (Generic, Codex, Claude) strictly from validated ArchitectureProject.
+  - Snapshot fingerprinting (`createHandoffSnapshotKey`) and staleness detection (`isHandoffStale`).
+  - Typed evidence decoding via `@coding-cad/implementation-analyzer/codec` to identify reverse-engineered architectures containing inferred evidence (`checkHasInferredEvidence`).
+  - Bi-directional task and constraint provenance tracking linking blueprint items back to Architecture IR elements.
+  - Verbatim clipboard copy and standard file export formatting with embedded metadata headers and timestamps.
+  - Strict gating: rejects empty or invalid architectures, displays unapproved candidate notice without polluting handoff.
+- UI Modal & Canvas Focus (`ExecutionHandoffModal.svelte` & `+page.svelte`):
+  - Tabbed viewer for Blueprint JSON and 3 Guides.
+  - Sidebar entry point, interactive provenance links focusing canvas nodes, staleness warning banners with manual regeneration.
+- Baseline Presets & Validator Fixtures:
+  - Updated monorepo golden and expected baselines to incorporate legitimate web dependencies on execution-blueprint and agent-adapter.
+
+### 2. 为什么这么做 / Why
+- 单一事实来源守卫：Handoff 必须纯粹基于已批准的正式 `ArchitectureProject` 生成，杜绝候选提案（Ghost/Candidate）或者未校验草稿污染执行产物。
+- 可追溯性与执行契约：每一项 Blueprint 任务和 Guide 步骤必须精确回溯到架构元素（组件、连接、决策），使架构师与 Coding Agent 之间保持透明的上下文审计链。
+- 零伪造与防误导：架构为空或失效时严禁伪造空文档冒充成功；代码反演架构含 `inferred` 证据时主动提示，确保下游 Coding Agent 理解证据置信度边界。
+- 纯渲染适配：UI 和 Adapter 仅消费 Blueprint 与公共包 API，不引入外部 Agent 运行时或独立调度器，恪守架构分层边界。
+
+- Source of Truth Integrity: Handoff is strictly derived from the validated, accepted ArchitectureProject; unapproved candidates never leak into generated handoff artifacts.
+- Bidirectional Provenance: Every task and constraint links directly to IR element IDs, preserving an auditable chain from architecture decisions to agent implementation.
+- Zero Deception: Prohibits generating empty artifacts on invalid architectures; explicitly flags inferred evidence from reverse engineering.
+- Renderer Boundary: Adapter renders Blueprint into prompts without runtime dependencies or orchestration layers.
+
+### 3. 验证结果 / Verification
+- 已实现并验证：
+  - Web 单元测试：`apps/web/src/lib/architecture/handoff/execution-handoff.test.ts` 7/7 通过；
+  - Web 集成测试：`apps/web/src/lib/architecture/handoff/execution-handoff.integration.test.ts` 4/4 通过；
+  - Web 端全量测试：16 个单元测试文件（89 测试通过），4 个集成测试文件（13 测试通过）；
+  - Playwright E2E 浏览器测试（`apps/web/e2e/handoff.spec.ts`）：
+    - 在 dev 模式与 preview 模式下，全部 3 个端到端测试均通过（包含 Greenfield 流程、三 Guide 切换、画布聚焦、剪贴板复制比对、文件导出校验、过期变动检测、未决候选隔离断言、Brownfield 反演架构 inferred 证据横幅展示）；
+    - 完整 web E2E 套件（29 个测试）在 dev 和 production preview 下 100% 通过，保持 100% ELK 布局求解器守卫（零 fallback）；
+  - 全仓跨包测试：15 个包全部通过构建，30/30 单元与集成测试套件通过；
+  - 严格变更审计：`CI=true TURBO_FORCE=true pnpm ci:verify` 全门禁通过。
+- 未实现：
+  - 不包含 Ghost 节点渲染与交互（留待后续步骤）；
+  - 不包含启动或管理 Coding Agent、Terminal 功能；
+  - 不包含 xjb_coding 导出目标实现（仅在备忘录调研）。
+- 风险与回退方式：
+  - 风险：若浏览器不支持 `navigator.clipboard.writeText`，回退至安全通知提示用户手动选择复制。
+  - 回退方式：`git revert <commit-hash>`。
+
+
 
 

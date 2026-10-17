@@ -1,0 +1,193 @@
+
+> @coding-cad/web@0.1.0 test:e2e /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/web
+> vite build --mode layout-acceptance && playwright test && playwright test --config playwright.preview.config.ts
+
+vite v7.3.6 building ssr environment for layout-acceptance...
+transforming...
+✓ 697 modules transformed.
+rendering chunks...
+vite v7.3.6 building client environment for layout-acceptance...
+transforming...
+✓ 613 modules transformed.
+rendering chunks...
+computing gzip size...
+.svelte-kit/output/client/_app/version.json                                     0.03 kB │ gzip:   0.05 kB
+.svelte-kit/output/client/.vite/manifest.json                                   4.29 kB │ gzip:   0.84 kB
+.svelte-kit/output/client/_app/immutable/workers/layout-worker-Bwz_iYRG.js      5.25 kB
+.svelte-kit/output/client/_app/immutable/workers/chunks/Cl9yntJ2.js         1,441.25 kB
+.svelte-kit/output/client/_app/immutable/assets/2.UQj87InL.css                 36.39 kB │ gzip:   6.42 kB
+.svelte-kit/output/client/_app/immutable/nodes/2.DxOM8g1X.js                    0.07 kB │ gzip:   0.08 kB
+.svelte-kit/output/client/_app/immutable/entry/start.C0Xwqla0.js                0.08 kB │ gzip:   0.09 kB
+.svelte-kit/output/client/_app/immutable/chunks/DaDEMsvy.js                     0.22 kB │ gzip:   0.18 kB
+.svelte-kit/output/client/_app/immutable/nodes/0.BDVOgMgN.js                    0.34 kB │ gzip:   0.26 kB
+.svelte-kit/output/client/_app/immutable/nodes/1.Cv-V2aeJ.js                    0.51 kB │ gzip:   0.33 kB
+.svelte-kit/output/client/_app/immutable/chunks/Dnav3_Jt.js                     1.15 kB │ gzip:   0.64 kB
+.svelte-kit/output/client/_app/immutable/chunks/wbPk3Yxo.js                     1.37 kB │ gzip:   0.66 kB
+.svelte-kit/output/client/_app/immutable/chunks/DuszAfsc.js                     1.55 kB │ gzip:   0.68 kB
+.svelte-kit/output/client/_app/immutable/chunks/sikE3Fb8.js                     1.59 kB │ gzip:   0.83 kB
+.svelte-kit/output/client/_app/immutable/entry/app.C2H7J2Ts.js                  4.16 kB │ gzip:   1.91 kB
+.svelte-kit/output/client/_app/immutable/chunks/CvRJ2Vy-.js                     4.58 kB │ gzip:   2.16 kB
+.svelte-kit/output/client/_app/immutable/chunks/CTH4_3T7.js                     7.77 kB │ gzip:   3.49 kB
+.svelte-kit/output/client/_app/immutable/chunks/DQ3jf3UX.js                    31.77 kB │ gzip:  12.49 kB
+.svelte-kit/output/client/_app/immutable/chunks/B_l-smd_.js                    40.14 kB │ gzip:  14.66 kB
+.svelte-kit/output/client/_app/immutable/chunks/D6FFXwhw.js                   400.86 kB │ gzip: 125.29 kB
+.svelte-kit/output/client/_app/immutable/chunks/D_IaZ538.js                 1,441.31 kB │ gzip: 439.14 kB
+✓ built in 6.23s
+.svelte-kit/output/server/.vite/manifest.json                                                 5.34 kB
+.svelte-kit/output/server/_app/immutable/assets/_page.BCi25-Di.css                           27.93 kB
+.svelte-kit/output/server/entries/pages/_layout.ts.js                                         0.04 kB
+.svelte-kit/output/server/entries/fallbacks/layout.svelte.js                                  0.16 kB
+.svelte-kit/output/server/env.js                                                              0.23 kB
+.svelte-kit/output/server/internal.js                                                         0.35 kB
+.svelte-kit/output/server/chunks/server.js                                                    0.62 kB
+.svelte-kit/output/server/chunks/utils2.js                                                    1.09 kB
+.svelte-kit/output/server/entries/endpoints/api/workspace/_server.ts.js                       1.14 kB
+.svelte-kit/output/server/entries/fallbacks/error.svelte.js                                   1.36 kB
+.svelte-kit/output/server/chunks/internal.js                                                  3.22 kB
+.svelte-kit/output/server/chunks/exports.js                                                   7.02 kB
+.svelte-kit/output/server/chunks/index2.js                                                    9.02 kB
+.svelte-kit/output/server/chunks/workspace.js                                                10.24 kB
+.svelte-kit/output/server/entries/endpoints/api/workspace/_id_/_server.ts.js                 18.75 kB
+.svelte-kit/output/server/chunks/uneval.js                                                   19.91 kB
+.svelte-kit/output/server/remote-entry.js                                                    36.79 kB
+.svelte-kit/output/server/chunks/index.js                                                    38.52 kB
+.svelte-kit/output/server/entries/endpoints/api/workspace/analyze-repository/_server.ts.js   50.16 kB
+.svelte-kit/output/server/chunks/utils.js                                                    59.65 kB
+.svelte-kit/output/server/chunks/root.js                                                     87.54 kB
+.svelte-kit/output/server/index.js                                                          134.98 kB
+.svelte-kit/output/server/entries/pages/_page.svelte.js                                     257.28 kB
+✓ built in 8.27s
+
+Run npm run preview to preview your production build locally.
+
+> Using @sveltejs/adapter-auto
+  Could not detect a supported production environment. See https://svelte.dev/docs/kit/adapters to learn how to configure your app to run on the platform of your choosing
+  ✔ done
+
+Running 29 tests using 1 worker
+
+[Browser Benchmark - Coding-CAD (dev)] {
+  "fixture": "Coding-CAD (this repository)",
+  "mode": "dev",
+  "serverDurationMs": 348.210458,
+  "firstScreenRenderMs": 558.751583,
+  "totalNodeCount": 30,
+  "visibleNodeCount": 30,
+  "hiddenCountAfterCollapse": 15,
+  "solverSource": "elk",
+  "peerOverlaps": 0,
+  "containmentFailures": 0,
+  "routedCrossings": 27,
+  "routedEdges": 42,
+  "totalEdges": 42
+}
+  ✓   1 [chrome] › e2e/brownfield-benchmarks.spec.ts:18:3 › Brownfield Real Browser Benchmarks › measures real browser metrics for Coding-CAD (this repo) (1.4s)
+[Browser Benchmark - Synthetic (dev)] {
+  "fixture": "synthetic-large-repo (120 modules)",
+  "mode": "dev",
+  "serverDurationMs": 97.41004199999998,
+  "firstScreenRenderMs": 325.238875,
+  "totalNodeCount": 150,
+  "visibleNodeCount": 150,
+  "hiddenCountAfterCollapse": 120,
+  "solverSource": "elk",
+  "peerOverlaps": 0,
+  "containmentFailures": 0,
+  "routedCrossings": 1,
+  "routedEdges": 147,
+  "totalEdges": 147
+}
+  ✓   2 [chrome] › e2e/brownfield-benchmarks.spec.ts:101:3 › Brownfield Real Browser Benchmarks › measures real browser metrics for synthetic-large-repo (120 modules) (802ms)
+  ✓   3 [chrome] › e2e/brownfield.spec.ts:14:3 › Brownfield Architecture Pipeline E2E › analyzes repository, renders ELK layout, inspects evidence, and toggles group collapse (485ms)
+  ✓   4 [chrome] › e2e/brownfield.spec.ts:78:3 › Brownfield Architecture Pipeline E2E › verifies compliance checking unavailable banner, loads drifted baseline, asserts badges, tests bidirectional navigation and group auto-expansion, and verifies golden baseline pass (1.4s)
+  ✓   5 [chrome] › e2e/brownfield.spec.ts:168:3 › Brownfield Architecture Pipeline E2E › asserts unsupported structures warning banner on edge-cases-repo and error banner on invalid repo path (534ms)
+  ✓   6 [chrome] › e2e/canvas.spec.ts:10:1 › greenfield workspace generates, validates, and renders a navigable canvas (433ms)
+  ✓   7 [chrome] › e2e/canvas.spec.ts:31:1 › palette adds a component through the command application (1.1s)
+  ✓   8 [chrome] › e2e/canvas.spec.ts:43:1 › save and open restore the accepted architecture and a usable view (863ms)
+  ✓   9 [chrome] › e2e/canvas.spec.ts:62:1 › inspector edits a component description via explicit command (954ms)
+  ✓  10 [chrome] › e2e/canvas.spec.ts:95:1 › validation problems navigate to the affected component (440ms)
+  ✓  11 [chrome] › e2e/canvas.spec.ts:107:1 › rejecting a candidate keeps both architectures and records rejection (476ms)
+  ✓  12 [chrome] › e2e/canvas.spec.ts:118:1 › empty requirement shows an error and blocks generation (212ms)
+  ✓  13 [chrome] › e2e/canvas.spec.ts:125:1 › duplicate palette component is rejected and accepted IR is preserved (634ms)
+  ✓  14 [chrome] › e2e/canvas.spec.ts:137:1 › workspace sidebar hosts project actions and a gear settings popover (383ms)
+  ✓  15 [chrome] › e2e/canvas.spec.ts:162:1 › full greenfield happy path: create, validate, accept, save, open (814ms)
+  ✓  16 [chrome] › e2e/editing.spec.ts:49:1 › successful removal cascades incident edges and survives Save/Open (1.1s)
+  ✓  17 [chrome] › e2e/editing.spec.ts:65:1 › removal without cascade confirmation is blocked and facts are unchanged (778ms)
+  ✓  18 [chrome] › e2e/editing.spec.ts:75:1 › missing-component removal is blocked by existing command semantics (659ms)
+  ✓  19 [chrome] › e2e/editing.spec.ts:84:1 › successful connection waits for approval and survives Save/Open (1.3s)
+  ✓  20 [chrome] › e2e/editing.spec.ts:98:1 › invalid connection appears in Problems and cannot enter accepted architecture (885ms)
+  ✓  21 [chrome] › e2e/editing.spec.ts:111:1 › Inspector contract add/remove use Review and preserve schema through Save/Open (1.6s)
+  ✓  22 [chrome] › e2e/editing.spec.ts:133:1 › Inspector type, capability and limitation controls use explicit review (2.5s)
+  ✓  23 [chrome] › e2e/editing.spec.ts:158:1 › save and open failures remain visible and a retry preserves architecture (897ms)
+  ✓  24 [chrome] › e2e/handoff.spec.ts:19:1 › execution handoff preview, guide switching, canvas focus, copy, export, and staleness detection (1.5s)
+  ✓  25 [chrome] › e2e/handoff.spec.ts:126:1 › execution handoff displays unapproved candidate warning without polluting handoff (470ms)
+  ✓  26 [chrome] › e2e/handoff.spec.ts:150:1 › execution handoff on brownfield reconstructed architecture presents inferred evidence notice banner (518ms)
+  ✓  27 [chrome] › e2e/layout-quality.spec.ts:13:3 › browser quality and determinism: workspace-default (1.7s)
+  ✓  28 [chrome] › e2e/layout-quality.spec.ts:13:3 › browser quality and determinism: points-system (1.9s)
+  ✓  29 [chrome] › e2e/solver.spec.ts:4:1 › requires ELK solver success with real routes (425ms)
+
+  29 passed (29.0s)
+
+Running 29 tests using 1 worker
+
+[Browser Benchmark - Coding-CAD (preview)] {
+  "fixture": "Coding-CAD (this repository)",
+  "mode": "preview",
+  "serverDurationMs": 340.19904199999996,
+  "firstScreenRenderMs": 526.861916,
+  "totalNodeCount": 30,
+  "visibleNodeCount": 30,
+  "hiddenCountAfterCollapse": 15,
+  "solverSource": "elk",
+  "peerOverlaps": 0,
+  "containmentFailures": 0,
+  "routedCrossings": 27,
+  "routedEdges": 42,
+  "totalEdges": 42
+}
+  ✓   1 [chrome] › e2e/brownfield-benchmarks.spec.ts:18:3 › Brownfield Real Browser Benchmarks › measures real browser metrics for Coding-CAD (this repo) (865ms)
+[Browser Benchmark - Synthetic (preview)] {
+  "fixture": "synthetic-large-repo (120 modules)",
+  "mode": "preview",
+  "serverDurationMs": 100.21704199999999,
+  "firstScreenRenderMs": 312.61408400000005,
+  "totalNodeCount": 150,
+  "visibleNodeCount": 150,
+  "hiddenCountAfterCollapse": 120,
+  "solverSource": "elk",
+  "peerOverlaps": 0,
+  "containmentFailures": 0,
+  "routedCrossings": 1,
+  "routedEdges": 147,
+  "totalEdges": 147
+}
+  ✓   2 [chrome] › e2e/brownfield-benchmarks.spec.ts:101:3 › Brownfield Real Browser Benchmarks › measures real browser metrics for synthetic-large-repo (120 modules) (720ms)
+  ✓   3 [chrome] › e2e/brownfield.spec.ts:14:3 › Brownfield Architecture Pipeline E2E › analyzes repository, renders ELK layout, inspects evidence, and toggles group collapse (437ms)
+  ✓   4 [chrome] › e2e/brownfield.spec.ts:78:3 › Brownfield Architecture Pipeline E2E › verifies compliance checking unavailable banner, loads drifted baseline, asserts badges, tests bidirectional navigation and group auto-expansion, and verifies golden baseline pass (1.3s)
+  ✓   5 [chrome] › e2e/brownfield.spec.ts:168:3 › Brownfield Architecture Pipeline E2E › asserts unsupported structures warning banner on edge-cases-repo and error banner on invalid repo path (490ms)
+  ✓   6 [chrome] › e2e/canvas.spec.ts:10:1 › greenfield workspace generates, validates, and renders a navigable canvas (388ms)
+  ✓   7 [chrome] › e2e/canvas.spec.ts:31:1 › palette adds a component through the command application (832ms)
+  ✓   8 [chrome] › e2e/canvas.spec.ts:43:1 › save and open restore the accepted architecture and a usable view (660ms)
+  ✓   9 [chrome] › e2e/canvas.spec.ts:62:1 › inspector edits a component description via explicit command (769ms)
+  ✓  10 [chrome] › e2e/canvas.spec.ts:95:1 › validation problems navigate to the affected component (393ms)
+  ✓  11 [chrome] › e2e/canvas.spec.ts:107:1 › rejecting a candidate keeps both architectures and records rejection (411ms)
+  ✓  12 [chrome] › e2e/canvas.spec.ts:118:1 › empty requirement shows an error and blocks generation (145ms)
+  ✓  13 [chrome] › e2e/canvas.spec.ts:125:1 › duplicate palette component is rejected and accepted IR is preserved (497ms)
+  ✓  14 [chrome] › e2e/canvas.spec.ts:137:1 › workspace sidebar hosts project actions and a gear settings popover (285ms)
+  ✓  15 [chrome] › e2e/canvas.spec.ts:162:1 › full greenfield happy path: create, validate, accept, save, open (648ms)
+  ✓  16 [chrome] › e2e/editing.spec.ts:49:1 › successful removal cascades incident edges and survives Save/Open (1.0s)
+  ✓  17 [chrome] › e2e/editing.spec.ts:65:1 › removal without cascade confirmation is blocked and facts are unchanged (763ms)
+  ✓  18 [chrome] › e2e/editing.spec.ts:75:1 › missing-component removal is blocked by existing command semantics (614ms)
+  ✓  19 [chrome] › e2e/editing.spec.ts:84:1 › successful connection waits for approval and survives Save/Open (994ms)
+  ✓  20 [chrome] › e2e/editing.spec.ts:98:1 › invalid connection appears in Problems and cannot enter accepted architecture (842ms)
+  ✓  21 [chrome] › e2e/editing.spec.ts:111:1 › Inspector contract add/remove use Review and preserve schema through Save/Open (1.5s)
+  ✓  22 [chrome] › e2e/editing.spec.ts:133:1 › Inspector type, capability and limitation controls use explicit review (2.1s)
+  ✓  23 [chrome] › e2e/editing.spec.ts:158:1 › save and open failures remain visible and a retry preserves architecture (842ms)
+  ✓  24 [chrome] › e2e/handoff.spec.ts:19:1 › execution handoff preview, guide switching, canvas focus, copy, export, and staleness detection (1.3s)
+  ✓  25 [chrome] › e2e/handoff.spec.ts:126:1 › execution handoff displays unapproved candidate warning without polluting handoff (416ms)
+  ✓  26 [chrome] › e2e/handoff.spec.ts:150:1 › execution handoff on brownfield reconstructed architecture presents inferred evidence notice banner (453ms)
+  ✓  27 [chrome] › e2e/layout-quality.spec.ts:13:3 › browser quality and determinism: workspace-default (1.2s)
+  ✓  28 [chrome] › e2e/layout-quality.spec.ts:13:3 › browser quality and determinism: points-system (1.2s)
+  ✓  29 [chrome] › e2e/solver.spec.ts:4:1 › requires ELK solver success with real routes (368ms)
+
+  29 passed (24.2s)

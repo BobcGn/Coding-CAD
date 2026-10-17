@@ -32,8 +32,15 @@
     CODING_CAD_EXPECTED_BASELINE,
     CODING_CAD_DRIFTED_BASELINE
   } from "$lib/architecture/compliance/baseline-presets.js";
+  import ExecutionHandoffModal from "$lib/cad/handoff/ExecutionHandoffModal.svelte";
+  import {
+    generateExecutionHandoff,
+    isHandoffStale,
+    type HandoffViewModel
+  } from "$lib/architecture/handoff/execution-handoff.js";
 
   let controller = $state<WorkspaceShellController>();
+
   let shell = $state<GreenfieldShellState>();
   let projection = $state<ReturnType<WorkspaceShellController["projection"]>>();
   let layout = $state<ReturnType<WorkspaceShellController["layout"]>>();
@@ -51,6 +58,8 @@
   let connectionProtocol = $state("REST");
   let expectedModalOpen = $state(false);
   let expectedCustomJson = $state("");
+  let handoffModalOpen = $state(false);
+  let handoffModel = $state<HandoffViewModel>();
   const pendingReview = $derived(shell?.proposal?.status === "draft" || shell?.proposal?.status === "in-review");
   const removalConnections = $derived(shell?.accepted.architecture.connections.filter(
     (edge) => edge.from === removeComponentId || edge.to === removeComponentId
@@ -74,6 +83,9 @@
     errorMessage = shell.status === "error" ? shell.message : "";
     noticeMessage = shell.status === "error" ? "" : shell.message;
     busy = shell.status === "generating" || shell.status === "layout";
+    if (handoffModel && shell?.accepted && isHandoffStale(shell.accepted, handoffModel.snapshotKey)) {
+      handoffModel = { ...handoffModel, status: "stale" };
+    }
     updateInspector();
   }
 
@@ -296,6 +308,27 @@
     syncFromController();
   }
 
+  function handleOpenHandoff(): void {
+    if (controller === undefined || !shell?.accepted) return;
+    if (!handoffModel) {
+      handoffModel = generateExecutionHandoff(shell.accepted, {
+        hasPendingCandidate: pendingReview || shell.candidate !== undefined,
+        validationResult: shell.validation
+      });
+    } else if (isHandoffStale(shell.accepted, handoffModel.snapshotKey)) {
+      handoffModel = { ...handoffModel, status: "stale" };
+    }
+    handoffModalOpen = true;
+  }
+
+  function handleRegenerateHandoff(): void {
+    if (controller === undefined || !shell?.accepted) return;
+    handoffModel = generateExecutionHandoff(shell.accepted, {
+      hasPendingCandidate: pendingReview || shell.candidate !== undefined,
+      validationResult: shell.validation
+    });
+  }
+
   // --- Personal settings (language / theme) ---
   function t(key: Parameters<typeof uiText>[1]): string {
     return uiText(settings.locale, key);
@@ -375,6 +408,9 @@
           </button>
           <button type="button" class="sidebar-action" data-testid="sidebar-load-expected" onclick={() => { expectedModalOpen = true; }} disabled={busy}>
             {settings.locale === "zh" ? "加载期望架构基线" : "Load Expected Baseline"}
+          </button>
+          <button type="button" class="sidebar-action" data-testid="sidebar-execution-handoff" onclick={handleOpenHandoff} disabled={busy || !shell?.accepted}>
+            {settings.locale === "zh" ? "执行交接 (Handoff)" : "Execution Handoff"}
           </button>
           <button type="button" class="sidebar-action" onclick={handleAutoLayout} disabled={busy || !layout}>
             {t("autoLayout")}
@@ -523,6 +559,15 @@
           </button>
         </div>
       </div>
+    {/if}
+
+    {#if handoffModalOpen && handoffModel}
+      <ExecutionHandoffModal
+        model={handoffModel}
+        onClose={() => { handoffModalOpen = false; }}
+        onRegenerate={handleRegenerateHandoff}
+        onFocusTarget={handleFocusTarget}
+      />
     {/if}
 
     <div class="content">

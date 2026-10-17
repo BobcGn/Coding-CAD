@@ -68,6 +68,8 @@ export const CODING_CAD_EXPECTED_BASELINE: ArchitectureProject = {
       { id: "web-to-component-registry", from: "web", to: "component-registry", protocol: "module-import" },
       { id: "web-to-implementation-analyzer", from: "web", to: "implementation-analyzer", protocol: "module-import" },
       { id: "web-to-implementation-validator", from: "web", to: "implementation-validator", protocol: "module-import" },
+      { id: "web-to-agent-adapter", from: "web", to: "agent-adapter", protocol: "module-import" },
+      { id: "web-to-execution-blueprint", from: "web", to: "execution-blueprint", protocol: "module-import" },
       { id: "web-to-workspace", from: "web", to: "workspace", protocol: "module-import" },
       { id: "workspace-to-architecture-ir", from: "workspace", to: "architecture-ir", protocol: "module-import" },
       { id: "workspace-to-architecture-validator", from: "workspace", to: "architecture-validator", protocol: "module-import" },
@@ -163,7 +165,9 @@ export const CODING_CAD_DRIFTED_BASELINE: ArchitectureProject = {
       { id: "web-to-implementation-analyzer", from: "web", to: "implementation-analyzer", protocol: "module-import" },
       { id: "web-to-implementation-validator", from: "web", to: "implementation-validator", protocol: "module-import" },
       { id: "web-to-workspace", from: "web", to: "workspace", protocol: "module-import" },
+      { id: "web-to-agent-adapter", from: "web", to: "agent-adapter", protocol: "module-import" },
       { id: "web-to-execution-blueprint", from: "web", to: "execution-blueprint", protocol: "module-import" },
+      { id: "web-to-server", from: "web", to: "server", protocol: "module-import" },
       { id: "workspace-to-architecture-ir", from: "workspace", to: "architecture-ir", protocol: "module-import" },
       { id: "workspace-to-architecture-validator", from: "workspace", to: "architecture-validator", protocol: "module-import" },
       { id: "workspace-to-execution-blueprint", from: "workspace", to: "execution-blueprint", protocol: "module-import" }

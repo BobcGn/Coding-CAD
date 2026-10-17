@@ -93,6 +93,9 @@
     { "from": "web", "to": "architecture-validator" },
     { "from": "web", "to": "component-registry" },
     { "from": "web", "to": "implementation-analyzer" },
+    { "from": "web", "to": "implementation-validator" },
+    { "from": "web", "to": "agent-adapter" },
+    { "from": "web", "to": "execution-blueprint" },
     { "from": "web", "to": "workspace" }
   ],
   "discrepancies": [

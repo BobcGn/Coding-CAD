@@ -59,7 +59,7 @@ async function runTests() {
   assert.equal(targetUnapproved?.to, "component-registry");
 
   const missingDepIssue = {
-    id: "dependency.missing.web-to-execution-blueprint",
+    id: "dependency.missing.web-to-server",
     severity: "WARNING" as const,
     title: "Required dependency not detected",
     description: "",
@@ -69,9 +69,9 @@ async function runTests() {
   };
   const targetMissingDep = resolveIssueTarget(missingDepIssue);
   assert.equal(targetMissingDep?.type, "connection");
-  assert.equal(targetMissingDep?.targetId, "web-to-execution-blueprint");
+  assert.equal(targetMissingDep?.targetId, "web-to-server");
   assert.equal(targetMissingDep?.from, "web");
-  assert.equal(targetMissingDep?.to, "execution-blueprint");
+  assert.equal(targetMissingDep?.to, "server");
 
   const contractIssue = {
     id: "contract.protocol.server.get-health",
@@ -131,8 +131,8 @@ async function runTests() {
 
   // Verify missing required dependency was caught
   assert.ok(
-    driftedReport.issues.some((i) => i.id === "dependency.missing.web-to-execution-blueprint"),
-    "Must report missing web -> execution-blueprint dependency"
+    driftedReport.issues.some((i) => i.id === "dependency.missing.web-to-server"),
+    "Must report missing web -> server dependency"
   );
 
   // Verify unapproved dependency was caught (cli -> component-registry removed from drifted expected)
