@@ -1,3 +1,11 @@
+<script module lang="ts">
+  /**
+   * 默认折叠节点数阈值（未经批准的临时值，待用户裁定 / Unapproved temporary value pending user decision）
+   * 当系统组件总数超过此阈值时，可初始折叠模块容器以减轻大图首屏视觉复杂度。
+   */
+  export const DEFAULT_UNAPPROVED_COLLAPSE_THRESHOLD = 50;
+</script>
+
 <script lang="ts">
   import { untrack } from "svelte";
   import {
@@ -26,6 +34,12 @@
     layout: LayoutResult;
     viewState: LayoutState;
     selectedNodeIds?: readonly string[];
+    /**
+     * 默认自动折叠阈值（组件数量超过此阈值时初始折叠全部模块容器）。
+     * 标注：当前在代码中定义为 DEFAULT_UNAPPROVED_COLLAPSE_THRESHOLD = 50，属于未经批准的临时值（Unapproved temporary value），待用户决策裁定。
+     * 若未设置或设置为 Infinity 则保持默认平铺展开。
+     */
+    defaultCollapseThreshold?: number;
     onViewStateChange?: (state: LayoutState) => void;
     onSelectionChange?: (nodeIds: readonly string[], edgeIds: readonly string[]) => void;
     onViewportChange?: (viewport: { x: number; y: number; zoom: number }) => void;
@@ -36,6 +50,7 @@
     layout,
     viewState,
     selectedNodeIds = [],
+    defaultCollapseThreshold,
     onViewStateChange,
     onSelectionChange,
     onViewportChange
@@ -46,6 +61,20 @@
   let compact = $state(false);
   let collapsedGroupIds = $state(new Set<string>());
   const nodeTypes = { architecture: ArchitectureNode };
+
+  let initialCollapsedApplied = false;
+  $effect(() => {
+    if (!initialCollapsedApplied && defaultCollapseThreshold !== undefined) {
+      const componentCount = projection.layoutGraph.nodes.filter((n) => n.kind === "component").length;
+      if (componentCount > defaultCollapseThreshold) {
+        const groupIds = layout.nodes.filter((n) => n.kind === "group").map((n) => n.id);
+        if (groupIds.length > 0) {
+          collapsedGroupIds = new Set(groupIds);
+          initialCollapsedApplied = true;
+        }
+      }
+    }
+  });
 
   function handleToggleCollapse(groupId: string): void {
     const next = new Set(collapsedGroupIds);

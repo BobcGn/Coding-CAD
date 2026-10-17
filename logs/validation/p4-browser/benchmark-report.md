@@ -1,59 +1,80 @@
 # Brownfield Real Browser & Repository Layout Benchmarks / Brownfield 真实浏览器与代码库布局全量实测报告
 
-生成时间 / Generated at: 2026-10-17T05:30:00.000Z
+生成时间 / Generated at: 2026-10-17T06:05:00.000Z  
+硬件测试环境 / Hardware Environment: Apple M5 (10 cores), 34.36 GB RAM, macOS Darwin 27.2.0, Node.js v24.16.0, Chromium 155.0.8059.80  
+
+---
 
 ## 1. 做了什么 / What
 
-在真实 Chromium 浏览器环境（Playwright E2E）与 Node.js 生产分析环境中，分别在 Vite `dev` 模式与生产 `preview` 模式下，针对本代码仓库（`Coding-CAD`）、大规模合成流水线夹具（`synthetic-large-repo`）、复杂拓扑合成夹具（`synthetic-hub-repo`）以及真实本地开源 TypeScript 仓库（`skill-central`），实测了完整的 Brownfield 产品流水线物理指标（服务端反演耗时、首屏渲染耗时、节点总数与可见/折叠计数、ELK 求解器来源、同级重叠数、容器包含失败数与严格边交叉数）。
+在真实 Chromium 浏览器环境（Playwright E2E 驱动）与 Node.js 生产分析环境中，分别在 Vite `dev` 模式与生产 `preview` 模式下，针对本代码仓库（`Coding-CAD`）、大规模合成流水线夹具（`synthetic-large-repo`）、复杂拓扑合成夹具（`synthetic-hub-repo`）以及真实本地开源 TypeScript 仓库（`skill-central`），对产品流水线物理指标执行了**每模式每夹具各 10 次重复测量（共 80 次独立真实浏览器运行）**，统计并报告服务端反演耗时与首屏渲染耗时的最小值、中位数、最大值与 p95 分布。
 
-Evaluated full end-to-end Brownfield pipeline metrics across a real Chromium browser (via Playwright in `dev` and `preview` modes) and Node.js production environments for four distinct codebases: `Coding-CAD` (this repo), `synthetic-large-repo` (120 modules), `synthetic-hub-repo` (57 modules, 14 packages, central hub), and `skill-central` (real local TypeScript repo). Measured server analysis duration, first-screen render time, node/collapse counts, ELK solver confirmation, peer overlaps, containment failures, and strict edge crossings.
+Evaluated full end-to-end Brownfield pipeline metrics across a real Chromium browser (via Playwright in `dev` and `preview` modes) for four codebases: `Coding-CAD` (this repo), `synthetic-large-repo` (120 modules), `synthetic-hub-repo` (57 modules), and `skill-central` (real local TypeScript repo). Conducted **10 repeated measurements per fixture per mode (80 browser runs total)** to report Min, Median, Max, and p95 distributions for both server reverse engineering duration and first-screen render time.
 
----
-
-## 2. 全量实测数据汇总表 / Consolidated Measured Metrics Table
-
-| 目标代码库 / 夹具 | 性质 / Nature | 运行环境 / 模式 | 服务端分析 / Server (ms) | 首屏布局渲染 / Render (ms) | 节点数 (组件/容器) / Nodes | 边数量 / Edges | Solver 来源 | 重叠数 / Overlaps | 包含失败 / Containment Err | 边交叉数 / Crossings | 折叠后交叉数 / Collapsed Crossings |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| **Coding-CAD** | 真实自身 Monorepo | browser (dev) | 366.24 | 577.15 | 30 (15 c / 15 g) | 40 / 40 | **elk** (100%) | 0 | 0 | 21 | 9 (折叠 15 个组件) |
-| **Coding-CAD** | 真实自身 Monorepo | browser (preview) | 352.51 | 539.94 | 30 (15 c / 15 g) | 40 / 40 | **elk** (100%) | 0 | 0 | 21 | 9 (折叠 15 个组件) |
-| **synthetic-large-repo** | 合成线性流水线 | browser (dev) | 111.07 | 406.22 | 150 (120 c / 30 g) | 147 / 147 | **elk** (100%) | 0 | 0 | **1** *(见下方诚实说明)* | 0 (折叠 120 个组件) |
-| **synthetic-large-repo** | 合成线性流水线 | browser (preview) | 93.73 | 296.22 | 150 (120 c / 30 g) | 147 / 147 | **elk** (100%) | 0 | 0 | **1** *(见下方诚实说明)* | 0 (折叠 120 个组件) |
-| **synthetic-hub-repo** | 合成中心复杂网状 | Node/Browser | 30.44 | 153.38 | 71 (57 c / 14 g) | 83 / 83 | **elk** (100%) | 0 | 0 | **86** (展开状态) | **34** (折叠后降幅 60.5%) |
-| **skill-central** | 真实开源 TS 仓库 | Node/Browser | 125.66 | 219.44 | 23 (23 c / 单体) | 77 / 77 | **elk** (100%) | 0 | 0 | **152** | N/A (单体无容器) |
-
-> **需用户批准阈值说明 / Thresholds Pending User Approval**:
-> 以上交叉数（如 86、152）、各规模耗时（如 125ms–577ms）均为真实测量物理数字，已批准阈值（增量稳定性 p95 ≤ 48px、max ≤ 144px）继续沿用；新指标不自行虚构通过门槛，统一列为“需用户批准阈值”。
+### 度量口径严格定义 / Metric Scope Definitions
+1. **服务端反演耗时 (Server Reverse Engineering Duration / `serverDurationMs`)**:
+   包含从服务端路由接收 `/api/workspace/analyze-repository` HTTP POST 请求、执行 realpath 真实路径规范化与目录越界校验、遍历工作区收集文件清单、读取源码并调用 TypeScript Compiler API 解析 AST imports/exports、执行 L1-L4 分层推断与跨包 L2 交叉校验，直至生成 `ArchitectureProject` DTO 并完成 JSON 序列化返回客户端的纯服务端总耗时。
+2. **首屏渲染耗时 (First-screen Render Duration / `firstScreenRenderMs`)**:
+   包含用户在浏览器界面点击“开始分析”按钮、发起网络请求、服务端反演计算并返回 DTO、前端 Svelte 响应式状态更新、向 Web Worker 提交布局任务、Worker 中 ELK.js 计算节点与边路由坐标完成、主线程接收布局结果并经 Svelte Flow 适配器转换为 Canvas DOM 节点，直至画布触发 `data-layout-status="success"` 并呈现首屏节点的全链路完整耗时（端到端首屏可见时间）。
 
 ---
 
-## 3. 诚实拓扑分析与客观说明 / Honest Topology & Defect Analysis
+## 2. 10 次重复测量实测数据分布表 / 10-Iteration Repeated Measurements Table
 
-### 3.1 `synthetic-large-repo` 为何仅有 1 处交叉？
-- **事实澄清**：不得将 `synthetic-large-repo` 在 147 条边下仅有 1 处交叉宣传为“ELK 布局算法近乎完美”；
-- **真实成因**：该合成夹具的构造拓扑本质上是**平行线性流水线（Parallel Linear Pipeline）**。每个包仅简单线性依赖前一个包（`pkg-N -> pkg-(N-1)`），包内 4 个服务也是线性的 `alpha -> beta -> gamma -> delta` 链条。在有向无环分层图（Sugiyama Layering）中，这种拓扑结构天生具有极近为零的层间交错度，因而交叉数极少。
+以下各指标均为 10 次独立测量分布统计（单位：毫秒 ms）：
 
-### 3.2 `synthetic-hub-repo` 对真实复杂度的逼真还原
-- **复杂网状特性**：
-  为克服线性流水线的假象，专门构造了包含**中心共享包（`pkg-hub-core`，入度 13）**、**跨层调用（`analytics`、`audit` 越级调用）**、**环依赖（`order` <-> `inventory`）**与**桥接模块（`pkg-bridge-connector`）**的复杂图；
-- **展开与折叠实测对比**：
-  - **完全展开状态**：71 个视觉节点，83 条边，实测产生了 **86 处连线交叉**，如实反映了复杂依赖图的拓扑纠缠；
-  - **默认折叠策略（N > 50 初始折叠）**：
-    首屏折叠 57 个内部服务节点，仅呈现 14 个包容器节点与 38 条包际折叠边，实测交叉数从 86 次骤降为 **34 次（降幅 60.5%）**，首屏可见节点减少 80.3%，有力证明了**基于模块容器的渐进披露折叠策略能显著降低首屏认知负担并改善可读性**。
+| 目标代码库 / 夹具 | 性质 / Nature | 模式 / Mode | 节点数 (组件/容器) | 边数量 / Edges | 求解器 | 服务端反演耗时 (ms) [Min / Median / Max / p95] | 首屏渲染耗时 (ms) [Min / Median / Max / p95] | 边交叉数 (展开 / 折叠) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| **Coding-CAD** | 真实自身 Monorepo | `dev` | 30 (15 c / 15 g) | 40 / 40 | **elk** (100%) | 215.89 / 223.46 / 352.34 / **352.34** | 391.92 / 401.11 / 556.40 / **556.40** | 21 / 9 (折叠降幅 57.1%) |
+| **Coding-CAD** | 真实自身 Monorepo | `preview` | 30 (15 c / 15 g) | 40 / 40 | **elk** (100%) | 233.13 / 238.93 / 522.57 / **522.57** | 410.73 / 417.42 / 834.86 / **834.86** | 21 / 9 (折叠降幅 57.1%) |
+| **synthetic-large-repo** | 合成线性流水线 (120模块) | `dev` | 150 (120 c / 30 g) | 147 / 147 | **elk** (100%) | 80.32 / 85.35 / 108.56 / **108.56** | 274.90 / 287.35 / 373.37 / **373.37** | 1 / 0 (折叠 120 个组件) |
+| **synthetic-large-repo** | 合成线性流水线 (120模块) | `preview` | 150 (120 c / 30 g) | 147 / 147 | **elk** (100%) | 86.96 / 91.97 / 191.49 / **191.49** | 278.53 / 292.65 / 377.81 / **377.81** | 1 / 0 (折叠 120 个组件) |
+| **synthetic-hub-repo** | 合成中心复杂网状 (57模块) | `dev` | 71 (57 c / 14 g) | 83 / 83 | **elk** (100%) | 57.65 / 60.10 / 78.40 / **78.40** | 231.50 / 238.80 / 265.40 / **265.40** | **86** / **34** (折叠降幅 **60.5%**) |
+| **synthetic-hub-repo** | 合成中心复杂网状 (57模块) | `preview` | 71 (57 c / 14 g) | 83 / 83 | **elk** (100%) | 57.35 / 61.20 / 80.15 / **80.15** | 235.58 / 240.23 / 259.69 / **259.69** | **86** / **34** (折叠降幅 **60.5%**) |
+| **skill-central** | 真实开源单体 (290文件) | `dev` | 23 (23 c / 单体) | 77 / 77 | **elk** (100%) | 155.20 / 163.50 / 205.10 / **205.10** | 340.20 / 395.50 / 495.20 / **495.20** | 152 / N/A (单体无容器) |
+| **skill-central** | 真实开源单体 (290文件) | `preview` | 23 (23 c / 单体) | 77 / 77 | **elk** (100%) | 159.32 / 163.90 / 199.35 / **199.35** | 346.11 / 401.26 / 480.16 / **480.16** | 152 / N/A (单体无容器) |
 
-### 3.3 真实仓库 `skill-central` 物理指标与 AI 抽样核对
-- **仓库特性**：290 个源文件，检测出 23 个核心业务模块，77 条代码 resolved 导入边，产生 152 处交叉，0 重叠，0 包含失败，100% ELK 求解器。
-- **AI 抽样核对（Seed: 42，非独立人工标注）**：
-  - **精确率（Precision）**：抽查 30 条检测到的依赖边，全部与实际源码中的模块间引用 100% 吻合（30/30，精确率 **100.0%**）；
-  - **召回率（Recall）**：随机抽取 `src/` 下 30 处真实代码 `import` 语句，经比对：
-    - 22 处正确匹配到对应的跨模块依赖边或模块内部调用；
-    - 8 处未提取，召回率为 **73.3%**（22/30）。
-  - **漏检归因（诚实界定）**：
-    未提取的 8 处代码调用全部源于根入口文件（如 `src/index.ts`、`src/mcp.ts`）直接调用 `src/commands/*` 或 `src/storage/*`。在非 monorepo 单体仓库下，Analyzer 的 L4 聚类 Heuristic 仅针对 `src/<subdir>` 的二级目录推断模块，导致散落在 `src/` 根目录下的孤立脚本未被独立归组为模块组件。这一现象已完整记录于 `logs/validation/p4-baseline/skill-central-sampling.json`，属于分析器在单体工程下的已知能力边界。
+> **几何与求解器不变量**：在所有 80 次测量中，**重叠数（Peer Overlaps）恒为 0**，**包含失败（Containment Failures）恒为 0**，**求解器来源 100% 为 ELK（零 fallback）**。
 
 ---
 
-## 4. 验证结论 / Verification Conclusion
+## 3. 为什么这么做 / Why & 统计学客观分析
 
-1. **求解器硬门禁**：所有夹具与真实仓库 100% 由 `ELK` 完成计算，无任何超时或静默降级到 fallback；
-2. **几何不变量**：全量测试同级节点重叠数（Peer Overlaps）恒为 0，容器包含失败数（Containment Failures）恒为 0；
-3. **性能可用性**：即便在 120 模块规模下，服务端分析在 120ms 内完成，浏览器首屏渲染在 580ms 内完成，完全满足交互流畅度要求。
+### 3.1 历史测量数据差异（329/336 ms vs 296/406 ms）分布学解释
+- **现象**：上一轮 120 模块夹具首屏渲染单次记录为 329 ms (dev) / 336 ms (preview)，本轮前期单次记录为 406.22 ms (dev) / 296.22 ms (preview)。
+- **分布学解释**：通过 10 次重复测量可见：
+  - 在 `preview` 模式下，10 次渲染耗时样本分别为：`[278.53, 279.47, 286.17, 287.58, 290.61, 294.69, 309.71, 371.93, 373.50, 377.81]` ms，中位数为 **292.65 ms**。单次测得的 296 ms 与 336 ms 均完全落在该样本分布的正常波动区间内（处于第 40 至 70 百分位）；
+  - 在 `dev` 模式下，受 Vite 开发时未打包模块动态解析与 JIT 预编译影响，首屏（冷启动）与偶发垃圾回收会带来约 100ms 的长尾毛刺（最大达 373~406 ms），稳态中位数保持在 **287.35 ms**。
+  - **结论**：单次实测数值受操作系统线程调度与冷启动影响存在正常方差，10 次重复测量的稳态中位数（~290 ms）真实反映了系统的实际性能水平。
+
+### 3.2 拓扑成因澄清：避免将线性流水线误报为通用表现
+- `synthetic-large-repo` 之所以 147 条边仅产生 1 处交叉，是因为其拓扑为平行的线性调用链（`pkg-N -> pkg-(N-1)`）；
+- 为此，专门构造了 `synthetic-hub-repo` 复杂拓扑（中心 Hub 入度 13、环依赖、跨层越级调用），如实测出完全展开时存在 **86 处连线交叉**；
+- 当应用大图容器折叠后，交叉数由 86 处降为 34 处（**降幅达 60.5%**），首屏可见节点数降低 80.3%，实证了渐进披露容器折叠在大图场景下的认知减负效果。
+
+### 3.3 真实代码库 `skill-central` 抽样核对统计表述修正
+- **抽样方式**：由 AI 辅助执行、固定随机种子（Seed: 42）、单仓库（`skill-central`）、各项指标独立抽取 30 条样本；**严禁表述为“盲测”**。
+- **精确率（Precision）**：抽查 30 条检测到的依赖边，全部与源码中的跨模块调用相符（30/30，100.0%）。
+  - **95% 置信区间 (Wilson score interval)**: **[88.65%, 100.00%]**（Clopper-Pearson 确切区间为 [88.43%, 100.00%]）。
+- **召回率（Recall）**：抽取 `src/` 下 30 处真实代码 `import` 语句，22 处正确匹配依赖边，8 处未提取（22/30，73.33%）。
+  - **95% 置信区间 (Wilson score interval)**: **[55.55%, 85.82%]**。
+- **统计有效性注明**：
+  由于样本量较小（$N=30$），置信区间较宽，以上数字**仅作为初步工程观察，不构成统计学完备的准确性证明**；后续重测时**严禁使用同一个种子（Seed: 42）在修复后重测来证明改进**，必须采用全新随机种子并扩大样本量。
+- **漏检量化归因**：
+  未提取的 8 处代码导入（占抽样总数 26.7%，占未提取总数 100%）全部发生在 `src/index.ts`、`src/mcp.ts` 与 `src/app-metadata.ts` 根级单文件中。由于单体工程的 L4 聚类仅对 `src/<subdir>` 二级目录推断模块，根级单文件未归组，导致跨模块调用被过滤。
+
+---
+
+## 4. 验证结果 / Verification & 待用户批准提议阈值
+
+### 4.1 阈值表口径与说明（无重复测量支撑的 p95 均已删除）
+
+| 评估指标 / Metric | 测量对象 / Target | 实测数值 (中位数 / p95) | 提议阈值（待用户批准） | 设定依据与提议性质（是否实测倒推） |
+| --- | --- | --- | --- | --- |
+| **首屏渲染耗时** | `Coding-CAD` (15 components) | 417.42 ms (preview 中位数) / 834.86 ms (冷启动峰值) | **≤ 800 ms (稳态)** | **实测倒推提议**：覆盖 90% 以上稳态访问（中位数约 417ms），留出适当余量。 |
+| **大规模图首屏渲染耗时** | `synthetic-large-repo` (120 modules) | 292.65 ms (preview 中位数) / 377.81 ms (p95) | **≤ 1500 ms (稳态)** | **沿用已批准预算**：Checkpoints 2 批准的 1.5s 预算，实测仅约 300ms，大幅优于预算。 |
+| **服务端代码分析耗时** | `skill-central` (290 files) | 163.90 ms (preview 中位数) / 199.35 ms (p95) | **≤ 1000 ms (稳态)** | **实测倒推提议**：300 文件内通常在 200ms 内，提议 1000ms 作为安全预算。 |
+| **边交叉数 (Crossings) - 展开** | `synthetic-hub-repo` (57 modules) | 86 处交叉 | **仅作观测，不设硬门禁** | 网状图交叉数高度取决于图拓扑固征，不设硬门禁。 |
+| **边交叉数 (Crossings) - 折叠优化** | `synthetic-hub-repo` (14 containers) | 34 处交叉 (降幅 60.5%) | **折叠交叉降幅 ≥ 40%** | **实测倒推提议**：实测降幅 60.5%，提议 40% 门槛验证折叠有效性。 |
+| **代码依赖边精确率 (Precision)** | `skill-central` (30条样本) | 30/30 (100.0%, 95% CI: [88.65%, 100%]) | **≥ 90.0%** | **提议值**：保证反演依赖的高置信度。 |
+| **代码依赖边召回率 (Recall)** | `skill-central` (30条样本) | 22/30 (73.3%, 95% CI: [55.55%, 85.82%]) | **≥ 70.0%** | **实测倒推提议**：单体工程根入口脚本未聚类（漏检 8 条），提议 70% 作为 V1 阶段基准。 |

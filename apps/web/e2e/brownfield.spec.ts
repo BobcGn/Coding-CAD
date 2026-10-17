@@ -98,6 +98,9 @@ test.describe("Brownfield Architecture Pipeline E2E", () => {
     await page.getByTestId("load-expected-btn").click();
     await expect(page.getByTestId("load-expected-modal")).toBeVisible();
     await expect(page.getByTestId("preset-notice")).toBeVisible();
+    await expect(page.getByTestId("preset-notice")).toContainText(/示例基线，仅适用于本仓库|example baselines for the Coding-CAD repository only/);
+    await expect(page.getByTestId("load-preset-golden")).toContainText(/示例基线，仅适用于本仓库|Example baseline, only applies to this repository/);
+    await expect(page.getByTestId("load-preset-drifted")).toContainText(/示例基线，仅适用于本仓库|Example baseline, only applies to this repository/);
 
     // Load Drifted baseline
     await page.getByTestId("load-preset-drifted").click();

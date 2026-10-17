@@ -1,0 +1,378 @@
+{
+  "timestamp": "2026-10-17T06:00:29.375Z",
+  "hardware": {
+    "platform": "darwin",
+    "release": "27.2.0",
+    "arch": "arm64",
+    "cpuModel": "Apple M5",
+    "cpuCores": 10,
+    "totalMemoryGb": 34.36,
+    "nodeVersion": "v24.16.0"
+  },
+  "modes": {
+    "dev": {
+      "coding-cad": {
+        "fixture": "Coding-CAD (this repository)",
+        "components": 15,
+        "edges": 40,
+        "serverDuration": {
+          "min": 215.89,
+          "max": 352.34,
+          "median": 223.46,
+          "p95": 352.34,
+          "mean": 239.56,
+          "stdDev": 39.29,
+          "samples": [
+            215.89,
+            216.74,
+            219.16,
+            220.67,
+            220.93,
+            226,
+            230.02,
+            238.8,
+            255.02,
+            352.34
+          ]
+        },
+        "firstScreenRender": {
+          "min": 391.92,
+          "max": 556.4,
+          "median": 401.11,
+          "p95": 556.4,
+          "mean": 419.95,
+          "stdDev": 46.9,
+          "samples": [
+            391.92,
+            393.59,
+            397.85,
+            399.04,
+            399.48,
+            402.74,
+            409.41,
+            417.39,
+            431.66,
+            556.4
+          ]
+        }
+      },
+      "synthetic-large-repo": {
+        "fixture": "synthetic-large-repo (120 modules)",
+        "components": 120,
+        "edges": 147,
+        "serverDuration": {
+          "min": 80.32,
+          "max": 108.56,
+          "median": 85.35,
+          "p95": 108.56,
+          "mean": 87.88,
+          "stdDev": 8.27,
+          "samples": [
+            80.32,
+            80.56,
+            81.12,
+            82.98,
+            84.51,
+            86.18,
+            87.63,
+            93.37,
+            93.52,
+            108.56
+          ]
+        },
+        "firstScreenRender": {
+          "min": 274.9,
+          "max": 373.37,
+          "median": 287.35,
+          "p95": 373.37,
+          "mean": 298,
+          "stdDev": 28.17,
+          "samples": [
+            274.9,
+            277.22,
+            279.93,
+            282.57,
+            286.08,
+            288.62,
+            292.96,
+            306.34,
+            318.01,
+            373.37
+          ]
+        }
+      },
+      "synthetic-hub-repo": {
+        "fixture": "synthetic-hub-repo (57 modules)",
+        "components": 57,
+        "edges": 83,
+        "serverDuration": {
+          "min": 59.78,
+          "max": 73.8,
+          "median": 62.54,
+          "p95": 73.8,
+          "mean": 63.15,
+          "stdDev": 3.95,
+          "samples": [
+            59.78,
+            59.92,
+            60.05,
+            60.8,
+            62.06,
+            63.03,
+            63.1,
+            63.98,
+            65.01,
+            73.8
+          ]
+        },
+        "firstScreenRender": {
+          "min": 240.4,
+          "max": 347.03,
+          "median": 255.52,
+          "p95": 347.03,
+          "mean": 264.29,
+          "stdDev": 31.82,
+          "samples": [
+            240.4,
+            241.2,
+            242.83,
+            243.06,
+            254.36,
+            256.69,
+            257.57,
+            262.93,
+            296.87,
+            347.03
+          ]
+        }
+      },
+      "skill-central": {
+        "fixture": "skill-central (real repo, 290 files)",
+        "components": 23,
+        "edges": 77,
+        "serverDuration": {
+          "min": 164.26,
+          "max": 343.87,
+          "median": 184.18,
+          "p95": 343.87,
+          "mean": 199.54,
+          "stdDev": 50.34,
+          "samples": [
+            164.26,
+            168.09,
+            171.85,
+            175.08,
+            182.7,
+            185.65,
+            189.82,
+            196.35,
+            217.7,
+            343.87
+          ]
+        },
+        "firstScreenRender": {
+          "min": 444.66,
+          "max": 625.68,
+          "median": 464.2,
+          "p95": 625.68,
+          "mean": 479.82,
+          "stdDev": 50.86,
+          "samples": [
+            444.66,
+            450.18,
+            450.75,
+            454.14,
+            461.3,
+            467.11,
+            468.69,
+            477.36,
+            498.28,
+            625.68
+          ]
+        }
+      }
+    },
+    "preview": {
+      "coding-cad": {
+        "fixture": "Coding-CAD (this repository)",
+        "components": 15,
+        "edges": 40,
+        "serverDuration": {
+          "min": 233.13,
+          "max": 522.57,
+          "median": 238.93,
+          "p95": 522.57,
+          "mean": 270.31,
+          "stdDev": 84.53,
+          "samples": [
+            233.13,
+            233.35,
+            235.43,
+            236.62,
+            238.21,
+            239.65,
+            252.29,
+            253.05,
+            258.81,
+            522.57
+          ]
+        },
+        "firstScreenRender": {
+          "min": 410.73,
+          "max": 834.86,
+          "median": 417.42,
+          "p95": 834.86,
+          "mean": 461.12,
+          "stdDev": 124.86,
+          "samples": [
+            410.73,
+            411.02,
+            411.11,
+            413.88,
+            416.73,
+            418.11,
+            430.06,
+            430.3,
+            434.44,
+            834.86
+          ]
+        }
+      },
+      "synthetic-large-repo": {
+        "fixture": "synthetic-large-repo (120 modules)",
+        "components": 120,
+        "edges": 147,
+        "serverDuration": {
+          "min": 86.96,
+          "max": 191.49,
+          "median": 91.97,
+          "p95": 191.49,
+          "mean": 101.84,
+          "stdDev": 30.13,
+          "samples": [
+            86.96,
+            89.2,
+            89.45,
+            90.03,
+            91.63,
+            92.3,
+            92.39,
+            92.77,
+            102.19,
+            191.49
+          ]
+        },
+        "firstScreenRender": {
+          "min": 278.53,
+          "max": 377.81,
+          "median": 292.65,
+          "p95": 377.81,
+          "mean": 315,
+          "stdDev": 39.77,
+          "samples": [
+            278.53,
+            279.47,
+            286.17,
+            287.58,
+            290.61,
+            294.69,
+            309.71,
+            371.93,
+            373.5,
+            377.81
+          ]
+        }
+      },
+      "synthetic-hub-repo": {
+        "fixture": "synthetic-hub-repo (57 modules)",
+        "components": 57,
+        "edges": 83,
+        "serverDuration": {
+          "min": 57.35,
+          "max": 80.15,
+          "median": 61.2,
+          "p95": 80.15,
+          "mean": 64.03,
+          "stdDev": 7.43,
+          "samples": [
+            57.35,
+            58.6,
+            59.34,
+            60.19,
+            60.96,
+            61.44,
+            62.4,
+            63.17,
+            76.74,
+            80.15
+          ]
+        },
+        "firstScreenRender": {
+          "min": 235.58,
+          "max": 259.69,
+          "median": 240.23,
+          "p95": 259.69,
+          "mean": 242.73,
+          "stdDev": 7.6,
+          "samples": [
+            235.58,
+            236.38,
+            238.14,
+            239.7,
+            239.79,
+            240.68,
+            240.7,
+            241.71,
+            254.97,
+            259.69
+          ]
+        }
+      },
+      "skill-central": {
+        "fixture": "skill-central (real repo, 290 files)",
+        "components": 23,
+        "edges": 77,
+        "serverDuration": {
+          "min": 159.32,
+          "max": 199.35,
+          "median": 163.9,
+          "p95": 199.35,
+          "mean": 169.55,
+          "stdDev": 13.48,
+          "samples": [
+            159.32,
+            160.93,
+            161.18,
+            162.94,
+            163.74,
+            164.06,
+            164.65,
+            166.54,
+            192.79,
+            199.35
+          ]
+        },
+        "firstScreenRender": {
+          "min": 346.11,
+          "max": 480.16,
+          "median": 401.26,
+          "p95": 480.16,
+          "mean": 404.05,
+          "stdDev": 54.19,
+          "samples": [
+            346.11,
+            347.65,
+            348.85,
+            353.68,
+            359.32,
+            443.21,
+            444.61,
+            445.3,
+            471.61,
+            480.16
+          ]
+        }
+      }
+    }
+  }
+}

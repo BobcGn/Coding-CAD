@@ -1357,13 +1357,56 @@ PR #3首次远端CI在额外security:audit步骤报告7high，本地旧ci:verify
   - AI 抽样核对记录保存于 `logs/validation/p4-baseline/skill-central-sampling.json`；
   - 人工评估方案就绪于 `docs/evaluation/p4-comprehension-eval.md`；
   - `logs/validation/p4-browser/benchmark-report.md` 汇总结构全量就绪。
-- 未实现：
-  - 人工可理解性评测数据待真实人类架构师填写。
-- 风险与回退方式：
-  - 回退方式：`git revert <commit-hash>`。
+## 2026-10-17: 阶段 4 报告与证据全量订正 / Phase 4 Exit Report and Evidence Rectification
 
+### 1. 做了什么 / What
+- 提交与回退表完整重构（订正 1）：
+  - 通过 `git log --oneline bf3726b..HEAD` 重新导出 11 个提交并逐一验证对象真实存在；
+  - 明确说明旧哈希 `7e5111f` 与 `f78a2e5` 失效原因（`f78a2e5` 系此前误记，真实提交为 `c38ef3f`；`7e5111f` 在本地门禁拆分中已重写为 `ddc11f2` 与 `9ede079`）；
+  - 编写包含各提交逆序回退连带影响的完整回退指南，同步更正 `docs/phase-4-exit-report.md` 与 `.github/pr-draft-phase4.md`。
+- 待用户处理事项全面补齐（订正 2）：
+  - 补列事项 3：是否批准新增不依赖期望架构的结构性检查规则类型（最小集合：跨模块循环依赖检测 `cyclic-dependencies`）；
+  - 补列事项 4：默认折叠阈值 N=50 的审批与确认，在 `ArchitectureCanvas.svelte` 导出 `DEFAULT_UNAPPROVED_COLLAPSE_THRESHOLD = 50` 并支持 `defaultCollapseThreshold` prop，严格标注为未经批准临时值；
+  - 补充单体仓库根级单文件未聚类量化影响（漏检 8 条 import 占抽样 26.7%，涉及 `src/index.ts`、`src/mcp.ts`、`src/app-metadata.ts`）；
+  - 披露证据缺口（仅覆盖单个单体仓库，无真实 Monorepo 证据）。
+- 统计表述严谨规范化（订正 3）：
+  - 彻底删除全篇“盲测”字样，准确描述为“AI 辅助抽样核对（固定种子 42、单仓库、各抽取 30 条）”；
+  - 采用 Wilson score interval 标明 95% 置信区间（精确率 100.0% [88.65%, 100%]，召回率 73.3% [55.55%, 85.82%]），注明样本量小仅作初步观察，禁止用同一种子重测证明改进。
+- 度量口径统一与 10 次重复测量（订正 4）：
+  - 严格定义服务端反演耗时与首屏渲染耗时口径；
+  - 在 Apple M5 环境下对 4 个夹具在 dev 与 preview 模式下各重复测量 10 次（共 80 次真实浏览器运行），报告 Min/Median/Max/p95 分布；
+  - 解释 120 模块历史数字差异源于稳态分布与冷启动波动；删除无重复测量支撑的 p95，阈值表明确标注提议性质及是否由实测倒推。
+- 关键结论内嵌矩阵表（订正 5）：
+  - 在报告正文内嵌四张完整表格：期望基线来源与 38->40 边演进表、7 项边缘用例逐项矩阵表、D-005 原文与分组/折叠逐条对照表、漂移夹具 5 类偏差检出表（无偏差 0 项 vs 漂移 5 项）。
+- 预设基线标注与断言（订正 6）：
+  - 确认界面已明确标注“示例基线，仅适用于本仓库”，在 `brownfield.spec.ts` 补充对应断言。
 
+- Commit & Rollback Table Reconstruction (Correction 1): Re-exported and verified all 11 commits via `git log`, explained invalidation of `7e5111f` and `f78a2e5`, and documented cascade rollback effects.
+- Complete Items Pending User Action (Correction 2): Added structural cyclic dependency rule approval, N=50 collapse threshold configurability and unapproved temporary value annotation in `ArchitectureCanvas.svelte`, quantified root-level entry file recall gap (8/30 missed), and disclosed real monorepo evidence gaps.
+- Rigorous Statistical Descriptions (Correction 3): Removed "blind test" wording, accurately described AI-assisted sampling with seed 42, calculated 95% Wilson confidence intervals, and barred reusing seed 42 for re-evaluations.
+- Strict Metric Definitions & 10-Iteration Repeated Measurements (Correction 4): Formally defined server and render duration scopes, executed 10 repeated measurements per fixture per mode (80 runs total), explained distribution variance, and removed unsupported p95 claims from proposed threshold tables.
+- Embedded Critical Tables in Report Body (Correction 5): Directly embedded four analysis tables in exit report: expected baseline 38->40 evolution, 7 edge cases matrix, D-005 conformance table, and drifted 5-deviation detection table.
+- Preset Baseline Annotations (Correction 6): Verified explicit UI annotations for sample baselines and added E2E assertions in `brownfield.spec.ts`.
 
+### 2. 为什么这么做 / Why
+- 严格遵循工程治理与科学真实性原则：严禁将局部单次测量包装为无方差确据；通过 10 次重复测量揭示真实系统稳态与长尾方差。
+- 恪守架构事实边界：对未经用户批准的 N=50 折叠策略和结构性检查规则，显式提请用户决策，防止工程代理越权固化业务规则。
+- 杜绝技术粉饰：诚实汇报样本量较小带来的置信区间宽度，如实披露真实 Monorepo 证据缺口与单体工程根级单文件的聚类能力边界。
 
+- Rigorous Engineering Governance: Rejected packaging single-shot spikes as steady-state performance; 10 repeated runs reveal true distributions across dev and preview.
+- Preserving Architecture Authority: Explicitly raised unapproved N=50 collapse and structural rule additions for user confirmation, preventing agent overreach.
+- Zero Technical Whitewashing: Transparently reported wide confidence intervals from small sample sizes and acknowledged evidence gaps regarding production monorepos.
 
-
+### 3. 验证结果 / Verification
+- 已实现并验证 / Implemented and verified:
+  - `pnpm check:changelog`: 全量检查通过；
+  - `apps/web/src/lib/cad/canvas/ArchitectureCanvas.test.svelte.ts`: 单元测试验证 `DEFAULT_UNAPPROVED_COLLAPSE_THRESHOLD = 50` 导出与可配置性；
+  - `apps/web/e2e/brownfield.spec.ts`: dev 与 preview 双模式 26/26 通过，包含预设免责声明与 4 类问题计数器断言；
+  - `node scripts/benchmarks/run-repeated-benchmarks.mjs`: 4 夹具双模式各 10 次重复测量（80 次运行）全量 PASS (exit 0)；
+  - `CI=true TURBO_FORCE=true pnpm ci:verify`: 15/15 任务全量通过（0 cached）。
+- 已实现未验证 / Implemented but unverified:
+  - 人工可理解性评测方案（`docs/evaluation/p4-comprehension-eval.md`）待人类架构师实操执行。
+- 未实现及范围外 / Not implemented or out of scope:
+  - 阶段 5+（Ghost 节点、完整 Review 工作区、Execution Handoff、Terminal）。
+- 风险与回退方式 / Risks and Rollback:
+  - 回退方式: `git revert <commit-hash>`。

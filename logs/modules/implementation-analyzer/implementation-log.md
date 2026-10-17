@@ -220,10 +220,10 @@ Validation:
 
 ### 2. 为什么这么做 / Why
 - 克服线性流水线的假象：此前 `synthetic-large-repo` 的 1 个交叉归因于其简单的流水线构造，不能用来证明复杂大图布局质量；必须建立逼真的中心包与环依赖复杂图，用实测数据证明折叠机制在降低认知过载方面的核心价值。
-- 真实代码库的外部实证：必须引入未被本工程夹具专门微调过的真实外部代码库进行盲测，诚实暴露出单体仓库根目录单文件的聚类边界。
+- 真实代码库的外部实证：必须引入未被本工程夹具专门微调过的真实外部代码库进行实测，诚实暴露出单体仓库根目录单文件的聚类边界。
 
 - Overcoming Linear Artifacts: Acknowledging that `synthetic-large-repo`'s 1 crossing stemmed from parallel linear pipelines, the hub fixture genuinely stresses ELK with 86 crossings and proves the 60.5% crossing reduction of container collapse.
-- External Empirical Grounding: Blind-testing on a real repository proves actual precision (100%) and exposes honest boundary limits (73.3% recall due to root-level file heuristics).
+- External Empirical Grounding: Empirical testing on a real repository proves actual precision (100%) and exposes honest boundary limits (73.3% recall due to root-level file heuristics).
 
 ### 3. 验证结果 / Verification
 - 已实现并验证：

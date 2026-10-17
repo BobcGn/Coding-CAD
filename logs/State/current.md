@@ -36,7 +36,7 @@
 - 步骤 4 的画布与问题列表双向交互导航（点击问题自动展开已折叠父分组并聚焦节点；点击节点联动 Inspector 展示关联问题）；
 - 真实浏览器 Playwright E2E 验证（双模式下 `brownfield.spec.ts` 与 `brownfield-benchmarks.spec.ts` 全量通过，断言 ELK 求解器执行与零 fallback）；
 - 步骤 5 的复杂拓扑夹具（`synthetic-hub-repo` 57 模块、14 包）与 N > 50 折叠优化度量（86 交叉 -> 34 交叉，降幅 60.5%）；
-- 步骤 5 的真实外部代码库盲测（`skill-central` 23 模块、77 边、152 交叉、100% ELK 求解器、0 重叠、0 包含失败）与种子 42 AI 抽样核对（Precision 100.0%、Recall 73.3%）；
+- 步骤 5 的真实外部代码库实测（`skill-central` 23 模块、77 边、152 交叉、100% ELK 求解器、0 重叠、0 包含失败）与种子 42 AI 抽样核对（Precision 100.0%、Recall 73.3%）；
 - 步骤 5 的全量物理度量报告汇总（`logs/validation/p4-browser/benchmark-report.md`）；
 - 步骤 6 的退出报告草稿（`docs/phase-4-exit-report.md`）与 PR 草稿（`.github/pr-draft-phase4.md`），置顶“待用户处理事项”，结论严格标注“有条件满足 / Conditionally Satisfied”，并同步更新全量设计文档。
 
