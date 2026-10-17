@@ -10,15 +10,17 @@
 
 ## 阶段 5 进度总结 / Phase 5 Progress Summary
 
-阶段 5 (Ghost Architecture, Review Gate, and Execution Handoff) 当前执行状态：**已完成并满足退出条件 / SATISFIED**（详见 `docs/phase-5-exit-report.md`）。
-- **步骤 0（Git 忽略规则完善）**：已完成并提交（`7400cd4`）。范围外附带改动已全面核验，`git ls-files -c -i --exclude-standard` 验证 0 跟踪文件受损。
+阶段 5 (Ghost Architecture, Review Gate, and Execution Handoff) 当前执行状态：**有条件满足 / CONDITIONALLY SATISFIED**（详见 `docs/phase-5-exit-report.md`，待用户处理事项裁定）。
+- **范围外附带改动（Git 忽略规则完善）**：已完成并提交（`7400cd4`）。工作区 `.gitignore` 规则完善，`git ls-files -c -i --exclude-standard` 验证 0 跟踪文件受损，作为范围外附带改动合规披露。
 - **步骤 5.0（设计备忘录）**：已完成并提交（`77e446a`）。产出 `docs/phase-5-design-memo.md`（中英双语 7 节分析 + Q-5.1~Q-5.5 决策清单），初始化 `.github/pr-draft-phase5.md`。
 - **步骤 5.1（Execution Handoff 产品化）**：已完成并提交（`2797f9c` / `3f8d76a`）。实现 Blueprint 预览、3 种 Guide（Generic/Codex/Claude）渲染、来源聚焦画布、快照防过期、复制与导出。
 - **步骤 5.1.1（订正与补齐证据）**：已完成并提交（`f6ea675`）。手工溯源基线改动（40 边增至 42 边）；补齐剪贴板逐字比对与权限拒绝降级测试；完善来源追踪覆盖表；重构规范化快照键算法与不变性测试；全仓测试用例按包分类统计。
 - **步骤 5.2（Proposal 与 Ghost 投影）**：已完成并提交（`cb8be8e` / `baba8c0`）。落实 D-007 方案 B（Web 适配层局部扩展），纯函数几何放置保证与正式节点及容器边界几何零重叠；Svelte Flow 适配层渲染 Ghost 节点、Ghost 连接与待变更/待删除标记；单提案锁定生效；Ghost ID 绝不进入正式架构或持久化状态。
 - **步骤 5.3（Review 接入与生命周期硬化）**：已完成并提交（`9971e4d` / `b94e0fb`）。实现 Accept 推进正式变更并触发增量布局、Reject 即刻清除 Ghost 并保留候选；实现正式架构变化后自动标记未决提案为已过期（Stale）并禁用 Accept；审查状态机具备幂等性与无效候选防御。
 - **步骤 5.4（增量布局与稳定性指标度量）**：已完成并提交（`7120770` / `634c355`）。在 Greenfield 与 Medium Brownfield 上断言增量布局未受影响节点位移严格满足预算（实测均为 0.0px）；度量 Ghost 到正式节点欧几里得位移距离，输出完整经验表格与统计分析。
-- **步骤 5.5（阶段 5 验收与文档同步）**：已完成。`CI=true TURBO_FORCE=true pnpm ci:verify` 全门禁通过（0 缓存）；双模式 Playwright 36/36 全数通过；产出中英双语《阶段 5 退出报告》（`docs/phase-5-exit-report.md`）；同步主计划、PR 草稿与状态日志。阶段 5 满足退出条件。
+- **步骤 5.5（阶段 5 初始验收与文档同步）**：已完成并提交（`d529390` / `71e76d0`）。初始交付物、不变量检查与退出报告初版完成。
+- **步骤 5.6（订正与补证据）**：进行中。退出结论变更为有条件满足；补充待用户处理事项；Playwright 真实浏览器实测（dev/preview 双模式覆盖 6 个 Add 场景，零重叠、零容器包含失败、100% ELK 求解器、无关节点 0.0px 位移）；回答 Medium 夹具 (24, 153) 归因与 DocGen 候选顺序；完成公开 API 与范围审计 (`git diff --stat main..HEAD`)；补齐拒绝后内存保留单元测试。
+- **步骤 5.7（Ghost 预测位置设计备忘录）**：即将开展。编写只读备忘录 `docs/phase-5-ghost-placement-memo.md`（评估方案 A/B/C，不实现产品代码）。
 
 ## 阶段 4 进度总结 / Phase 4 Progress Summary
 

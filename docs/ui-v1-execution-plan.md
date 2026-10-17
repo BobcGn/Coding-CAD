@@ -696,7 +696,7 @@ Greenfield E2E 和所有验收标准通过；Workspace/IR/View State 边界评�
 
 ### Exit Condition / 退出条件
 
-完整流程 E2E 与 Review/IR/Ghost 不变量通过；没有 Agent runtime；Phase report 完成。当前状态：已完成并满足退出条件（分支 `codex/phase-5-ghost-handoff`，详见 `docs/phase-5-exit-report.md`）。 / The full-flow E2E and Review/IR/Ghost invariants pass; no Agent runtime exists; the Phase report is complete. Current status: Completed and Satisfied Exit Conditions (branch `codex/phase-5-ghost-handoff`, see `docs/phase-5-exit-report.md`).
+完整流程 E2E 与 Review/IR/Ghost 不变量通过；没有 Agent runtime；Phase report 完成。当前状态：有条件满足（分支 `codex/phase-5-ghost-handoff`，详见 `docs/phase-5-exit-report.md`，待用户处理事项裁定）。 / The full-flow E2E and Review/IR/Ghost invariants pass; no Agent runtime exists; the Phase report is complete. Current status: Conditionally Satisfied (branch `codex/phase-5-ghost-handoff`, see `docs/phase-5-exit-report.md`, pending user action items approval).
 
 ## Phase 6 — Layout Quality / Performance / E2E / 布局质量、性能与 E2E
 

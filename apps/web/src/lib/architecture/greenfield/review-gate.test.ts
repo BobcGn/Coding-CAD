@@ -5,6 +5,7 @@ import { ArchitectureValidator } from "@coding-cad/architecture-validator";
 import { pointsSystemFixture } from "../projection/points-system-fixture.js";
 import { CandidateFlow } from "./candidate-flow.js";
 import { WorkspaceShellController } from "./workspace-shell-controller.js";
+import { toSvelteFlowProjection } from "../../layout/adapters/svelte-flow-adapter.js";
 
 function setup(invalid = false) {
   const review = new ArchitectureReview();
@@ -251,5 +252,60 @@ describe("Step 5.3 Review Integration & Lifecycle Hardening (Ghost & Stale Propo
     controller.rejectCandidate("Reject invalid candidate");
     expect(controller.state().proposal?.status).toBe("rejected");
   });
+
+  it("clarifies 'retaining candidate in memory on rejection': cannot revive rejected proposal, ghost disappears without reappearing, and lock releases for subsequent edits", async () => {
+    const { controller } = setup();
+    await controller.executeCommand({
+      type: "add-component",
+      component: { id: "audit-svc", name: "AuditService", type: "service", capabilities: ["audit"] }
+    });
+
+    const pending = controller.state();
+    expect(pending.proposal?.status).toBe("draft");
+    expect(pending.candidate?.architecture.components.some((c) => c.id === "audit-svc")).toBe(true);
+
+    // 1. Projecting pending proposal yields Ghost node
+    const projection = controller.projection()!;
+    const layout = controller.layout()!;
+    const pendingProjection = toSvelteFlowProjection(projection, layout, undefined, { ghostProposal: pending.proposal });
+    expect(pendingProjection.nodes.some((n) => n.id === "ghost:audit-svc")).toBe(true);
+
+    // 2. Reject candidate
+    controller.rejectCandidate("AuditService is deferred to V2.");
+    const rejectedState = controller.state();
+
+    // 2a. Candidate is retained in memory for inspection/audit
+    expect(rejectedState.candidate).toBeDefined();
+    expect(rejectedState.candidate?.architecture.components.some((c) => c.id === "audit-svc")).toBe(true);
+    expect(rejectedState.proposal?.status).toBe("rejected");
+
+    // 2b. Ghost disappears and does NOT reappear
+    const rejectedProjection = toSvelteFlowProjection(projection, layout, undefined, { ghostProposal: rejectedState.proposal });
+    expect(rejectedProjection.nodes.some((n) => n.id.startsWith("ghost:"))).toBe(false);
+
+    // 2c. User cannot revive rejected proposal: calling acceptCandidate has no effect
+    await controller.acceptCandidate("Attempting to revive rejected proposal");
+    expect(controller.state().proposal?.status).toBe("rejected");
+    expect(controller.state().accepted.architecture.components.some((c) => c.id === "audit-svc")).toBe(false);
+
+    // 2d. Single-proposal lock is released: user can now propose a new edit
+    await controller.executeCommand({
+      type: "add-component",
+      component: { id: "metrics-svc", name: "MetricsService", type: "service", capabilities: ["metrics"] }
+    });
+
+    const newPending = controller.state();
+    expect(newPending.status).toBe("ready");
+    expect(newPending.proposal?.status).toBe("draft");
+    // Old rejected candidate is superseded by new candidate
+    expect(newPending.candidate?.architecture.components.some((c) => c.id === "metrics-svc")).toBe(true);
+    expect(newPending.candidate?.architecture.components.some((c) => c.id === "audit-svc")).toBe(false);
+
+    // Only new Ghost appears
+    const newProjection = toSvelteFlowProjection(controller.projection()!, controller.layout()!, undefined, { ghostProposal: newPending.proposal });
+    expect(newProjection.nodes.some((n) => n.id === "ghost:metrics-svc")).toBe(true);
+    expect(newProjection.nodes.some((n) => n.id === "ghost:audit-svc")).toBe(false);
+  });
 });
+
 

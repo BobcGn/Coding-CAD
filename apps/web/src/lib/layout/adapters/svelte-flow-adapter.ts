@@ -190,16 +190,38 @@ export function toSvelteFlowProjection(
     });
 
     for (const added of diff.components.added) {
-      const relatedFormalIds = (diff.connections.added ?? [])
-        .filter((c) => c.from === added.id || c.to === added.id)
-        .map((c) => (c.from === added.id ? c.to : c.from))
-        .filter((id) => formalRects.some((r) => r.id === id));
+      const relatedFormalIds = [
+        ...(diff.connections.added ?? [])
+          .filter((c) => c.from === added.id || c.to === added.id)
+          .map((c) => (c.from === added.id ? c.to : c.from)),
+        ...(added.tags ?? [])
+          .filter((t) => t.startsWith("anchor:") || t.startsWith("related:"))
+          .map((t) => t.replace(/^(anchor|related):/, ""))
+      ].filter((id) => formalRects.some((r) => r.id === id));
+
+      let targetContainerId: string | undefined;
+      for (const tag of added.tags ?? []) {
+        const match = /^(module|domain):(.+)$/.exec(tag.trim());
+        if (match) {
+          const candidateId = `group:${match[1]}:${match[2]!.trim()}`;
+          if (formalRects.some((r) => r.id === candidateId && r.kind === "group")) {
+            targetContainerId = candidateId;
+            break;
+          }
+        }
+      }
+      if (!targetContainerId && added.type !== undefined && ["database", "storage", "cache", "queue"].includes(added.type)) {
+        if (formalRects.some((r) => r.id === "group:infrastructure" && r.kind === "group")) {
+          targetContainerId = "group:infrastructure";
+        }
+      }
 
       const placement = calculateGhostPlacement({
         ghostId: added.id,
         relatedComponentIds: relatedFormalIds,
         formalNodes: formalRects,
-        direction: result.direction
+        direction: result.direction,
+        targetContainerId
       });
 
       const parentPos = placement.parentId === undefined ? undefined

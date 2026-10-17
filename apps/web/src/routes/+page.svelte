@@ -370,7 +370,25 @@
     if (import.meta.env.DEV || import.meta.env.MODE === "layout-acceptance") {
       void import("$lib/layout/testing/layout-acceptance.js").then(({ installLayoutAcceptance }) => installLayoutAcceptance(next));
     }
-    (window as unknown as { __coding_cad_controller__?: unknown }).__coding_cad_controller__ = next;
+    const pageWindow = window as unknown as Record<string, unknown>;
+    pageWindow.__coding_cad_controller__ = next;
+    pageWindow.__coding_cad_sync__ = syncFromController;
+    pageWindow.__coding_cad_execute_command__ = async (cmd: ArchitectureCommand) => {
+      await next.executeCommand(cmd);
+      syncFromController();
+    };
+    pageWindow.__coding_cad_accept__ = async (rationale: string) => {
+      await next.acceptCandidate(rationale);
+      syncFromController();
+    };
+    pageWindow.__coding_cad_reject__ = (rationale: string) => {
+      next.rejectCandidate(rationale);
+      syncFromController();
+    };
+    pageWindow.__coding_cad_set_architecture__ = async (project: ArchitectureProject) => {
+      await next.updateAcceptedArchitecture(project);
+      syncFromController();
+    };
     const handleExternal = async (e: Event) => {
       const customEvent = e as CustomEvent<ArchitectureProject>;
       if (customEvent.detail && next) {

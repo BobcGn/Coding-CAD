@@ -1,0 +1,155 @@
+{
+  "layoutMode": "dev",
+  "timestamp": "2026-10-17T11:26:25.979Z",
+  "records": [
+    {
+      "fixtureName": "Greenfield (Points System)",
+      "proposalId": "cc2fda95-cb9f-49aa-9b30-972af1f0c240",
+      "componentId": "audit-svc",
+      "componentName": "AuditService",
+      "reasonCode": "adjacent-anchor",
+      "anchorId": "ledger",
+      "ghostPos": {
+        "x": 512,
+        "y": 236
+      },
+      "distanceToAnchor": 257.7,
+      "finalPos": {
+        "x": 24,
+        "y": 236
+      },
+      "displacement": 488,
+      "preAcceptGhostOverlaps": 0,
+      "postAcceptPeerOverlaps": 0,
+      "postAcceptContainmentFailures": 0,
+      "solverSource": "elk",
+      "unaffectedP95": 0,
+      "unaffectedMax": 0,
+      "withinBudget": true
+    },
+    {
+      "fixtureName": "Greenfield (Points System)",
+      "proposalId": "2794164d-80bb-465a-8e30-2f94b7afb5c6",
+      "componentId": "payment-gw",
+      "componentName": "PaymentGateway",
+      "reasonCode": "adjacent-anchor",
+      "anchorId": "gateway",
+      "ghostPos": {
+        "x": 252,
+        "y": 236
+      },
+      "distanceToAnchor": 257.7,
+      "finalPos": {
+        "x": 24,
+        "y": 236
+      },
+      "displacement": 228,
+      "preAcceptGhostOverlaps": 0,
+      "postAcceptPeerOverlaps": 0,
+      "postAcceptContainmentFailures": 0,
+      "solverSource": "elk",
+      "unaffectedP95": 0,
+      "unaffectedMax": 0,
+      "withinBudget": true
+    },
+    {
+      "fixtureName": "Greenfield (Points System)",
+      "proposalId": "3d6dd06c-46a8-412c-946b-e88a4c414842",
+      "componentId": "redis-cache",
+      "componentName": "RedisCache",
+      "reasonCode": "container-full-exterior",
+      "anchorId": "group:infrastructure",
+      "ghostPos": {
+        "x": 801,
+        "y": 24
+      },
+      "distanceToAnchor": 252,
+      "finalPos": {
+        "x": 561,
+        "y": 248
+      },
+      "displacement": 328.3,
+      "preAcceptGhostOverlaps": 0,
+      "postAcceptPeerOverlaps": 0,
+      "postAcceptContainmentFailures": 0,
+      "solverSource": "elk",
+      "unaffectedP95": 0,
+      "unaffectedMax": 0,
+      "withinBudget": true,
+      "notice": "所属容器 'group:infrastructure' 内部无可用空间，Ghost 放置于容器外侧"
+    },
+    {
+      "fixtureName": "Coding-CAD (Medium Baseline)",
+      "proposalId": "063ee7b3-6858-432e-8b74-4ddc39b48fd7",
+      "componentId": "telemetry-svc",
+      "componentName": "Telemetry",
+      "reasonCode": "adjacent-anchor",
+      "anchorId": "server",
+      "ghostPos": {
+        "x": 1764,
+        "y": 306
+      },
+      "distanceToAnchor": 967.5,
+      "finalPos": {
+        "x": 24,
+        "y": 153
+      },
+      "displacement": 1746.7,
+      "preAcceptGhostOverlaps": 0,
+      "postAcceptPeerOverlaps": 0,
+      "postAcceptContainmentFailures": 0,
+      "solverSource": "elk",
+      "unaffectedP95": 0,
+      "unaffectedMax": 0,
+      "withinBudget": true
+    },
+    {
+      "fixtureName": "Coding-CAD (Medium Baseline)",
+      "proposalId": "18a9d48b-c5df-410c-beb4-3648547e1cc2",
+      "componentId": "architecture-doc-gen",
+      "componentName": "DocGen",
+      "reasonCode": "adjacent-anchor",
+      "anchorId": "architecture-ir",
+      "ghostPos": {
+        "x": 1812,
+        "y": 208
+      },
+      "distanceToAnchor": 228,
+      "finalPos": {
+        "x": 24,
+        "y": 153
+      },
+      "displacement": 1788.8,
+      "preAcceptGhostOverlaps": 0,
+      "postAcceptPeerOverlaps": 0,
+      "postAcceptContainmentFailures": 0,
+      "solverSource": "elk",
+      "unaffectedP95": 0,
+      "unaffectedMax": 0,
+      "withinBudget": true
+    },
+    {
+      "fixtureName": "Coding-CAD (Medium Baseline)",
+      "proposalId": "e60737aa-68f1-4335-9038-f7fc271d2c22",
+      "componentId": "isolated-mock",
+      "componentName": "IsolatedMock",
+      "reasonCode": "fallback-global",
+      "ghostPos": {
+        "x": 1812,
+        "y": 35
+      },
+      "finalPos": {
+        "x": 24,
+        "y": 153
+      },
+      "displacement": 1791.9,
+      "preAcceptGhostOverlaps": 0,
+      "postAcceptPeerOverlaps": 0,
+      "postAcceptContainmentFailures": 0,
+      "solverSource": "elk",
+      "unaffectedP95": 0,
+      "unaffectedMax": 0,
+      "withinBudget": true
+    }
+  ]
+}

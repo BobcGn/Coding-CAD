@@ -2,8 +2,8 @@
 
 分支 / Branch: `codex/phase-5-ghost-handoff`  
 目标基线 / Target Baseline: `c060ffb` (main)  
-当前状态 / Current Status: 进行中（已完成全仓 gitignore 完善、步骤 5.0 设计备忘录、步骤 5.1 Execution Handoff 产品化、步骤 5.1.1 订正与补证据，以及步骤 5.2 Proposal 与 Ghost 投影；即将进入步骤 5.3 Review 接入与生命周期强化） / IN PROGRESS (Gitignore perfection, Step 5.0 design memo, Step 5.1 Execution Handoff, Step 5.1.1 corrections, and Step 5.2 Proposal & Ghost projection completed; proceeding to Step 5.3 Review Integration)  
-退出结论 / Exit Conclusion: **未完成（阶段 5 进行中，已完成 Ghost 投影与测试，待完成步骤 5.3–5.5 审核接入与增量布局指标） / IN PROGRESS (Ghost projection and invariant tests verified, awaiting Steps 5.3–5.5)**
+当前状态 / Current Status: 有条件满足（已完成步骤 5.0~5.6 全流程开发、订正、测试与真实浏览器基准测试；进入步骤 5.7 Ghost 预测位置设计备忘录） / CONDITIONALLY SATISFIED (Steps 5.0-5.6 complete, corrections, tests, and real browser benchmarks verified; proceeding to Step 5.7 design memo)  
+退出结论 / Exit Conclusion: **有条件满足 / CONDITIONALLY SATISFIED**（阶段 5 范围内全部交付物与门禁均已完成并验证，待用户处理事项裁定） / CONDITIONALLY SATISFIED (All deliverables and gates within Phase 5 scope verified, pending user action items).
 
 ---
 
@@ -184,26 +184,33 @@
 
 | 步骤 / Step | 提交哈希 / Commit | 提交信息 / Message | 回退命令 / Revert Command | 连带影响 / Cascade Impact |
 | --- | --- | --- | --- | --- |
-| 0 | `7400cd4` | `chore(git): perfect gitignore rules across workspace packages and apps` | `git revert 7400cd4` | 回退各目录 `.gitignore`，可能导致本地构建产生未跟踪文件（范围外附带改动） |
+| 范围外附带改动 | `7400cd4` | `chore(git): perfect gitignore rules across workspace packages and apps` | `git revert 7400cd4` | 回退各目录 `.gitignore`，可能导致本地构建产生未跟踪文件 |
 | 5.0 | `77e446a` | `docs(phase-5): add phase 5 design memo and initialize PR draft` | `git revert 77e446a` | 回退备忘录与 PR 草稿初始版 |
 | 5.1 | `2797f9c` | `feat(handoff): implement execution handoff preview, copy, export, and provenance tracking` | `git revert 2797f9c` | 移除 Execution Handoff 产品化能力、Web 依赖及对应 E2E/单元测试，恢复合规基线连接 |
+| 5.1 (PR) | `3f8d76a` | `docs(pr): update PR draft with Step 5.1 commit hash and rollback crosswalk` | `git revert 3f8d76a` | 同步回退 PR 草稿中步骤 5.1 提交哈希 |
 | 5.1.1 | `f6ea675` | `test(handoff): correct baseline provenance, add copy fallback, and enforce canonical snapshot key` | `git revert f6ea675` | 回退 5.1.1 补齐测试与快照算法规范化 |
 | 5.2 | `cb8be8e` | `feat(ghost): implement proposal ghost projection, placement adapter, and view markers` | `git revert cb8be8e` | 移除 Ghost 放置算法、Svelte Flow Ghost 投影与编辑标记，恢复无 Ghost 的直接候选状态 |
+| 5.2 (PR) | `baba8c0` | `docs(pr): update PR draft with Step 5.2 commit hash and rollback crosswalk` | `git revert baba8c0` | 同步回退 PR 草稿中步骤 5.2 提交哈希 |
 | 5.3 | `9971e4d` | `feat(review): harden review gate with ghost accept/reject, stale proposals, and single-proposal lock` | `git revert 9971e4d` | 移除 Review 接入硬化、过期提案标记与单提案严格防御 |
+| 5.3 (PR) | `b94e0fb` | `docs(pr): update PR draft with Step 5.3 commit hash` | `git revert b94e0fb` | 同步回退 PR 草稿中步骤 5.3 提交哈希 |
 | 5.4 | `7120770` | `test(layout): verify incremental layout stability budget and measure ghost displacement` | `git revert 7120770` | 移除增量布局稳定性指标测试与位移度量套件 |
-| 5.5 | `d529390` | `docs(phase-5): add phase 5 exit report and update execution plan` | `git revert d529390` | 回退阶段 5 退出报告与主计划状态 |
+| 5.4 (PR) | `634c355` | `docs(pr): update PR draft with Step 5.4 commit hash` | `git revert 634c355` | 同步回退 PR 草稿中步骤 5.4 提交哈希 |
+| 5.5 | `d529390` | `docs(phase-5): add phase 5 exit report and update execution plan` | `git revert d529390` | 回退阶段 5 初始退出报告 |
+| 5.5 (PR) | `71e76d0` | `docs(pr): update PR draft with Step 5.5 commit hash and final rollback crosswalk` | `git revert 71e76d0` | 同步回退 PR 草稿中步骤 5.5 提交哈希 |
+| 5.6 | *(Pending)* | `test(e2e): add real browser benchmarks for ghost placement and correct exit status` | `git revert <5.6-hash>` | 移除浏览器 E2E benchmark 测试套件与订正报告 |
 
 ### 逆序回退分析 / Cascading Rollback Analysis
 
 若需回退本阶段提交，请严格按照逆序操作：
-1. **回退 5.5** (`git revert HEAD`)：移除阶段 5 退出报告与状态标记；
-2. **回退 5.4** (`git revert 7120770`)：移除增量布局稳定性测试与位移度量套件，不影响正式架构与 Ghost 交互；
-3. **回退 5.3** (`git revert 9971e4d`)：移除过期提案检测、单提案严格阻断与 Review 接入硬化，恢复步骤 5.2 的基本 Ghost 投影；
-4. **回退 5.2** (`git revert cb8be8e`)：安全移除 Ghost 投影、局部放置纯函数与待删除/待变更视觉标记，不影响正式架构与 Review 状态机；
-5. **回退 5.1.1** (`git revert f6ea675`)：恢复 5.1 初始快照实现与测试；
-6. **回退 5.1** (`git revert 2797f9c`)：将安全移除 Handoff 弹窗、对焦控制与导出的全部功能代码及测试，不会损坏底层已有的 Greenfield/Brownfield/Review 核心逻辑；
-7. **回退 5.0** (`git revert 77e446a`)：若在 5.1 未回退时强行回退 5.0，会导致 PR 草稿和设计备忘录丢失，使得 5.1 的架构依据与决策索引失效；
-8. **回退 0** (`git revert 7400cd4`)：若在后续步骤未回退时单独回退，会导致 `.svelte-kit/`、`.turbo/` 等产生未跟踪文件污染工作区，但不影响业务代码运行。
+1. **回退 5.6** (`git revert <5.6-hash>`)：移除真实浏览器基准测试套件与订正报告；
+2. **回退 5.5** (`git revert 71e76d0` -> `git revert d529390`)：移除阶段 5 退出报告与状态标记；
+3. **回退 5.4** (`git revert 634c355` -> `git revert 7120770`)：移除增量布局稳定性测试与位移度量套件，不影响正式架构与 Ghost 交互；
+4. **回退 5.3** (`git revert b94e0fb` -> `git revert 9971e4d`)：移除过期提案检测、单提案严格阻断与 Review 接入硬化，恢复步骤 5.2 的基本 Ghost 投影；
+5. **回退 5.2** (`git revert baba8c0` -> `git revert cb8be8e`)：安全移除 Ghost 投影、局部放置纯函数与待删除/待变更视觉标记，不影响正式架构与 Review 状态机；
+6. **回退 5.1.1** (`git revert f6ea675`)：恢复 5.1 初始快照实现与测试；
+7. **回退 5.1** (`git revert 3f8d76a` -> `git revert 2797f9c`)：将安全移除 Handoff 弹窗、对焦控制与导出的全部功能代码及测试，不会损坏底层已有的 Greenfield/Brownfield/Review 核心逻辑；
+8. **回退 5.0** (`git revert 77e446a`)：若在 5.1 未回退时强行回退 5.0，会导致 PR 草稿和设计备忘录丢失；
+9. **回退范围外附带改动** (`git revert 7400cd4`)：若在后续步骤未回退时单独回退，会导致 `.svelte-kit/`、`.turbo/` 等产生未跟踪文件污染工作区，但不影响业务代码运行。
 
 
 
