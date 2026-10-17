@@ -1,0 +1,724 @@
+{
+  "note": "由 AI 抽样核对, 非独立人工标注 (Seed: 42)",
+  "target": "/Users/bobcgn/AAA_Codings/Personal_Projects/skill-central",
+  "precisionSample": [
+    {
+      "index": 1,
+      "id": "protocol-service-to-schema-service",
+      "from": "protocol-service",
+      "to": "schema-service",
+      "description": "src/protocol/tools.ts imports ../schema/rule.js resolving to src/schema.",
+      "valid": true
+    },
+    {
+      "index": 2,
+      "id": "scheduler-service-to-schema-service",
+      "from": "scheduler-service",
+      "to": "schema-service",
+      "description": "src/scheduler/workflow-scheduler.ts imports ../schema/universal-skill.js resolving to src/schema.",
+      "valid": true
+    },
+    {
+      "index": 3,
+      "id": "commands-service-to-registry-service",
+      "from": "commands-service",
+      "to": "registry-service",
+      "description": "src/commands/rules.ts imports ../registry/rule-query.js resolving to src/registry.",
+      "valid": true
+    },
+    {
+      "index": 4,
+      "id": "scheduler-service-to-core-service",
+      "from": "scheduler-service",
+      "to": "core-service",
+      "description": "src/scheduler/workflow-scheduler.ts imports ../core/engine.js resolving to src/core.",
+      "valid": true
+    },
+    {
+      "index": 5,
+      "id": "web-service-to-ide-detection-service",
+      "from": "web-service",
+      "to": "ide-detection-service",
+      "description": "src/web/server.ts imports ../ide-detection/types.js resolving to src/ide-detection.",
+      "valid": true
+    },
+    {
+      "index": 6,
+      "id": "web-service-to-local-store-service",
+      "from": "web-service",
+      "to": "local-store-service",
+      "description": "src/web/server.ts imports ../local-store/app-state.js resolving to src/local-store.",
+      "valid": true
+    },
+    {
+      "index": 7,
+      "id": "commands-service-to-auth-service",
+      "from": "commands-service",
+      "to": "auth-service",
+      "description": "src/commands/sync.ts imports ../auth/github-config.js resolving to src/auth.",
+      "valid": true
+    },
+    {
+      "index": 8,
+      "id": "sync-service-to-local-store-service",
+      "from": "sync-service",
+      "to": "local-store-service",
+      "description": "src/sync/sync-apply.ts imports ../local-store/app-state.js resolving to src/local-store.",
+      "valid": true
+    },
+    {
+      "index": 9,
+      "id": "compiler-service-to-core-service",
+      "from": "compiler-service",
+      "to": "core-service",
+      "description": "src/compiler/prompt-bundle.ts imports ../core/engine.js resolving to src/core.",
+      "valid": true
+    },
+    {
+      "index": 10,
+      "id": "web-service-to-adapters-service",
+      "from": "web-service",
+      "to": "adapters-service",
+      "description": "src/web/server.ts imports ../adapters/registry.js resolving to src/adapters.",
+      "valid": true
+    },
+    {
+      "index": 11,
+      "id": "desktop-service-to-runtime-service",
+      "from": "desktop-service",
+      "to": "runtime-service",
+      "description": "src/desktop/main.ts imports ../runtime/manager.js resolving to src/runtime.",
+      "valid": true
+    },
+    {
+      "index": 12,
+      "id": "health-service-to-core-service",
+      "from": "health-service",
+      "to": "core-service",
+      "description": "src/health/ide-connection.ts imports ../core/engine.js resolving to src/core.",
+      "valid": true
+    },
+    {
+      "index": 13,
+      "id": "web-service-to-sync-service",
+      "from": "web-service",
+      "to": "sync-service",
+      "description": "src/web/server.ts imports ../sync/sync-apply.js resolving to src/sync.",
+      "valid": true
+    },
+    {
+      "index": 14,
+      "id": "desktop-service-to-ide-detection-service",
+      "from": "desktop-service",
+      "to": "ide-detection-service",
+      "description": "src/desktop/mcp-launch.ts imports ../ide-detection/types.js resolving to src/ide-detection.",
+      "valid": true
+    },
+    {
+      "index": 15,
+      "id": "commands-service-to-compiler-service",
+      "from": "commands-service",
+      "to": "compiler-service",
+      "description": "src/commands/export.ts imports ../compiler/export-transaction.js resolving to src/compiler.",
+      "valid": true
+    },
+    {
+      "index": 16,
+      "id": "web-service-to-connect-service",
+      "from": "web-service",
+      "to": "connect-service",
+      "description": "src/web/server.ts imports ../connect/connect-plan.js resolving to src/connect.",
+      "valid": true
+    },
+    {
+      "index": 17,
+      "id": "web-service-to-runtime-service",
+      "from": "web-service",
+      "to": "runtime-service",
+      "description": "src/web/server.ts imports ../runtime/manager.js resolving to src/runtime.",
+      "valid": true
+    },
+    {
+      "index": 18,
+      "id": "core-service-to-schema-service",
+      "from": "core-service",
+      "to": "schema-service",
+      "description": "src/core/rule-engine.ts imports ../schema/rule.js resolving to src/schema.",
+      "valid": true
+    },
+    {
+      "index": 19,
+      "id": "startup-service-to-connect-service",
+      "from": "startup-service",
+      "to": "connect-service",
+      "description": "src/startup/reconciler.ts imports ../connect/types.js resolving to src/connect.",
+      "valid": true
+    },
+    {
+      "index": 20,
+      "id": "sync-service-to-storage-service",
+      "from": "sync-service",
+      "to": "storage-service",
+      "description": "src/sync/sync-engine.ts imports ../storage/reader.js resolving to src/storage.",
+      "valid": true
+    },
+    {
+      "index": 21,
+      "id": "web-service-to-storage-service",
+      "from": "web-service",
+      "to": "storage-service",
+      "description": "src/web/server.ts imports ../storage/config.js resolving to src/storage.",
+      "valid": true
+    },
+    {
+      "index": 22,
+      "id": "protocol-service-to-local-store-service",
+      "from": "protocol-service",
+      "to": "local-store-service",
+      "description": "src/protocol/resources.ts imports ../local-store/app-state.js resolving to src/local-store.",
+      "valid": true
+    },
+    {
+      "index": 23,
+      "id": "registry-service-to-core-service",
+      "from": "registry-service",
+      "to": "core-service",
+      "description": "src/registry/query.ts imports ../core/engine.js resolving to src/core.",
+      "valid": true
+    },
+    {
+      "index": 24,
+      "id": "web-service-to-core-service",
+      "from": "web-service",
+      "to": "core-service",
+      "description": "src/web/server.ts imports ../core/engine.js resolving to src/core.",
+      "valid": true
+    },
+    {
+      "index": 25,
+      "id": "web-service-to-compiler-service",
+      "from": "web-service",
+      "to": "compiler-service",
+      "description": "src/web/server.ts imports ../compiler/compiler.js resolving to src/compiler.",
+      "valid": true
+    },
+    {
+      "index": 26,
+      "id": "commands-service-to-sync-service",
+      "from": "commands-service",
+      "to": "sync-service",
+      "description": "src/commands/sync.ts imports ../sync/sync-apply.js resolving to src/sync.",
+      "valid": true
+    },
+    {
+      "index": 27,
+      "id": "web-service-to-startup-service",
+      "from": "web-service",
+      "to": "startup-service",
+      "description": "src/web/server.ts imports ../startup/reconciler.js resolving to src/startup.",
+      "valid": true
+    },
+    {
+      "index": 28,
+      "id": "desktop-service-to-auth-service",
+      "from": "desktop-service",
+      "to": "auth-service",
+      "description": "src/desktop/main.ts imports ../auth/token-store.js resolving to src/auth.",
+      "valid": true
+    },
+    {
+      "index": 29,
+      "id": "web-service-to-update-service",
+      "from": "web-service",
+      "to": "update-service",
+      "description": "src/web/server.ts imports ../update/types.js resolving to src/update.",
+      "valid": true
+    },
+    {
+      "index": 30,
+      "id": "commands-service-to-connect-service",
+      "from": "commands-service",
+      "to": "connect-service",
+      "description": "src/commands/register.ts imports ../connect/connect-plan.js resolving to src/connect.",
+      "valid": true
+    }
+  ],
+  "recallSample": [
+    {
+      "file": "src/commands/connect.ts",
+      "line": 15,
+      "importPath": "../ide-detection/registry.js",
+      "text": "import { isIdeTarget, SUPPORTED_IDES } from \"../ide-detection/registry.js\";"
+    },
+    {
+      "file": "src/web/mcp-http.ts",
+      "line": 15,
+      "importPath": "../core/engine.js",
+      "text": "import type { SkillEngine } from \"../core/engine.js\";"
+    },
+    {
+      "file": "src/protocol/tools.ts",
+      "line": 14,
+      "importPath": "../schema/rule.js",
+      "text": "import type { RuleSeverity } from \"../schema/rule.js\";"
+    },
+    {
+      "file": "src/commands/reverse-output.ts",
+      "line": 15,
+      "importPath": "../storage/config.js",
+      "text": "import { loadConfig } from \"../storage/config.js\";"
+    },
+    {
+      "file": "src/mcp.ts",
+      "line": 11,
+      "importPath": "./core/rule-engine.js",
+      "text": "import { RuleEngine } from \"./core/rule-engine.js\";"
+    },
+    {
+      "file": "src/commands/install.ts",
+      "line": 20,
+      "importPath": "./lockfile.js",
+      "text": "import { inferSourceKind, readLock, writeLock, addEntry, findById } from \"./lockfile.js\";"
+    },
+    {
+      "file": "src/index.ts",
+      "line": 49,
+      "importPath": "./commands/session.js",
+      "text": "import { cmdSession } from \"./commands/session.js\";"
+    },
+    {
+      "file": "src/storage/config.ts",
+      "line": 19,
+      "importPath": "./schemas.js",
+      "text": "import type { SkillLayer } from \"./schemas.js\";"
+    },
+    {
+      "file": "src/commands/install.ts",
+      "line": 24,
+      "importPath": "../web/backup.js",
+      "text": "import { backupBeforeWrite } from \"../web/backup.js\";"
+    },
+    {
+      "file": "src/health/ide-connection.ts",
+      "line": 29,
+      "importPath": "../core/engine.js",
+      "text": "import type { SkillEngine } from \"../core/engine.js\";"
+    },
+    {
+      "file": "src/desktop/main.ts",
+      "line": 29,
+      "importPath": "../app-metadata.js",
+      "text": "import { PACKAGED_GITHUB_OAUTH_CLIENT_ID } from \"../app-metadata.js\";"
+    },
+    {
+      "file": "src/commands/connect.ts",
+      "line": 13,
+      "importPath": "../core/engine.js",
+      "text": "import { SkillEngine } from \"../core/engine.js\";"
+    },
+    {
+      "file": "src/adapters/registry.ts",
+      "line": 15,
+      "importPath": "./types.js",
+      "text": "import type { CompileTarget, TargetAdapter } from \"./types.js\";"
+    },
+    {
+      "file": "src/commands/show.ts",
+      "line": 8,
+      "importPath": "../core/engine.js",
+      "text": "import { SkillEngine } from \"../core/engine.js\";"
+    },
+    {
+      "file": "src/commands/export.ts",
+      "line": 16,
+      "importPath": "../adapters/types.js",
+      "text": "import type { CompileTarget } from \"../adapters/types.js\";"
+    },
+    {
+      "file": "src/index.ts",
+      "line": 45,
+      "importPath": "./commands/compile.js",
+      "text": "import { cmdCompile } from \"./commands/compile.js\";"
+    },
+    {
+      "file": "src/adapters/cursor.ts",
+      "line": 17,
+      "importPath": "./types.js",
+      "text": "import type { AdapterArtifact, CapabilitySupport, TargetAdapter, TargetCapability } from \"./types.js\";"
+    },
+    {
+      "file": "src/compiler/degradation.ts",
+      "line": 15,
+      "importPath": "./types.js",
+      "text": "import type { DegradationReport } from \"./types.js\";"
+    },
+    {
+      "file": "src/index.ts",
+      "line": 35,
+      "importPath": "./commands/validate.js",
+      "text": "import { cmdValidate } from \"./commands/validate.js\";"
+    },
+    {
+      "file": "src/mcp.ts",
+      "line": 13,
+      "importPath": "./storage/config.js",
+      "text": "import { loadConfig } from \"./storage/config.js\";"
+    },
+    {
+      "file": "src/desktop/shutdown.ts",
+      "line": 9,
+      "importPath": "../web/server.js",
+      "text": "import type { RuntimeController } from \"../web/server.js\";"
+    },
+    {
+      "file": "src/commands/export.ts",
+      "line": 17,
+      "importPath": "../compiler/compiler.js",
+      "text": "import { compileIntentDryRun } from \"../compiler/compiler.js\";"
+    },
+    {
+      "file": "src/index.ts",
+      "line": 31,
+      "importPath": "./commands/add.js",
+      "text": "import { cmdAdd } from \"./commands/add.js\";"
+    },
+    {
+      "file": "src/compiler/compiler.ts",
+      "line": 15,
+      "importPath": "../adapters/registry.js",
+      "text": "import { getTargetAdapter } from \"../adapters/registry.js\";"
+    },
+    {
+      "file": "src/connect/connect-plan.ts",
+      "line": 30,
+      "importPath": "../health/ide-connection.js",
+      "text": "import { checkIdeConnectionHealth } from \"../health/ide-connection.js\";"
+    },
+    {
+      "file": "src/commands/uninstall.ts",
+      "line": 12,
+      "importPath": "./lockfile.js",
+      "text": "import { readLock, writeLock, findById, removeEntry } from \"./lockfile.js\";"
+    },
+    {
+      "file": "src/commands/workflow.ts",
+      "line": 17,
+      "importPath": "../storage/config.js",
+      "text": "import { loadConfig } from \"../storage/config.js\";"
+    },
+    {
+      "file": "src/index.ts",
+      "line": 47,
+      "importPath": "./commands/connect.js",
+      "text": "import { cmdConnect } from \"./commands/connect.js\";"
+    },
+    {
+      "file": "src/commands/remove.ts",
+      "line": 11,
+      "importPath": "../storage/reader.js",
+      "text": "import { readAllLayers } from \"../storage/reader.js\";"
+    },
+    {
+      "file": "src/adapters/generic-mcp.ts",
+      "line": 10,
+      "importPath": "./capability-loader.js",
+      "text": "import { loadTargetCapabilities, supportFromCapabilities } from \"./capability-loader.js\";"
+    }
+  ],
+  "verifiedRecall": [
+    {
+      "file": "src/commands/connect.ts",
+      "line": 15,
+      "importPath": "../ide-detection/registry.js",
+      "text": "import { isIdeTarget, SUPPORTED_IDES } from \"../ide-detection/registry.js\";",
+      "fromModule": "commands-service",
+      "toModule": "ide-detection-service",
+      "edgeKey": "commands-service->ide-detection-service",
+      "extracted": true
+    },
+    {
+      "file": "src/web/mcp-http.ts",
+      "line": 15,
+      "importPath": "../core/engine.js",
+      "text": "import type { SkillEngine } from \"../core/engine.js\";",
+      "fromModule": "web-service",
+      "toModule": "core-service",
+      "edgeKey": "web-service->core-service",
+      "extracted": true
+    },
+    {
+      "file": "src/protocol/tools.ts",
+      "line": 14,
+      "importPath": "../schema/rule.js",
+      "text": "import type { RuleSeverity } from \"../schema/rule.js\";",
+      "fromModule": "protocol-service",
+      "toModule": "schema-service",
+      "edgeKey": "protocol-service->schema-service",
+      "extracted": true
+    },
+    {
+      "file": "src/commands/reverse-output.ts",
+      "line": 15,
+      "importPath": "../storage/config.js",
+      "text": "import { loadConfig } from \"../storage/config.js\";",
+      "fromModule": "commands-service",
+      "toModule": "storage-service",
+      "edgeKey": "commands-service->storage-service",
+      "extracted": true
+    },
+    {
+      "file": "src/mcp.ts",
+      "line": 11,
+      "importPath": "./core/rule-engine.js",
+      "text": "import { RuleEngine } from \"./core/rule-engine.js\";",
+      "toModule": "core-service",
+      "edgeKey": "",
+      "extracted": false
+    },
+    {
+      "file": "src/commands/install.ts",
+      "line": 20,
+      "importPath": "./lockfile.js",
+      "text": "import { inferSourceKind, readLock, writeLock, addEntry, findById } from \"./lockfile.js\";",
+      "fromModule": "commands-service",
+      "toModule": "commands-service",
+      "edgeKey": "(intra-module: commands-service)",
+      "extracted": true
+    },
+    {
+      "file": "src/index.ts",
+      "line": 49,
+      "importPath": "./commands/session.js",
+      "text": "import { cmdSession } from \"./commands/session.js\";",
+      "toModule": "commands-service",
+      "edgeKey": "",
+      "extracted": false
+    },
+    {
+      "file": "src/storage/config.ts",
+      "line": 19,
+      "importPath": "./schemas.js",
+      "text": "import type { SkillLayer } from \"./schemas.js\";",
+      "fromModule": "storage-service",
+      "toModule": "storage-service",
+      "edgeKey": "(intra-module: storage-service)",
+      "extracted": true
+    },
+    {
+      "file": "src/commands/install.ts",
+      "line": 24,
+      "importPath": "../web/backup.js",
+      "text": "import { backupBeforeWrite } from \"../web/backup.js\";",
+      "fromModule": "commands-service",
+      "toModule": "web-service",
+      "edgeKey": "commands-service->web-service",
+      "extracted": true
+    },
+    {
+      "file": "src/health/ide-connection.ts",
+      "line": 29,
+      "importPath": "../core/engine.js",
+      "text": "import type { SkillEngine } from \"../core/engine.js\";",
+      "fromModule": "health-service",
+      "toModule": "core-service",
+      "edgeKey": "health-service->core-service",
+      "extracted": true
+    },
+    {
+      "file": "src/desktop/main.ts",
+      "line": 29,
+      "importPath": "../app-metadata.js",
+      "text": "import { PACKAGED_GITHUB_OAUTH_CLIENT_ID } from \"../app-metadata.js\";",
+      "fromModule": "desktop-service",
+      "edgeKey": "",
+      "extracted": false
+    },
+    {
+      "file": "src/commands/connect.ts",
+      "line": 13,
+      "importPath": "../core/engine.js",
+      "text": "import { SkillEngine } from \"../core/engine.js\";",
+      "fromModule": "commands-service",
+      "toModule": "core-service",
+      "edgeKey": "commands-service->core-service",
+      "extracted": true
+    },
+    {
+      "file": "src/adapters/registry.ts",
+      "line": 15,
+      "importPath": "./types.js",
+      "text": "import type { CompileTarget, TargetAdapter } from \"./types.js\";",
+      "fromModule": "adapters-service",
+      "toModule": "adapters-service",
+      "edgeKey": "(intra-module: adapters-service)",
+      "extracted": true
+    },
+    {
+      "file": "src/commands/show.ts",
+      "line": 8,
+      "importPath": "../core/engine.js",
+      "text": "import { SkillEngine } from \"../core/engine.js\";",
+      "fromModule": "commands-service",
+      "toModule": "core-service",
+      "edgeKey": "commands-service->core-service",
+      "extracted": true
+    },
+    {
+      "file": "src/commands/export.ts",
+      "line": 16,
+      "importPath": "../adapters/types.js",
+      "text": "import type { CompileTarget } from \"../adapters/types.js\";",
+      "fromModule": "commands-service",
+      "toModule": "adapters-service",
+      "edgeKey": "commands-service->adapters-service",
+      "extracted": true
+    },
+    {
+      "file": "src/index.ts",
+      "line": 45,
+      "importPath": "./commands/compile.js",
+      "text": "import { cmdCompile } from \"./commands/compile.js\";",
+      "toModule": "commands-service",
+      "edgeKey": "",
+      "extracted": false
+    },
+    {
+      "file": "src/adapters/cursor.ts",
+      "line": 17,
+      "importPath": "./types.js",
+      "text": "import type { AdapterArtifact, CapabilitySupport, TargetAdapter, TargetCapability } from \"./types.js\";",
+      "fromModule": "adapters-service",
+      "toModule": "adapters-service",
+      "edgeKey": "(intra-module: adapters-service)",
+      "extracted": true
+    },
+    {
+      "file": "src/compiler/degradation.ts",
+      "line": 15,
+      "importPath": "./types.js",
+      "text": "import type { DegradationReport } from \"./types.js\";",
+      "fromModule": "compiler-service",
+      "toModule": "compiler-service",
+      "edgeKey": "(intra-module: compiler-service)",
+      "extracted": true
+    },
+    {
+      "file": "src/index.ts",
+      "line": 35,
+      "importPath": "./commands/validate.js",
+      "text": "import { cmdValidate } from \"./commands/validate.js\";",
+      "toModule": "commands-service",
+      "edgeKey": "",
+      "extracted": false
+    },
+    {
+      "file": "src/mcp.ts",
+      "line": 13,
+      "importPath": "./storage/config.js",
+      "text": "import { loadConfig } from \"./storage/config.js\";",
+      "toModule": "storage-service",
+      "edgeKey": "",
+      "extracted": false
+    },
+    {
+      "file": "src/desktop/shutdown.ts",
+      "line": 9,
+      "importPath": "../web/server.js",
+      "text": "import type { RuntimeController } from \"../web/server.js\";",
+      "fromModule": "desktop-service",
+      "toModule": "web-service",
+      "edgeKey": "desktop-service->web-service",
+      "extracted": true
+    },
+    {
+      "file": "src/commands/export.ts",
+      "line": 17,
+      "importPath": "../compiler/compiler.js",
+      "text": "import { compileIntentDryRun } from \"../compiler/compiler.js\";",
+      "fromModule": "commands-service",
+      "toModule": "compiler-service",
+      "edgeKey": "commands-service->compiler-service",
+      "extracted": true
+    },
+    {
+      "file": "src/index.ts",
+      "line": 31,
+      "importPath": "./commands/add.js",
+      "text": "import { cmdAdd } from \"./commands/add.js\";",
+      "toModule": "commands-service",
+      "edgeKey": "",
+      "extracted": false
+    },
+    {
+      "file": "src/compiler/compiler.ts",
+      "line": 15,
+      "importPath": "../adapters/registry.js",
+      "text": "import { getTargetAdapter } from \"../adapters/registry.js\";",
+      "fromModule": "compiler-service",
+      "toModule": "adapters-service",
+      "edgeKey": "compiler-service->adapters-service",
+      "extracted": true
+    },
+    {
+      "file": "src/connect/connect-plan.ts",
+      "line": 30,
+      "importPath": "../health/ide-connection.js",
+      "text": "import { checkIdeConnectionHealth } from \"../health/ide-connection.js\";",
+      "fromModule": "connect-service",
+      "toModule": "health-service",
+      "edgeKey": "connect-service->health-service",
+      "extracted": true
+    },
+    {
+      "file": "src/commands/uninstall.ts",
+      "line": 12,
+      "importPath": "./lockfile.js",
+      "text": "import { readLock, writeLock, findById, removeEntry } from \"./lockfile.js\";",
+      "fromModule": "commands-service",
+      "toModule": "commands-service",
+      "edgeKey": "(intra-module: commands-service)",
+      "extracted": true
+    },
+    {
+      "file": "src/commands/workflow.ts",
+      "line": 17,
+      "importPath": "../storage/config.js",
+      "text": "import { loadConfig } from \"../storage/config.js\";",
+      "fromModule": "commands-service",
+      "toModule": "storage-service",
+      "edgeKey": "commands-service->storage-service",
+      "extracted": true
+    },
+    {
+      "file": "src/index.ts",
+      "line": 47,
+      "importPath": "./commands/connect.js",
+      "text": "import { cmdConnect } from \"./commands/connect.js\";",
+      "toModule": "commands-service",
+      "edgeKey": "",
+      "extracted": false
+    },
+    {
+      "file": "src/commands/remove.ts",
+      "line": 11,
+      "importPath": "../storage/reader.js",
+      "text": "import { readAllLayers } from \"../storage/reader.js\";",
+      "fromModule": "commands-service",
+      "toModule": "storage-service",
+      "edgeKey": "commands-service->storage-service",
+      "extracted": true
+    },
+    {
+      "file": "src/adapters/generic-mcp.ts",
+      "line": 10,
+      "importPath": "./capability-loader.js",
+      "text": "import { loadTargetCapabilities, supportFromCapabilities } from \"./capability-loader.js\";",
+      "fromModule": "adapters-service",
+      "toModule": "adapters-service",
+      "edgeKey": "(intra-module: adapters-service)",
+      "extracted": true
+    }
+  ],
+  "recallRate": 0.7333333333333333,
+  "precisionRate": 1
+}

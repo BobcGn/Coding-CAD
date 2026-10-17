@@ -14,7 +14,8 @@
 - **步骤 3.1（补齐证据与安全加固）**：已完成并验证。落实功能开关 `CODING_CAD_ENABLE_REPOSITORY_ANALYSIS`、Host 头白名单（阻断 DNS rebinding）、Origin 校验、强制 Content-Type: application/json、软链接成环阻断与越界显式报告、超限资源截断负控（`server.test.ts` 19/19 项全数通过）；过滤 `.pnpm-store` 等构建缓存并限制 AST 解析仅针对脚本文件；更新设计文档与已知安全边界；刷新全量基准与边缘用例证据表（Coding-CAD 39 边 100% 召回，合成夹具 147 边全量检测）；真实 Chromium 浏览器测定 dev 与 preview 双模式下本仓库与 120 模块合成夹具实测数据（100% ELK 求解器，0 节点重叠，0 包含失败，400ms 内渲染完毕）。
 - **步骤 4（合规检查与双向问题导航）**：已完成并验证。编写 `docs/brownfield-compliance-design.md` 说明基线来源模型与 5 条规则在棕地下的物理边界；扩展 `packages/implementation-validator` 导出 `IssueTarget`、`resolveIssueTarget`、`isContractIssue` 与 `createImplementationModel`；修复 `technology-rule.ts` 漏报缺陷；建立 `coding-cad-expected.json` 与 `coding-cad-drifted.json` 双基线夹具并通过自动化验证；Web 端实现基线加载预设、未加载显式不可用横幅、角标渲染（`[无法验证]`、`[待人工确认]`）、画布受控自动展开折叠分组以及 Inspector 双向联动；Playwright E2E（`brownfield.spec.ts`）在 dev 与 preview 双模式全数通过，100% 验证 ELK 求解器。
 - **步骤 4.1（澄清与补齐证据）**：已完成并验证。更正技术合规规则在技术未检出时的语义为“无法验证（Analyzer 未检出技术）”（非技术违规）；在 Web 端实现 4 类分类计数器（错误、警告、待确认、无法验证）与专用角标；增加预设演示免责声明与非法路径错误横幅；补充 E2E 断言；交付四份关键证据文档（期望基线独立来源与边数 38->40 演进分析、L2 交叉校验文件路径与归因表、7 项边缘场景逐项矩阵、D-005 分组实现逐条合规核验表）。
-- **步骤 5–6**：待推进（步骤 5：全量验收与人工可理解性评估；步骤 6：退出报告与 PR 草稿定稿）。
+- **步骤 5（验收基线完善、复杂网状夹具与真实代码库实测）**：已完成并验证。建立 57 模块、14 包的中心网状合成夹具 `synthetic-hub-repo`（中心 Hub、环依赖、跨层调用、桥接器），实测展开 86 处交叉，应用 N > 50 初始折叠后降至 14 容器、34 交叉（降幅 60.5%）；对真实本地 TypeScript 代码库 `skill-central`（290 文件、23 模块、77 边、152 交叉、0 重叠、100% ELK）执行端到端分析，并完成种子 42 的 AI 抽样核对（Precision 100.0%、Recall 73.3%，诚实界定根级文件 L4 聚类边界）；交付人工可理解性评估材料 `docs/evaluation/p4-comprehension-eval.md`（带客观依据与标准答案，状态标注为待人工执行）；汇总全量物理指标于 `logs/validation/p4-browser/benchmark-report.md`。
+- **步骤 6**：待推进（退出报告与 PR 草稿定稿）。
 
 ## 已实现并验证 / Implemented and verified
 
@@ -31,11 +32,14 @@
 - 服务端安全隔离与负控测试（19/19 测试通过，覆盖 loopback、DNS rebinding、路径遍历拦截、凭据过滤、外部符号链接跳过、DTO 源码正文排除）；
 - 步骤 4 的期望架构基线比对与合规检查流程（显式基线加载、显式不可用状态横幅、契约规则“无法验证”透明标记、推断项与技术偏离“待人工确认”标注）；
 - 步骤 4 的画布与问题列表双向交互导航（点击问题自动展开已折叠父分组并聚焦节点；点击节点联动 Inspector 展示关联问题）；
-- 真实浏览器 Playwright E2E 验证（双模式下 `brownfield.spec.ts` 与 `brownfield-benchmarks.spec.ts` 全量通过，断言 ELK 求解器执行与零 fallback）。
+- 真实浏览器 Playwright E2E 验证（双模式下 `brownfield.spec.ts` 与 `brownfield-benchmarks.spec.ts` 全量通过，断言 ELK 求解器执行与零 fallback）；
+- 步骤 5 的复杂拓扑夹具（`synthetic-hub-repo` 57 模块、14 包）与 N > 50 折叠优化度量（86 交叉 -> 34 交叉，降幅 60.5%）；
+- 步骤 5 的真实外部代码库盲测（`skill-central` 23 模块、77 边、152 交叉、100% ELK 求解器、0 重叠、0 包含失败）与种子 42 AI 抽样核对（Precision 100.0%、Recall 73.3%）；
+- 步骤 5 的全量物理度量报告汇总（`logs/validation/p4-browser/benchmark-report.md`）。
 
 ## 已实现未验证 / Implemented but unverified
 
-- 步骤 5 的用户人工可理解性评估表（需待用户实际填写验收）。
+- 步骤 5 的用户人工可理解性评估表（设计方案与带标准答案的题库已就绪于 `docs/evaluation/p4-comprehension-eval.md`，标注为待真实人类架构师测试执行，不可由 AI 代填）。
 
 ## 未实现及范围外 / Not implemented or out of scope
 

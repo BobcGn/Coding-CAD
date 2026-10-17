@@ -200,5 +200,42 @@ Validation:
   - 风险：若未来新增非常规脚本后缀（如 `.cts`），可按需扩展白名单。
   - 回退方式：`git revert <commit-hash>`。
 
+## 2026-10-17 - 阶段 4 步骤 5：复杂网状合成夹具建立与真实代码库 AI 抽样核对 / Phase 4 Step 5: Complex Mesh Synthetic Fixture and Real Repository AI Sampling Check
+
+### 1. 做了什么 / What
+- 复杂拓扑合成夹具构造（`packages/implementation-analyzer/fixtures/synthetic-hub-repo`）：
+  - 标记为纯合成夹具（`SYNTHETIC BENCHMARK FIXTURE - NOT A REAL REPOSITORY`）；
+  - 包含 14 个包、57 个服务组件（每个包配置 `.service.ts` 形成 `group: <pkgStem>` 模块分组）；
+  - 具备真实复杂拓扑：中心共享 Hub 包 `pkg-hub-core`（入度 13）、环依赖 `pkg-service-order <-> pkg-service-inventory`、跨层调用（`analytics`、`audit`、`billing`）以及桥接模块 `pkg-bridge-connector`；
+  - 实测完全展开时产生 86 处连线交叉；应用 N > 50 默认折叠策略后节点降至 14 个容器，交叉数降至 34 处（降幅 60.5%）。
+- 真实本地 TypeScript 仓库实测（`/Users/bobcgn/AAA_Codings/Personal_Projects/skill-central`）：
+  - 真实扫描 290 个源文件，检测出 23 个业务模块，提取 77 条代码 resolved 依赖边，0 语法不支持报告，0 截断，产生 152 处交叉，0 重叠，0 包含失败，100% ELK 求解器；
+  - 执行种子为 42 的伪随机 AI 抽样核对（明确标注“由 AI 抽样核对, 非独立人工标注”）：
+    - 精确率（Precision）：随机抽样 30 条检测到的依赖边，经核对 30/30 均对应源码中的跨模块调用，精确率达到 100.0%；
+    - 召回率（Recall）：随机抽样 `src/` 下 30 处源码 `import` 语句，经核对 22 处正确映射到模块依赖或模块内调用，8 处未提取，召回率为 73.3%（22/30）；
+    - 归因分析：8 处漏检均属于散落在单体仓库 `src/` 根目录的入口文件（`src/index.ts`、`src/mcp.ts`、`src/app-metadata.ts`），因 L4 目录聚类仅面向 `src/<subdir>` 二级目录，根级文件未归属于独立模块，属于单体工程下的已知能力边界；详细记录保存于 `logs/validation/p4-baseline/skill-central-sampling.json`。
+
+- Complex Mesh Synthetic Fixture (`fixtures/synthetic-hub-repo`): Created a 14-package, 57-module synthetic benchmark featuring a central hub (`pkg-hub-core`), cyclic dependencies (`order <-> inventory`), cross-tier pipelines (`analytics`, `audit`), and bridge connectors (`pkg-bridge-connector`). Measured 86 crossings expanded vs. 34 crossings collapsed (60.5% reduction under N > 50 collapse).
+- Real Repository Analysis & AI Sampling (`skill-central`): Analyzed 290 files, 23 modules, 77 connections, 152 crossings, 0 overlaps, 100% ELK layout. Conducted seeded (seed: 42) AI sampling check: Precision 30/30 (100.0%), Recall 22/30 (73.3%), with honest attribution that top-level root files (`src/*.ts`) are excluded by single-repo L4 directory clustering.
+
+### 2. 为什么这么做 / Why
+- 克服线性流水线的假象：此前 `synthetic-large-repo` 的 1 个交叉归因于其简单的流水线构造，不能用来证明复杂大图布局质量；必须建立逼真的中心包与环依赖复杂图，用实测数据证明折叠机制在降低认知过载方面的核心价值。
+- 真实代码库的外部实证：必须引入未被本工程夹具专门微调过的真实外部代码库进行盲测，诚实暴露出单体仓库根目录单文件的聚类边界。
+
+- Overcoming Linear Artifacts: Acknowledging that `synthetic-large-repo`'s 1 crossing stemmed from parallel linear pipelines, the hub fixture genuinely stresses ELK with 86 crossings and proves the 60.5% crossing reduction of container collapse.
+- External Empirical Grounding: Blind-testing on a real repository proves actual precision (100%) and exposes honest boundary limits (73.3% recall due to root-level file heuristics).
+
+### 3. 验证结果 / Verification
+- 已实现并验证：
+  - `synthetic-hub-repo` 57 模块、14 包全部成功反演并完成 100% ELK 布局，86 交叉 -> 34 交叉；
+  - `skill-central` 23 模块、77 边成功反演，耗时 125ms 分析、219ms 布局，100% ELK 求解器，0 重叠，0 包含失败；
+  - AI 抽样核对记录保存于 `logs/validation/p4-baseline/skill-central-sampling.json`；
+  - 人工评估方案就绪于 `docs/evaluation/p4-comprehension-eval.md`（状态：待执行）。
+- 未实现：
+  - 人工可理解性评测数据待真实人类架构师填写。
+- 风险与回退方式：
+  - 回退方式：`git revert <commit-hash>`。
+
+
 
 

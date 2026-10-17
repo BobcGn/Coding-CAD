@@ -1320,6 +1320,49 @@ PR #3首次远端CI在额外security:audit步骤报告7high，本地旧ci:verify
 - 风险与回退方式：
   - 回退方式：`git revert <commit-hash>`。
 
+## 2026-10-17 - 阶段 4 步骤 5：验收基线完善、复杂网状夹具与真实代码库实测 / Phase 4 Step 5: Acceptance Baseline Expansion, Complex Mesh Fixture, and Real Repository Empirical Testing
+
+### 1. 做了什么 / What
+- 复杂拓扑合成夹具构造（`packages/implementation-analyzer/fixtures/synthetic-hub-repo`）：
+  - 构造 14 包、57 服务的复杂合成微服务网络，明确标记为 `SYNTHETIC BENCHMARK FIXTURE - NOT A REAL REPOSITORY`；
+  - 包含中心共享 Hub（`pkg-hub-core`，入度 13）、环依赖（`order <-> inventory`）、跨层越级调用（`analytics`、`audit`、`billing`）以及遗留桥接（`pkg-bridge-connector`）；
+  - 实测完全展开时产生 86 处交叉，应用 N > 50 初始折叠后节点降为 14 个容器，交叉数降至 34 处（降幅 60.5%）。
+- 真实本地 TypeScript 仓库实测（`/Users/bobcgn/AAA_Codings/Personal_Projects/skill-central`）：
+  - 真实扫描 290 个源文件，检测出 23 个业务模块，提取 77 条代码 resolved 导入边，0 语法不支持报告，0 截断，产生 152 处交叉，0 重叠，0 包含失败，100% ELK 求解器；
+  - 执行种子 42 的伪随机 AI 抽样核对（明确标注“由 AI 抽样核对, 非独立人工标注”）：精确率 100.0%（30/30），召回率 73.3%（22/30），详细记录与未提取根文件归因保存于 `logs/validation/p4-baseline/skill-central-sampling.json`。
+- 人工可理解性评估材料设计（`docs/evaluation/p4-comprehension-eval.md`）：
+  - 设计 A/B 对照方案、四类任务（核心依赖、可疑依赖、模块边界、改动影响）与 1–5 分评分量表；
+  - 针对 `skill-central`、`Coding-CAD` 与 `synthetic-hub-repo` 编写了附带代码行证据的标准答案；
+  - 明确标注“本材料供人工评估使用，当前状态为待执行，评测数据不可由 AI 代填”。
+- 汇总全量实测数据报告（`logs/validation/p4-browser/benchmark-report.md`）：
+  - 整合本仓库、120 模块流水线、57 模块复杂 Hub 以及真实开源仓库的实测表格；
+  - 诚实指出 `synthetic-large-repo` 的 1 处交叉归因于线性流水线拓扑，杜绝技术粉饰。
+
+- Complex Mesh Synthetic Fixture (`fixtures/synthetic-hub-repo`): Built 14-package, 57-module benchmark with central hub, cyclic dependency, cross-tier pipelines, and bridge connectors. Measured 86 crossings expanded vs. 34 crossings collapsed (60.5% reduction under N > 50 collapse).
+- Real Repository Testing & AI Sampling (`skill-central`): Measured 290 files, 23 modules, 77 connections, 152 crossings, 0 overlaps, 100% ELK layout. Seed-42 AI sampling yielded 100.0% precision (30/30) and 73.3% recall (22/30) with honest root-file attribution recorded in `logs/validation/p4-baseline/skill-central-sampling.json`.
+- Human Comprehension Evaluation Material (`docs/evaluation/p4-comprehension-eval.md`): Defined A/B protocol, rubric, and question sets with verified ground truth; marked as PENDING EXECUTION for human evaluators.
+- Consolidated Metrics Report (`logs/validation/p4-browser/benchmark-report.md`): Documented metrics across all four codebases and clarified the linear-pipeline topology origin of the single crossing in `synthetic-large-repo`.
+
+### 2. 为什么这么做 / Why
+- 科学求实与杜绝粉饰：严禁将线性流水线的低交叉假象宣称为算法性能优越；通过复杂中心网状夹具真实呈现了 86 处交叉，并用实测数据证明了模块折叠对降低视觉杂乱度的决定性价值。
+- 严守主观评测真实性：人类可理解性评估必须由真实工程师执行，严禁 AI 编造用户评分；提供带客观标准答案的测试底稿，为后续人工验收奠定基础。
+
+- Scientific Honesty: Acknowledged topology constraints in `synthetic-large-repo` while generating realistic 86-crossing mesh graphs to prove the 60.5% crossing drop from container collapse.
+- Subjective Evaluation Integrity: Human comprehension cannot be synthesized by AI; providing structured question sets with ground truth establishes a rigorous foundation for human review.
+
+### 3. 验证结果 / Verification
+- 已实现并验证：
+  - `synthetic-hub-repo` 57 模块、14 包全部成功反演并完成 100% ELK 布局，86 交叉 -> 34 交叉；
+  - `skill-central` 23 模块、77 边成功反演，耗时 125ms 分析、219ms 布局，100% ELK 求解器，0 重叠，0 包含失败；
+  - AI 抽样核对记录保存于 `logs/validation/p4-baseline/skill-central-sampling.json`；
+  - 人工评估方案就绪于 `docs/evaluation/p4-comprehension-eval.md`；
+  - `logs/validation/p4-browser/benchmark-report.md` 汇总结构全量就绪。
+- 未实现：
+  - 人工可理解性评测数据待真实人类架构师填写。
+- 风险与回退方式：
+  - 回退方式：`git revert <commit-hash>`。
+
+
 
 
 

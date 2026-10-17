@@ -1,0 +1,15 @@
+{
+  "name": "synthetic-hub-repo",
+  "type": "synthetic-hub",
+  "note": "Synthetic complex benchmark with central hub, cross-tier calls, cycles, and bridge connectors. NOT A REAL REPOSITORY.",
+  "modulesCount": 57,
+  "packagesCount": 14,
+  "hubPackage": "pkg-hub-core",
+  "cycles": [
+    [
+      "pkg-service-order",
+      "pkg-service-inventory"
+    ]
+  ],
+  "bridge": "pkg-bridge-connector"
+}
