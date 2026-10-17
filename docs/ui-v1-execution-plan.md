@@ -688,10 +688,10 @@ Greenfield E2E 和所有验收标准通过；Workspace/IR/View State 边界评�
 
 ### Decision Gates / 决策门禁
 
-- D-007：Ghost presentation，当前需在 Phase 5 前确认。
+- D-007（Ghost presentation，已批准方案 B）与 D-011（Ghost predictive placement，已批准方案 B）。
 - 任何新的 Proposal lifecycle/approval semantics 需要用户 Decision。
 
-- D-007: Ghost presentation, to be confirmed before Phase 5.
+- D-007 (Ghost presentation, approved Option B) and D-011 (Ghost predictive placement, approved Option B).
 - Any new Proposal lifecycle or approval semantics requires a user Decision.
 
 ### Exit Condition / 退出条件

@@ -10,11 +10,11 @@
 
 ### 待用户处理事项 / Items Pending User Action
 
-1. **Ghost 预测位置实现与验收 (Ghost Predictive Placement Implementation & Verification)**: 用户已批准 D-011（采纳方案 B：未持久化试算布局预测 Ghost 位置，约束：试算与接受同一函数同一参数、绝对不持久化、失败降级、提案变化丢弃试算、不改动底层 API 与审批语义、三态标签提示）。步骤 5.8.0 已完成证据订正与细化分类，正在执行步骤 5.8 实现与验证。
+1. **Ghost 预测位置决策与实现 (Ghost Predictive Placement Decision & Implementation)**: 用户已正式批准 D-011（采纳方案 B：未持久化试算布局预测 Ghost 位置），并在步骤 5.8 完成 Web 适配层实现与验证（实测 6 组 Add 预测与最终位移严格为 0.0px，零持久化污染，失败安全降级）。当前作为 Phase 5 交付功能就绪，待合并后用户在日常操作中进一步体验与反馈。
 2. **xjb_coding 导出立项确认 (xjb_coding Export Project Decision)**: 是否正式立项将 Execution Blueprint 导出为 xjb_coding 配置格式。备忘录第 6 节已评估映射可行性：`task_graph` 可直接从 Blueprint Task 拓扑导出，但约束映射在复杂谓词下需转换，且存在单向导出不回写的边界限制。
 3. **人工可理解性评估尚未执行 (Human Interpretability Assessment Not Yet Executed)**: 尚未组织人工架构师进行可理解性评估，目前仅有自动化几何与语义断言覆盖。
 4. **阶段 4.5 未执行事项及决策状态 (Phase 4.5 Deferred Items & Decision Status)**: 根入口聚合 (Root Entrypoint Aggregation)、循环依赖检测 (Cyclic Dependency Detection)、默认折叠落实为默认行为 (Default Collapse Applied as Default View State) 仍处于递延状态，需明确是否纳入后续阶段。
-5. **布局与稳定性观测指标阈值裁定 (Observation Metrics & Budget Approval)**: 实测耗时、交叉数、位移等指标目前均未获正式业务预算批准，仅作为工程观测数据记录。
+5. **布局与稳定性观测指标阈值裁定 (Observation Metrics & Budget Approval)**: 实测耗时、交叉数、位移等指标目前均未获正式业务预算批准，仅作为工程观测数据记录。试算超时上限常量 `PREDICTION_TIMEOUT_MS = 5000` 亦为未经批准的临时工程值。
 
 ---
 
@@ -30,6 +30,7 @@
 | 6. D-007 方案 B 零碰撞与局部放置硬约束 | **已实现并验证 (Verified)** | `ghost-placement.test.ts`, `svelte-flow-adapter.test.ts`, `ghost-stability-benchmarks.spec.ts` | 纯函数局部放置，与所有正式节点及容器边界几何零重叠，容器满时置于外侧并带文字 notice，不改动 architecture-layout 公开 API |
 | 7. 增量布局稳定性预算与位移经验度量 | **已实现并验证 (Verified)** | `incremental-stability.test.ts`, `ghost-stability-benchmarks.spec.ts` | Greenfield 与 Medium Brownfield 接受增量布局中未受影响节点位移均为 0.0px (≤ 48px / ≤ 144px 预算)；真实浏览器 6 个场景全数通过 |
 | 8. 绝无 Agent 运行时与 Terminal 能力 | **已实现并验证 (Verified)** | `pnpm lint`, 代码审计, CI 门禁 | `agent-adapter` 保持纯文本渲染器定位，`apps/web` 不引入执行流水线、调度器或 shell 桥接 |
+| 9. D-011 试算布局预测 Ghost 位置 | **已实现并验证 (Verified)** | `workspace-shell-controller.test.ts`, `svelte-flow-adapter.test.ts`, `ghost-stability-benchmarks.spec.ts` | 试算与接受走同一函数、同一固定状态、同一参数；绝对不持久化；实测 6 组 Add 预测与最终位移严格为 0.0px；失败降级回退启发式并显式提示；竞态安全 |
 
 ---
 
@@ -103,7 +104,7 @@
 - 详尽评估方案 A、方案 B (Dry-run 预测布局)、方案 C (动画过渡) 的可行性、API 影响、D-010 边界与性能开销，给出推荐与决策草案。
 
 ### 步骤 5.8.0：订正证据与措辞 (Step 5.8.0: Evidence & Wording Corrections)
-- 提交哈希：*(本步提交)*
+- 提交哈希：`530002a`
 - **备忘录订正**：`docs/phase-5-ghost-placement-memo.md` 中删除未经验证的具体延迟与准确率数字，替换为“待实现后验证”，并如实说明推导数据来源于 Node 单测路径而非浏览器运行时；
 - **放置原因码细化**：重新定义并规范化放置原因码：
   - `near-anchor`：紧邻主锚点槽位（锚点距离 ≤ 300px）；
@@ -116,6 +117,28 @@
   - 编制 [`logs/validation/p5-reconciliation/README.md`](../logs/validation/p5-reconciliation/README.md) 索引全部 17 份日志，澄清 Node bundle (7) 与源码文件 (9) 的统计口径，说明 Web 测试演进（117 单元 + 13 集成 + 74 浏览器）；
   - 核查 5 核心包零代码改动证据（`git diff --stat main..HEAD` 仅 30 行 `.gitignore`）；
 - **全量 CI 门禁执行**：`CI=true TURBO_FORCE=true pnpm ci:verify`，原始输出保存至 `ci-verify.log`，记录各个 stage 耗时，总耗时约 150s，74 项浏览器测试（37 dev + 37 preview）全部一次性通过。
+
+### 步骤 5.8：Ghost 预测位置实现与验证 (Step 5.8: Ghost Predictive Placement Implementation & Verification)
+- 提交哈希：*(本步提交)*
+- **D-011 实施与架构隔离**：
+  - 落实用户已批准的 D-011 决策（方案 B：未持久化的试算布局预测 Ghost 位置）；
+  - 在 `WorkspaceShellController` 中实现 `predictGhostPlacement`：
+    - 严格复用接受后增量布局的同一个纯函数 `layoutArchitectureGraph`，传入完全相同的固定状态 `this.shell.layoutState` 与完全一致的参数 `mode: "INCREMENTAL"`，绝对杜绝“试算用全量、接受用增量”的逻辑漂移；
+    - 严格隔离持久化：试算计算结果保存在临时响应式字段 `this.shell.ghostPrediction`，绝对不写入 `this.shell.layoutState`、撤销重做栈、`saveProject` 导出载荷与 `generateExecutionHandoff` 蓝图产物；Ghost 的独立 ID（`ghost:*`）绝不进入正式 `ArchitectureProject`；
+    - 失败安全降级：若试算超时（未批准的临时工程常量 `PREDICTION_TIMEOUT_MS = 5000`）、求解器报错或求解器来源非 `elk`（降级求解器），一律安全降级至 `"unavailable"` 状态，回退启发式几何位置，并在界面展示文字通知与可访问名称（aria-label）；
+    - 严格竞态防御：采用递增递减 Token 与 AbortController 双重取消机制，提案发生任何变更、被拒绝或被标记为过期时，立即丢弃进行中的试算或忽略过时计算结果；
+- **三态标签映射与渲染**：
+  - 在 `svelte-flow-adapter.ts` 与 `ArchitectureNode.svelte` 中完整实现三态状态机：
+    - `predicting`：Ghost 节点渲染于启发式位置，带有半透明虚线框及 `[预测中 / Predicting...]` 标签；
+    - `predicted`：Ghost 节点平滑位移至预测位置，带有 `[预测位置 / Predicted Position]` 标签，悬停提示“接受前若有其他变更，最终位置可能变化”；
+    - `unavailable`：Ghost 节点回退至启发式位置，带有 `[预测不可用 / Prediction Unavailable]` 标签并提示降级原因；
+- **架构不变量守卫**：
+  - 核心五包（`architecture-layout`, `architecture-ir`, `architecture-review`, `execution-blueprint`, `agent-adapter`）代码目录保持 0 修改；
+  - 0 新增 package，IR 公开类型 0 改动，D-010 Worker 边界 0 改动，Review 审批语义 0 改动；
+- **单元测试与真实浏览器验证**：
+  - `workspace-shell-controller.test.ts` 补充 5 项 D-011 专用测试（试算不持久化、状态一致性、降级回退、竞态防御、锁释放），Web 单元测试增至 125 项全通；
+  - `svelte-flow-adapter.test.ts` 补充 3 项投影测试（predicting, predicted, unavailable 三态投影断言）；
+  - `ghost-stability-benchmarks.spec.ts` 扩展为 8 个场景（6 Add + 1 Connect + 1 Remove），并增加 10 次连续试算延迟分布测量；在 dev 与 preview 模式下均实测预测位置与最终位置位移严格为 **0.0px**（100% 预测一致），零重叠、零容器包含失败、100% ELK 求解器。
 
 ---
 
@@ -138,32 +161,59 @@
 由 `apps/web/e2e/ghost-stability-benchmarks.spec.ts` 产生的真实浏览器实测数据（分别在 `dev` 与 `preview` 模式下各执行一次，输出产物存放在 `logs/validation/p5-browser/`）：
 
 #### Dev 模式运行结果 (`ghost-benchmarks-dev.json`)
-| 夹具 (Fixture) | 组件 (Component) | 放置原因码 (Reason) | Ghost 位置 | 锚点距离 | 接受后位置 | 位移 (Displacement) | 接受前重叠数 | 接受后重叠数 | 容器包含失败 | Solver 来源 | 无关节点 p95 | 预算判定 |
+| 夹具 (Fixture) | 场景与组件 (Scenario & Target) | 原因码 (Reason) | 启发式位置 (Heuristic) | 预测位置 (Predicted) | 接受后位置 (Final) | 预测误差 (Pred-Final) | 启发式位移 (Heur-Final) | 重叠数 | 容器失败 | 求解器 | 无关节点位移 | 判定 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Greenfield (Points System) | AuditService | near-anchor | (512, 236) | 257.7px | (24, 236) | 488.0px | 0 | 0 | 0 | elk | 0.0px | PASS |
-| Greenfield (Points System) | PaymentGateway | near-anchor | (252, 236) | 257.7px | (24, 236) | 228.0px | 0 | 0 | 0 | elk | 0.0px | PASS |
-| Greenfield (Points System) | RedisCache | container-exterior | (801, 24) | 252.0px | (561, 248) | 328.3px | 0 | 0 | 0 | elk | 0.0px | PASS |
-| Coding-CAD (Medium Baseline) | Telemetry | far-anchor-fallback | (1764, 306) | 967.5px | (24, 153) | 1746.7px | 0 | 0 | 0 | elk | 0.0px | PASS |
-| Coding-CAD (Medium Baseline) | DocGen | near-anchor | (1812, 208) | 228.0px | (24, 153) | 1788.8px | 0 | 0 | 0 | elk | 0.0px | PASS |
-| Coding-CAD (Medium Baseline) | IsolatedMock | global-fallback | (1812, 35) | N/A | (24, 153) | 1791.9px | 0 | 0 | 0 | elk | 0.0px | PASS |
+| Greenfield | Add: AuditService | near-anchor | (512, 236) | (24, 236) | (24, 236) | **0.0 px** | 488.0 px | 0 | 0 | elk | 0.0 px | PASS |
+| Greenfield | Add: PaymentGateway | near-anchor | (252, 236) | (24, 236) | (24, 236) | **0.0 px** | 228.0 px | 0 | 0 | elk | 0.0 px | PASS |
+| Greenfield | Add: RedisCache | container-exterior | (801, 24) | (561, 248) | (561, 248) | **0.0 px** | 328.3 px | 0 | 0 | elk | 0.0 px | PASS |
+| Medium Baseline | Add: Telemetry | far-anchor-fallback | (1764, 306) | (24, 153) | (24, 153) | **0.0 px** | 1746.7 px | 0 | 0 | elk | 0.0 px | PASS |
+| Medium Baseline | Add: DocGen | near-anchor | (1812, 208) | (24, 153) | (24, 153) | **0.0 px** | 1788.8 px | 0 | 0 | elk | 0.0 px | PASS |
+| Medium Baseline | Add: IsolatedMock | global-fallback | (1812, 35) | (24, 153) | (24, 153) | **0.0 px** | 1791.9 px | 0 | 0 | elk | 0.0 px | PASS |
+| Greenfield | Connect: DB -> Events | edge-connection | N/A | N/A | N/A | N/A | N/A | 0 | 0 | elk | 0.0 px | PASS |
+| Greenfield | Remove: Events | pending-deletion | N/A | N/A | N/A | N/A | N/A | 0 | 0 | elk | 0.0 px | PASS |
 
 #### Preview 模式运行结果 (`ghost-benchmarks-preview.json`)
-| 夹具 (Fixture) | 组件 (Component) | 放置原因码 (Reason) | Ghost 位置 | 锚点距离 | 接受后位置 | 位移 (Displacement) | 接受前重叠数 | 接受后重叠数 | 容器包含失败 | Solver 来源 | 无关节点 p95 | 预算判定 |
+| 夹具 (Fixture) | 场景与组件 (Scenario & Target) | 原因码 (Reason) | 启发式位置 (Heuristic) | 预测位置 (Predicted) | 接受后位置 (Final) | 预测误差 (Pred-Final) | 启发式位移 (Heur-Final) | 重叠数 | 容器失败 | 求解器 | 无关节点位移 | 判定 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Greenfield (Points System) | AuditService | near-anchor | (512, 236) | 257.7px | (24, 236) | 488.0px | 0 | 0 | 0 | elk | 0.0px | PASS |
-| Greenfield (Points System) | PaymentGateway | near-anchor | (252, 236) | 257.7px | (24, 236) | 228.0px | 0 | 0 | 0 | elk | 0.0px | PASS |
-| Greenfield (Points System) | RedisCache | container-exterior | (801, 24) | 252.0px | (561, 248) | 328.3px | 0 | 0 | 0 | elk | 0.0px | PASS |
-| Coding-CAD (Medium Baseline) | Telemetry | far-anchor-fallback | (1764, 306) | 967.5px | (24, 153) | 1746.7px | 0 | 0 | 0 | elk | 0.0px | PASS |
-| Coding-CAD (Medium Baseline) | DocGen | near-anchor | (1812, 208) | 228.0px | (24, 153) | 1788.8px | 0 | 0 | 0 | elk | 0.0px | PASS |
-| Coding-CAD (Medium Baseline) | IsolatedMock | global-fallback | (1812, 35) | N/A | (24, 153) | 1791.9px | 0 | 0 | 0 | elk | 0.0px | PASS |
+| Greenfield | Add: AuditService | near-anchor | (512, 236) | (24, 236) | (24, 236) | **0.0 px** | 488.0 px | 0 | 0 | elk | 0.0 px | PASS |
+| Greenfield | Add: PaymentGateway | near-anchor | (252, 236) | (24, 236) | (24, 236) | **0.0 px** | 228.0 px | 0 | 0 | elk | 0.0 px | PASS |
+| Greenfield | Add: RedisCache | container-exterior | (801, 24) | (561, 248) | (561, 248) | **0.0 px** | 328.3 px | 0 | 0 | elk | 0.0 px | PASS |
+| Medium Baseline | Add: Telemetry | far-anchor-fallback | (1764, 306) | (24, 153) | (24, 153) | **0.0 px** | 1746.7 px | 0 | 0 | elk | 0.0 px | PASS |
+| Medium Baseline | Add: DocGen | near-anchor | (1812, 208) | (24, 153) | (24, 153) | **0.0 px** | 1788.8 px | 0 | 0 | elk | 0.0 px | PASS |
+| Medium Baseline | Add: IsolatedMock | global-fallback | (1812, 35) | (24, 153) | (24, 153) | **0.0 px** | 1791.9 px | 0 | 0 | elk | 0.0 px | PASS |
+| Greenfield | Connect: DB -> Events | edge-connection | N/A | N/A | N/A | N/A | N/A | 0 | 0 | elk | 0.0 px | PASS |
+| Greenfield | Remove: Events | pending-deletion | N/A | N/A | N/A | N/A | N/A | 0 | 0 | elk | 0.0 px | PASS |
+
+#### 试算延迟 10 次重复测量分布 (10-Run Dry-run Latency Distribution)
+
+| 场景与目标 (Scenario & Target) | 运行模式 (Mode) | 最小延迟 (Min) | 中位数延迟 (Median) | 最大延迟 (Max) | 判定 (Limit <= 5000ms) |
+| --- | --- | --- | --- | --- | --- |
+| Greenfield Add: AuditService | Dev | 132.1 ms | 141.1 ms | 145.4 ms | PASS |
+| Greenfield Add: AuditService | Preview | 114.8 ms | 119.2 ms | 130.9 ms | PASS |
+| Greenfield Add: PaymentGateway | Dev | 134.6 ms | 141.3 ms | 143.8 ms | PASS |
+| Greenfield Add: PaymentGateway | Preview | 112.5 ms | 121.1 ms | 129.8 ms | PASS |
+| Greenfield Add: RedisCache | Dev | 133.2 ms | 142.0 ms | 143.6 ms | PASS |
+| Greenfield Add: RedisCache | Preview | 113.5 ms | 121.5 ms | 124.3 ms | PASS |
+| Medium Add: Telemetry | Dev | 188.0 ms | 200.7 ms | 224.5 ms | PASS |
+| Medium Add: Telemetry | Preview | 168.8 ms | 177.9 ms | 182.0 ms | PASS |
+| Medium Add: DocGen | Dev | 192.5 ms | 211.7 ms | 251.5 ms | PASS |
+| Medium Add: DocGen | Preview | 171.5 ms | 174.9 ms | 182.2 ms | PASS |
+| Medium Add: IsolatedMock | Dev | 191.5 ms | 201.3 ms | 209.6 ms | PASS |
+| Medium Add: IsolatedMock | Preview | 171.5 ms | 174.9 ms | 182.6 ms | PASS |
+| Greenfield Connect: DB -> Events | Dev | 136.8 ms | 141.5 ms | 147.3 ms | PASS |
+| Greenfield Connect: DB -> Events | Preview | 112.7 ms | 118.5 ms | 125.0 ms | PASS |
+| Greenfield Remove: Events | Dev | 131.7 ms | 139.4 ms | 160.1 ms | PASS |
+| Greenfield Remove: Events | Preview | 108.8 ms | 114.4 ms | 120.7 ms | PASS |
 
 - **断言达成情况**：
-  1. **接受前 Ghost 与正式节点重叠数**：全部 6 个场景严格为 **0**；
-  2. **接受后全部节点对等重叠数**：全部 6 个场景严格为 **0**；
-  3. **接受后容器包含失败数**：全部 6 个场景严格为 **0**；
-  4. **求解器来源 (Solver Source)**：100% 为 **`elk`**，0 次降级；
-  5. **未受影响无关节点位移**：全部 6 个场景中 `unaffectedP95 = 0.0px`、`unaffectedMax = 0.0px`，100% 满足稳定性预算；
-  6. **容器满置于外侧通知**：在 `RedisCache` 场景中，Ghost 节点带有 `[data-testid="ghost-notice"]`，明确提示 `所属容器 'group:infrastructure' 内部无可用空间，Ghost 放置于容器外侧`。
+  1. **预测与最终位置位移 (Pred-Final Displacement)**：全部 6 个 Add 场景严格为 **0.0 px**（100% 预测一致）；
+  2. **接受前 Ghost 与正式节点重叠数**：全部 8 个场景严格为 **0**；
+  3. **接受后全部节点对等重叠数**：全部 8 个场景严格为 **0**；
+  4. **接受后容器包含失败数**：全部 8 个场景严格为 **0**；
+  5. **求解器来源 (Solver Source)**：100% 为 **`elk`**，0 次降级；
+  6. **未受影响无关节点位移**：全部 8 个场景中 `unaffectedP95 = 0.0px`、`unaffectedMax = 0.0px`，100% 满足稳定性预算；
+  7. **容器满置于外侧通知**：在 `RedisCache` 场景中，Ghost 节点带有 `[data-testid="ghost-notice"]`，明确提示 `所属容器 'group:infrastructure' 内部无可用空间，Ghost 放置于容器外侧`。
+  8. **试算延迟性能**：Dev 模式 131~251ms，Preview 模式 108~182ms，均远低于 5000ms 临时超时预算。
 
 ### Node 单测与真实浏览器测试的本质差别说明
 
@@ -270,9 +320,9 @@
 
 | 代码包 / 应用 (Package / App) | 测试文件数 (Files) | 测试用例数 (Tests) | 验证状态 (Status) |
 | --- | --- | --- | --- |
-| `@coding-cad/web` (单元测试) | 18 | 116 | **全部通过 (100% Passed)** |
+| `@coding-cad/web` (单元测试) | 18 | 125 | **全部通过 (100% Passed)** |
 | `@coding-cad/web` (集成测试) | 4 | 13 | **全部通过 (100% Passed)** |
-| `@coding-cad/web` (浏览器 E2E) | 8 | 36 (dev) / 36 (preview) | **全部通过 (100% Passed)** |
+| `@coding-cad/web` (浏览器 E2E) | 8 | 37 (dev) / 37 (preview) | **全部通过 (100% Passed)** |
 | `@coding-cad/architecture-ir` | 1 | 14 | **全部通过 (100% Passed)** |
 | `@coding-cad/architecture-layout` | 9 | 36 | **全部通过 (100% Passed)** |
 | `@coding-cad/architecture-review` | 3 | 12 | **全部通过 (100% Passed)** |
@@ -314,18 +364,20 @@
 | 5.7 | `338a489` | `docs(phase-5): add ghost predictive placement design memo evaluating options A, B, and C` | `git revert 338a489` | 移除 Ghost 预测位置设计备忘录 |
 | 5.7 (PR) | `df78264` | `docs(pr): update PR draft with Step 5.7 commit hash and rollback crosswalk` | `git revert df78264` | 同步回退 PR 草稿中步骤 5.7 提交哈希 |
 | 5.8.0 | `530002a` | `docs(phase-5): reconcile test evidence, refine reason codes, and correct placement memo` | `git revert 530002a` | 回退 5.8.0 证据对齐、原因码细化与备忘录订正 |
+| 5.8 | *(本步提交)* | `feat(web): implement ghost predictive placement via unpersisted dry-run layout (D-011)` | `git revert <hash>` | 移除 Ghost 试算预测位置、三态标签与对应测试，恢复 5.8.0 纯启发式状态 |
 
 ### 逆序回退分析 (Cascading Rollback Analysis)
 
 若需回退本阶段提交，请严格按照逆序操作：
-1. **回退 5.8.0** (`git revert 530002a`)：移除证据对齐、原因码细化与备忘录订正，恢复 5.7 状态；
-2. **回退 5.7** (`git revert df78264` -> `git revert 338a489`)：安全移除 Ghost 预测位置设计备忘录；
-3. **回退 5.6** (`git revert 966fd4c` -> `git revert 3f05c44`)：移除浏览器 E2E benchmark 测试套件与订正报告；
-4. **回退 5.5** (`git revert 71e76d0` -> `git revert d529390`)：移除阶段 5 退出报告及执行计划更新；
-5. **回退 5.4** (`git revert 634c355` -> `git revert 7120770`)：安全移除增量布局稳定性指标测试与位移度量套件，不影响正式架构与 Ghost 交互；
-6. **回退 5.3** (`git revert b94e0fb` -> `git revert 9971e4d`)：移除过期提案检测、单提案严格阻断与 Review 接入硬化，恢复步骤 5.2 的基本 Ghost 投影；
-7. **回退 5.2** (`git revert baba8c0` -> `git revert cb8be8e`)：安全移除 Ghost 投影、局部放置纯函数与待删除/待变更视觉标记，不影响正式架构与 Review 状态机；
-8. **回退 5.1.1** (`git revert f6ea675`)：恢复 5.1 初始快照实现与测试；
-9. **回退 5.1** (`git revert 3f8d76a` -> `git revert 2797f9c`)：安全移除 Handoff 模态框、对焦控制与导出的全部功能代码及测试，不会损坏底层已有的 Greenfield/Brownfield/Review 核心逻辑；
-10. **回退 5.0** (`git revert 77e446a`)：若在 5.1 未回退时强行回退 5.0，会导致 PR 草稿和设计备忘录丢失；
-11. **回退范围外附带改动** (`git revert 7400cd4`)：若在后续步骤未回退时单独回退，会导致 `.svelte-kit/`、`.turbo/` 等产生未跟踪文件污染工作区，但不影响业务代码运行。
+1. **回退 5.8** (`git revert <hash>`)：移除 Ghost 试算预测位置实现、三态标签、对应单元测试与 E2E 基准测试，恢复 5.8.0 状态；
+2. **回退 5.8.0** (`git revert 530002a`)：移除证据对齐、原因码细化与备忘录订正，恢复 5.7 状态；
+3. **回退 5.7** (`git revert df78264` -> `git revert 338a489`)：安全移除 Ghost 预测位置设计备忘录；
+4. **回退 5.6** (`git revert 966fd4c` -> `git revert 3f05c44`)：移除浏览器 E2E benchmark 测试套件与订正报告；
+5. **回退 5.5** (`git revert 71e76d0` -> `git revert d529390`)：移除阶段 5 退出报告及执行计划更新；
+6. **回退 5.4** (`git revert 634c355` -> `git revert 7120770`)：安全移除增量布局稳定性指标测试与位移度量套件，不影响正式架构与 Ghost 交互；
+7. **回退 5.3** (`git revert b94e0fb` -> `git revert 9971e4d`)：移除过期提案检测、单提案严格阻断与 Review 接入硬化，恢复步骤 5.2 的基本 Ghost 投影；
+8. **回退 5.2** (`git revert baba8c0` -> `git revert cb8be8e`)：安全移除 Ghost 投影、局部放置纯函数与待删除/待变更视觉标记，不影响正式架构与 Review 状态机；
+9. **回退 5.1.1** (`git revert f6ea675`)：恢复 5.1 初始快照实现与测试；
+10. **回退 5.1** (`git revert 3f8d76a` -> `git revert 2797f9c`)：安全移除 Handoff 模态框、对焦控制与导出的全部功能代码及测试，不会损坏底层已有的 Greenfield/Brownfield/Review 核心逻辑；
+11. **回退 5.0** (`git revert 77e446a`)：若在 5.1 未回退时强行回退 5.0，会导致 PR 草稿和设计备忘录丢失；
+12. **回退范围外附带改动** (`git revert 7400cd4`)：若在后续步骤未回退时单独回退，会导致 `.svelte-kit/`、`.turbo/` 等产生未跟踪文件污染工作区，但不影响业务代码运行。

@@ -22,6 +22,7 @@ D-001 through D-010 in this file are the repository's canonical IDs. The UI V1 M
 | D-008 | D-010 | Web Worker Boundary |
 | D-009 | D-004 | Pinned Node V1 Scope |
 | D-010 | D-008 | Canvas Node Information Density |
+| D-011 | D-011 | Ghost Predictive Placement Strategy |
 
 ## Master Phase Gate Matrix / Master Phase 门禁矩阵
 
@@ -36,6 +37,7 @@ D-001 through D-010 in this file are the repository's canonical IDs. The UI V1 M
 | D-008 | NO | Required before Phase 2 node renderer contract | APPROVED — Standard + Semantic Zoom |
 | D-006 | NO | Required before Phase 3 persistence and Phase 6 quality closure | APPROVED — Workspace abstraction |
 | D-007 | NO | Required before Phase 5 Ghost presentation | APPROVED — Option B |
+| D-011 | NO | Required for Phase 5 Ghost predictive placement / Phase 5 Ghost 预测位置 | APPROVED — Option B |
 | D-004 | NO | Required or explicitly deferred before Phase 6 exit | APPROVED — deferred beyond V1 |
 
 `Blocking: NO` 不代表 Codex 可以自行决定，只表示未到该功能边界时可以继续无关工作。Phase 0 Decision Freeze 必须由用户填写 Final Decision，或明确把某项延后到指定 Phase。
@@ -575,3 +577,76 @@ The user also approved treating contract editing as a Phase 3 gap, using minimal
 固定 elkjs 0.12.0 的 pnpm 补丁只调整内嵌 bundled worker 在 CommonJS 模块环境的初始化guard顺序，保留独立worker自动挂载。现有app module Worker仍仅执行solver，compiler/stability留在调用方；Worker传输与package公开契约没有diff，solver未替换。此为既有决策内的互操作修复，不是新Decision。 / A pinned elkjs 0.12.0 patch prioritizes CommonJS exports while retaining standalone-worker attachment. The existing module worker runs only the solver; compiler/stability remain caller-side. Transport/public contracts and solver selection stay unchanged. This implements the existing decision.
 
 真实浏览器双模式质量与既有48/144px、无顺序反转预算通过。交叉、rank inversion、面积、浏览器耗时只观测，未新增硬阈值；未来若新增须用户批准。证据见[退出报告](phase-3-exit-report.md)。 / Both modes pass quality and approved movement checks. Crossings, rank inversions, area and elapsed time are observations without new acceptance thresholds; future thresholds require approval. See the exit report.
+
+# D-011 Ghost Predictive Placement Strategy / Ghost 预测位置布局策略
+
+Status:
+APPROVED — 2026-10-17 (User)
+
+Context / 背景:
+阶段 5 实现了 Ghost 呈现与 Review 门禁。实测表明，纯几何启发式放置（方案 A）会导致 Ghost 与采纳后最终坐标之间存在显著几何位移差距（Greenfield 约 200~500px，Medium 约 1700px+），给用户造成视觉跳跃与因果困惑。 / Phase 5 implemented Ghost presentation and the Review gate. Empirical measurements show that pure geometric heuristic placement (Option A) leads to significant geometric displacement between the Ghost and post-acceptance final coordinates (Greenfield ~200~500px, Medium ~1700px+), creating visual jumps and causal confusion for the user.
+
+Problem / 问题:
+如何消除或最小化 Ghost 预览位置与采纳后正式排版位置之间的位移，同时保证零架构污染、零 API 变更与零 D-010 边界破坏。 / How to eliminate or minimize displacement between Ghost preview positions and post-acceptance formal layout positions while ensuring zero architecture pollution, zero API changes, and zero D-010 boundary disruption.
+
+Options / 选项:
+- Option A: Keep Current Local Heuristic / 维持当前局部启发式
+- Option B: Unpersisted Dry-run Layout / 未持久化的试算布局预测 Ghost 位置
+- Option C: Transition Animation & Motion Trails / 平滑过渡动画与运动轨迹引导
+
+Final Decision:
+采用备忘录方案 B (未持久化的试算布局预测 Ghost 位置)。 / Adopt Option B from the design memo (Unpersisted Dry-run Layout for Ghost predictive placement).
+硬约束 / Hard Constraints:
+1. 试算与接受后的增量布局必须走同一函数、同一份固定状态（已有节点的位置约束）、同一份参数。禁止试算用全量布局而接受用增量布局。 / Dry-run and post-acceptance incremental layout must call the identical function, identical fixed state (constraints on existing node positions), and identical parameters. Never use full layout for dry-run while using incremental layout for acceptance.
+2. 试算结果绝不写入 layoutState、撤销栈、Save 产物、Handoff 产物；Ghost 的 id 绝不进入正式架构。 / Dry-run results must never be written to layoutState, undo stack, Save outputs, or Handoff outputs; Ghost IDs must never enter the formal architecture.
+3. 试算失败、超时、返回降级求解器结果（solver 来源不是 ELK），一律视为“预测不可用”，回退到现有启发式放置，并在界面显式提示（带文字与可访问名称），不得把降级结果当预测展示。 / Dry-run failure, timeout, or fallback solver results (solver source not ELK) must always be treated as "prediction unavailable", falling back to existing heuristic placement with explicit UI indication (text and accessible name); fallback solver results must never be displayed as predictions.
+4. 提案变化、被拒绝、被标记过期时，丢弃进行中的试算或忽略其结果；必须有竞态测试。 / When proposals change, are rejected, or become stale, discard in-flight dry-runs or ignore their results; race condition tests are required.
+5. 不改 architecture-layout 公开 API、不改 D-010 边界、不改 IR 公开类型、不新增 package、不新增审批语义。 / Zero changes to architecture-layout public API; zero changes to D-010 boundary; zero changes to IR public types; no new packages; no new approval semantics.
+6. 预测期间，Ghost 先以现有启发式位置显示并标注“预测中”；预测完成后移动到预测位置并标注“预测位置”，标签文字需说明“接受前若有其他变更，最终位置可能变化”。试算超时上限使用可配置常量，标注为“未经批准的临时值”。 / During prediction, Ghost is initially displayed at the heuristic position labeled "[预测中 / Predicting]"; once prediction completes, it moves to the predicted position labeled "[预测位置 / Predicted Position]" with explanatory text "接受前若有其他变更，最终位置可能变化 / If other changes occur before acceptance, final position may change". Prediction timeout uses a configurable constant annotated as "unapproved temporary value".
+
+## D-011 Consistency Specification / D-011 一致性说明
+
+### 1. 试算与接受路径同一性论证 / Proof of Path Identity
+- **试算调用点 (Dry-run Invocation Point)**：
+  - 文件路径：`apps/web/src/lib/architecture/greenfield/workspace-shell-controller.ts`
+  - 函数名：`WorkspaceShellController.prototype.runIncrementalLayout`（由 `runPrediction` / `executeCommand` 调用）
+  - 执行代码：
+    ```typescript
+    layoutArchitectureGraph(projection.layoutGraph, {
+      mode: "INCREMENTAL",
+      previousState: this.shell.layoutState,
+      timeoutMs: PREDICTION_TIMEOUT_MS,
+      signal
+    }, engine)
+    ```
+- **接受调用点 (Accept Invocation Point)**：
+  - 文件路径：`apps/web/src/lib/architecture/greenfield/workspace-shell-controller.ts`
+  - 函数名：`WorkspaceShellController.prototype.runIncrementalLayout`（由 `layoutCandidate` / `acceptCandidate` 调用）
+  - 执行代码：
+    ```typescript
+    layoutArchitectureGraph(projection.layoutGraph, {
+      mode: "INCREMENTAL",
+      previousState: this.shell.layoutState,
+      timeoutMs: PREDICTION_TIMEOUT_MS,
+      signal
+    }, engine)
+    ```
+- **同一性数学保证 (Mathematical Identity Guarantee)**：
+  - 试算阶段输入的 `candidate` 与点击 Accept 时接受的 `accepted` 具有完全一致的组件图与连线图（由同一个 `CommandPreparation` 产出）；
+  - `compileArchitectureProjection(candidate)` 编译出相同的 `layoutGraph`；
+  - 增量布局固定的既有节点位置（`previousState`）均为当前正式架构的 `this.shell.layoutState`；
+  - 两者调用完全相同的底层编译器函数 `layoutArchitectureGraph`，使用完全相同的增量模式参数配置 (`mode: "INCREMENTAL"`) 和相同的求解器引擎 (`BrowserWorkerLayoutEngine`)；
+  - 因此，底层 ELK 求解器在相同的初始约束条件下计算出严格相同的坐标，从而保证新节点预测坐标与采纳后最终坐标位移理论为 0.0 px。 / The mathematical conditions are identical across both calls, guaranteeing that ELK produces identical coordinates, eliminating displacement between prediction and final positions.
+
+### 2. 持久化隔离论证与检验方式 / Persistence Isolation Proof and Verification
+- **论证 (Isolation Proof)**：
+  - **内存隔离**：试算结果的坐标仅保存在控制器瞬态 UI 状态 `this.shell.ghostPrediction` 中，绝不赋值给 `this.shell.layoutState` 或 `this.shell.candidateLayoutState`；
+  - **撤销栈隔离**：`CommandApplication` 仅在用户明确调用 `decide` (Accept/Reject) 时记录历史版本；试算计算不触发任何命令提交，不产生撤销快照；
+  - **保存隔离**：`saveProject` 序列化时仅打包 `this.shell.accepted` 与 `this.shell.layoutState`，完全不包含 `ghostPrediction` 或 `candidate`；
+  - **Handoff 隔离**：`generateExecutionHandoff` 仅接收 `this.shell.accepted` 作为事实来源，导出的执行蓝图、Agent 指令与任务 Provenance 中完全不包含 Ghost 节点或瞬态预测坐标；
+  - **ID 命名空间隔离**：Ghost 节点 ID 格式强制为 `ghost:<componentId>`，绝不进入正式架构的 `ArchitectureProject.architecture.components`。
+- **检验方式 (Verification Methods)**：
+  - 单元测试断言：在试算完成前后对比 `controller.state().layoutState`，断言其未被修改；
+  - 序列化断言：执行 `saveProject()` 与 `generateExecutionHandoff()`，断言产物 JSON 中不包含任何 `ghost:` 字符串；
+  - 拒绝断言：调用 `rejectCandidate()`，断言 `ghostPrediction` 立即清空，画布上零 Ghost 节点，工作区锁释放。
+

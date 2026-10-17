@@ -179,8 +179,8 @@ test("Add component renders Ghost node with badge, dashed border, zero overlap a
   // Ghost node is visible with badge and accessible label
   const ghostNode = page.locator(".svelte-flow__node article[data-ghost='true']");
   await expect(ghostNode).toBeVisible();
-  await expect(ghostNode.getByTestId("ghost-badge")).toHaveText(/待审批 \/ Proposed/);
-  await expect(ghostNode).toHaveAttribute("aria-label", /待审批 \/ Proposed/);
+  await expect(ghostNode.getByTestId("ghost-badge")).toHaveText(/(待审批 \/ Proposed|预测位置 \/ Predicted Position)/);
+  await expect(ghostNode).toHaveAttribute("aria-label", /(待审批 \/ Proposed|预测位置 \/ Predicted Position)/);
 
   // Formal node position remains stable (no displacement)
   const pointServiceAfter = await page.locator(".svelte-flow__node").filter({ hasText: "PointService" }).boundingBox();

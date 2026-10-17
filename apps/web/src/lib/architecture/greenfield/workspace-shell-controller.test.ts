@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import { describe, it } from "vitest";
+import type { ArchitectureProject } from "@coding-cad/architecture-ir";
+import type { LayoutState } from "@coding-cad/architecture-layout";
 import { ArchitectureReview } from "@coding-cad/architecture-review";
+import { generateExecutionHandoff } from "../handoff/execution-handoff.js";
 import { pointsSystemFixture } from "../projection/points-system-fixture.js";
 import { CandidateFlow } from "./candidate-flow.js";
 import { WorkspaceShellController } from "./workspace-shell-controller.js";
@@ -16,11 +19,17 @@ function createController(accepted = pointsSystemFixture): WorkspaceShellControl
       })
     }),
     engineFactory: () => ({
-      layout: async () => ({
+      layout: async (graph: any) => ({
         status: "success" as const,
         direction: "LR" as const,
         size: { width: 800, height: 600 },
-        nodes: [],
+        nodes: graph?.nodes ? graph.nodes.map((n: any, idx: number) => ({
+          id: n.id,
+          sourceId: n.id,
+          kind: n.kind,
+          position: { x: 100 + idx * 250, y: 150 },
+          size: { width: 220, height: 90 }
+        })) : [],
         edges: [],
         diagnostics: []
       }),
@@ -343,6 +352,278 @@ describe("Step 5.2 Ghost & Proposal Invariants (D-007 Option B)", () => {
     // In D-007 Option B, layoutValue must not be overwritten or re-laid out
     assert.strictEqual(controller.layout(), initialLayout);
     assert.deepEqual(controller.layout()?.nodes, initialLayout.nodes);
+  });
+});
+
+describe("Step 5.8 D-011 Ghost Predictive Placement (Option B: Dry-run Prediction)", () => {
+  it("a. persistence isolation: dry-run does not write layoutState, undo stack, Save outputs, or Handoff; ghost ID not in formal architecture", async () => {
+    const initialLayoutState: LayoutState = {
+      version: 1,
+      direction: "LR",
+      nodes: [
+        { id: "gateway", position: { x: 100, y: 100 }, size: { width: 220, height: 90 } },
+        { id: "ledger", position: { x: 400, y: 100 }, size: { width: 220, height: 90 } }
+      ],
+      edges: []
+    };
+    const controller = createController();
+    (controller as any).shell = {
+      ...controller.state(),
+      layoutState: initialLayoutState
+    };
+    (controller as any).layoutValue = {
+      status: "success",
+      direction: "LR",
+      size: { width: 800, height: 600 },
+      nodes: initialLayoutState.nodes,
+      edges: [],
+      diagnostics: []
+    };
+    const layoutStateBefore = structuredClone(controller.state().layoutState);
+
+    await controller.executeCommand({
+      type: "add-component",
+      component: { id: "audit-svc", name: "Audit Service", type: "service", capabilities: ["audit"] }
+    });
+
+    const state = controller.state();
+    assert.ok(state.ghostPrediction !== undefined);
+    assert.equal(state.ghostPrediction?.status, "predicted");
+    assert.ok(state.ghostPrediction?.nodes?.["audit-svc"] !== undefined);
+
+    // Assert layoutState was NOT mutated by dry-run
+    assert.deepEqual(state.layoutState, layoutStateBefore);
+    assert.equal(state.candidateLayoutState, undefined);
+
+    // Assert Save payload does not contain ghost: prefix or audit-svc
+    const savedArchJson = JSON.stringify(state.accepted);
+    const savedViewStateJson = JSON.stringify(state.layoutState);
+    assert.ok(!savedArchJson.includes("ghost:"));
+    assert.ok(!savedArchJson.includes("audit-svc"));
+    assert.ok(!savedViewStateJson.includes("ghost:"));
+    assert.ok(!savedViewStateJson.includes("audit-svc"));
+
+    // Assert Handoff generation does not contain ghost: prefix or audit-svc
+    const handoff = generateExecutionHandoff(state.accepted);
+    assert.ok(!JSON.stringify(handoff).includes("ghost:"));
+    assert.ok(!JSON.stringify(handoff).includes("audit-svc"));
+
+    // Assert formal ArchitectureProject has no ghost ID
+    assert.ok(!state.accepted.architecture.components.some((c) => c.id.includes("ghost") || c.id === "audit-svc"));
+  });
+
+  it("b. consistency: dry-run and accept call identical incremental layout function and identical previousState", async () => {
+    const layoutCalls: Array<{ architecture: ArchitectureProject; previousState?: LayoutState }> = [];
+    const controller = new WorkspaceShellController(pointsSystemFixture, {
+      flow: new CandidateFlow({
+        review: new ArchitectureReview({
+          clock: () => new Date("2026-08-15T00:00:00.000Z"),
+          idGenerator: (() => { let id = 0; return () => `proposal-${++id}`; })()
+        })
+      }),
+      engineFactory: () => ({
+        layout: async (graph: any) => ({
+          status: "success" as const,
+          direction: "LR" as const,
+          size: { width: 800, height: 600 },
+          nodes: graph.nodes.map((n: any, idx: number) => ({
+            id: n.id,
+            sourceId: n.id,
+            kind: n.kind,
+            position: { x: 50 + idx * 250, y: 150 },
+            size: { width: 220, height: 90 }
+          })),
+          edges: [],
+          diagnostics: []
+        }),
+        dispose: () => undefined
+      })
+    });
+
+    const initialLayoutState: LayoutState = {
+      version: 1,
+      direction: "LR",
+      nodes: pointsSystemFixture.architecture.components.map((c, i) => ({
+        id: c.id,
+        position: { x: i * 200, y: 100 },
+        size: { width: 220, height: 90 }
+      })),
+      edges: []
+    };
+    controller.updateLayoutState(initialLayoutState);
+    (controller as any).layoutValue = {
+      status: "success",
+      direction: "LR",
+      size: { width: 800, height: 600 },
+      nodes: initialLayoutState.nodes,
+      edges: [],
+      diagnostics: []
+    };
+
+    // Spy on controller's unified incremental layout execution point
+    const originalRunIncremental = (controller as any).runIncrementalLayout.bind(controller);
+    (controller as any).runIncrementalLayout = async (arch: any, prev: any, sig: any, timeout: any) => {
+      layoutCalls.push({ architecture: arch, previousState: prev });
+      return originalRunIncremental(arch, prev, sig, timeout);
+    };
+
+    // Call 1: Dry-run prediction triggered by executeCommand
+    await controller.executeCommand({
+      type: "add-component",
+      component: { id: "payment-gw", name: "Payment Gateway", type: "service", capabilities: ["pay"] }
+    });
+    assert.equal(controller.state().ghostPrediction?.status, "predicted");
+
+    // Call 2: Formal acceptCandidate
+    await controller.acceptCandidate("Approved payment gateway.");
+
+    assert.ok(layoutCalls.length >= 2);
+    const dryRunCall = layoutCalls[layoutCalls.length - 2];
+    const acceptCall = layoutCalls[layoutCalls.length - 1];
+
+    assert.equal(dryRunCall.architecture.architecture.components.length, acceptCall.architecture.architecture.components.length);
+    assert.deepEqual(dryRunCall.previousState, initialLayoutState);
+    assert.deepEqual(acceptCall.previousState, initialLayoutState);
+  });
+
+  it("c. fault injection: solver error, timeout, and fallback solver gracefully degrade to unavailable with accessible notice", async () => {
+    // 1. Fallback solver status injection
+    const fallbackController = new WorkspaceShellController(pointsSystemFixture, {
+      engineFactory: () => ({
+        layout: async (graph: any) => ({
+          status: "fallback" as const,
+          direction: "LR" as const,
+          size: { width: 800, height: 600 },
+          nodes: graph.nodes.map((n: any) => ({
+            id: n.id, sourceId: n.id, kind: n.kind, position: { x: 0, y: 0 }, size: { width: 100, height: 50 }
+          })),
+          edges: [],
+          diagnostics: [{ code: "SOLVER_FAILURE" as const, severity: "error" as const, message: "Injected ELK crash" }]
+        }),
+        dispose: () => undefined
+      })
+    });
+    (fallbackController as any).layoutValue = {
+      status: "success",
+      direction: "LR",
+      size: { width: 800, height: 600 },
+      nodes: [],
+      edges: [],
+      diagnostics: []
+    };
+
+    await fallbackController.executeCommand({
+      type: "add-component",
+      component: { id: "crash-test", name: "Crash Test", type: "service", capabilities: ["crash"] }
+    });
+
+    const state = fallbackController.state();
+    assert.equal(state.ghostPrediction?.status, "unavailable");
+    assert.equal(state.ghostPrediction?.solver, "fallback");
+    assert.ok(state.ghostPrediction?.notice?.includes("求解器降级") || state.ghostPrediction?.notice?.includes("Injected ELK crash"));
+
+    // 2. Worker / Layout exception injection
+    const errorController = new WorkspaceShellController(pointsSystemFixture, {
+      engineFactory: () => ({
+        layout: async () => { throw new Error("Worker timeout: 5000ms exceeded"); },
+        dispose: () => undefined
+      })
+    });
+    (errorController as any).layoutValue = {
+      status: "success",
+      direction: "LR",
+      size: { width: 800, height: 600 },
+      nodes: [],
+      edges: [],
+      diagnostics: []
+    };
+
+    await errorController.executeCommand({
+      type: "add-component",
+      component: { id: "timeout-test", name: "Timeout Test", type: "service", capabilities: ["timeout"] }
+    });
+
+    const errorState = errorController.state();
+    assert.equal(errorState.ghostPrediction?.status, "unavailable");
+    assert.ok(errorState.ghostPrediction?.notice?.includes("Worker timeout"));
+  });
+
+  it("d. race conditions: stale dry-run results are safely discarded when proposal changes, is rejected, or becomes stale", async () => {
+    let slowResolve: ((val: any) => void) | undefined;
+    const slowEngine = {
+      layout: async (graph: any) => {
+        return new Promise((resolve) => {
+          slowResolve = () => resolve({
+            status: "success" as const,
+            direction: "LR" as const,
+            size: { width: 800, height: 600 },
+            nodes: graph.nodes.map((n: any) => ({
+              id: n.id, sourceId: n.id, kind: n.kind, position: { x: 999, y: 999 }, size: { width: 220, height: 90 }
+            })),
+            edges: [],
+            diagnostics: []
+          });
+        });
+      },
+      dispose: () => undefined
+    };
+
+    const controller = new WorkspaceShellController(pointsSystemFixture, {
+      engineFactory: () => slowEngine as any
+    });
+    (controller as any).layoutValue = {
+      status: "success",
+      direction: "LR",
+      size: { width: 800, height: 600 },
+      nodes: [],
+      edges: [],
+      diagnostics: []
+    };
+
+    // Start slow proposal 1
+    const p1 = controller.executeCommand({
+      type: "add-component",
+      component: { id: "slow-svc", name: "Slow Service", type: "service", capabilities: ["slow"] }
+    });
+
+    // While slow dry-run is in-flight, user rejects proposal
+    controller.rejectCandidate("Discard slow proposal.");
+
+    // Now let slow dry-run resolve
+    slowResolve?.(null);
+    await p1;
+
+    // The stale dry-run must NOT have applied its result
+    const state = controller.state();
+    assert.equal(state.proposal?.status, "rejected");
+    assert.equal(state.ghostPrediction, undefined);
+    assert.equal(state.isCommandProposal, undefined);
+  });
+
+  it("e. rejection releases workspace lock and ensures no Ghost reappears", async () => {
+    const controller = createController();
+    await controller.executeCommand({
+      type: "add-component",
+      component: { id: "rejected-svc", name: "Rejected Service", type: "service", capabilities: ["reject"] }
+    });
+
+    assert.ok(controller.state().proposal !== undefined);
+    assert.ok(controller.state().isCommandProposal);
+
+    // Reject candidate
+    controller.rejectCandidate("User rejected.");
+
+    const state = controller.state();
+    assert.equal(state.status, "ready");
+    assert.equal(state.isCommandProposal, undefined);
+    assert.equal(state.ghostPrediction, undefined);
+
+    // Can immediately propose another change without being blocked
+    await controller.executeCommand({
+      type: "add-component",
+      component: { id: "new-svc", name: "New Service", type: "service", capabilities: ["new"] }
+    });
+    assert.ok(controller.state().proposal?.title.includes("new-svc"));
   });
 });
 

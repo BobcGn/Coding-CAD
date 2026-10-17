@@ -27,7 +27,8 @@
   import {
     toSvelteFlowProjection,
     type ArchitectureFlowEdge,
-    type ArchitectureFlowNode
+    type ArchitectureFlowNode,
+    type GhostPredictionState
   } from "$lib/layout/adapters/svelte-flow-adapter.js";
   import { persistDraggedPosition } from "$lib/architecture/state/workspace-view-state.js";
 
@@ -37,6 +38,7 @@
     viewState: LayoutState;
     selectedNodeIds?: readonly string[];
     ghostProposal?: Proposal | undefined;
+    ghostPrediction?: GhostPredictionState | undefined;
     /**
      * 默认自动折叠阈值（组件数量 kind === 'component' 严格大于此阈值时初始折叠全部模块容器）。
      * 标注：当前在代码中定义为 DEFAULT_UNAPPROVED_COLLAPSE_THRESHOLD = 50，属于未经批准的临时值（Unapproved temporary value），待用户决策裁定。
@@ -55,6 +57,7 @@
     viewState,
     selectedNodeIds = [],
     ghostProposal,
+    ghostPrediction,
     defaultCollapseThreshold,
     onViewStateChange,
     onSelectionChange,
@@ -114,7 +117,8 @@
     const adapted = toSvelteFlowProjection(projection, layout, viewState, {
       collapsedGroupIds,
       onToggleCollapse: handleToggleCollapse,
-      ghostProposal
+      ghostProposal,
+      ghostPrediction
     });
     flowNodes = adapted.nodes.map((n) => ({
       ...n,

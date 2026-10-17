@@ -12,15 +12,22 @@
   class:ghost-proposed={data.ghostStatus === "proposed"}
   class:ghost-pending-change={data.ghostStatus === "pending-change"}
   class:ghost-pending-deletion={data.ghostStatus === "pending-deletion"}
+  class:ghost-predicting={data.ghostPredictionStatus === "predicting"}
+  class:ghost-predicted={data.ghostPredictionStatus === "predicted"}
+  class:ghost-unavailable={data.ghostPredictionStatus === "unavailable"}
   data-role={data.role}
   data-kind={data.kind}
   data-ghost={data.isGhost ? "true" : undefined}
   data-ghost-status={data.ghostStatus}
-  aria-label={data.ghostLabel ? `${data.ghostLabel} ${data.label}, ${data.role}` : `${data.label}, ${data.role}`}
+  data-ghost-prediction-status={data.ghostPredictionStatus}
+  data-ghost-reason-code={data.ghostReasonCode}
+  data-ghost-heuristic-x={data.ghostHeuristicPosition?.x}
+  data-ghost-heuristic-y={data.ghostHeuristicPosition?.y}
+  aria-label={data.ghostNotice ? `${data.ghostLabel} ${data.label}, ${data.role} - ${data.ghostNotice}` : (data.ghostLabel ? `${data.ghostLabel} ${data.label}, ${data.role}` : `${data.label}, ${data.role}`)}
 >
   {#if data.ghostStatus}
     <div
-      class="ghost-badge-bar {data.ghostStatus}"
+      class="ghost-badge-bar {data.ghostPredictionStatus ?? data.ghostStatus}"
       data-testid="ghost-badge"
       aria-label={data.ghostLabel}
     >
@@ -173,6 +180,18 @@
   }
   .ghost-badge-bar.proposed {
     background: #7c3aed;
+    color: #ffffff;
+  }
+  .ghost-badge-bar.predicting {
+    background: #0284c7;
+    color: #ffffff;
+  }
+  .ghost-badge-bar.predicted {
+    background: #059669;
+    color: #ffffff;
+  }
+  .ghost-badge-bar.unavailable {
+    background: #64748b;
     color: #ffffff;
   }
   .ghost-badge-bar.pending-change {

@@ -365,7 +365,9 @@
   }
 
   onMount(() => {
-    const next = new WorkspaceShellController(pointsSystemFixture);
+    const next = new WorkspaceShellController(pointsSystemFixture, {
+      onStateChange: () => syncFromController()
+    });
     controller = next;
     if (import.meta.env.DEV || import.meta.env.MODE === "layout-acceptance") {
       void import("$lib/layout/testing/layout-acceptance.js").then(({ installLayoutAcceptance }) => installLayoutAcceptance(next));
@@ -375,6 +377,10 @@
     pageWindow.__coding_cad_sync__ = syncFromController;
     pageWindow.__coding_cad_execute_command__ = async (cmd: ArchitectureCommand) => {
       await next.executeCommand(cmd);
+      syncFromController();
+    };
+    pageWindow.__coding_cad_wait_for_prediction__ = async () => {
+      await next.waitForPrediction();
       syncFromController();
     };
     pageWindow.__coding_cad_accept__ = async (rationale: string) => {
@@ -695,6 +701,7 @@
           viewState={(shell.candidate && !shell.isCommandProposal ? shell.candidateLayoutState : shell.layoutState) ?? shell.layoutState!}
           selectedNodeIds={selectedNodeIds}
           ghostProposal={shell?.isCommandProposal && pendingReview ? shell.proposal : undefined}
+          ghostPrediction={shell?.isCommandProposal && pendingReview ? shell.ghostPrediction : undefined}
           onViewStateChange={(next) => controller?.updateLayoutState(next)}
           onSelectionChange={(nodeIds) => {
             selectedNodeIds = [...nodeIds];

@@ -265,4 +265,78 @@ describe("Ghost Proposal Projection (D-007 Option B)", () => {
     const adapted = toSvelteFlowProjection(projection, layout, undefined, { ghostProposal: approvedProposal });
     expect(adapted.nodes.some((n) => n.id.startsWith("ghost:"))).toBe(false);
   });
+
+  describe("Step 5.8 D-011 Ghost Prediction Projection States", () => {
+    const proposal = createTestProposal({
+      components: { added: [{ id: "kafka", name: "Kafka Broker", type: "queue" }] },
+      connections: { added: [{ id: "conn-kafka", from: "service", to: "kafka", protocol: "MESSAGE" }] }
+    });
+
+    it("projects 'predicting' state with heuristic position and predicting badge", () => {
+      const adapted = toSvelteFlowProjection(projection, layout, undefined, {
+        ghostProposal: proposal,
+        ghostPrediction: { status: "predicting", proposalId: proposal.id }
+      });
+
+      const ghostNode = adapted.nodes.find((n) => n.id === "ghost:kafka");
+      expect(ghostNode).toBeDefined();
+      expect(ghostNode?.data.ghostPredictionStatus).toBe("predicting");
+      expect(ghostNode?.data.ghostLabel).toBe("[预测中 / Predicting]");
+      expect(ghostNode?.ariaLabel).toContain("[预测中 / Predicting]");
+
+      const ghostEdge = adapted.edges.find((e) => e.id === "ghost:connection:conn-kafka");
+      expect(ghostEdge?.data?.ghostPredictionStatus).toBe("predicting");
+      expect(ghostEdge?.label).toBe("[预测中 / Predicting]");
+    });
+
+    it("projects 'predicted' state with predicted coordinates, predicted badge, and accessibility notice", () => {
+      const adapted = toSvelteFlowProjection(projection, layout, undefined, {
+        ghostProposal: proposal,
+        ghostPrediction: {
+          status: "predicted",
+          proposalId: proposal.id,
+          nodes: { kafka: { position: { x: 550, y: 320 } } },
+          solver: "elk",
+          durationMs: 42
+        }
+      });
+
+      const ghostNode = adapted.nodes.find((n) => n.id === "ghost:kafka");
+      expect(ghostNode).toBeDefined();
+      expect(ghostNode?.position).toEqual({ x: 550, y: 320 });
+      expect(ghostNode?.data.ghostPredictionStatus).toBe("predicted");
+      expect(ghostNode?.data.ghostLabel).toBe("[预测位置 / Predicted Position]");
+      expect(ghostNode?.ariaLabel).toContain("[预测位置 / Predicted Position]");
+      expect(ghostNode?.ariaLabel).toContain("接受前若有其他变更，最终位置可能变化");
+      expect(ghostNode?.data.ghostNotice).toContain("接受前若有其他变更，最终位置可能变化");
+
+      const ghostEdge = adapted.edges.find((e) => e.id === "ghost:connection:conn-kafka");
+      expect(ghostEdge?.data?.ghostPredictionStatus).toBe("predicted");
+      expect(ghostEdge?.label).toBe("[预测位置 / Predicted Position]");
+    });
+
+    it("projects 'unavailable' state with fallback heuristic coordinates and unavailable notice", () => {
+      const adapted = toSvelteFlowProjection(projection, layout, undefined, {
+        ghostProposal: proposal,
+        ghostPrediction: {
+          status: "unavailable",
+          proposalId: proposal.id,
+          solver: "fallback",
+          durationMs: 15,
+          notice: "求解器降级 (timeout)，预测不可用已回退至启发式放置"
+        }
+      });
+
+      const ghostNode = adapted.nodes.find((n) => n.id === "ghost:kafka");
+      expect(ghostNode).toBeDefined();
+      expect(ghostNode?.data.ghostPredictionStatus).toBe("unavailable");
+      expect(ghostNode?.data.ghostLabel).toBe("[预测不可用 / Prediction Unavailable]");
+      expect(ghostNode?.ariaLabel).toContain("[预测不可用 / Prediction Unavailable]");
+      expect(ghostNode?.data.ghostNotice).toBe("求解器降级 (timeout)，预测不可用已回退至启发式放置");
+
+      const ghostEdge = adapted.edges.find((e) => e.id === "ghost:connection:conn-kafka");
+      expect(ghostEdge?.data?.ghostPredictionStatus).toBe("unavailable");
+      expect(ghostEdge?.label).toBe("[预测不可用 / Prediction Unavailable]");
+    });
+  });
 });

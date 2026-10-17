@@ -11,6 +11,13 @@ import {
   type GhostPlacementReasonCode,
   type Rect
 } from "../../cad/canvas/adapters/ghost-placement.js";
+import type {
+  GhostPredictedNode,
+  GhostPredictionState,
+  GhostPredictionStatus
+} from "../../architecture/greenfield/workspace-shell.js";
+
+export type { GhostPredictedNode, GhostPredictionState, GhostPredictionStatus };
 
 export type GhostStatus = "proposed" | "pending-change" | "pending-deletion";
 
@@ -26,15 +33,18 @@ export interface ArchitectureNodeData extends Record<string, unknown> {
   readonly onToggleCollapse?: (groupId: string) => void;
   readonly isGhost?: boolean;
   readonly ghostStatus?: GhostStatus;
+  readonly ghostPredictionStatus?: GhostPredictionStatus;
   readonly ghostLabel?: string;
   readonly ghostNotice?: string;
   readonly ghostReasonCode?: GhostPlacementReasonCode;
   readonly ghostDistanceToAnchor?: number;
+  readonly ghostHeuristicPosition?: { x: number; y: number };
 }
 
 export interface ArchitectureEdgeData extends Record<string, unknown> {
   readonly isGhost?: boolean;
   readonly ghostStatus?: "proposed" | "pending-deletion";
+  readonly ghostPredictionStatus?: GhostPredictionStatus;
   readonly ghostLabel?: string;
 }
 
@@ -50,6 +60,7 @@ export interface SvelteFlowAdapterOptions {
   readonly collapsedGroupIds?: ReadonlySet<string>;
   readonly onToggleCollapse?: (groupId: string) => void;
   readonly ghostProposal?: Proposal | undefined;
+  readonly ghostPrediction?: GhostPredictionState | undefined;
 }
 
 /** The sole one-way anti-corruption adapter from solver-neutral layout to Svelte Flow. */
@@ -227,16 +238,42 @@ export function toSvelteFlowProjection(
         targetContainerId
       });
 
-      const parentPos = placement.parentId === undefined ? undefined
-        : positionById.get(placement.parentId) ?? resultById.get(placement.parentId)?.position;
-      const flowPos = parentPos === undefined ? placement.position : {
-        x: placement.position.x - parentPos.x,
-        y: placement.position.y - parentPos.y
+      const prediction = options.ghostPrediction;
+      const isMatchingProposal = prediction !== undefined && proposal !== undefined && prediction.proposalId === proposal.id;
+      const predictionStatus: GhostPredictionStatus | undefined = isMatchingProposal ? prediction.status : undefined;
+      const predictedNode = isMatchingProposal && predictionStatus === "predicted"
+        ? prediction.nodes?.[added.id]
+        : undefined;
+
+      const effectivePos = predictedNode !== undefined ? predictedNode.position : placement.position;
+      const effectiveParentId = predictedNode !== undefined ? predictedNode.parentId : placement.parentId;
+
+      let ghostLabel = "[待审批 / Proposed]";
+      let ghostNotice = placement.containerNotice;
+      if (predictionStatus === "predicting") {
+        ghostLabel = "[预测中 / Predicting]";
+      } else if (predictionStatus === "predicted") {
+        ghostLabel = "[预测位置 / Predicted Position]";
+        ghostNotice = "接受前若有其他变更，最终位置可能变化 / If other changes occur before acceptance, final position may change";
+      } else if (predictionStatus === "unavailable") {
+        ghostLabel = "[预测不可用 / Prediction Unavailable]";
+        ghostNotice = prediction?.notice ?? "预测不可用，已回退至启发式放置";
+      }
+
+      const parentPos = effectiveParentId === undefined ? undefined
+        : positionById.get(effectiveParentId) ?? resultById.get(effectiveParentId)?.position;
+      const flowPos = parentPos === undefined ? effectivePos : {
+        x: effectivePos.x - parentPos.x,
+        y: effectivePos.y - parentPos.y
       };
 
       const role: LayoutSemanticRole = added.type === "external-service"
         ? "external"
         : (added.type as LayoutSemanticRole) ?? "service";
+
+      const ariaLabel = predictionStatus === "predicted"
+        ? `${ghostLabel} ${added.name}, ${role} - 接受前若有其他变更，最终位置可能变化`
+        : `${ghostLabel} ${added.name}, ${role}`;
 
       ghostNodes.push({
         id: `ghost:${added.id}`,
@@ -244,8 +281,8 @@ export function toSvelteFlowProjection(
         position: flowPos,
         width: 220,
         height: 90,
-        parentId: placement.parentId,
-        ariaLabel: `[待审批 / Proposed] ${added.name}, ${role}`,
+        parentId: effectiveParentId,
+        ariaLabel,
         data: {
           label: added.name,
           compactLabel: added.name.slice(0, 2).toUpperCase(),
@@ -253,10 +290,12 @@ export function toSvelteFlowProjection(
           kind: "component",
           isGhost: true,
           ghostStatus: "proposed",
-          ghostLabel: "[待审批 / Proposed]",
-          ghostNotice: placement.containerNotice,
+          ghostPredictionStatus: predictionStatus,
+          ghostLabel,
+          ghostNotice,
           ghostReasonCode: placement.reasonCode,
-          ghostDistanceToAnchor: placement.distanceToAnchor
+          ghostDistanceToAnchor: placement.distanceToAnchor,
+          ghostHeuristicPosition: placement.position
         }
       });
     }
@@ -266,22 +305,38 @@ export function toSvelteFlowProjection(
   const ghostEdges: ArchitectureFlowEdge[] = [];
   if (diff && diff.connections.added.length > 0) {
     const addedCompIdSet = new Set(diff.components.added.map((c) => c.id));
+    const prediction = options.ghostPrediction;
+    const isMatchingProposal = prediction !== undefined && proposal !== undefined && prediction.proposalId === proposal.id;
+    const predictionStatus: GhostPredictionStatus | undefined = isMatchingProposal ? prediction.status : undefined;
+
+    let edgeLabel = "[待审批 / Proposed]";
+    if (predictionStatus === "predicting") {
+      edgeLabel = "[预测中 / Predicting]";
+    } else if (predictionStatus === "predicted") {
+      edgeLabel = "[预测位置 / Predicted Position]";
+    } else if (predictionStatus === "unavailable") {
+      edgeLabel = "[预测不可用 / Prediction Unavailable]";
+    }
+
     for (const conn of diff.connections.added) {
       const sourceId = addedCompIdSet.has(conn.from) ? `ghost:${conn.from}` : conn.from;
       const targetId = addedCompIdSet.has(conn.to) ? `ghost:${conn.to}` : conn.to;
+      const edgeAriaLabel = `${edgeLabel} Connection from ${conn.from} to ${conn.to}`;
+
       ghostEdges.push({
         id: `ghost:connection:${conn.id}`,
         type: "smoothstep",
         source: sourceId,
         target: targetId,
         focusable: true,
-        ariaLabel: `[待审批 / Proposed] Connection from ${conn.from} to ${conn.to}`,
-        label: "[待审批 / Proposed]",
+        ariaLabel: edgeAriaLabel,
+        label: edgeLabel,
         style: "stroke: #8b5cf6; stroke-dasharray: 5 5; stroke-width: 2px;",
         data: {
           isGhost: true,
           ghostStatus: "proposed",
-          ghostLabel: "[待审批 / Proposed]"
+          ghostPredictionStatus: predictionStatus,
+          ghostLabel: edgeLabel
         }
       });
     }

@@ -21,8 +21,8 @@
 - **步骤 5.5（阶段 5 初始验收与文档同步）**：已完成并提交（`d529390` / `71e76d0`）。初始交付物、不变量检查与退出报告初版完成。
 - **步骤 5.6（订正与补证据）**：已完成并提交（`3f05c44` / `966fd4c`）。退出结论变更为有条件满足；补充待用户处理事项；Playwright 真实浏览器实测（dev/preview 双模式覆盖 6 个 Add 场景，零重叠、零容器包含失败、100% ELK 求解器、无关节点 0.0px 位移）；回答 Medium 夹具 (24, 153) 归因与 DocGen 候选顺序；完成公开 API 与范围审计 (`git diff --stat main..HEAD`)；补齐拒绝后内存保留单元测试。
 - **步骤 5.7（Ghost 预测位置设计备忘录）**：已完成并提交（`338a489` / `df78264`）。编写只读备忘录 `docs/phase-5-ghost-placement-memo.md`（评估方案 A/B/C，提供 D-011 决策草案）。
-- **步骤 5.8.0（订正证据与措辞）**：已完成。订正备忘录去除未经验证的具体数值并注明推导来源；细化 Ghost 放置原因码为 `near-anchor`、`far-anchor-fallback`、`container-interior`、`container-exterior`、`global-fallback`；逐包执行 15 包并归档 17 份原始日志至 `logs/validation/p5-reconciliation/`；执行全量可写环境 `CI=true TURBO_FORCE=true pnpm ci:verify`，74 项浏览器测试全部一次性通过；核验 5 核心包零代码改动。
-- **步骤 5.8（Ghost 预测位置实现, D-011）**：即将开展。落实已批准 D-011，在 Web 适配层实现未持久化的试算布局预测，保证与接受后增量布局同一函数、同一固定状态、同一参数，实现三态标签与安全降级。
+- **步骤 5.8.0（订正证据与措辞）**：已完成并提交（`530002a`）。订正备忘录去除未经验证的具体数值并注明推导来源；细化 Ghost 放置原因码为 `near-anchor`、`far-anchor-fallback`、`container-interior`、`container-exterior`、`global-fallback`；逐包执行 15 包并归档 17 份原始日志至 `logs/validation/p5-reconciliation/`；执行全量可写环境 `CI=true TURBO_FORCE=true pnpm ci:verify`，74 项浏览器测试全部一次性通过；核验 5 核心包零代码改动。
+- **步骤 5.8（Ghost 预测位置实现, D-011）**：已完成并验证。落实已批准 D-011，在 Web 适配层实现未持久化的试算布局预测（`predictGhostPlacement`），保证与接受后增量布局同一函数（`layoutArchitectureGraph`）、同一固定状态（`this.shell.layoutState`）、同一参数（`mode: "INCREMENTAL"`）；绝对不持久化（仅存内存响应式字段，不写入 `layoutState`、撤销栈、Save/Handoff 产物）；失败降级回退启发式位置并显式提示；三态标签映射（`predicting` / `predicted` / `unavailable`）；竞态安全防御（提案变更立即丢弃试算）；单元测试 5+3 项全通，Playwright 真实浏览器实测（dev/preview 双模式覆盖 6 Add + 1 Connect + 1 Remove）位移 0.0px，100% ELK 求解器，未受影响节点位移 0.0px。
 
 ## 阶段 4 进度总结 / Phase 4 Progress Summary
 

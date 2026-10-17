@@ -135,21 +135,22 @@
 
 ---
 
-### 5.2 供用户决策的 Decision 条目草案 (Draft Decision Entry)
+### 5.2 用户决策结果与正式 Decision 条目 (User Decision & Canonical Decision Entry)
 
-若用户同意采纳方案 B，建议在后续阶段将以下决策正式追加至 `docs/architecture-layout-decisions.md`：
+用户已于 2026-10-17 正式批准采纳方案 B，正式决策已追加至 `docs/architecture-layout-decisions.md`（编号 D-011）：
 
 ```markdown
 ### D-011: Ghost 预测位置布局策略 (Ghost Predictive Placement Strategy)
 
-- **Status**: PROPOSED (Awaiting User Formal Approval)
+- **Status**: APPROVED — 2026-10-17 (User)
 - **Context**: 阶段 5 实现了 Ghost 呈现与 Review 门禁。实测表明，纯几何启发式放置（方案 A）会导致 Ghost 与采纳后最终坐标之间存在显著位移（Greenfield 约 300px，Medium 约 1700px），给用户造成视觉跳变。
-- **Final Decision (Proposed)**: 采纳 **方案 B（未持久化的 Dry-run 预测布局）**。
+- **Final Decision**: 采纳 **方案 B（未持久化的 Dry-run 预测布局）**。
 - **Hard Constraints / 硬约束**:
-  1. **零公开 API 变更**：不得修改 `@coding-cad/architecture-layout` 的导出接口与数据契约；
-  2. **零 D-010 边界变更**：复用既有 Web Worker 通信通道，不扩展任何专用 Worker 消息类型；
-  3. **严格非持久化**：Dry-run 计算坐标仅用于前端 Ghost 临时渲染，严禁写入 `shell.layoutState`，严禁污染撤销/重做栈，严禁落盘；
-  4. **零重叠保证**：Ghost 预测位置必须保证与正式节点几何零重叠；
-  5. **安全降级**：若 Dry-run 求解因异常发生超时或失败，自动安全降级至既有局部启发式放置，不得阻断用户提案与审核流程。
+  1. **同一性约束**：试算与接受后的增量布局必须走同一函数、同一份固定状态（已有节点的位置约束）、同一份参数。禁止试算用全量布局而接受用增量布局；
+  2. **严格非持久化**：试算结果绝不写入 layoutState、撤销栈、Save 产物、Handoff 产物；Ghost 的 id 绝不进入正式架构；
+  3. **安全降级守卫**：试算失败、超时、返回降级求解器结果（solver 来源不是 ELK），一律视为“预测不可用”，回退到现有启发式放置，并在界面显式提示（带文字与可访问名称），不得把降级结果当预测展示；
+  4. **并发与竞态处理**：提案变化、被拒绝、被标记过期时，丢弃进行中的试算或忽略其结果；必须有竞态测试；
+  5. **架构边界保护**：不改 architecture-layout 公开 API、不改 D-010 边界、不改 IR 公开类型、不新增 package、不新增审批语义；
+  6. **三态显式反馈**：预测期间，Ghost 先以现有启发式位置显示并标注“预测中”；预测完成后移动到预测位置并标注“预测位置”，标签文字需说明“接受前若有其他变更，最终位置可能变化”。试算超时上限使用可配置常量，标注为“未经批准的临时值”。
 - **Affected Packages**: `apps/web` (仅限前端适配层)。
 ```

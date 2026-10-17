@@ -22,6 +22,23 @@ import type { InspectionReportDto } from "../workspace/contract.js";
 
 export type ShellStatus = "idle" | "generating" | "layout" | "ready" | "error";
 
+export type GhostPredictionStatus = "predicting" | "predicted" | "unavailable";
+
+export interface GhostPredictedNode {
+  readonly position: { readonly x: number; readonly y: number };
+  readonly parentId?: string | undefined;
+}
+
+export interface GhostPredictionState {
+  readonly status: GhostPredictionStatus;
+  readonly proposalId: string;
+  readonly nodes?: Readonly<Record<string, GhostPredictedNode>> | undefined;
+  readonly edgeRoutes?: Readonly<Record<string, unknown>> | undefined;
+  readonly notice?: string | undefined;
+  readonly solver?: string | undefined;
+  readonly durationMs?: number | undefined;
+}
+
 export interface GreenfieldShellState {
   readonly accepted: ArchitectureProject;
   readonly candidate?: ArchitectureProject;
@@ -39,6 +56,7 @@ export interface GreenfieldShellState {
   readonly isCommandProposal?: boolean | undefined;
   readonly isProposalStale?: boolean | undefined;
   readonly movement?: MovementReport | undefined;
+  readonly ghostPrediction?: GhostPredictionState | undefined;
 }
 
 export interface GreenfieldShellActions {

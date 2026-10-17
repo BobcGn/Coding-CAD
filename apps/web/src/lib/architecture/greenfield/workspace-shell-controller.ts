@@ -63,12 +63,21 @@ export interface ShellController {
   analyzeRepository(repositoryPath: string): Promise<void>;
   updateAcceptedArchitecture(project: ArchitectureProject): Promise<void>;
   movement(): MovementReport | undefined;
+  waitForPrediction(): Promise<void>;
 }
+
+/**
+ * 试算布局超时上限常量（毫秒）
+ * 标注：未经批准的临时值（Unapproved temporary value），待用户裁定。
+ * 超时后将回退为启发式放置，并标记为“预测不可用”。
+ */
+export const PREDICTION_TIMEOUT_MS = 5000;
 
 export interface ShellControllerOptions {
   readonly flow?: CandidateFlow;
   readonly engineFactory?: () => LayoutEngine;
   readonly review?: ArchitectureReview;
+  readonly onStateChange?: (state: GreenfieldShellState) => void;
 }
 
 export class WorkspaceShellController implements ShellController {
@@ -79,6 +88,9 @@ export class WorkspaceShellController implements ShellController {
   private readonly engineFactory: () => LayoutEngine;
   private pendingCommand: CommandPreparation | undefined;
   private readonly commands: CommandApplication;
+  private predictionToken = 0;
+  private inFlightPrediction: Promise<void> | undefined;
+  private readonly onStateChange?: (state: GreenfieldShellState) => void;
 
   constructor(accepted: ArchitectureProject, options: ShellControllerOptions = {}) {
     this.shell = {
@@ -87,6 +99,7 @@ export class WorkspaceShellController implements ShellController {
       message: "",
       selectedNodeIds: []
     };
+    this.onStateChange = options.onStateChange;
     const review = options.review;
     this.flow = options.flow ?? new CandidateFlow({ ...(review ? { review } : {}) });
     this.engineFactory = options.engineFactory ?? (() => new BrowserWorkerLayoutEngine());
@@ -110,6 +123,14 @@ export class WorkspaceShellController implements ShellController {
 
   movement(): MovementReport | undefined {
     return this.shell.movement;
+  }
+
+  waitForPrediction(): Promise<void> {
+    return this.inFlightPrediction ?? Promise.resolve();
+  }
+
+  private notifyState(): void {
+    this.onStateChange?.(this.shell);
   }
 
   async generateFromRequirement(requirement: string, signal?: AbortSignal): Promise<void> {
@@ -168,17 +189,22 @@ export class WorkspaceShellController implements ShellController {
         return;
       }
       this.pendingCommand = undefined;
+      this.predictionToken++;
       this.shell = {
         ...this.shell, accepted: result.accepted, candidate: undefined, candidateLayoutState: undefined,
-        proposal: result.proposal, isCommandProposal: undefined, isProposalStale: undefined, status: "layout", message: ""
+        proposal: result.proposal, isCommandProposal: undefined, isProposalStale: undefined,
+        ghostPrediction: undefined, status: "layout", message: ""
       };
+      this.notifyState();
       await this.layoutCandidate(result.accepted);
       this.shell = { ...this.shell, status: "ready", message: "Candidate accepted." };
+      this.notifyState();
     } catch (error) {
       this.shell = {
         ...this.shell, proposal: this.shell.proposal?.status === "approved" ? this.shell.proposal : this.currentProposal(proposal.id), status: "error",
         message: error instanceof Error ? error.message : "Approval failed."
       };
+      this.notifyState();
     }
   }
 
@@ -191,19 +217,23 @@ export class WorkspaceShellController implements ShellController {
         ? this.flow.decide(proposal.id, input)
         : this.commands.decide(this.pendingCommand, input);
       this.pendingCommand = undefined;
+      this.predictionToken++;
       this.shell = {
         ...this.shell,
         proposal: result.proposal,
         isCommandProposal: undefined,
         isProposalStale: undefined,
+        ghostPrediction: undefined,
         status: "ready",
         message: "Candidate rejected; accepted IR unchanged."
       };
+      this.notifyState();
     } catch (error) {
       this.shell = {
         ...this.shell, proposal: this.shell.proposal?.status === "approved" ? this.shell.proposal : this.currentProposal(proposal.id), status: "error",
         message: error instanceof Error ? error.message : "Rejection failed."
       };
+      this.notifyState();
     }
   }
 
@@ -213,25 +243,38 @@ export class WorkspaceShellController implements ShellController {
         ? "Formal architecture has changed; pending proposal is stale. Reject it before proposing new changes. / 正式架构已变化，当前提案已失效，请先拒绝清理后再发起新提议。"
         : "Review the pending candidate before editing.";
       this.shell = { ...this.shell, status: "error", message: msg };
+      this.notifyState();
       return;
     }
     try {
       const prepared = this.commands.prepare(this.shell.accepted, command);
       this.pendingCommand = prepared;
+      const requiresPrediction = command.type === "add-component" || command.type === "connect-components";
+      const token = ++this.predictionToken;
+
       this.shell = {
         ...this.shell,
         candidate: prepared.candidate,
         validation: prepared.validation,
         proposal: prepared.proposal,
         isCommandProposal: true,
+        ghostPrediction: requiresPrediction ? { status: "predicting", proposalId: prepared.proposal.id } : undefined,
         status: "ready",
         message: prepared.validation.valid ? "Command candidate awaits review." : "Command candidate has validation errors."
       };
+      this.notifyState();
+
       // In D-007 Option B (Local Extension), command editing proposals do NOT re-layout
       // the formal architecture with the solver. The formal layout remains stable, and
       // Ghost elements/markers are projected locally by the Web adapter layer.
       if (this.layoutValue === undefined) {
         await this.layoutCandidate(this.shell.accepted);
+      }
+
+      if (requiresPrediction) {
+        const predictionPromise = this.predictGhostPlacement(token, prepared.proposal.id, prepared.candidate, command);
+        this.inFlightPrediction = predictionPromise;
+        await predictionPromise;
       }
     } catch (error) {
       const reason = error instanceof Error ? error.message : "Command failed.";
@@ -241,6 +284,7 @@ export class WorkspaceShellController implements ShellController {
           id: "command.application", severity: "ERROR", title: "Command rejected", description: reason
         }] }
       };
+      this.notifyState();
     }
   }
 
@@ -251,8 +295,10 @@ export class WorkspaceShellController implements ShellController {
         status: "error",
         message: "Invalid ArchitectureProject: Expected an object with architecture.components array."
       };
+      this.notifyState();
       return;
     }
+    this.predictionToken++;
     const hasPending = this.shell.candidate !== undefined && this.shell.proposal !== undefined &&
       this.shell.proposal.status !== "approved" && this.shell.proposal.status !== "rejected";
     if (hasPending) {
@@ -260,9 +306,11 @@ export class WorkspaceShellController implements ShellController {
         ...this.shell,
         accepted: project,
         isProposalStale: true,
+        ghostPrediction: undefined,
         status: "ready",
         message: "Formal architecture has changed; the pending proposal is stale and must be re-proposed. / 正式架构已变化，提案已失效，请重新提议。"
       };
+      this.notifyState();
       await this.layoutCandidate(project);
       return;
     }
@@ -270,9 +318,11 @@ export class WorkspaceShellController implements ShellController {
       ...this.shell,
       accepted: project,
       isProposalStale: undefined,
+      ghostPrediction: undefined,
       status: "ready",
       message: "Formal architecture updated."
     };
+    this.notifyState();
     await this.layoutCandidate(project);
   }
 
@@ -340,16 +390,19 @@ export class WorkspaceShellController implements ShellController {
 
   reset(): void {
     this.pendingCommand = undefined;
+    this.predictionToken++;
     this.shell = {
       accepted: this.shell.accepted,
       status: "idle",
       message: "",
       selectedNodeIds: [],
       expectedArchitecture: undefined,
-      complianceReport: undefined
+      complianceReport: undefined,
+      ghostPrediction: undefined
     };
     this.projectionValue = undefined;
     this.layoutValue = undefined;
+    this.notifyState();
   }
 
   async saveProject(): Promise<string> {
@@ -451,13 +504,109 @@ export class WorkspaceShellController implements ShellController {
     return this.pendingCommand === undefined ? this.flow.getProposal(id) : this.commands.getProposal(id);
   }
 
-  private async layoutCandidate(architecture: ArchitectureProject, signal?: AbortSignal, restoredState?: LayoutState): Promise<void> {
+  private async runIncrementalLayout(
+    architecture: ArchitectureProject,
+    previousState?: LayoutState,
+    signal?: AbortSignal,
+    timeoutMs: number = PREDICTION_TIMEOUT_MS
+  ): Promise<{ result: LayoutResult; movement?: MovementReport }> {
     const projection = compileArchitectureProjection(architecture);
     const engine = this.engineFactory();
     try {
-      const { result: layout, movement } = await layoutArchitectureGraph(projection.layoutGraph, {
-        mode: "INCREMENTAL", previousState: this.shell.layoutState, signal, timeoutMs: 5_000
+      return await layoutArchitectureGraph(projection.layoutGraph, {
+        mode: "INCREMENTAL",
+        previousState,
+        signal,
+        timeoutMs
       }, engine);
+    } finally {
+      if (isDisposable(engine)) {
+        engine.dispose();
+      }
+    }
+  }
+
+  private async predictGhostPlacement(
+    token: number,
+    proposalId: string,
+    candidate: ArchitectureProject,
+    command: ArchitectureCommand
+  ): Promise<void> {
+    const startTime = Date.now();
+    try {
+      const { result } = await this.runIncrementalLayout(
+        candidate,
+        this.shell.layoutState,
+        undefined,
+        PREDICTION_TIMEOUT_MS
+      );
+      const elapsed = Date.now() - startTime;
+
+      if (token !== this.predictionToken || this.shell.proposal?.id !== proposalId || this.shell.isProposalStale) {
+        return;
+      }
+
+      if (result.status === "fallback") {
+        const diag = result.diagnostics.map((d) => d.message).join("; ");
+        this.shell = {
+          ...this.shell,
+          ghostPrediction: {
+            status: "unavailable",
+            proposalId,
+            solver: "fallback",
+            durationMs: elapsed,
+            notice: `求解器降级 (${diag || "fallback"})，预测不可用已回退至启发式放置`
+          }
+        };
+        this.notifyState();
+        return;
+      }
+
+      const nodes: Record<string, { position: { x: number; y: number }; parentId?: string }> = {};
+      for (const node of result.nodes) {
+        nodes[node.id] = {
+          position: { x: node.position.x, y: node.position.y },
+          parentId: node.parentId
+        };
+      }
+
+      this.shell = {
+        ...this.shell,
+        ghostPrediction: {
+          status: "predicted",
+          proposalId,
+          nodes,
+          solver: "elk",
+          durationMs: elapsed
+        }
+      };
+      this.notifyState();
+    } catch (error) {
+      const elapsed = Date.now() - startTime;
+      if (token !== this.predictionToken || this.shell.proposal?.id !== proposalId || this.shell.isProposalStale) {
+        return;
+      }
+      this.shell = {
+        ...this.shell,
+        ghostPrediction: {
+          status: "unavailable",
+          proposalId,
+          durationMs: elapsed,
+          notice: error instanceof Error ? error.message : "试算布局失败，已回退至启发式放置"
+        }
+      };
+      this.notifyState();
+    }
+  }
+
+  private async layoutCandidate(architecture: ArchitectureProject, signal?: AbortSignal, restoredState?: LayoutState): Promise<void> {
+    try {
+      const { result: layout, movement } = await this.runIncrementalLayout(
+        architecture,
+        this.shell.layoutState,
+        signal,
+        PREDICTION_TIMEOUT_MS
+      );
 
       if (signal?.aborted) return;
       const generatedState = resetToGeneratedLayout(layout);
@@ -469,7 +618,7 @@ export class WorkspaceShellController implements ShellController {
         ...generatedState,
         nodes: generatedState.nodes.map((node) => ({ ...node, position: prior.get(node.id) ?? node.position }))
       };
-      this.projectionValue = projection;
+      this.projectionValue = compileArchitectureProjection(architecture);
       this.layoutValue = layout;
       this.shell = {
         ...this.shell,
@@ -481,13 +630,11 @@ export class WorkspaceShellController implements ShellController {
         status: "ready",
         message: this.shell.message || ""
       };
+      this.notifyState();
     } catch (error) {
       this.shell = { ...this.shell, status: "error", message: error instanceof Error ? error.message : "Layout failed." };
+      this.notifyState();
       throw error;
-    } finally {
-      if (isDisposable(engine)) {
-        engine.dispose();
-      }
     }
   }
 }
