@@ -92,8 +92,12 @@ export class DependencyGraphBuilder {
     }
 
     // L2: Parse AST using TypeScript Compiler API to resolve file-level imports
+    const SCRIPT_EXTENSIONS = new Set([".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs"]);
     for (const module of modules) {
       for (const file of module.files) {
+        if (!SCRIPT_EXTENSIONS.has(path.extname(file).toLowerCase())) {
+          continue;
+        }
         const absolutePath = path.join(snapshot.rootPath, file);
         let source: string;
         try {

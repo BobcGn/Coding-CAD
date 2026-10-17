@@ -383,3 +383,38 @@ PR #3首次远端CI在额外security:audit步骤报告7high，本地旧ci:verify
 - 风险与回退方式：
   - 风险：多租户环境下需增加鉴权机制；当前为本机 loopback 模式。
   - 回退方式：`git revert <step-3-commit>`。
+
+## 2026-10-16 - 阶段 4 步骤 3.1：Web 路由安全加固与真实浏览器双模式基准实测 / Phase 4 Step 3.1: Web Route Security Hardening and Real Browser Dual-Mode Benchmarks
+
+### 1. 做了什么 / What
+- 路由安全加固（`apps/web/src/routes/api/workspace/analyze-repository/+server.ts`）：
+  - 增加功能开关 `CODING_CAD_ENABLE_REPOSITORY_ANALYSIS`，未启用返回 403；
+  - 增加 Host 头白名单校验（仅 loopback 域名）与 Origin 头主机名校验，拦截 DNS rebinding 与跨源恶意调用；
+  - 增加 Content-Type: application/json 校验；
+  - 捕获软链接成环与越界报告，并在响应 DTO 中透传 `isTruncated`、`truncationReason` 与 `unsupportedStructures`。
+- 安全测试补齐（`apps/web/src/routes/api/workspace/analyze-repository/server.test.ts`）：
+  - 补全开关关闭（403）、非法 Host（403）、缺失 Host（403）、非法 Origin（403）、非 JSON Content-Type（403）、超限文件截断、执行超时截断、超限文件体量（`oversized-file`）、外部软链接逃逸及目录软链接成环测试，测试用例扩展至 19/19。
+- 真实浏览器双模式基准（`apps/web/e2e/brownfield-benchmarks.spec.ts`）：
+  - 在真实 Chromium 浏览器中测定 `Coding-CAD` 与 120 模块合成夹具在 dev 与 preview 双模式下的性能与布局质量（服务端耗时、首屏渲染、可见/隐藏节点数、ELK 求解器来源、重叠数、包含失败数、交叉数）。
+
+- Route Security Hardening (`+server.ts`): Added `CODING_CAD_ENABLE_REPOSITORY_ANALYSIS` switch, Host header loopback whitelist, Origin hostname check, and Content-Type: application/json requirement.
+- Route Negative Control Tests (`server.test.ts`): Expanded suite to 19 tests covering disabled flag, DNS rebinding hosts, origins, content-types, truncation limits, external symlinks, and directory cycle loops.
+- Real Browser Dual-Mode Benchmarks (`brownfield-benchmarks.spec.ts`): Captured dev and preview browser metrics on both `Coding-CAD` and `synthetic-large-repo` (120 modules).
+
+### 2. 为什么这么做 / Why
+- 本机单机安全铁律：开放本地文件系统读取能力的 Web 路由必须建立多层纵深防御，避免暴露为本地攻击跳板。
+- 真实浏览器质量证据：为满足阶段 4 门禁，必须在真实浏览器与真实 ELK worker 进程中测定布局质量，确保大图在各种构建模式下稳定可用。
+- Defense in Depth: Local server endpoints capable of reading files require strict loopback, Host, and Origin constraints.
+- Real Browser Evidence: Validating complex layout rendering inside real Chromium processes confirms that 120-module layouts perform reliably without solver fallback.
+
+### 3. 验证结果 / Verification
+- 已实现并验证：
+  - `apps/web/src/routes/api/workspace/analyze-repository/server.test.ts`：19/19 通过；
+  - `pnpm --filter @coding-cad/web test:unit`：15/15 文件，78/78 通过；
+  - `pnpm --filter @coding-cad/web exec playwright test e2e/brownfield-benchmarks.spec.ts --config=playwright.config.ts`：通过；
+  - `pnpm --filter @coding-cad/web exec playwright test e2e/brownfield-benchmarks.spec.ts --config=playwright.preview.config.ts`：通过。
+- 未实现：无。
+- 风险与回退方式：
+  - 风险：生产构建若环境变量未设置会导致路由关闭，属于预期安全行为。
+  - 回退方式：`git revert <commit-hash>`。
+

@@ -64,6 +64,7 @@
     { "from": "architecture-layout", "to": "architecture-ir" },
     { "from": "architecture-review", "to": "architecture-ir" },
     { "from": "architecture-review", "to": "architecture-validator" },
+    { "from": "architecture-review", "to": "execution-blueprint" },
     { "from": "architecture-review", "to": "workspace" },
     { "from": "architecture-validator", "to": "architecture-ir" },
     { "from": "architecture-validator", "to": "component-registry" },

@@ -14,7 +14,9 @@ export type UnsupportedStructureType =
   | "unparseable-syntax"
   | "unsupported-language"
   | "unknown-workspace-layout"
-  | "missing-entry-point";
+  | "missing-entry-point"
+  | "symlink-outside-root"
+  | "oversized-file";
 
 export interface UnsupportedStructureReport {
   readonly type: UnsupportedStructureType;
@@ -37,5 +39,7 @@ export interface RepositorySnapshot {
   readonly workspacePackages?: readonly WorkspacePackageInfo[] | undefined;
   readonly unsupportedStructures?: readonly UnsupportedStructureReport[] | undefined;
   readonly tsconfigPaths?: TsconfigPathsConfig | undefined;
+  readonly isTruncated?: boolean | undefined;
+  readonly truncationReason?: string | undefined;
 }
 

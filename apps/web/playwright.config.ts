@@ -26,6 +26,9 @@ export default defineConfig({
     command: "pnpm dev --host 127.0.0.1 --port 4173 --strictPort",
     port: 4173,
     reuseExistingServer: false,
-    env: { CODING_CAD_WORKSPACE_ROOT: workspaceRoot }
+    env: {
+      CODING_CAD_WORKSPACE_ROOT: workspaceRoot,
+      CODING_CAD_ENABLE_REPOSITORY_ANALYSIS: "true"
+    }
   }
 });

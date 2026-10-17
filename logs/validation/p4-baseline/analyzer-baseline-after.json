@@ -4,7 +4,7 @@
     "rootPath": "/Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD",
     "truthLevel": "L1-manifest",
     "passed": true,
-    "elapsedMs": 840.8752079999999,
+    "elapsedMs": 891.6056249999999,
     "modules": {
       "detected": 15,
       "expected": 15,
@@ -16,11 +16,11 @@
     },
     "connections": {
       "detected": 39,
-      "expected": 38,
-      "truePositives": 38,
-      "falsePositives": 1,
+      "expected": 39,
+      "truePositives": 39,
+      "falsePositives": 0,
       "falseNegatives": 0,
-      "precision": 0.9744,
+      "precision": 1,
       "recall": 1
     },
     "evidenceBreakdown": {
@@ -100,7 +100,7 @@
     "rootPath": "/Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-analyzer/fixtures/small-monorepo",
     "truthLevel": "L2-hand-annotated",
     "passed": true,
-    "elapsedMs": 2.673958999999968,
+    "elapsedMs": 3.7126670000000104,
     "modules": {
       "detected": 3,
       "expected": 3,
@@ -148,7 +148,7 @@
     "rootPath": "/Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-analyzer/fixtures/small-single-repo",
     "truthLevel": "L2-hand-annotated",
     "passed": true,
-    "elapsedMs": 1.8700410000000147,
+    "elapsedMs": 2.0652090000000953,
     "modules": {
       "detected": 4,
       "expected": 4,
@@ -198,7 +198,7 @@
     "rootPath": "/Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-analyzer/fixtures/edge-cases-repo",
     "truthLevel": "L2-hand-annotated",
     "passed": true,
-    "elapsedMs": 3.4109589999999343,
+    "elapsedMs": 5.050707999999986,
     "modules": {
       "detected": 5,
       "expected": 5,
@@ -249,7 +249,7 @@
     "rootPath": "/Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-analyzer/fixtures/synthetic-large-repo",
     "truthLevel": "synthetic",
     "passed": true,
-    "elapsedMs": 29.152416000000017,
+    "elapsedMs": 30.377041999999847,
     "modules": {
       "detected": 120,
       "expected": 120,

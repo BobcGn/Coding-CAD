@@ -11,6 +11,12 @@ const IGNORED_DIRECTORIES = new Set([
   ".turbo",
   ".next",
   "node_modules",
+  ".pnpm-store",
+  ".yarn",
+  ".svelte-kit",
+  ".code-review-graph",
+  ".cache",
+  ".output",
   "dist",
   "build",
   "coverage",
@@ -35,20 +41,29 @@ const CONFIG_FILE_NAMES = new Set([
   "nest-cli.json"
 ]);
 
+export interface ScannerOptions {
+  readonly maxFiles?: number | undefined;
+  readonly maxFileSizeBytes?: number | undefined;
+  readonly timeoutMs?: number | undefined;
+}
+
 export class RepositoryScanner {
-  async scan(rootPath: string): Promise<RepositorySnapshot> {
+  async scan(rootPath: string, options: ScannerOptions = {}): Promise<RepositorySnapshot> {
     const absoluteRoot = path.resolve(rootPath);
     const rootStats = await stat(absoluteRoot).catch(() => undefined);
     if (rootStats === undefined || !rootStats.isDirectory()) {
       throw new Error(`Repository path is not a directory: ${absoluteRoot}.`);
     }
 
-    const files = await collectFiles(absoluteRoot);
+    const unsupportedStructures: UnsupportedStructureReport[] = [];
+    const { files, isTruncated, truncationReason } = await collectFiles(
+      absoluteRoot,
+      options,
+      unsupportedStructures
+    );
     const configFiles = files.filter(isConfigFile);
     const dependencies = await readDependencies(absoluteRoot, configFiles);
     const languages = detectLanguages(files);
-
-    const unsupportedStructures: UnsupportedStructureReport[] = [];
 
     // Detect unsupported languages
     for (const language of languages) {
@@ -88,31 +103,81 @@ export class RepositoryScanner {
       dependencies,
       workspacePackages,
       unsupportedStructures,
-      tsconfigPaths
+      tsconfigPaths,
+      ...(isTruncated ? { isTruncated, truncationReason } : {})
     };
   }
 }
 
-async function collectFiles(rootPath: string): Promise<string[]> {
+async function collectFiles(
+  rootPath: string,
+  options: ScannerOptions,
+  unsupportedStructures: UnsupportedStructureReport[]
+): Promise<{ files: string[]; isTruncated?: boolean | undefined; truncationReason?: string | undefined }> {
   const files: string[] = [];
+  const visitedDirs = new Set<string>();
+  const startTime = performance.now();
+  let isTruncated = false;
+  let truncationReason: string | undefined;
 
   async function visit(directory: string): Promise<void> {
+    if (isTruncated) return;
+
+    if (options.timeoutMs && performance.now() - startTime > options.timeoutMs) {
+      isTruncated = true;
+      truncationReason = "timeout";
+      return;
+    }
+
     const entries = await readdir(directory, { withFileTypes: true });
     for (const entry of entries.sort((left, right) => left.name.localeCompare(right.name))) {
+      if (isTruncated) return;
+
+      if (options.maxFiles && files.length >= options.maxFiles) {
+        isTruncated = true;
+        truncationReason = "file-count";
+        return;
+      }
+
+      if (options.timeoutMs && performance.now() - startTime > options.timeoutMs) {
+        isTruncated = true;
+        truncationReason = "timeout";
+        return;
+      }
+
       const fullPath = path.join(directory, entry.name);
       if (entry.isSymbolicLink()) {
         try {
           const resolvedTarget = await realpath(fullPath);
           if (!resolvedTarget.startsWith(rootPath + path.sep) && resolvedTarget !== rootPath) {
-            // Symlink points outside root: do not follow
+            // Symlink points outside root: do not follow and report explicitly
+            unsupportedStructures.push({
+              type: "symlink-outside-root",
+              reason: `Symlink '${path.relative(rootPath, fullPath)}' points outside repository root to '${resolvedTarget}' and was skipped.`,
+              scope: fullPath
+            });
             continue;
           }
+
           const targetStat = await stat(resolvedTarget);
           if (targetStat.isDirectory()) {
+            if (visitedDirs.has(resolvedTarget)) {
+              // Cycle detected; do not recurse infinitely
+              continue;
+            }
+            visitedDirs.add(resolvedTarget);
             if (!IGNORED_DIRECTORIES.has(entry.name)) {
               await visit(resolvedTarget);
             }
           } else if (targetStat.isFile()) {
+            if (options.maxFileSizeBytes && targetStat.size > options.maxFileSizeBytes) {
+              unsupportedStructures.push({
+                type: "oversized-file",
+                reason: `File size (${targetStat.size} bytes) exceeds limit (${options.maxFileSizeBytes} bytes).`,
+                scope: fullPath
+              });
+              continue;
+            }
             if (!isIgnoredFile(entry.name)) {
               files.push(toRepositoryPath(path.relative(rootPath, resolvedTarget)));
             }
@@ -121,8 +186,24 @@ async function collectFiles(rootPath: string): Promise<string[]> {
           // ignore broken symlink
         }
       } else if (entry.isDirectory()) {
+        const realDir = await realpath(fullPath).catch(() => fullPath);
+        if (visitedDirs.has(realDir)) {
+          continue;
+        }
+        visitedDirs.add(realDir);
         if (!IGNORED_DIRECTORIES.has(entry.name)) await visit(fullPath);
       } else if (entry.isFile()) {
+        if (options.maxFileSizeBytes) {
+          const fileStat = await stat(fullPath).catch(() => undefined);
+          if (fileStat && fileStat.size > options.maxFileSizeBytes) {
+            unsupportedStructures.push({
+              type: "oversized-file",
+              reason: `File size (${fileStat.size} bytes) exceeds limit (${options.maxFileSizeBytes} bytes).`,
+              scope: fullPath
+            });
+            continue;
+          }
+        }
         if (!isIgnoredFile(entry.name)) {
           files.push(toRepositoryPath(path.relative(rootPath, fullPath)));
         }
@@ -130,8 +211,10 @@ async function collectFiles(rootPath: string): Promise<string[]> {
     }
   }
 
+  const rootReal = await realpath(rootPath).catch(() => rootPath);
+  visitedDirs.add(rootReal);
   await visit(rootPath);
-  return files.sort();
+  return { files: files.sort(), isTruncated, truncationReason };
 }
 
 function isConfigFile(file: string): boolean {

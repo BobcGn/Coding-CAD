@@ -72,9 +72,16 @@ export function isWorkspaceProjectDto(value: unknown): value is WorkspaceProject
   );
 }
 
+export interface AnalyzeRepositoryOptionsDto {
+  readonly maxFiles?: number | undefined;
+  readonly timeoutMs?: number | undefined;
+  readonly maxFileSizeBytes?: number | undefined;
+}
+
 /** Analyze an external source repository (Phase 4 Brownfield). */
 export interface AnalyzeRepositoryRequest {
   readonly repositoryPath: string;
+  readonly options?: AnalyzeRepositoryOptionsDto | undefined;
 }
 
 export interface UnsupportedStructureDto {

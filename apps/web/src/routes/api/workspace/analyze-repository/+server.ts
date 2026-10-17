@@ -14,17 +14,58 @@ import type {
 const MAX_FILE_COUNT = 5000;
 /** Maximum execution duration in milliseconds before timeout truncation. */
 const MAX_ANALYSIS_DURATION_MS = 30000;
+/** Maximum single file size in bytes (2 MB). */
+const MAX_FILE_SIZE_BYTES = 2 * 1024 * 1024;
 
 const LOOPBACK_HOSTS = new Set(["localhost", "127.0.0.1", "::1", "[::1]"]);
 
 export const POST: RequestHandler = async ({ request, url }) => {
-  // 1. Loopback only security check
+  // 0. Explicit environment switch check
+  const isEnabled =
+    process.env.CODING_CAD_ENABLE_REPOSITORY_ANALYSIS === "true" ||
+    process.env.CODING_CAD_ENABLE_REPOSITORY_ANALYSIS === "1";
+  if (!isEnabled) {
+    throw error(403, "Repository analysis is disabled. Set CODING_CAD_ENABLE_REPOSITORY_ANALYSIS=true to enable.");
+  }
+
+  // 1. Host header whitelist
+  const hostHeader = request.headers.get("host");
+  if (!hostHeader) {
+    throw error(403, "Access forbidden: Missing Host header.");
+  }
+  const hostMatch = hostHeader.trim().toLowerCase().match(/^(\[[a-f0-9:]+\]|[^:]+)(?::\d+)?$/);
+  const hostName = hostMatch ? hostMatch[1] : "";
+  if (!LOOPBACK_HOSTS.has(hostName)) {
+    throw error(403, `Access forbidden: Host '${hostHeader}' is not allowed.`);
+  }
+
+  // 2. Origin check (if present)
+  const originHeader = request.headers.get("origin");
+  if (originHeader) {
+    let originHost = "";
+    try {
+      originHost = new URL(originHeader).hostname.toLowerCase();
+    } catch {
+      throw error(403, "Access forbidden: Malformed Origin header.");
+    }
+    if (!LOOPBACK_HOSTS.has(originHost) && !LOOPBACK_HOSTS.has(`[${originHost}]`)) {
+      throw error(403, `Access forbidden: Origin '${originHeader}' is not allowed.`);
+    }
+  }
+
+  // 3. Content-Type check
+  const contentType = request.headers.get("content-type")?.toLowerCase() ?? "";
+  if (!contentType.includes("application/json")) {
+    throw error(403, "Access forbidden: Request must specify Content-Type: application/json.");
+  }
+
+  // 4. URL hostname check
   const hostname = url.hostname.toLowerCase();
   if (!LOOPBACK_HOSTS.has(hostname) && hostname !== "") {
     throw error(403, "Access forbidden: repository analysis is restricted to loopback interface.");
   }
 
-  // 2. Validate request payload
+  // 5. Validate request payload
   let body: unknown;
   try {
     body = await request.json();
@@ -39,7 +80,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
 
   const inputPath = payload.repositoryPath.trim();
 
-  // 3. Reject explicit path traversal escaping
+  // 6. Reject explicit path traversal escaping
   if (inputPath.includes("..")) {
     throw error(400, "Repository path must not contain traversal segments ('..').");
   }
@@ -47,7 +88,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
   const normalized = path.normalize(inputPath);
   const resolved = path.resolve(normalized);
 
-  // 4. Verify directory existence and realpath containment
+  // 7. Verify directory existence and realpath containment
   let dirStat;
   try {
     dirStat = await stat(resolved);
@@ -66,13 +107,24 @@ export const POST: RequestHandler = async ({ request, url }) => {
     throw error(400, `Failed to resolve realpath for repository: ${err instanceof Error ? err.message : String(err)}`);
   }
 
-  // 5. Execute analysis with resource caps and execution timer
+  // 8. Execute analysis with resource caps and execution timer
+  const maxFiles = payload.options?.maxFiles !== undefined
+    ? Math.max(1, payload.options.maxFiles)
+    : MAX_FILE_COUNT;
+  const timeoutMs = payload.options?.timeoutMs !== undefined
+    ? Math.max(1, payload.options.timeoutMs)
+    : MAX_ANALYSIS_DURATION_MS;
+  const maxFileSizeBytes = payload.options?.maxFileSizeBytes !== undefined
+    ? Math.max(1, payload.options.maxFileSizeBytes)
+    : MAX_FILE_SIZE_BYTES;
+
+  const scannerOptions = { maxFiles, timeoutMs, maxFileSizeBytes };
   const startTime = performance.now();
   const analyzer = new ImplementationAnalyzer();
 
   let inspection;
   try {
-    inspection = await analyzer.inspect(realRoot);
+    inspection = await analyzer.inspect(realRoot, scannerOptions);
   } catch (err) {
     throw error(500, `Analysis inspection failed: ${err instanceof Error ? err.message : String(err)}`);
   }
@@ -80,24 +132,37 @@ export const POST: RequestHandler = async ({ request, url }) => {
   const elapsedMs = performance.now() - startTime;
   let truncated: TruncationReportDto | undefined;
 
-  // Check file count cap
-  const totalFiles = inspection.snapshot.files.length;
-  if (totalFiles > MAX_FILE_COUNT) {
+  // Check truncation indicators
+  if (inspection.isTruncated || inspection.snapshot.isTruncated) {
+    const reason = inspection.truncationReason ?? inspection.snapshot.truncationReason;
+    const hitLimit = reason === "timeout" ? "timeout" : "file-count";
+    truncated = {
+      hitLimit,
+      message: hitLimit === "timeout"
+        ? `Repository analysis timed out after ${timeoutMs}ms.`
+        : `Repository file count reached limit (${maxFiles} files). Analysis was truncated.`
+    };
+  } else if (inspection.unsupportedStructures?.some((s) => s.type === "oversized-file")) {
+    truncated = {
+      hitLimit: "file-size",
+      message: `One or more files exceeded the single file size limit (${maxFileSizeBytes} bytes).`
+    };
+  } else if (inspection.snapshot.files.length >= maxFiles) {
     truncated = {
       hitLimit: "file-count",
-      message: `Repository file count (${totalFiles}) exceeded maximum limit (${MAX_FILE_COUNT}). Analysis was truncated.`
+      message: `Repository file count (${inspection.snapshot.files.length}) reached limit (${maxFiles}). Analysis was truncated.`
     };
-  } else if (elapsedMs > MAX_ANALYSIS_DURATION_MS) {
+  } else if (elapsedMs > timeoutMs) {
     truncated = {
       hitLimit: "timeout",
-      message: `Repository analysis duration (${elapsedMs.toFixed(0)}ms) exceeded maximum timeout (${MAX_ANALYSIS_DURATION_MS}ms).`
+      message: `Repository analysis duration (${elapsedMs.toFixed(0)}ms) exceeded maximum timeout (${timeoutMs}ms).`
     };
   }
 
-  // 6. Map to ArchitectureProject
+  // 9. Map to ArchitectureProject
   let architecture;
   try {
-    architecture = await analyzer.analyze(realRoot);
+    architecture = await analyzer.analyze(realRoot, scannerOptions);
   } catch (err) {
     throw error(500, `Architecture reconstruction failed: ${err instanceof Error ? err.message : String(err)}`);
   }

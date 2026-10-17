@@ -1155,4 +1155,69 @@ PR #3首次远端CI在额外security:audit步骤报告7high，本地旧ci:verify
   - 风险：若后续需支持多用户环境需引入鉴权与容器沙箱；当前按批准的单机 loopback 模型实现。
   - 回退方式：`git revert <commit-hash>` 可完全独立回退步骤 3 的改动。
 
+## 2026-10-16 - 阶段 4 步骤 3.1：补齐证据与安全加固（Host/Origin 白名单、软链接防环/外链显式报告、超限截断负控与浏览器双模式实测） / Phase 4 Step 3.1: Evidence Replenishment & Security Hardening (Host/Origin Whitelist, Symlink Cycle/Escape Explicit Reporting, Truncation Negative Controls, and Browser Dual-Mode Benchmarks)
+
+### 1. 做了什么 / What
+- 路由安全加固与负控测试（`apps/web/src/routes/api/workspace/analyze-repository/+server.ts` 与 `server.test.ts`）：
+  - 显式功能开关：新增环境变量开关 `CODING_CAD_ENABLE_REPOSITORY_ANALYSIS`，默认完全关闭（Default-Off）；未启用时返回 403 Forbidden 并附带明确启用指引；
+  - Host 头白名单校验：阻断 DNS Rebinding 攻击，仅允许 `localhost`、`127.0.0.1`、`[::1]` 及 `::1`；缺失或非环回 Host 头一律 403；
+  - Origin 头跨源校验：若携带 Origin，必须解析为白名单内的环回主机名；
+  - Content-Type 强制要求：必须指定为 `application/json`；
+  - 补齐超限截断负控测试：文件数量超限截断（`hitLimit: "file-count"`）、执行耗时超时截断（`hitLimit: "timeout"`）、单文件体量超限（`oversized-file` 不支持结构）；
+  - 补齐符号链接安全测试：跳过指向根目录外的软链接并显式报告为 `symlink-outside-root`；防止根目录内软链接成环造成无限递归（`visitedDirs` 真实物理路径集合检测）；
+  - `server.test.ts` 测试套件扩展至 19/19 项测试全数通过。
+- 扫描器与分析器安全与过滤补强（`packages/implementation-analyzer/`）：
+  - `scanner.ts`：扩展 `IGNORED_DIRECTORIES`，忽略包管理器与构建缓存目录（`.pnpm-store`、`.yarn`、`.svelte-kit`、`.code-review-graph`、`.cache`、`.output`）；增加软链接访问真实路径去重与成环阻断；支持 `ScannerOptions`（`maxFiles`、`maxFileSizeBytes`、`timeoutMs`）；
+  - `dependency-graph.ts`：限制 AST 编译器导入解析仅针对 JS/TS 脚本文件，避免对 Markdown、图像与 HTML 产生误报 `unparseable-syntax`；
+  - `analyzer.ts`：透传 `ScannerOptions` 与截断状态元数据。
+- 设计文档与安全边界完善：
+  - 更新 `docs/brownfield-pipeline-design.md`，记录开关名称、Host/Origin 白名单、已知安全边界（TOCTOU 竞态物理局限、DTO 相对路径元数据承载）及 SvelteKit 本地文件访问先例说明。
+- 实测证据补充与报告：
+  - 刷新基准报告 `logs/validation/p4-baseline/analyzer-baseline-after.json` 与 `analyzer-comparison.md`；
+  - 新增 `apps/web/e2e/brownfield-benchmarks.spec.ts`，在真实 Chromium 浏览器中测定本仓库自身与 120 模块合成夹具在 `dev` 与 `preview` 两种模式下的各项物理指标；
+  - 生成 `logs/validation/p4-browser/benchmark-report.md`，记录完整的服务端反演耗时、首屏渲染耗时、节点与折叠计数、ELK 求解器来源（100% ELK 零 fallback）、0 重叠、0 容器包含失败与严格交叉数。
+
+- Route Security Hardening & Negative Control Tests (`analyze-repository/+server.ts` & `server.test.ts`):
+  - Explicit Feature Switch: Added `CODING_CAD_ENABLE_REPOSITORY_ANALYSIS` environment switch (default off); non-enabled requests receive 403 Forbidden with clear enablement instructions.
+  - Host Header Whitelist: Prevents DNS rebinding; allows only `localhost`, `127.0.0.1`, `[::1]`, and `::1`; rejects missing or non-loopback hosts with 403.
+  - Origin Validation: Validates incoming Origin headers against the loopback whitelist.
+  - Content-Type Enforcement: Enforces `application/json`.
+  - Resource Truncation Negative Controls: Validated file count truncation (`file-count`), duration truncation (`timeout`), and oversized file exclusion (`oversized-file`).
+  - Symlink Safety Tests: Tested outside symlink skipping with explicit `symlink-outside-root` reporting; verified cycle detection preventing infinite recursion loops using `visitedDirs`.
+  - Expanded `server.test.ts` to 19/19 passing tests.
+- Scanner & Analyzer Defensive Filtering (`packages/implementation-analyzer/`):
+  - `scanner.ts`: Expanded `IGNORED_DIRECTORIES` to exclude package manager and build cache directories (`.pnpm-store`, `.yarn`, `.svelte-kit`, `.code-review-graph`, `.cache`, `.output`); added cycle defense and `ScannerOptions` support.
+  - `dependency-graph.ts`: Restricted AST import parsing strictly to JS/TS script files, preventing false positive `unparseable-syntax` warnings on Markdown and HTML.
+  - `analyzer.ts`: Forwarded `ScannerOptions` and truncation metadata.
+- Design Documentation & Security Boundaries:
+  - Updated `docs/brownfield-pipeline-design.md` detailing the feature flag name, Host/Origin whitelisting, known boundaries (TOCTOU race conditions, DTO path metadata), and SvelteKit filesystem access precedents.
+- Browser Benchmark Evidence:
+  - Refreshed baseline records `logs/validation/p4-baseline/analyzer-baseline-after.json` and `analyzer-comparison.md`.
+  - Added `apps/web/e2e/brownfield-benchmarks.spec.ts` capturing real Chromium browser metrics for `Coding-CAD` and `synthetic-large-repo` (120 modules) in both `dev` and `preview` modes.
+  - Emitted `logs/validation/p4-browser/benchmark-report.md` recording server duration, first render time, node/collapse counts, ELK solver confirmation (100% ELK, zero fallback), zero overlaps, zero containment failures, and strict edge crossings.
+
+### 2. 为什么这么做 / Why
+- 防御性安全边界：DNS rebinding、恶意跨源请求与非 JSON 请求是单机本地服务暴露 HTTP 路由时的典型攻击面；通过 Host/Origin 严格白名单与强制 Content-Type，确保仅受信任的本地工作区能触发代码分析。
+- 零静默降级原则：指向根目录外的软链接不能静默消失，必须显式报告原因与作用域；超限截断必须显式标记，禁止把残缺图冒充完整图。
+- 物理现实与可解释性：将 AST 编译器解析范围限定于脚本文件，消除将非脚本静态资源视作语法错误的假阳性，提高分析报告可信度。
+- 真实浏览器实测证据：按照阶段门禁要求，在大规模图（120 模块）下实测布局性能与几何质量，不人为假定阈值，用外部数据证明布局引擎在极端复杂度下的鲁棒性。
+- Defensive Security: Strict Host and Origin whitelisting with JSON Content-Type enforcement blocks DNS rebinding and CSRF vectors on loopback analysis endpoints.
+- Zero Silent Degradation: Symlinks pointing outside root are explicitly reported rather than silently ignored; truncated scans are transparently flagged to prevent misrepresenting partial graphs as complete models.
+- Evidence Integrity: Confining AST compilation to script source extensions eliminates false-positive syntax warnings on non-code assets.
+- Real Browser Evidence: Capturing real Chromium measurements across dev and preview modes provides empirical proof of ELK layout reliability under large-scale stress without arbitrary thresholds.
+
+### 3. 验证结果 / Verification
+- 已实现并验证：
+  - `apps/web/src/routes/api/workspace/analyze-repository/server.test.ts`：19/19 测试全数通过；
+  - `pnpm --filter @coding-cad/implementation-analyzer test`：单测全量通过；
+  - `pnpm --filter @coding-cad/implementation-analyzer benchmark`：5 个真值基准夹具全量通过（包含 Coding-CAD 39/39 边 100% 召回，以及 120 模块合成夹具 147 边全量检测）；
+  - `pnpm --filter @coding-cad/web test:unit`：15/15 测试文件，78/78 测试全量通过；
+  - `apps/web/e2e/brownfield-benchmarks.spec.ts`：真实浏览器 dev 模式（Coding-CAD 493ms / 合成 406ms，100% ELK 求解器，0 重叠，0 包含失败）与 preview 模式（Coding-CAD 637ms / 合成 296ms，100% ELK 求解器，0 重叠，0 包含失败）全量通过；
+  - `pnpm check:changelog`：变更记录闸门脚本全量校验通过。
+- 未实现：无。
+- 风险与回退方式：
+  - 风险：若用户分析超过 5000 文件的大型仓库，会触发文件数截断告警；后续可增加分包目录分析或自定义上限配置。
+  - 回退方式：`git revert <commit-hash>` 可独立回退步骤 3.1 的安全加固与基准测量。
+
+
 

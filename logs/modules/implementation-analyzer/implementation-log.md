@@ -163,4 +163,42 @@ Validation:
   - 风险：若用户仓库合法引用了外部符号链接，此类链接将被安全忽略；
   - 回退方式：`git revert <step-3-commit>`。
 
+## 2026-10-16 - 阶段 4 步骤 3.1：扫描器与构建缓存过滤、软链接防环与 AST 解析白名单 / Phase 4 Step 3.1: Scanner Cache Exclusion, Symlink Cycle Prevention, and AST Parsing Extension Whitelist
+
+### 1. 做了什么 / What
+- 缓存与包管理器目录忽略（`scanner.ts`）：
+  - 在 `IGNORED_DIRECTORIES` 中追加 `.pnpm-store`、`.yarn`、`.svelte-kit`、`.code-review-graph`、`.cache`、`.output`，彻底排除依赖安装包存储与大型二进制缓存；
+  - 引入 `ScannerOptions`（`maxFiles`、`maxFileSizeBytes`、`timeoutMs`），支持超限提前终止与显式标记 `isTruncated`。
+- 软链接安全与成环阻断：
+  - 在 `collectFiles` 中通过真实物理路径集合 `visitedDirs` 跟踪目录，遇到成环链接安全终止递归，防止无限循环遍历；
+  - 遇到指向根目录外的软链接，记录 `type: "symlink-outside-root"` 显式报告结构，杜绝静默丢弃。
+- AST 编译器解析白名单化（`dependency-graph.ts`）：
+  - 限制 `ts.createSourceFile` 仅处理 `.ts`、`.tsx`、`.js`、`.jsx`、`.mjs`、`.cjs`，跳过 Markdown、图片与 HTML，彻底消除非脚本文件的假阳性语法错误。
+- 完善真值对齐：
+  - 更新 `fixtures/coding-cad-golden.json`，补充 `architecture-review -> execution-blueprint` 的 devDependency 声明，基准 Precision 与 Recall 达到 100%。
+
+- Cache & Store Directory Exclusion (`scanner.ts`): Expanded `IGNORED_DIRECTORIES` to ignore `.pnpm-store`, `.yarn`, `.svelte-kit`, `.code-review-graph`, `.cache`, and `.output`. Added `ScannerOptions` for explicit truncation.
+- Symlink Cycle & Escape Handling: Added `visitedDirs` set to block directory recursion cycles and recorded explicit `symlink-outside-root` reports.
+- Script-Only AST Import Parsing (`dependency-graph.ts`): Confined `ts.createSourceFile` calls strictly to JS/TS script extensions, eliminating false syntax error diagnostics on non-script assets.
+- Ground Truth Alignment: Added `architecture-review -> execution-blueprint` to `coding-cad-golden.json`, achieving 100% precision and recall across all fixtures.
+
+### 2. 为什么这么做 / Why
+- 真实单体仓库扫描可用性：`.pnpm-store` 包含数千个包与多兆字节执行体，不忽略会导致扫描器超出单文件或总文件限制并产生虚假截断；
+- 真实软链接拓扑鲁棒性：本地开发常见软链接成环或指向外部，必须有闭环防线与可观测报告；
+- 消除编译器假阳性：Markdown 与图片不是 JS 代码，传给 TS 编译器只会产生误报。
+- Monorepo Practicality: Build and pnpm stores contain thousands of binary and vendor files that exhaust file budgets if unignored.
+- Robust Topology: Symlink loops must terminate safely and escapes must be reported explicitly.
+- Diagnostic Purity: Non-script assets should not be parsed as TypeScript syntax.
+
+### 3. 验证结果 / Verification
+- 已实现并验证：
+  - `pnpm --filter @coding-cad/implementation-analyzer test`：单测通过；
+  - `pnpm --filter @coding-cad/implementation-analyzer benchmark`：5 个真值夹具全量通过（所有夹具 precision 与 recall 均为 100%）；
+  - `apps/web/src/routes/api/workspace/analyze-repository/server.test.ts`：19/19 测试通过（覆盖外部软链接跳过、软链接成环、文件数截断、耗时超时截断、超限文件排除）。
+- 未实现：无。
+- 风险与回退方式：
+  - 风险：若未来新增非常规脚本后缀（如 `.cts`），可按需扩展白名单。
+  - 回退方式：`git revert <commit-hash>`。
+
+
 

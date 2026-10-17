@@ -2,7 +2,7 @@ import type { ArchitectureProject } from "@coding-cad/architecture-ir";
 import { DependencyDetector, type TechnologyInfo } from "./detector/dependency-detector.js";
 import { DependencyGraphBuilder, type DependencyGraph } from "./graph/dependency-graph.js";
 import { ArchitectureMapper, type RepositoryAnalysisEvidence } from "./mapper/architecture-mapper.js";
-import { RepositoryScanner } from "./repository/scanner.js";
+import { RepositoryScanner, type ScannerOptions } from "./repository/scanner.js";
 import type { RepositorySnapshot, UnsupportedStructureReport } from "./repository/snapshot.js";
 import { ModuleAnalyzer, type ImplementationModule } from "./structure/module-analyzer.js";
 
@@ -12,6 +12,8 @@ export interface RepositoryInspection {
   readonly modules: readonly ImplementationModule[];
   readonly dependencyGraph: DependencyGraph;
   readonly unsupportedStructures?: readonly UnsupportedStructureReport[] | undefined;
+  readonly isTruncated?: boolean | undefined;
+  readonly truncationReason?: string | undefined;
 }
 
 export interface ImplementationAnalyzerDependencies {
@@ -38,8 +40,8 @@ export class ImplementationAnalyzer {
     this.architectureMapper = dependencies.architectureMapper ?? new ArchitectureMapper();
   }
 
-  async inspect(rootPath: string): Promise<RepositoryInspection> {
-    const snapshot = await this.scanner.scan(rootPath);
+  async inspect(rootPath: string, options: ScannerOptions = {}): Promise<RepositoryInspection> {
+    const snapshot = await this.scanner.scan(rootPath, options);
     const technology = this.dependencyDetector.detect(snapshot.languages, snapshot.dependencies);
     const modules = await this.moduleAnalyzer.analyze(snapshot);
     const dependencyGraph = await this.dependencyGraphBuilder.build(snapshot, modules);
@@ -47,11 +49,18 @@ export class ImplementationAnalyzer {
       ...(snapshot.unsupportedStructures ?? []),
       ...(dependencyGraph.unsupportedReports ?? [])
     ];
-    return { snapshot, technology, modules, dependencyGraph, unsupportedStructures };
+    return {
+      snapshot,
+      technology,
+      modules,
+      dependencyGraph,
+      unsupportedStructures,
+      ...(snapshot.isTruncated ? { isTruncated: snapshot.isTruncated, truncationReason: snapshot.truncationReason } : {})
+    };
   }
 
-  async analyze(rootPath: string): Promise<ArchitectureProject> {
-    const inspection = await this.inspect(rootPath);
+  async analyze(rootPath: string, options: ScannerOptions = {}): Promise<ArchitectureProject> {
+    const inspection = await this.inspect(rootPath, options);
     return this.architectureMapper.map({
       ...inspection,
       unsupportedStructures: inspection.unsupportedStructures
@@ -59,6 +68,6 @@ export class ImplementationAnalyzer {
   }
 }
 
-export async function analyzeRepository(rootPath: string): Promise<ArchitectureProject> {
-  return new ImplementationAnalyzer().analyze(rootPath);
+export async function analyzeRepository(rootPath: string, options: ScannerOptions = {}): Promise<ArchitectureProject> {
+  return new ImplementationAnalyzer().analyze(rootPath, options);
 }
