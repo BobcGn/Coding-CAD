@@ -2,7 +2,7 @@
 
 分支 / Branch: `codex/phase-5-ghost-handoff`  
 目标基线 / Target Baseline: `c060ffb` (main)  
-当前状态 / Current Status: 有条件满足（已完成步骤 5.0~5.6 全流程开发、订正、测试与真实浏览器基准测试；进入步骤 5.7 Ghost 预测位置设计备忘录） / CONDITIONALLY SATISFIED (Steps 5.0-5.6 complete, corrections, tests, and real browser benchmarks verified; proceeding to Step 5.7 design memo)  
+当前状态 / Current Status: 有条件满足（已完成步骤 5.0~5.8 全流程开发、订正、测试、D-011 Ghost 试算预测位置实现与真实浏览器基准测试） / CONDITIONALLY SATISFIED (Steps 5.0-5.8 complete, corrections, tests, D-011 predictive placement implemented and verified via real browser benchmarks)  
 退出结论 / Exit Conclusion: **有条件满足 / CONDITIONALLY SATISFIED**（阶段 5 范围内全部交付物与门禁均已完成并验证，待用户处理事项裁定） / CONDITIONALLY SATISFIED (All deliverables and gates within Phase 5 scope verified, pending user action items).
 
 ---
@@ -16,6 +16,7 @@
 | **Q-5.3** | **部分采纳 (Cherry-picking) 语义** | **方案 A**（V1 仅支持全量接受或全量拒绝）。拒绝后可通过 Inspector 针对性编辑。 | **已批准 (APPROVED)** |
 | **Q-5.4** | **基线演变后的过期提案处置** | **方案 A**（自动标记“已过期”，禁用接受，要求重新提议）。保证架构一致性。 | **已批准 (APPROVED)** |
 | **Q-5.5** | **Brownfield Handoff 的证据提示** | **方案 A**（显著呈现含 `inferred` 证据提示横幅）。已在 5.1 中落实并验证。 | **已批准 (APPROVED)** |
+| **D-011** | **Ghost 预测位置布局策略** | **方案 B**（未持久化的试算布局预测 Ghost 位置）。硬约束：试算与接受增量布局同一函数同一参数、零持久化、失败安全降级、竞态取消、不改公开 API 与 D-010 边界。 | **已批准 (APPROVED)** |
 
 ---
 
@@ -99,6 +100,17 @@
   - 放置原因码细化：重构为 `near-anchor`、`far-anchor-fallback`、`container-interior`、`container-exterior`、`global-fallback`；
   - 测试证据对齐：逐包捕获 17 份原始日志于 `logs/validation/p5-reconciliation/`，编制索引 README.md；
   - 全量 CI 验证：`CI=true TURBO_FORCE=true pnpm ci:verify` 全程约 150s，74 项浏览器测试全部 PASS，5 核心包零代码改动。
+- **步骤 5.8：Ghost 预测位置实现与验证 (Step 5.8: Ghost Predictive Placement via Dry-run Layout)**：
+  - 落实已批准 D-011 决策（方案 B：未持久化的试算布局预测 Ghost 位置）；
+  - 在 `apps/web/src/lib/architecture/greenfield/workspace-shell.ts` 扩展 `GhostPredictionState`；
+  - 在 `apps/web/src/lib/architecture/greenfield/workspace-shell-controller.ts` 实现 `predictGhostPlacement`：
+    - 与接受后增量布局完全共用纯函数 `layoutArchitectureGraph`，复用同一固定状态 `this.shell.layoutState` 与同一参数 `mode: "INCREMENTAL"`；
+    - 严格隔离持久化：计算结果仅存控制器瞬态响应式属性 `this.shell.ghostPrediction`，绝不写入 `this.shell.layoutState`、撤销重做栈、Save 载荷与 Handoff 产物；
+    - 失败安全降级：试算超时（未批准临时常量 `PREDICTION_TIMEOUT_MS = 5000`）、求解器报错或非 ELK 降级求解器结果，一律安全降级至 `"unavailable"` 并回退启发式位置；
+    - 竞态与取消防御：采用 token 递增与 AbortController 双重取消机制，提案发生任何变更、被拒绝或标记为过期时，即刻丢弃在途计算；
+  - 在 `apps/web/src/lib/layout/adapters/svelte-flow-adapter.ts` 与 `ArchitectureNode.svelte` 实现三态渲染与文字/可访问徽章（`[预测中 / Predicting...]`、`[预测位置 / Predicted Position]`、`[预测不可用 / Prediction Unavailable]`）；
+  - 核心五包代码 0 改动，0 新增 package，IR 公开类型与 D-010 Worker 边界保持纯净；
+  - 扩展单元测试（controller 5 项 + adapter 3 项，Web 单元测试达 125 项）与 Playwright E2E（扩展至 8 场景与 10 次重复延迟测量）；实测 6 组 Add 预测与最终位置位移严格为 **0.0px**（100% 预测一致），零重叠、零容器包含失败、100% ELK。
 
 ---
 
@@ -166,13 +178,14 @@
   - `@coding-cad/cli`: 集成与 E2E 通过；
   - `@coding-cad/server`: 安全隔离与路由验证通过 (19/19 测试)；
   - `@coding-cad/web`:
-    - 单元测试 (vitest unit)：18 个测试文件，115/115 项通过；
+    - 单元测试 (vitest unit)：18 个测试文件，125/125 项通过；
     - 集成测试 (vitest integration)：4 个测试文件，13/13 项通过；
-    - 合计 Web 端单元 + 集成测试通过总数：128 项；
+    - 合计 Web 端单元 + 集成测试通过总数：138 项；
     - TypeScript 类型检查：`svelte-check` 0 错误 0 警告；
     - Playwright 浏览器 E2E (`editing.spec.ts`)：14/14 全数通过（包含 Ghost 节点添加、待删除标记、待变更标记、Ghost 接受、Ghost 拒绝与过期提案阻断）；
     - Playwright 浏览器 E2E (`handoff.spec.ts`)：dev 模式 4/4 通过，preview 模式 4/4 通过，包含逐字剪贴板比对与权限拒绝降级路径；
-    - Playwright 浏览器 E2E 全量套件：36/36 全数通过。
+    - Playwright 浏览器 E2E (`ghost-stability-benchmarks.spec.ts`)：dev 模式 8/8 通过，preview 模式 8/8 通过，包含 10 次重复试算延迟分布测量；
+    - Playwright 浏览器 E2E 全量套件：37 (dev) + 37 (preview) = 74 项全数通过。
 
 ---
 
@@ -214,21 +227,23 @@
 | 5.7 | `338a489` | `docs(phase-5): add ghost predictive placement design memo evaluating options A, B, and C` | `git revert 338a489` | 移除 Ghost 预测位置设计备忘录 |
 | 5.7 (PR) | `df78264` | `docs(pr): update PR draft with Step 5.7 commit hash and rollback crosswalk` | `git revert df78264` | 同步回退 PR 草稿中步骤 5.7 提交哈希 |
 | 5.8.0 | `530002a` | `docs(phase-5): reconcile test evidence, refine reason codes, and correct placement memo` | `git revert 530002a` | 回退 5.8.0 证据对齐、原因码细化与备忘录订正 |
+| 5.8 | `831bab4` | `feat(web): implement ghost predictive placement via unpersisted dry-run layout (D-011)` | `git revert 831bab4` | 移除 Ghost 试算预测位置、三态标签与对应测试，恢复 5.8.0 纯启发式状态 |
 
 ### 逆序回退分析 / Cascading Rollback Analysis
 
 若需回退本阶段提交，请严格按照逆序操作：
-1. **回退 5.8.0** (`git revert 530002a`)：移除证据对齐、原因码细化与备忘录订正，恢复 5.7 状态；
-2. **回退 5.7** (`git revert df78264` -> `git revert 338a489`)：安全移除 Ghost 预测位置设计备忘录，不影响代码或测试；
-3. **回退 5.6** (`git revert 966fd4c` -> `git revert 3f05c44`)：移除真实浏览器基准测试套件与订正报告；
-4. **回退 5.5** (`git revert 71e76d0` -> `git revert d529390`)：移除阶段 5 退出报告与状态标记；
-5. **回退 5.4** (`git revert 634c355` -> `git revert 7120770`)：移除增量布局稳定性测试与位移度量套件，不影响正式架构与 Ghost 交互；
-6. **回退 5.3** (`git revert b94e0fb` -> `git revert 9971e4d`)：移除过期提案检测、单提案严格阻断与 Review 接入硬化，恢复步骤 5.2 的基本 Ghost 投影；
-7. **回退 5.2** (`git revert baba8c0` -> `git revert cb8be8e`)：安全移除 Ghost 投影、局部放置纯函数与待删除/待变更视觉标记，不影响正式架构与 Review 状态机；
-8. **回退 5.1.1** (`git revert f6ea675`)：恢复 5.1 初始快照实现与测试；
-9. **回退 5.1** (`git revert 3f8d76a` -> `git revert 2797f9c`)：将安全移除 Handoff 弹窗、对焦控制与导出的全部功能代码及测试，不会损坏底层已有的 Greenfield/Brownfield/Review 核心逻辑；
-10. **回退 5.0** (`git revert 77e446a`)：若在 5.1 未回退时强行回退 5.0，会导致 PR 草稿和设计备忘录丢失；
-11. **回退范围外附带改动** (`git revert 7400cd4`)：若在后续步骤未回退时单独回退，会导致 `.svelte-kit/`、`.turbo/` 等产生未跟踪文件污染工作区，但不影响业务代码运行。
+1. **回退 5.8** (`git revert 831bab4`)：移除 Ghost 试算预测位置实现、三态标签、对应单元测试与 E2E 基准测试，恢复 5.8.0 状态；
+2. **回退 5.8.0** (`git revert 530002a`)：移除证据对齐、原因码细化与备忘录订正，恢复 5.7 状态；
+3. **回退 5.7** (`git revert df78264` -> `git revert 338a489`)：安全移除 Ghost 预测位置设计备忘录，不影响代码或测试；
+4. **回退 5.6** (`git revert 966fd4c` -> `git revert 3f05c44`)：移除真实浏览器基准测试套件与订正报告；
+5. **回退 5.5** (`git revert 71e76d0` -> `git revert d529390`)：移除阶段 5 退出报告与状态标记；
+6. **回退 5.4** (`git revert 634c355` -> `git revert 7120770`)：移除增量布局稳定性测试与位移度量套件，不影响正式架构与 Ghost 交互；
+7. **回退 5.3** (`git revert b94e0fb` -> `git revert 9971e4d`)：移除过期提案检测、单提案严格阻断与 Review 接入硬化，恢复步骤 5.2 的基本 Ghost 投影；
+8. **回退 5.2** (`git revert baba8c0` -> `git revert cb8be8e`)：安全移除 Ghost 投影、局部放置纯函数与待删除/待变更视觉标记，不影响正式架构与 Review 状态机；
+9. **回退 5.1.1** (`git revert f6ea675`)：恢复 5.1 初始快照实现与测试；
+10. **回退 5.1** (`git revert 3f8d76a` -> `git revert 2797f9c`)：将安全移除 Handoff 弹窗、对焦控制与导出的全部功能代码及测试，不会损坏底层已有的 Greenfield/Brownfield/Review 核心逻辑；
+11. **回退 5.0** (`git revert 77e446a`)：若在 5.1 未回退时强行回退 5.0，会导致 PR 草稿和设计备忘录丢失；
+12. **回退范围外附带改动** (`git revert 7400cd4`)：若在后续步骤未回退时单独回退，会导致 `.svelte-kit/`、`.turbo/` 等产生未跟踪文件污染工作区，但不影响业务代码运行。
 
 
 

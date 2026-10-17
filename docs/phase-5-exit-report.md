@@ -119,7 +119,7 @@
 - **全量 CI 门禁执行**：`CI=true TURBO_FORCE=true pnpm ci:verify`，原始输出保存至 `ci-verify.log`，记录各个 stage 耗时，总耗时约 150s，74 项浏览器测试（37 dev + 37 preview）全部一次性通过。
 
 ### 步骤 5.8：Ghost 预测位置实现与验证 (Step 5.8: Ghost Predictive Placement Implementation & Verification)
-- 提交哈希：*(本步提交)*
+- 提交哈希：`831bab4`
 - **D-011 实施与架构隔离**：
   - 落实用户已批准的 D-011 决策（方案 B：未持久化的试算布局预测 Ghost 位置）；
   - 在 `WorkspaceShellController` 中实现 `predictGhostPlacement`：
@@ -364,12 +364,12 @@
 | 5.7 | `338a489` | `docs(phase-5): add ghost predictive placement design memo evaluating options A, B, and C` | `git revert 338a489` | 移除 Ghost 预测位置设计备忘录 |
 | 5.7 (PR) | `df78264` | `docs(pr): update PR draft with Step 5.7 commit hash and rollback crosswalk` | `git revert df78264` | 同步回退 PR 草稿中步骤 5.7 提交哈希 |
 | 5.8.0 | `530002a` | `docs(phase-5): reconcile test evidence, refine reason codes, and correct placement memo` | `git revert 530002a` | 回退 5.8.0 证据对齐、原因码细化与备忘录订正 |
-| 5.8 | *(本步提交)* | `feat(web): implement ghost predictive placement via unpersisted dry-run layout (D-011)` | `git revert <hash>` | 移除 Ghost 试算预测位置、三态标签与对应测试，恢复 5.8.0 纯启发式状态 |
+| 5.8 | `831bab4` | `feat(web): implement ghost predictive placement via unpersisted dry-run layout (D-011)` | `git revert 831bab4` | 移除 Ghost 试算预测位置、三态标签与对应测试，恢复 5.8.0 纯启发式状态 |
 
 ### 逆序回退分析 (Cascading Rollback Analysis)
 
 若需回退本阶段提交，请严格按照逆序操作：
-1. **回退 5.8** (`git revert <hash>`)：移除 Ghost 试算预测位置实现、三态标签、对应单元测试与 E2E 基准测试，恢复 5.8.0 状态；
+1. **回退 5.8** (`git revert 831bab4`)：移除 Ghost 试算预测位置实现、三态标签、对应单元测试与 E2E 基准测试，恢复 5.8.0 状态；
 2. **回退 5.8.0** (`git revert 530002a`)：移除证据对齐、原因码细化与备忘录订正，恢复 5.7 状态；
 3. **回退 5.7** (`git revert df78264` -> `git revert 338a489`)：安全移除 Ghost 预测位置设计备忘录；
 4. **回退 5.6** (`git revert 966fd4c` -> `git revert 3f05c44`)：移除浏览器 E2E benchmark 测试套件与订正报告；
