@@ -1219,5 +1219,57 @@ PR #3首次远端CI在额外security:audit步骤报告7high，本地旧ci:verify
   - 风险：若用户分析超过 5000 文件的大型仓库，会触发文件数截断告警；后续可增加分包目录分析或自定义上限配置。
   - 回退方式：`git revert <commit-hash>` 可独立回退步骤 3.1 的安全加固与基准测量。
 
+## 2026-10-16 - 阶段 4 步骤 4：架构期望基线合规检查与双向问题导航 / Phase 4 Step 4: Expected Architecture Baseline Compliance Check and Bidirectional Problem Navigation
+
+### 1. 做了什么 / What
+- 架构设计文档（`docs/brownfield-compliance-design.md`）：
+  - 明确期望架构的权威来源机制（显式加载，严禁 AI 或系统自动深拷贝合成伪期望）；
+  - 界定未加载期望架构时的显式不可用状态（Explicit Unavailable State）；
+  - 逐条分析界定 5 条既有 Validator 规则在 Brownfield 下的检出能力与物理局限，将代码契约规则明确标记为“无法验证（Analyzer 未提取契约）”；
+  - 规定双向问题导航与折叠分组自动展开机制。
+- 校验器棕地适配与目标解析（`packages/implementation-validator/`）：
+  - `src/types.ts` & `src/index.ts`：导出 `IssueTarget`、`resolveIssueTarget`、`isContractIssue` 与防空指针辅助函数 `createImplementationModel`；
+  - `src/rules/technology-rule.ts`：修复 Brownfield 下未检测到实际技术但期望架构规定了技术时静默放行的漏洞，显式报告 `WARNING: Technology deviation detected`；
+  - `fixtures/`：建立 `coding-cad-expected.json`（Golden 真实期望基线，15 组件 40 连接）与 `coding-cad-drifted.json`（注入 5 项典型偏差用于负控验证）；
+  - `src/brownfield-compliance.test.ts`：测试目标解析与双基线，验证 Coding-CAD 0 结构误报与漂移基线 100% 检出。
+- Web 状态机、控制器与基线预设（`apps/web/`）：
+  - `src/lib/architecture/compliance/baseline-presets.ts`：提供 Golden 与 Drifted 类型化预设，支持自定义 JSON 导入；
+  - `src/lib/architecture/greenfield/workspace-shell.ts` & `workspace-shell-controller.ts`：扩展 `expectedArchitecture` 与 `complianceReport`，提供 `loadExpectedArchitecture` 与 `clearExpectedArchitecture`；
+  - `workspace-shell-controller.test.ts`：增加合规加载与计算测试，扩展至 17/17 测试全量通过。
+- UI 交互、角标渲染与受控自动展开（`apps/web/`）：
+  - `ArchitectureCanvas.svelte`：接收 `selectedNodeIds` 并在问题聚焦时自动展开目标所属父级分组容器（基于 `previousSelectedNodeIds` 差量触发，不影响用户后续手动折叠）；
+  - `src/routes/+page.svelte`：未加载基线时展示显式不可用横幅；提供加载基线对话框；渲染合规问题项并标注 `[ERROR]`、`[WARNING]`、`[无法验证]`、`[待人工确认]`；提供聚焦定位按钮；在 Inspector 联动展示关联问题。
+- Playwright E2E 真实浏览器验证（`apps/web/e2e/brownfield.spec.ts`）：
+  - 端到端验证不可用横幅、加载偏离基线、角标断言、点击问题自动展开已折叠父分组并聚焦、点击节点联动 Inspector、加载 Golden 基线获得 0 偏差完全合规通过、以及 100% ELK 求解器执行与零 fallback。
+
+- Design Documentation (`docs/brownfield-compliance-design.md`): Defined expected baseline sourcing (explicit loading, no synthetic hallucination), explicit unavailable state, rule scope & limitations, and bidirectional navigation.
+- Validator Adaptation (`packages/implementation-validator/`): Exported `IssueTarget`, `resolveIssueTarget`, `isContractIssue`, and `createImplementationModel`. Fixed technology rule false negatives. Created golden and drifted fixtures and integration test suite.
+- Web Controller & Presets (`apps/web/`): Added baseline presets, extended workspace shell controller with compliance actions and automated recalculation, covered by 17 unit tests.
+- UI & Canvas Auto-Expansion (`apps/web/`): Added explicit unavailable banner, baseline loading dialog, problem badges, target focus link, auto-expansion for collapsed parent groups, and bidirectional inspector section.
+- Playwright E2E (`apps/web/e2e/brownfield.spec.ts`): Fully validated end-to-end user journey in Chromium with 100% ELK solver confirmation.
+
+### 2. 为什么这么做 / Why
+- 架构事实来源唯一性与防伪要求：打开代码仓库时只有代码事实，没有预设期望；绝不能为了消除警告而由系统自动生成伪期望，必须由架构师显式加载批准模型；未加载时直白报告“不可用”。
+- 零静默降级铁律：Phase 4 AST 解析器未提取代码契约模式，契约规则必须透明报告为“无法验证”，不得谎报通过。技术规则对缺失技术的偏离必须显式警示，不得静默跳过。
+- 人机交互可用性：在 120+ 模块或大型工程中，合规问题对应的节点很可能位于折叠的模块容器内部；若不自动展开，用户点击问题后画布无从高亮，造成交互困惑；通过精准受控展开显著提升可用性。
+
+- Architecture Source of Truth: Brownfield repositories only have implementation reality; synthetic baselines are forbidden. The unavailable state honestly prevents false passes.
+- Zero Silent Degradation: Unextracted contract schemas are honestly labeled "Cannot Verify". Undetected expected technologies are reported as deviations rather than ignored.
+- Progressive Disclosure UX: Auto-expanding collapsed parent containers when a problem is selected bridges abstraction density with pinpoint problem location.
+
+### 3. 验证结果 / Verification
+- 已实现并验证：
+  - `pnpm --filter @coding-cad/implementation-validator test`：全量通过；
+  - `pnpm --filter @coding-cad/web test:unit`：15/15 文件，81/81 测试全量通过；
+  - `pnpm --filter @coding-cad/web build`：构建成功，0 错误；
+  - `apps/web/e2e/brownfield.spec.ts`：在 dev 模式与 preview 模式下双模式通过，100% ELK 求解器，零 fallback；
+  - `CI=true TURBO_FORCE=true pnpm test`：工作区 30/30 任务全量通过；
+  - `pnpm check:changelog`：检查通过（5 个生产文件变更）。
+- 未实现：无。
+- 风险与回退方式：
+  - 风险：若用户上传格式损坏的 JSON 期望文件，由解析层友好捕获并提示。
+  - 回退方式：`git revert <commit-hash>`。
+
+
 
 

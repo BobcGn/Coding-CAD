@@ -64,6 +64,9 @@ importers:
       '@coding-cad/implementation-analyzer':
         specifier: workspace:*
         version: link:../../packages/implementation-analyzer
+      '@coding-cad/implementation-validator':
+        specifier: workspace:*
+        version: link:../../packages/implementation-validator
       '@coding-cad/workspace':
         specifier: workspace:*
         version: link:../../packages/workspace

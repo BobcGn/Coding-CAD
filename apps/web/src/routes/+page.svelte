@@ -20,6 +20,16 @@
     type ThemeMode,
     type UiLocale
   } from "$lib/cad/workspace/ui-settings.js";
+  import type { ArchitectureProject } from "@coding-cad/architecture-ir";
+  import {
+    isContractIssue,
+    resolveIssueTarget,
+    type ComplianceIssue
+  } from "@coding-cad/implementation-validator";
+  import {
+    CODING_CAD_EXPECTED_BASELINE,
+    CODING_CAD_DRIFTED_BASELINE
+  } from "$lib/architecture/compliance/baseline-presets.js";
 
   let controller = $state<WorkspaceShellController>();
   let shell = $state<GreenfieldShellState>();
@@ -37,6 +47,8 @@
   let connectionFrom = $state("");
   let connectionTo = $state("");
   let connectionProtocol = $state("REST");
+  let expectedModalOpen = $state(false);
+  let expectedCustomJson = $state("");
   const pendingReview = $derived(shell?.proposal?.status === "draft" || shell?.proposal?.status === "in-review");
   const removalConnections = $derived(shell?.accepted.architecture.connections.filter(
     (edge) => edge.from === removeComponentId || edge.to === removeComponentId
@@ -248,6 +260,33 @@
     }
   }
 
+  function handleLoadExpected(project: ArchitectureProject): void {
+    if (controller === undefined) return;
+    controller.loadExpectedArchitecture(project);
+    syncFromController();
+    expectedModalOpen = false;
+  }
+
+  function handleLoadCustomJson(): void {
+    if (controller === undefined || expectedCustomJson.trim().length === 0) return;
+    controller.loadExpectedArchitectureJson(expectedCustomJson.trim());
+    syncFromController();
+    expectedModalOpen = false;
+  }
+
+  function handleClearExpected(): void {
+    if (controller === undefined) return;
+    controller.clearExpectedArchitecture();
+    syncFromController();
+  }
+
+  function handleFocusTarget(targetId: string): void {
+    if (controller === undefined) return;
+    selectedNodeIds = [targetId];
+    controller.selectNodeIds([targetId]);
+    updateInspector();
+  }
+
   function handleAutoLayout(): void {
     if (controller === undefined || controller.layout() === undefined) return;
     const layout = controller.layout()!;
@@ -331,6 +370,9 @@
           </button>
           <button type="button" class="sidebar-action" data-testid="open-repository-btn" onclick={() => { repoModalOpen = true; }} disabled={busy}>
             {settings.locale === "zh" ? "打开代码仓库" : "Analyze Repository"}
+          </button>
+          <button type="button" class="sidebar-action" data-testid="sidebar-load-expected" onclick={() => { expectedModalOpen = true; }} disabled={busy}>
+            {settings.locale === "zh" ? "加载期望架构基线" : "Load Expected Baseline"}
           </button>
           <button type="button" class="sidebar-action" onclick={handleAutoLayout} disabled={busy || !layout}>
             {t("autoLayout")}
@@ -417,6 +459,59 @@
             disabled={busy || repoPathInput.trim().length === 0}
           >
             {busy ? (settings.locale === "zh" ? "分析中..." : "Analyzing...") : (settings.locale === "zh" ? "开始反演分析" : "Analyze Repository")}
+          </button>
+        </div>
+      </div>
+    {/if}
+
+    {#if expectedModalOpen}
+      <div class="settings-overlay" role="presentation" onclick={() => { expectedModalOpen = false; }}></div>
+      <div class="settings-panel" role="dialog" aria-label="Load Expected Architecture" data-testid="load-expected-modal">
+        <div class="settings-panel-header">
+          <h3>{settings.locale === "zh" ? "加载已批准期望架构基线" : "Load Expected Architecture Baseline"}</h3>
+          <button type="button" class="settings-close" aria-label="Close" onclick={() => { expectedModalOpen = false; }}>×</button>
+        </div>
+        <p class="muted" style="margin: 0.5rem 0; font-size: 0.85rem;">
+          {settings.locale === "zh"
+            ? "选择权威的 ArchitectureProject 作为合规检查基线（严禁系统自动伪造期望）："
+            : "Select an authoritative ArchitectureProject baseline (no synthetic auto-expectations):"}
+        </p>
+        <div class="sidebar-actions" style="margin-bottom: 1rem; display: grid; gap: 0.5rem;">
+          <button
+            type="button"
+            class="sidebar-action"
+            data-testid="load-preset-golden"
+            onclick={() => handleLoadExpected(CODING_CAD_EXPECTED_BASELINE)}
+          >
+            <strong>Coding-CAD Golden Baseline</strong>
+            <small style="display:block; color: var(--muted);">{settings.locale === "zh" ? "完全合规基线（预期通过，0 结构偏离）" : "Fully compliant baseline (0 structural deviations)"}</small>
+          </button>
+          <button
+            type="button"
+            class="sidebar-action"
+            data-testid="load-preset-drifted"
+            onclick={() => handleLoadExpected(CODING_CAD_DRIFTED_BASELINE)}
+          >
+            <strong>Coding-CAD Drifted Baseline</strong>
+            <small style="display:block; color: var(--muted);">{settings.locale === "zh" ? "人工偏离基线（覆盖组件缺失、技术不符、未批准依赖等 5 种场景）" : "Drifted baseline (tests missing component, tech deviation, dependencies, contract)"}</small>
+          </button>
+        </div>
+        <div class="setting-row" style="display: grid; gap: 0.5rem;">
+          <label for="custom-expected-json">{settings.locale === "zh" ? "或粘贴自定义 ArchitectureProject JSON" : "Or Paste Custom ArchitectureProject JSON"}</label>
+          <textarea
+            id="custom-expected-json"
+            data-testid="custom-expected-json"
+            bind:value={expectedCustomJson}
+            rows="4"
+            placeholder={`{ "version": "1.0", "intent": { ... }, "architecture": { ... } }`}
+          ></textarea>
+          <button
+            type="button"
+            data-testid="load-custom-submit"
+            onclick={handleLoadCustomJson}
+            disabled={expectedCustomJson.trim().length === 0}
+          >
+            {settings.locale === "zh" ? "解析并加载" : "Parse & Load JSON"}
           </button>
         </div>
       </div>
@@ -513,9 +608,11 @@
           projection={projection}
           layout={layout}
           viewState={(shell.candidate ? shell.candidateLayoutState : shell.layoutState) ?? shell.layoutState!}
+          selectedNodeIds={selectedNodeIds}
           onViewStateChange={(next) => controller?.updateLayoutState(next)}
           onSelectionChange={(nodeIds) => {
             selectedNodeIds = [...nodeIds];
+            controller?.selectNodeIds(nodeIds);
             updateInspectorFor(nodeIds);
           }}
         />
@@ -638,29 +735,133 @@
             {#if inspector.issues.length > 0}
               <p class="warn">This component has {inspector.issues.length} validation issue(s).</p>
             {/if}
+            {#if shell?.complianceReport && selectedNodeIds.length > 0}
+              {@const currentId = selectedNodeIds[0]}
+              {@const relatedIssues = shell.complianceReport.issues.filter((issue) => {
+                const target = resolveIssueTarget(issue);
+                return target?.targetId === currentId || target?.from === currentId || target?.to === currentId;
+              })}
+              {#if relatedIssues.length > 0}
+                <div class="inspector-compliance-section" data-testid="inspector-compliance-section">
+                  <h3>{settings.locale === "zh" ? "关联的合规问题" : "Associated Compliance Issues"} ({relatedIssues.length})</h3>
+                  <ul class="compliance-issues-list">
+                    {#each relatedIssues as issue}
+                      <li class={`compliance-issue ${issue.severity.toLowerCase()}`} data-testid="inspector-compliance-issue">
+                        <span class={`badge severity ${issue.severity.toLowerCase()}`}>{issue.severity}</span>
+                        <strong>{issue.title}</strong>
+                        <p class="issue-desc">{issue.description}</p>
+                      </li>
+                    {/each}
+                  </ul>
+                </div>
+              {/if}
+            {/if}
           </section>
         {/if}
         <h2>{t("problems")}</h2>
-        {#if shell.validation && shell.validation.issues.length > 0}
-          <ul>
-            {#each shell.validation.issues as issue (issue.id)}
-              <li class={issue.severity.toLowerCase()}>
-                <strong>{issue.title}</strong>
-                {#if issue.affectedComponent}
-                  <button
-                    type="button"
-                    class="link"
-                    onclick={() => { selectedNodeIds = [issue.affectedComponent!]; updateInspector(); }}
-                  >
-                    {issue.affectedComponent}
-                  </button>
-                {/if}
-                <p>{issue.description}</p>
-              </li>
-            {/each}
-          </ul>
+        {#if shell.inspection !== undefined}
+          <!-- Brownfield Compliance Mode -->
+          {#if !shell.expectedArchitecture}
+            <div class="compliance-unavailable-banner warn" data-testid="compliance-unavailable-banner">
+              <h4>{settings.locale === "zh" ? "合规检查不可用：未加载期望架构" : "Compliance check unavailable: No expected architecture loaded"}</h4>
+              <p>{settings.locale === "zh" ? "请加载已批准的架构基线（ArchitectureProject）以进行实现偏离核对。" : "Please load an approved ArchitectureProject baseline to check implementation drift."}</p>
+              <button type="button" class="btn-sm" data-testid="load-expected-btn" onclick={() => { expectedModalOpen = true; }}>
+                {settings.locale === "zh" ? "加载期望架构" : "Load Expected Baseline"}
+              </button>
+            </div>
+          {:else}
+            <div class="compliance-header" data-testid="compliance-header">
+              <h3>{settings.locale === "zh" ? "实现合规检查" : "Compliance Verification"}</h3>
+              <span class="compliance-count">
+                {shell.complianceReport?.issues.length ?? 0} {settings.locale === "zh" ? "个偏差项" : "deviation(s)"}
+              </span>
+              <button type="button" class="btn-sm" data-testid="clear-expected-btn" onclick={handleClearExpected}>
+                {settings.locale === "zh" ? "清除基线" : "Clear Baseline"}
+              </button>
+            </div>
+            {#if shell.complianceReport && shell.complianceReport.issues.length > 0}
+              <ul class="compliance-issues-list" data-testid="compliance-issues-list">
+                {#each shell.complianceReport.issues as issue (issue.id)}
+                  {@const target = resolveIssueTarget(issue)}
+                  {@const isContract = isContractIssue(issue)}
+                  {@const isPending = !isContract && (
+                    issue.implementationEvidence.includes("inferred") ||
+                    issue.implementationEvidence.includes("0.6") ||
+                    issue.implementationEvidence.includes("0.5") ||
+                    issue.implementationEvidence.includes("0.4") ||
+                    issue.implementationEvidence.includes("Undeclared") ||
+                    issue.implementationEvidence.includes("no matching technology") ||
+                    issue.id.startsWith("technology.deviation")
+                  )}
+                  <li class={`compliance-issue ${issue.severity.toLowerCase()}`} data-testid="compliance-issue-item">
+                    <div class="issue-header">
+                      <span class={`badge severity ${issue.severity.toLowerCase()}`}>{issue.severity}</span>
+                      {#if isContract}
+                        <span class="badge cannot-verify" data-testid="badge-cannot-verify">
+                          {settings.locale === "zh" ? "无法验证 (Analyzer 未提取契约)" : "Cannot Verify (Contracts not extracted)"}
+                        </span>
+                      {/if}
+                      {#if isPending}
+                        <span class="badge pending-confirmation" data-testid="badge-pending-confirmation">
+                          {settings.locale === "zh" ? "待人工确认" : "Pending Confirmation"}
+                        </span>
+                      {/if}
+                      <strong>{issue.title}</strong>
+                    </div>
+                    {#if target}
+                      <div class="issue-target">
+                        <button
+                          type="button"
+                          class="link"
+                          data-testid="issue-target-link"
+                          onclick={() => handleFocusTarget(target.targetId)}
+                        >
+                          {settings.locale === "zh" ? "定位元素" : "Focus"}: <code>{target.targetId}</code>
+                        </button>
+                      </div>
+                    {/if}
+                    <p class="issue-desc">{issue.description}</p>
+                    {#if issue.architectureExpectation}
+                      <p class="issue-expectation"><small><strong>{settings.locale === "zh" ? "架构期望" : "Expectation"}:</strong> {issue.architectureExpectation}</small></p>
+                    {/if}
+                    {#if issue.implementationEvidence}
+                      <p class="issue-evidence"><small><strong>{settings.locale === "zh" ? "实现证据" : "Evidence"}:</strong> {issue.implementationEvidence}</small></p>
+                    {/if}
+                    {#if issue.recommendation}
+                      <p class="issue-recommendation"><small><strong>{settings.locale === "zh" ? "修复建议" : "Recommendation"}:</strong> {issue.recommendation}</small></p>
+                    {/if}
+                  </li>
+                {/each}
+              </ul>
+            {:else if shell.complianceReport}
+              <p class="compliance-passed" data-testid="compliance-passed">
+                {settings.locale === "zh" ? "实现完全符合已批准架构（0 项偏差）。" : "Implementation matches approved architecture baseline (0 deviations)."}
+              </p>
+            {/if}
+          {/if}
         {:else}
-          <p>{t("noValidationIssues")}</p>
+          <!-- Greenfield Validation Mode -->
+          {#if shell.validation && shell.validation.issues.length > 0}
+            <ul>
+              {#each shell.validation.issues as issue (issue.id)}
+                <li class={issue.severity.toLowerCase()}>
+                  <strong>{issue.title}</strong>
+                  {#if issue.affectedComponent}
+                    <button
+                      type="button"
+                      class="link"
+                      onclick={() => { selectedNodeIds = [issue.affectedComponent!]; updateInspector(); }}
+                    >
+                      {issue.affectedComponent}
+                    </button>
+                  {/if}
+                  <p>{issue.description}</p>
+                </li>
+              {/each}
+            </ul>
+          {:else}
+            <p>{t("noValidationIssues")}</p>
+          {/if}
         {/if}
 
         {#if shell.candidate}
@@ -773,5 +974,30 @@
   .evidence-panel h3 { margin: 0 0 0.5rem; font-size: 0.85rem; color: var(--fg); }
   .unsupported-structures-banner, .truncation-banner { border: 1px solid #fde68a; background: #fffbeb; color: #92400e; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 0.75rem; }
   .unsupported-structures-banner ul { margin: 0.25rem 0 0; padding-left: 1.25rem; font-size: 0.85rem; }
+  .compliance-unavailable-banner { border: 1px solid #fde68a; background: #fffbeb; color: #92400e; padding: 0.75rem; border-radius: 8px; margin-bottom: 0.75rem; }
+  .compliance-unavailable-banner h4 { margin: 0 0 0.25rem; font-size: 0.9rem; }
+  .compliance-unavailable-banner p { margin: 0 0 0.5rem; font-size: 0.8rem; }
+  .compliance-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; }
+  .compliance-header h3 { margin: 0; font-size: 0.95rem; }
+  .compliance-count { font-size: 0.8rem; color: var(--muted); }
+  .btn-sm { font-size: 0.75rem; padding: 0.2rem 0.5rem; border: 1px solid var(--panel-border); border-radius: 6px; background: var(--panel-bg); cursor: pointer; color: var(--fg); }
+  .compliance-issues-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.5rem; }
+  .compliance-issue { border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.5rem; background: var(--panel-bg); }
+  .compliance-issue.error { border-color: #fecaca; background: #fef2f2; }
+  .compliance-issue.warning { border-color: #fde68a; background: #fffbeb; }
+  .compliance-issue.info { border-color: #bfdbfe; background: #eff6ff; }
+  .issue-header { display: flex; align-items: center; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 0.3rem; }
+  .badge { font-size: 0.7rem; font-weight: 600; padding: 0.1rem 0.35rem; border-radius: 4px; text-transform: uppercase; }
+  .badge.severity.error { background: #dc2626; color: #ffffff; }
+  .badge.severity.warning { background: #d97706; color: #ffffff; }
+  .badge.severity.info { background: #2563eb; color: #ffffff; }
+  .badge.cannot-verify { background: #64748b; color: #ffffff; text-transform: none; }
+  .badge.pending-confirmation { background: #8b5cf6; color: #ffffff; text-transform: none; }
+  .issue-target { margin-bottom: 0.25rem; }
+  .issue-desc { margin: 0.2rem 0; font-size: 0.85rem; }
+  .issue-expectation, .issue-evidence, .issue-recommendation { margin: 0.15rem 0; font-size: 0.8rem; color: var(--muted); }
+  .compliance-passed { color: #166534; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 0.5rem; font-size: 0.85rem; }
+  .inspector-compliance-section { margin-top: 0.75rem; border-top: 1px solid var(--panel-border); padding-top: 0.5rem; }
+  .inspector-compliance-section h3 { margin: 0 0 0.4rem; font-size: 0.85rem; }
 </style>
 

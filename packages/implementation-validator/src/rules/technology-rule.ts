@@ -10,11 +10,22 @@ export const technologyComplianceRule: ComplianceRule = {
       const expectedTechnology = technologyName(expected);
       const actual = findActualComponent(expected, context.implementation);
       const actualTechnology = actual === undefined ? undefined : technologyName(actual);
-      if (
-        expectedTechnology === undefined
-        || actualTechnology === undefined
-        || normalize(expectedTechnology) === normalize(actualTechnology)
-      ) return [];
+      if (expectedTechnology === undefined) return [];
+      if (actualTechnology !== undefined && normalize(expectedTechnology) === normalize(actualTechnology)) {
+        return [];
+      }
+
+      if (actualTechnology === undefined) {
+        return [{
+          id: `technology.deviation.${expected.id}`,
+          severity: "WARNING",
+          title: `Technology deviation detected for ${expected.name}`,
+          description: `Approved architecture requires technology '${expectedTechnology}', but no matching technology was detected in implementation.`,
+          architectureExpectation: `Architecture requires ${expectedTechnology} for component '${expected.name}'.`,
+          implementationEvidence: `Implementation Analyzer detected no matching technology for '${expected.name}'. Repository technologies: ${context.implementation.technology.databases.join(", ") || "none"}.`,
+          recommendation: `Use ${expectedTechnology}, or document and approve the architecture choice through Architecture Review.`
+        }];
+      }
 
       return [{
         id: `technology.deviation.${expected.id}`,

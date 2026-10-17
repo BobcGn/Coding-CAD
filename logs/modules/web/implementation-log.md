@@ -418,3 +418,54 @@ PR #3首次远端CI在额外security:audit步骤报告7high，本地旧ci:verify
   - 风险：生产构建若环境变量未设置会导致路由关闭，属于预期安全行为。
   - 回退方式：`git revert <commit-hash>`。
 
+## 2026-10-16 - 阶段 4 步骤 4：架构期望基线合规检查与双向问题导航 / Phase 4 Step 4: Expected Architecture Baseline Compliance Check and Bidirectional Problem Navigation
+
+### 1. 做了什么 / What
+- 依赖集成与基线预设（`apps/web/package.json` & `src/lib/architecture/compliance/baseline-presets.ts`）：
+  - 引入 `@coding-cad/implementation-validator` 依赖；
+  - 导出 `BASELINE_PRESETS` 提供 Golden（完全匹配基线）与 Drifted（偏离注入基线）类型化预设，并支持用户自定义导入 JSON。
+- 状态机与控制器扩展（`src/lib/architecture/greenfield/workspace-shell.ts` & `workspace-shell-controller.ts`）：
+  - 在 `WorkspaceShell` 状态中增加 `expectedArchitecture` 与 `complianceReport`；
+  - 实现 `loadExpectedArchitecture`、`loadExpectedArchitectureJson` 与 `clearExpectedArchitecture` 方法；
+  - 并在打开仓库反演完成后自动计算合规报告（若已加载期望基线）。
+- 画布双向交互与自动展开（`src/lib/cad/canvas/ArchitectureCanvas.svelte`）：
+  - 接收 `selectedNodeIds` 属性；
+  - 实现受控自动展开：当问题列表触发聚焦被折叠分组内的节点时，系统精准展开其所属父级分组节点，并保持用户后续手动折叠的交互自由度（通过 `previousSelectedNodeIds` 差量触发）。
+- UI 交互与问题导航组件（`src/routes/+page.svelte`）：
+  - **显式不可用横幅**：未加载期望架构时展示 `data-testid="compliance-unavailable-banner"`，提示 `合规检查不可用：未加载期望架构 / Compliance check unavailable`，彻底杜绝伪通过；
+  - **加载基线对话框**：支持快速加载 Golden/Drifted 预设或粘贴自定义架构 JSON，并提供清除基线操作；
+  - **问题列表与显式角标**：展示 `[ERROR]`、`[WARNING]`，对契约规则展示 `[无法验证 (Analyzer 未提取契约) / Cannot Verify]`，对推断项或技术偏离展示 `[待人工确认 / Pending Confirmation]`；
+  - **问题目标链接**：点击 `data-testid="issue-target-link"` 居中聚焦画布节点；
+  - **检查器合规板块**：画布选中节点时，在 Inspector 底端联动展示关联的合规问题（`data-testid="inspector-compliance-section"`）。
+- 自动化与 E2E 测试：
+  - 控制器测试（`workspace-shell-controller.test.ts`）：新增 4 项合规加载与偏离核对测试，测试总数提升至 17/17；
+  - 真实浏览器 Playwright E2E（`apps/web/e2e/brownfield.spec.ts`）：验证未加载横幅、偏离基线加载、角标判定、问题聚焦自动展开折叠分组、画布选择联动 Inspector、Golden 基线 0 偏差通过、以及 100% ELK 求解器零 fallback 门禁。
+
+- Dependency & Presets (`package.json`, `baseline-presets.ts`): Integrated `@coding-cad/implementation-validator` and provided typed Golden/Drifted presets and custom JSON loading.
+- Controller Compliance Pipeline (`workspace-shell.ts`, `workspace-shell-controller.ts`): Extended shell state with `expectedArchitecture` and `complianceReport`, implementing explicit loading and clearing actions.
+- Canvas Auto-Expansion (`ArchitectureCanvas.svelte`): Implemented parent group auto-expansion when navigating to a problem target inside a collapsed container without overriding subsequent manual user collapse.
+- UI & Problem Navigation (`+page.svelte`): Added explicit unavailable banner, baseline loading dialog, problem badges (`[Cannot Verify]`, `[Pending Confirmation]`), focus links, and inspector bidirectional link section.
+- Test Coverage: Expanded controller unit tests to 17/17; added full Playwright E2E suite covering unavailable banner, drifted badge assertions, auto-expansion, bidirectional inspection, golden baseline pass, and 100% ELK solver verification.
+
+### 2. 为什么这么做 / Why
+- 架构事实边界防伪：Brownfield 场景打开代码库时只有代码实现事实，绝不能自动推断或深拷贝代码生成伪期望；未加载时诚实展示“不可用”，由人类架构师显式加载批准基线。
+- 零静默降级与物理真实：Analyzer 在 Phase 4 不提取代码契约模式，契约规则必须诚实显示为“无法验证”，不得谎报通过。
+- 渐进式理解与工作流连续性：用户点击合规问题时，若目标节点被隐藏在折叠的模块容器内，自动展开容器并高亮节点，极大缩减架构排查认知成本。
+
+- Truth Boundary: Reverse-engineering code only provides implementation facts; synthetic expectations are strictly rejected. The unavailable state honestly prevents false passes until an approved baseline is loaded.
+- Zero Silent Degradation: Since method-level contract schemas are outside Phase 4 Analyzer scope, contract issues are explicitly labeled "Cannot Verify".
+- Progressive Disclosure: Auto-expanding collapsed parent containers upon problem navigation reduces cognitive load while exploring architectural drift.
+
+### 3. 验证结果 / Verification
+- 已实现并验证：
+  - `apps/web/src/lib/architecture/greenfield/workspace-shell-controller.test.ts`：17/17 测试全数通过；
+  - `pnpm --filter @coding-cad/web test:unit`：15/15 文件，81/81 测试全量通过；
+  - `apps/web/e2e/brownfield.spec.ts`：在 dev 模式（4.1s）与 preview 模式（3.3s）下 2/2 测试全数通过；
+  - 真实 Chromium 浏览器断言 100% ELK solver 求解执行（零 fallback）；
+  - `pnpm build`：成功构建，无 TypeScript 或 Rollup 错误。
+- 未实现：无。
+- 风险与回退方式：
+  - 风险：若用户加载的期望架构 JSON 与 IR 格式不匹配，由 JSON schema 校验拦截并给出友好提示。
+  - 回退方式：`git revert <commit-hash>`。
+
+

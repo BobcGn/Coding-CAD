@@ -6,6 +6,7 @@ import type { ComplianceRule, ImplementationModel } from "./types.js";
 import { createImplementationModel } from "./types.js";
 import { ImplementationValidator } from "./validator.js";
 import "./analyzer-compatibility.test.js";
+import "./brownfield-compliance.test.js";
 
 const pointService: Component = {
   id: "point-service",

@@ -25,6 +25,7 @@
     projection: ArchitectureLayoutProjection;
     layout: LayoutResult;
     viewState: LayoutState;
+    selectedNodeIds?: readonly string[];
     onViewStateChange?: (state: LayoutState) => void;
     onSelectionChange?: (nodeIds: readonly string[], edgeIds: readonly string[]) => void;
     onViewportChange?: (viewport: { x: number; y: number; zoom: number }) => void;
@@ -34,6 +35,7 @@
     projection,
     layout,
     viewState,
+    selectedNodeIds = [],
     onViewStateChange,
     onSelectionChange,
     onViewportChange
@@ -55,12 +57,34 @@
     collapsedGroupIds = next;
   }
 
+  let previousSelectedNodeIds: readonly string[] = [];
+
+  $effect(() => {
+    const current = selectedNodeIds;
+    if (current && current.length > 0) {
+      const newlySelected = current.filter((id) => !previousSelectedNodeIds.includes(id));
+      for (const selectedId of newlySelected) {
+        const parentId = projection.abstraction?.parentByComponentId?.[selectedId]
+          ?? layout.nodes.find((n) => n.id === selectedId)?.parentId;
+        if (parentId && collapsedGroupIds.has(parentId)) {
+          const next = new Set(collapsedGroupIds);
+          next.delete(parentId);
+          collapsedGroupIds = next;
+        }
+      }
+    }
+    previousSelectedNodeIds = current ?? [];
+  });
+
   $effect(() => {
     const adapted = toSvelteFlowProjection(projection, layout, viewState, {
       collapsedGroupIds,
       onToggleCollapse: handleToggleCollapse
     });
-    flowNodes = [...adapted.nodes];
+    flowNodes = adapted.nodes.map((n) => ({
+      ...n,
+      selected: selectedNodeIds.includes(n.id)
+    }));
     flowEdges = [...adapted.edges];
   });
 

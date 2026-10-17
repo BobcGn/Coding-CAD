@@ -30,10 +30,18 @@
   - 完善负控测试：单文件超限（`oversized-file`）、文件总数超限（`file-count`）、耗时超时（`timeout`）、外部软链接逃逸跳过并显式报告（`symlink-outside-root`）、软链接成环阻断递归；`server.test.ts` 扩展至 19/19 项测试全部通过；
   - 扫描器与分析器过滤：`IGNORED_DIRECTORIES` 追加 `.pnpm-store` 等依赖包存储与构建输出；AST 解析限制针对 JS/TS 脚本文件，杜绝非代码静态文件的误报；
   - 补充实测证据：刷新 `logs/validation/p4-baseline/` 基准并对齐 `coding-cad-golden.json`；新增 `apps/web/e2e/brownfield-benchmarks.spec.ts` 并在 Chromium 浏览器中测定 dev 与 preview 双模式下本仓库与 120 模块合成夹具实测数据（100% ELK 求解器，0 节点重叠，0 包含失败，生成 `logs/validation/p4-browser/benchmark-report.md`）。
+- 步骤 4：架构期望基线合规检查与双向问题导航（`docs/brownfield-compliance-design.md`、`packages/implementation-validator/`、`apps/web/`）：
+  - 编写设计说明，明确期望基线权威来源机制与未加载时的显式不可用状态（Explicit Unavailable State）；
+  - 逐条界定 5 条 Validator 规则在 Brownfield 下的检出能力与物理局限，将代码契约规则透明标记为“无法验证”；
+  - 扩展 `implementation-validator`：导出 `IssueTarget`、`resolveIssueTarget`、`isContractIssue` 与 `createImplementationModel`；修复 `technology-rule.ts` 漏报缺陷；
+  - 编写双基线夹具（Golden 期望 `coding-cad-expected.json` 与 Drifted 偏离 `coding-cad-drifted.json`），单测与集成测试全量验证通过；
+  - Web 端实现基线预设加载、不可用横幅、角标渲染（`[无法验证]`、`[待人工确认]`）、画布受控自动展开折叠分组以及 Inspector 双向联动；
+  - 真实浏览器 Playwright E2E（`apps/web/e2e/brownfield.spec.ts`）在 dev 与 preview 双模式全数通过，100% 验证 ELK 求解器。
 - 新建并增量维护阶段 4 PR 草稿 `.github/pr-draft-phase4.md`，未触碰未跟踪文件 `.github/pr-draft-phase3.md`。
 
 - Step 3: Brownfield product pipeline (`a6d5781`).
 - Step 3.1: Evidence replenishment and security hardening (feature switch, Host/Origin whitelist, symlink loop/escape safety, truncation negative controls, and real browser dual-mode benchmarks).
+- Step 4: Expected architecture baseline compliance verification and bidirectional problem navigation (design doc, validator adaptation, golden/drifted fixtures, web presets, explicit unavailable banner, auto-expansion, badges, inspector sync, E2E tests).
 - Maintained `.github/pr-draft-phase4.md` incrementally without touching untracked `.github/pr-draft-phase3.md`.
 
 ---
@@ -47,6 +55,8 @@
 - 严守架构与模型边界：拒绝为反演器特化而篡改 Architecture IR 公开类型，利用现有 `tags` 与 `constraints` 承载证据与置信度；通过带类型的编解码器 `evidence-codec.ts` 隔绝底层字符串格式变动；清除 `capabilities` 语义污染，避免下游 Validator 与 Blueprint 误读。
 - 安全优先设计：SvelteKit 服务端路由读取本地目录必须限制在 loopback 本机，通过 Host 头白名单阻断 DNS rebinding，通过 realpath 拦截目录逃逸符号链接，过滤凭据文件并从 DTO 中彻底剔除源码正文。
 - 渐进式呈现与架构保真：采用 `module:<pkgStem>` 分组容器与折叠交互降低大图视觉过载，并通过角标明确显示折叠成员数量。
+- 架构事实来源与零假通过：Brownfield 场景打开仓库只有实现事实，拒绝系统伪造假期望；未加载基线时展示显式不可用横幅。Analyzer 未提取契约时诚实标记“无法验证”，杜绝静默假阳性或假阴性。
+- 双向导航可用性闭环：点击问题时若目标节点被隐藏在折叠的模块容器内部，系统受控自动展开父容器并居中聚焦，使问题定位无缝衔接。
 
 - Unified engineering governance and audit trail: enforce the 3-section sequence (What -> Why -> Verification) in bilingual format across all records.
 - Automated gate protection: test and enforce format validation during `pnpm check:changelog` and `pnpm ci:verify`.
@@ -55,6 +65,8 @@
 - Strict architecture boundary preservation: rejected altering Architecture IR public types, leveraging existing tags and constraints via typed codec; purged `capabilities` semantic pollution to protect downstream validators and blueprints.
 - Security-first host boundary: strictly contained server route filesystem access to loopback, sanitized paths with realpath, ignored secret files, and excluded source text from DTOs.
 - Progressive disclosure: container grouping and collapse/expand badges manage visual density on large graphs.
+- Architecture source of truth & zero false passes: reject synthetic baseline hallucination; explicit unavailable state prevents false passes. Honest "Cannot Verify" contract labels prevent silent degradation.
+- Bidirectional navigation UX: auto-expanding parent containers when focusing problem targets bridges density with problem discoverability.
 
 ---
 
@@ -74,18 +86,17 @@
     - **edge-cases-repo** (L2-hand-annotated): 5/5 模块 (100.0% P / 100.0% R), 4/4 边 (100.0% P / 100.0% R, Resolved Edges = 4).
     - **synthetic-large-repo** (synthetic): 120/120 模块 (100.0% P / 100.0% R), 147/147 边 (100.0% P / 100.0% R, Resolved Edges = 147).
   - 服务端安全路由负控 / Server route tests (`apps/web/src/routes/api/workspace/analyze-repository/server.test.ts`): 19/19 passed (DNS rebinding, origin, Content-Type, truncation, symlinks).
-  - Web unit 测试: 15/15 文件, 78/78 passed.
+  - Web unit 测试: 15/15 文件, 81/81 passed.
   - Web integration 测试: 3/3 文件, 9/9 passed.
   - Web typecheck: 0 errors, 0 warnings.
-  - Playwright E2E 真实浏览器双模式基准 (`apps/web/e2e/brownfield-benchmarks.spec.ts`):
-    - dev 模式通过: Coding-CAD (首屏 493ms, 39边, 0重叠, 0包含失败, 19交叉, 100% ELK); synthetic-large-repo (首屏 406ms, 147边, 0重叠, 0包含失败, 1交叉, 100% ELK).
-    - preview 模式通过: Coding-CAD (首屏 637ms, 39边, 0重叠, 0包含失败, 19交叉, 100% ELK); synthetic-large-repo (首屏 296ms, 147边, 0重叠, 0包含失败, 1交叉, 100% ELK).
+  - Playwright E2E 真实浏览器双模式测试 (`apps/web/e2e/brownfield.spec.ts` & `apps/web/e2e/brownfield-benchmarks.spec.ts`):
+    - `brownfield.spec.ts` 在 dev 与 preview 双模式下均全量通过，断言不可用横幅、漂移基线、所有合规角标、自动展开父分组、聚焦元素、Inspector 双向联动、Golden 基线 0 偏差全合规、以及 100% ELK 求解器执行与零 fallback。
+    - `brownfield-benchmarks.spec.ts` 在 dev 与 preview 双模式下均全量通过，测定 Coding-CAD（39边，0重叠，0包含失败，100% ELK）与 120 模块合成大图（147边，0重叠，0包含失败，100% ELK）。
   - `pnpm build && pnpm test`: 全工作区全量通过。
 - [ ] 已实现未验证 / Implemented but unverified:
-  - 步骤 4 的 Validator 问题双向导航与契约检查状态展示。
   - 步骤 5 的用户人工可理解性评估表（需待用户实际填写验收）。
 - [ ] 未实现 / Not implemented:
-  - 阶段 4 后续功能（合规导航、阶段验收与退出报告）。
+  - 阶段 4 退出报告与 PR 最终合流。
 
 ### 风险与回退方式 / Risks and Rollback
 - 风险 / Risk: 针对非标准工作区（如使用 lerna 或自定义路径）可能需要额外模式适配；已通过 `UnsupportedStructureReport` 提供显式告警而非静默降级。
