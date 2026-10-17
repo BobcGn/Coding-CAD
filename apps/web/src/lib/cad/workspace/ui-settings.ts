@@ -94,7 +94,8 @@ export type UiTextKey =
   | "noValidationIssues"
   | "noSelection"
   | "selected"
-  | "emptyRequirementError";
+  | "emptyRequirementError"
+  | "staleProposalWarning";
 
 const DICTIONARY: Record<UiLocale, Record<UiTextKey, string>> = {
   zh: {
@@ -120,6 +121,7 @@ const DICTIONARY: Record<UiLocale, Record<UiTextKey, string>> = {
     noSelection: "未选中",
     selected: "已选中",
     emptyRequirementError: "需求不能为空。",
+    staleProposalWarning: "正式架构已变化，提案已失效，请重新提议。",
   },
   en: {
     appName: "Coding CAD",
@@ -144,6 +146,7 @@ const DICTIONARY: Record<UiLocale, Record<UiTextKey, string>> = {
     noSelection: "No selection",
     selected: "Selected",
     emptyRequirementError: "Requirement must not be empty.",
+    staleProposalWarning: "Formal architecture has changed; the proposal is stale and must be re-proposed.",
   },
 };
 

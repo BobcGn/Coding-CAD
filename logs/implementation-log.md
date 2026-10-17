@@ -1716,4 +1716,71 @@ PR #3首次远端CI在额外security:audit步骤报告7high，本地旧ci:verify
   - 风险：若极密集图在特定容器内无空间，Ghost 置于容器外侧并附带 notice 提示，不破坏正式容器边界。
   - 回退方式：`git revert <commit-hash>`。
 
+## 2026-10-17 - 阶段 5 步骤 5.3：Review 接入与生命周期硬化 / Phase 5 Step 5.3: Review Integration & Lifecycle Hardening
+
+### 1. 做了什么 / What
+- 审批动作与 Ghost 关联 (Review Actions & Ghost Association):
+  - Accept：正式 `ArchitectureProject` 更新，Ghost 投影消失，触发增量布局（Stability pass）；
+  - Reject：Ghost 投影立即消失，正式架构保持不变，候选按已批准语义保留在内存中（“拒绝保留候选”）。
+- 过期提案处置机制 (Stale Proposal Handling):
+  - 当正式架构发生变化（通过外部重新加载、外部事件通知或 `updateAcceptedArchitecture` 等），若存在未决提案，标记该提案为“已过期 (Stale)”（`isProposalStale: true`）；
+  - 已过期的提案禁用 Accept，界面与控制器均给出明确警告提示“正式架构已变化，提案已失效，请重新提议。 / Formal architecture has changed; the proposal is stale and must be re-proposed.”；
+  - Reject 操作对已过期提案仍然可用，用于清理失效提案并恢复工作区可编辑状态。
+- 审查状态机防御与单提案锁定 (Review Gate Defense & Single-Proposal Lock):
+  - 严格单提案锁定：未决提案（或已过期未清理提案）存在时，新增命令被拒绝并给出明确错误；
+  - 审查幂等性：重复点击 Accept 或 Reject 操作具备幂等性，不抛出未捕获异常；
+  - 无效提案防御：校验失败的候选提案严格阻断 Accept，但允许执行 Reject 以清理提案；
+  - 审批理由必填：沿用现有 Review 门禁要求，空理由阻断提交。
+- 前端视图与无障碍同步 (Frontend View & Accessibility):
+  - `ui-settings.ts` 新增中英双语词条 `staleProposalWarning`；
+  - `+page.svelte` Review 面板展示过期警告，并根据 `isProposalStale` 状态禁用 Accept 按钮；
+  - 增加 `window` 事件监听与控制器测试挂钩，支持外部架构变更的实时响应与双向同步。
+- 自动化测试与验证 (Automated Tests & Verification):
+  - `review-gate.test.ts` 扩展 6 项单元测试（总计 11/11 通过），全面覆盖 Ghost 采纳、Ghost 拒绝、过期提案阻断与清理、单提案锁定防御、幂等性与无效候选拒绝；
+  - `workspace-shell-controller.test.ts`（20/20 通过）保持全量通过；
+  - `editing.spec.ts` 扩展 3 项 Playwright E2E 测试（总计 14/14 通过），覆盖“创建 Ghost → Accept → 正式节点出现且 Ghost 消失”、“创建 Ghost → Reject → Ghost 消失且正式节点不变”、“过期提案无法 Accept 并可 Reject 清理”。
+
+- Review Actions & Ghost Association:
+  - Accept: formal `ArchitectureProject` updates, Ghost projection clears, and incremental layout (Stability pass) runs on accepted project.
+  - Reject: Ghost projection clears immediately, formal architecture remains unchanged, and candidate is preserved in memory per approved semantics ("拒绝保留候选").
+- Stale Proposal Handling:
+  - When formal architecture changes (via external reload, bridge updates, or `updateAcceptedArchitecture`), pending proposals are marked stale (`isProposalStale: true`).
+  - Stale proposals disable Accept in both UI and controller with a clear bilingual notice ("Formal architecture has changed; the proposal is stale and must be re-proposed.").
+  - Reject remains enabled on stale proposals to allow cleanup and return the workspace to an editable state.
+- Review Gate Defense & Single-Proposal Lock:
+  - Enforced strict single-proposal lock: subsequent editing commands are blocked while a proposal is pending or stale.
+  - Review idempotency: repeated Accept or Reject calls are idempotent without throwing.
+  - Invalid candidate rejection: candidates with validation errors block Accept but permit Reject.
+  - Nonempty rationale requirement: reuses the approved Review gate semantics.
+- Frontend View & Accessibility:
+  - Added bilingual `staleProposalWarning` dictionary key to `ui-settings.ts`.
+  - Added warning banner in `+page.svelte` Review panel and wired Accept button disable logic.
+  - Added window event listener and controller test hook for external architecture changes.
+- Automated Verification:
+  - Extended `review-gate.test.ts` with 6 unit tests (11/11 passed).
+  - Extended `editing.spec.ts` with 3 Playwright E2E browser tests (14/14 passed).
+
+### 2. 为什么这么做 / Why
+- 架构事实唯一性：在正式架构发生外部演变后，基准版本已偏离，强行接受旧提案会引发事实冲突；自动标记为“已过期”并禁用 Accept，彻底杜绝静默冲突与错误变基。
+- 遵循既有审批门禁契约：不新增任何审批状态类型或特殊角色，完全复用已批准的 `ArchitectureReview` 状态机与 `local-user` 门禁。
+- 闭环生命周期体验：提供 Reject 作为清理失效提案的显式途径，用户拒绝后即可继续进行新的设计与提议，符合自然心智模型。
+
+- Source of Truth Invariant: After formal architecture evolves externally, the baseline diverges; auto-marking proposals as stale and blocking Accept prevents silent merge conflicts and corrupt state.
+- Preserves Approved Review Contracts: Avoids introducing ad-hoc approval types, fully adhering to `ArchitectureReview` and `local-user` constraints.
+- Closed Lifecycle UX: Provides Reject as an explicit path to clean up stale proposals, resetting the lock so users can proceed with new edits.
+
+### 3. 验证结果 / Verification
+- 已实现并验证：
+  - Web 单元测试：`apps/web` 17 个测试文件，112/112 项通过；
+  - Web 集成测试：`apps/web` 4 个测试文件，13/13 项通过；
+  - Web 浏览器 E2E 测试：`apps/web/e2e/editing.spec.ts` 14/14 项通过（包含 Ghost 接受、Ghost 拒绝与过期提案阻断）；
+  - TypeScript 类型检查：`pnpm --filter @coding-cad/web typecheck` 0 错误 0 警告；
+  - 全工作区构建与测试：`CI=true TURBO_FORCE=true pnpm test` 全量通过（30/30 Turbo 任务成功）。
+- 未实现：
+  - 步骤 5.4 增量布局稳定性位移量化指标测量（步骤 5.4 范围）。
+- 风险与回退方式：
+  - 风险：若存在未决提案期间外部导入损坏的架构，`updateAcceptedArchitecture` 会进行结构校验并返回错误状态，不污染正式图。
+  - 回退方式：`git revert <commit-hash>`。
+
+
 

@@ -25,6 +25,7 @@ import {
   openProject as openProjectViaBridge,
   analyzeRepository as analyzeRepositoryViaBridge
 } from "../workspace/workspace-bridge.js";
+import { ArchitectureReview } from "@coding-cad/architecture-review";
 import type { GreenfieldShellState, ShellStatus } from "./workspace-shell.js";
 
 /**
@@ -59,11 +60,13 @@ export interface ShellController {
   saveProject(): Promise<string>;
   openProject(id: string): Promise<void>;
   analyzeRepository(repositoryPath: string): Promise<void>;
+  updateAcceptedArchitecture(project: ArchitectureProject): Promise<void>;
 }
 
 export interface ShellControllerOptions {
   readonly flow?: CandidateFlow;
   readonly engineFactory?: () => LayoutEngine;
+  readonly review?: ArchitectureReview;
 }
 
 export class WorkspaceShellController implements ShellController {
@@ -82,10 +85,12 @@ export class WorkspaceShellController implements ShellController {
       message: "",
       selectedNodeIds: []
     };
-    this.flow = options.flow ?? new CandidateFlow();
+    const review = options.review;
+    this.flow = options.flow ?? new CandidateFlow({ ...(review ? { review } : {}) });
     this.engineFactory = options.engineFactory ?? (() => new BrowserWorkerLayoutEngine());
     this.commands = new CommandApplication({
-      layoutEngine: this.engineFactory()
+      layoutEngine: this.engineFactory(),
+      ...(review ? { review } : {})
     });
   }
 
@@ -134,7 +139,15 @@ export class WorkspaceShellController implements ShellController {
 
   async acceptCandidate(rationale: string): Promise<void> {
     const { candidate, proposal, validation } = this.shell;
-    if (candidate === undefined || proposal === undefined || proposal.status === "rejected") return;
+    if (candidate === undefined || proposal === undefined || proposal.status === "rejected" || proposal.status === "approved") return;
+    if (this.shell.isProposalStale) {
+      this.shell = {
+        ...this.shell,
+        status: "error",
+        message: "Formal architecture has changed; the pending proposal is stale and cannot be accepted. / 正式架构已变化，提案已失效，无法接受，请重新提议。"
+      };
+      return;
+    }
     if (validation?.valid !== true) {
       this.shell = { ...this.shell, status: "error", message: "Candidate has validation errors; approval is blocked." };
       return;
@@ -151,7 +164,7 @@ export class WorkspaceShellController implements ShellController {
       this.pendingCommand = undefined;
       this.shell = {
         ...this.shell, accepted: result.accepted, candidate: undefined, candidateLayoutState: undefined,
-        proposal: result.proposal, isCommandProposal: undefined, status: "layout", message: ""
+        proposal: result.proposal, isCommandProposal: undefined, isProposalStale: undefined, status: "layout", message: ""
       };
       await this.layoutCandidate(result.accepted);
       this.shell = { ...this.shell, status: "ready", message: "Candidate accepted." };
@@ -165,7 +178,7 @@ export class WorkspaceShellController implements ShellController {
 
   rejectCandidate(rationale: string): void {
     const { candidate, proposal } = this.shell;
-    if (candidate === undefined || proposal === undefined || proposal.status === "rejected") return;
+    if (candidate === undefined || proposal === undefined || proposal.status === "rejected" || proposal.status === "approved") return;
     try {
       const input = { reviewer: "local-user", decision: "reject" as const, rationale };
       const result = this.pendingCommand === undefined
@@ -175,6 +188,8 @@ export class WorkspaceShellController implements ShellController {
       this.shell = {
         ...this.shell,
         proposal: result.proposal,
+        isCommandProposal: undefined,
+        isProposalStale: undefined,
         status: "ready",
         message: "Candidate rejected; accepted IR unchanged."
       };
@@ -188,7 +203,10 @@ export class WorkspaceShellController implements ShellController {
 
   async executeCommand(command: ArchitectureCommand): Promise<void> {
     if (this.pendingCommand !== undefined || this.shell.proposal?.status === "draft" || this.shell.proposal?.status === "in-review") {
-      this.shell = { ...this.shell, status: "error", message: "Review the pending candidate before editing." };
+      const msg = this.shell.isProposalStale
+        ? "Formal architecture has changed; pending proposal is stale. Reject it before proposing new changes. / 正式架构已变化，当前提案已失效，请先拒绝清理后再发起新提议。"
+        : "Review the pending candidate before editing.";
+      this.shell = { ...this.shell, status: "error", message: msg };
       return;
     }
     try {
@@ -218,6 +236,38 @@ export class WorkspaceShellController implements ShellController {
         }] }
       };
     }
+  }
+
+  async updateAcceptedArchitecture(project: ArchitectureProject): Promise<void> {
+    if (!project || typeof project !== "object" || !project.architecture || !Array.isArray(project.architecture.components)) {
+      this.shell = {
+        ...this.shell,
+        status: "error",
+        message: "Invalid ArchitectureProject: Expected an object with architecture.components array."
+      };
+      return;
+    }
+    const hasPending = this.shell.candidate !== undefined && this.shell.proposal !== undefined &&
+      this.shell.proposal.status !== "approved" && this.shell.proposal.status !== "rejected";
+    if (hasPending) {
+      this.shell = {
+        ...this.shell,
+        accepted: project,
+        isProposalStale: true,
+        status: "ready",
+        message: "Formal architecture has changed; the pending proposal is stale and must be re-proposed. / 正式架构已变化，提案已失效，请重新提议。"
+      };
+      await this.layoutCandidate(project);
+      return;
+    }
+    this.shell = {
+      ...this.shell,
+      accepted: project,
+      isProposalStale: undefined,
+      status: "ready",
+      message: "Formal architecture updated."
+    };
+    await this.layoutCandidate(project);
   }
 
   updateLayoutState(next: LayoutState): void {
@@ -422,7 +472,7 @@ export class WorkspaceShellController implements ShellController {
           ? { layoutState: nextState }
           : { candidateLayoutState: nextState }),
         status: "ready",
-        message: ""
+        message: this.shell.message || ""
       };
     } catch (error) {
       this.shell = { ...this.shell, status: "error", message: error instanceof Error ? error.message : "Layout failed." };

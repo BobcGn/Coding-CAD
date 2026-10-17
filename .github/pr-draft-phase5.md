@@ -78,6 +78,11 @@
     - 扩展 `svelte-flow-adapter.test.ts`（8/8 通过）：验证 Ghost 节点/连接独立 ID、待变更/待删除标记、几何零重叠、无关正式节点不发生位移、非未决状态不投影 Ghost；
     - 扩展 `workspace-shell-controller.test.ts`（20/20 通过）：验证存在 Ghost 时正式架构引用与内容不变、Ghost ID 绝不进入 `saveProject` 载荷、命令提案不重新触发全图重布局；
     - 扩展 `apps/web/e2e/editing.spec.ts`（11/11 全数通过）：验证添加组件渲染 Ghost 节点且与正式节点零重叠、删除组件标记为待删除且不修改正式 IR、编辑属性标记为待变更、拒绝提案即刻清除 Ghost 投影。
+- **步骤 5.3：Review 接入与生命周期硬化 (Step 5.3: Review Integration & Lifecycle Hardening)**：
+  - **审批动作与 Ghost 关联**：实现 Accept 推进正式 `ArchitectureProject` 变更、Ghost 投影即刻消失、触发增量布局（Stability pass）；实现 Reject 即刻清除 Ghost 投影、正式架构事实保持不变、候选按已批准语义保留在内存中；
+  - **过期提案 (Stale Proposal) 处置机制**：正式架构发生外部演变后，自动将未决提案标记为“已过期 (Stale)”（`isProposalStale: true`），禁用 Accept 按钮并提供中英双语警告“正式架构已变化，提案已失效，请重新提议。 / Formal architecture has changed; the proposal is stale and must be re-proposed.”，同时保留 Reject 操作用于显式清理；
+  - **审查状态机防御与单提案锁定**：在未决提案或已过期提案存在时，严格阻断新增编辑命令；验证重复 Accept/Reject 的幂等性；验证校验失败的候选提案阻断 Accept 但允许 Reject 清理；
+  - **自动化测试覆盖**：扩展 `review-gate.test.ts` 新增 6 项生命周期单元测试（11/11 通过）；扩展 `editing.spec.ts` 新增 3 项 Playwright E2E 测试（14/14 通过，覆盖 Ghost 采纳、Ghost 拒绝与过期阻断）。
 
 ---
 
@@ -98,6 +103,9 @@
   - 严格满足用户裁定的“与正式节点零重叠、局部放置不触发无关节点移动、不改动 architecture-layout 公开 API、不改动 D-010 Worker 边界”四个硬条件；
   - 容器内部无空间时放置于外侧并附带 notice 提示，不破坏正式容器布局；
   - Ghost 拥有独立身份（`ghost:...`），其 ID 绝不进入正式 `ArchitectureProject`、持久化 `LayoutState`、Save 产物或 Handoff 蓝图；Save 后 Open 不残留 Ghost 或未决提案。
+- **生命周期硬化与基线防冲突（Step 5.3）**：
+  - 当正式架构发生外部演变后，旧提案基线已经失效，自动标记为过期并禁用 Accept，彻底杜绝静默冲突；
+  - 允许 Reject 清理过期提案，确保心智模型清晰可恢复，且全流程不增加额外审批语义或角色。
 - **纯渲染与宿主隔离**：
   - Adapter 仅负责将 Blueprint 映射为 Guide 文本，绝不引入 Agent 运行时、调度器、执行引擎或外部 shell 工具。
 
@@ -123,11 +131,11 @@
   - `@coding-cad/cli`: 集成与 E2E 通过；
   - `@coding-cad/server`: 安全隔离与路由验证通过 (19/19 测试)；
   - `@coding-cad/web`:
-    - 单元测试 (vitest unit)：17 个测试文件，106/106 项通过；
+    - 单元测试 (vitest unit)：17 个测试文件，112/112 项通过；
     - 集成测试 (vitest integration)：4 个测试文件，13/13 项通过；
-    - 合计 Web 端单元 + 集成测试通过总数：119 项；
+    - 合计 Web 端单元 + 集成测试通过总数：125 项；
     - TypeScript 类型检查：`svelte-check` 0 错误 0 警告；
-    - Playwright 浏览器 E2E (`editing.spec.ts`)：11/11 全数通过（包含 Ghost 节点添加、待删除标记、待变更标记与拒绝撤销）；
+    - Playwright 浏览器 E2E (`editing.spec.ts`)：14/14 全数通过（包含 Ghost 节点添加、待删除标记、待变更标记、Ghost 接受、Ghost 拒绝与过期提案阻断）；
     - Playwright 浏览器 E2E (`handoff.spec.ts`)：dev 模式 4/4 通过，preview 模式 4/4 通过，包含逐字剪贴板比对与权限拒绝降级路径。
 
 ---
@@ -151,20 +159,23 @@
 ## 提交记录与回退表 / Commits & Rollback Crosswalk
 
 | 步骤 / Step | 提交哈希 / Commit | 提交信息 / Message | 回退命令 / Revert Command | 连带影响 / Cascade Impact |
-| --- | --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | --- |
 | 0 | `7400cd4` | `chore(git): perfect gitignore rules across workspace packages and apps` | `git revert 7400cd4` | 回退各目录 `.gitignore`，可能导致本地构建产生未跟踪文件（范围外附带改动） |
 | 5.0 | `77e446a` | `docs(phase-5): add phase 5 design memo and initialize PR draft` | `git revert 77e446a` | 回退备忘录与 PR 草稿初始版 |
 | 5.1 | `2797f9c` | `feat(handoff): implement execution handoff preview, copy, export, and provenance tracking` | `git revert 2797f9c` | 移除 Execution Handoff 产品化能力、Web 依赖及对应 E2E/单元测试，恢复合规基线连接 |
 | 5.1.1 | `f6ea675` | `test(handoff): correct baseline provenance, add copy fallback, and enforce canonical snapshot key` | `git revert f6ea675` | 回退 5.1.1 补齐测试与快照算法规范化 |
 | 5.2 | `cb8be8e` | `feat(ghost): implement proposal ghost projection, placement adapter, and view markers` | `git revert cb8be8e` | 移除 Ghost 放置算法、Svelte Flow Ghost 投影与编辑标记，恢复无 Ghost 的直接候选状态 |
+| 5.3 | TBD | `feat(review): harden review gate with ghost accept/reject, stale proposals, and single-proposal lock` | `git revert HEAD` | 移除 Review 接入硬化、过期提案标记与单提案严格防御 |
 
 ### 逆序回退分析 / Cascading Rollback Analysis
 
 若需回退本阶段提交，请严格按照逆序操作：
-1. **回退 5.2** (`git revert HEAD`)：安全移除 Ghost 投影、局部放置纯函数与待删除/待变更视觉标记，不影响正式架构与 Review 状态机；
-2. **回退 5.1.1** (`git revert f6ea675`)：恢复 5.1 初始快照实现与测试；
-3. **回退 5.1** (`git revert 2797f9c`)：将安全移除 Handoff 弹窗、对焦控制与导出的全部功能代码及测试，不会损坏底层已有的 Greenfield/Brownfield/Review 核心逻辑；
-4. **回退 5.0** (`git revert 77e446a`)：若在 5.1 未回退时强行回退 5.0，会导致 PR 草稿和设计备忘录丢失，使得 5.1 的架构依据与决策索引失效；
-5. **回退 0** (`git revert 7400cd4`)：若在后续步骤未回退时单独回退，会导致 `.svelte-kit/`、`.turbo/` 等产生未跟踪文件污染工作区，但不影响业务代码运行。
+1. **回退 5.3** (`git revert HEAD`)：移除过期提案检测、单提案严格阻断与 Review 接入硬化，恢复步骤 5.2 的基本 Ghost 投影；
+2. **回退 5.2** (`git revert cb8be8e`)：安全移除 Ghost 投影、局部放置纯函数与待删除/待变更视觉标记，不影响正式架构与 Review 状态机；
+3. **回退 5.1.1** (`git revert f6ea675`)：恢复 5.1 初始快照实现与测试；
+4. **回退 5.1** (`git revert 2797f9c`)：将安全移除 Handoff 弹窗、对焦控制与导出的全部功能代码及测试，不会损坏底层已有的 Greenfield/Brownfield/Review 核心逻辑；
+5. **回退 5.0** (`git revert 77e446a`)：若在 5.1 未回退时强行回退 5.0，会导致 PR 草稿和设计备忘录丢失，使得 5.1 的架构依据与决策索引失效；
+6. **回退 0** (`git revert 7400cd4`)：若在后续步骤未回退时单独回退，会导致 `.svelte-kit/`、`.turbo/` 等产生未跟踪文件污染工作区，但不影响业务代码运行。
+
 
 

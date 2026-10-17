@@ -370,10 +370,23 @@
     if (import.meta.env.DEV || import.meta.env.MODE === "layout-acceptance") {
       void import("$lib/layout/testing/layout-acceptance.js").then(({ installLayoutAcceptance }) => installLayoutAcceptance(next));
     }
+    (window as unknown as { __coding_cad_controller__?: unknown }).__coding_cad_controller__ = next;
+    const handleExternal = async (e: Event) => {
+      const customEvent = e as CustomEvent<ArchitectureProject>;
+      if (customEvent.detail && next) {
+        await next.updateAcceptedArchitecture(customEvent.detail);
+        syncFromController();
+      }
+    };
+    window.addEventListener("coding-cad:external-architecture-change", handleExternal);
     syncFromController();
     applyCurrentTheme();
     globalThis.matchMedia?.("(prefers-color-scheme: dark)")
       .addEventListener("change", handleSystemThemeChange);
+
+    return () => {
+      window.removeEventListener("coding-cad:external-architecture-change", handleExternal);
+    };
   });
 </script>
 
@@ -956,11 +969,26 @@
             <label for="review-rationale">Review rationale</label>
             <textarea id="review-rationale" bind:value={reviewRationale} rows="2" disabled={busy}></textarea>
             <div class="actions">
-              <button type="button" onclick={handleAccept} disabled={busy || shell.validation?.valid !== true || !reviewRationale.trim() || shell.proposal?.status === "rejected"}>
+              <button
+                type="button"
+                data-testid="accept-proposal-button"
+                onclick={handleAccept}
+                disabled={busy || shell.isProposalStale || shell.validation?.valid !== true || !reviewRationale.trim() || shell.proposal?.status === "rejected" || shell.proposal?.status === "approved"}
+              >
                 Accept
               </button>
-              <button type="button" onclick={handleReject} disabled={busy || !reviewRationale.trim() || shell.proposal?.status === "rejected"}>Reject</button>
+              <button
+                type="button"
+                data-testid="reject-proposal-button"
+                onclick={handleReject}
+                disabled={busy || !reviewRationale.trim() || shell.proposal?.status === "rejected" || shell.proposal?.status === "approved"}
+              >
+                Reject
+              </button>
             </div>
+            {#if shell.isProposalStale}
+              <p class="warn" data-testid="stale-proposal-warning">{t("staleProposalWarning")}</p>
+            {/if}
             {#if shell.validation?.valid === false}
               <p class="warn">Approval is blocked while the candidate has validation errors.</p>
             {/if}

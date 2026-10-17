@@ -37,6 +37,7 @@ export interface GreenfieldShellState {
   readonly expectedArchitecture?: ArchitectureProject | undefined;
   readonly complianceReport?: ComplianceReport | undefined;
   readonly isCommandProposal?: boolean | undefined;
+  readonly isProposalStale?: boolean | undefined;
 }
 
 export interface GreenfieldShellActions {
@@ -49,6 +50,7 @@ export interface GreenfieldShellActions {
   loadExpectedArchitectureJson(json: string): void;
   clearExpectedArchitecture(): void;
   reset(): void;
+  updateAcceptedArchitecture(project: ArchitectureProject): Promise<void>;
 }
 
 /** Initial shell state with the empty-greenfield baseline. */
