@@ -1,7 +1,20 @@
 # 当前状态 / Current State
 
-更新时间 / Updated at: 2026-10-16
-分支 / Branch: codex/phase-4-brownfield-workspace
+更新时间 / Updated at: 2026-10-17
+分支 / Branch: codex/phase-5-ghost-handoff
+
+## 阶段 5 历史基线与演进说明 / Phase 5 Historical Baseline & Evolution Note
+
+> [!NOTE] 基线边数演进历史数字说明 / Historical Baseline Edge Count Note
+> 阶段 4 退出报告及验收基线中的“15 组件 / 40 边”为 Phase 4 结束时的真实历史数字（当时 `apps/web` 尚未引入 `agent-adapter` 与 `execution-blueprint`）。在阶段 5.1（commit `2797f9c`）中，`apps/web` 为提供 Execution Handoff 产品级预览与指引渲染，在 `apps/web/package.json`（第 18 行与第 25 行）合法引入了 `@coding-cad/agent-adapter` 与 `@coding-cad/execution-blueprint` 两项 workspace 依赖，使真实代码依赖边由 40 增至 42 边。阶段 4 历史报告与文档保持原样不改写，阶段 5 及后续基准以 42 边为准。
+
+## 阶段 5 进度总结 / Phase 5 Progress Summary
+
+阶段 5 (Ghost Architecture, Review Gate, and Execution Handoff) 当前执行状态：
+- **步骤 0（Git 忽略规则完善）**：已完成并提交（`7400cd4`）。范围外附带改动已全面核验，`git ls-files -c -i --exclude-standard` 验证 0 跟踪文件受损。
+- **步骤 5.0（设计备忘录）**：已完成并提交（`77e446a`）。产出 `docs/phase-5-design-memo.md`（中英双语 7 节分析 + Q-5.1~Q-5.5 决策清单），初始化 `.github/pr-draft-phase5.md`。
+- **步骤 5.1（Execution Handoff 产品化）**：已完成并提交（`2797f9c` / `3f8d76a`）。实现 Blueprint 预览、3 种 Guide（Generic/Codex/Claude）渲染、来源聚焦画布、快照防过期、复制与导出。
+- **步骤 5.1.1（订正与补齐证据）**：进行中。基线改动溯源完成；补齐剪贴板逐字比对与权限拒绝降级测试；完善来源追踪覆盖表；重构规范化快照键算法与不变性测试；全仓测试用例按包分类统计。
 
 ## 阶段 4 进度总结 / Phase 4 Progress Summary
 

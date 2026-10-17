@@ -35,7 +35,7 @@ D-001 through D-010 in this file are the repository's canonical IDs. The UI V1 M
 | D-003 | NO | Required before Phase 2 drag behavior | APPROVED — Workspace-owned LayoutState, conditional |
 | D-008 | NO | Required before Phase 2 node renderer contract | APPROVED — Standard + Semantic Zoom |
 | D-006 | NO | Required before Phase 3 persistence and Phase 6 quality closure | APPROVED — Workspace abstraction |
-| D-007 | NO | Required before Phase 5 Ghost presentation | REQUIRED — TBD |
+| D-007 | NO | Required before Phase 5 Ghost presentation | APPROVED — Option B |
 | D-004 | NO | Required or explicitly deferred before Phase 6 exit | APPROVED — deferred beyond V1 |
 
 `Blocking: NO` 不代表 Codex 可以自行决定，只表示未到该功能边界时可以继续无关工作。Phase 0 Decision Freeze 必须由用户填写 Final Decision，或明确把某项延后到指定 Phase。
@@ -363,7 +363,7 @@ Option A: LayoutState is owned through the Workspace abstraction. V1 does not fr
 # D-007 Ghost Proposal Layout Behavior / Ghost Proposal 布局行为
 
 Status:
-USER DECISION REQUIRED
+APPROVED — 2026-10-17
 
 Context / 背景:
 Ghost 必须展示未批准 Proposal，同时保护正式 ArchitectureProject 和 mental map。 / Ghost must display unapproved proposals while protecting the accepted ArchitectureProject and mental map.
@@ -410,7 +410,7 @@ Decision Needed Before / 最晚决策点:
 Checkpoint 7
 
 Final Decision:
-TBD
+Option B: Web 适配层局部扩展 (Local Extension via Web Adapter)。硬条件：Ghost 存在时与正式节点零重叠；局部放置，不触发无关节点移动；不改 architecture-layout 公开 API、不改 D-010 边界。任一条件无法满足时，停止该部分并汇报选项与实测依据。 / Approved Option B: Local Extension via Web Adapter. Hard constraints: zero overlap with formal nodes when Ghost exists; local placement without triggering movement of unrelated formal nodes; zero changes to architecture-layout public API; zero changes to D-010 worker boundary. If any condition cannot be satisfied, halt and report options with empirical test evidence.
 
 # D-008 Node Visual Density / 节点视觉密度
 

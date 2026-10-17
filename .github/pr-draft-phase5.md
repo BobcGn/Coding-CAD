@@ -52,6 +52,16 @@
   - **合规基线与全仓测试更新**：
     - 在 `baseline-presets.ts` 与 `coding-cad-golden.json` 中同步 `web -> execution-blueprint` 与 `web -> agent-adapter` 的合法依赖关系；
     - 更新 `brownfield-compliance.test.ts` 与 `coding-cad-drifted.json`，确保全仓 Brownfield 合规门禁 0 偏差。
+- **步骤 5.1.1：订正与补齐证据 (Step 5.1.1: Corrections & Evidence Completion)**：
+  - **基线改动溯源 (Baseline Provenance)**：手工比对 `apps/web/package.json` 差异，确认：
+    - 第 18 行 `@coding-cad/agent-adapter` 与第 25 行 `@coding-cad/execution-blueprint` 系由 commit `2797f9c` 引入，合法建立 `web -> agent-adapter` 与 `web -> execution-blueprint` 边；
+    - 第 27 行 `@coding-cad/implementation-validator` 系由阶段 4 commit `638a90e` 引入，在 5.1 中同步补齐至 `coding-cad-golden.json`；
+    - 在 `logs/State/current.md` 明确注明阶段 4 验收报告中的“15 组件 / 40 边”为历史数字，阶段 5 起代码依赖真实边数为 42 边；
+  - **剪贴板复制逐字验证与权限降级测试**：在 `apps/web/e2e/handoff.spec.ts` 中通过 `navigator.clipboard.readText()` 断言剪贴板文本与预览全文逐字一致；在 `ExecutionHandoffModal.svelte` 中显式处理剪贴板不可用与异常抛出，补充权限拒绝/失败降级 E2E 测试；
+  - **来源追踪全覆盖表与验证**：梳理 Blueprint 各类条目来源映射表，在 `execution-handoff.test.ts` 中补齐断言：每个 Blueprint 任务关联组件均存在于正式架构，每个约束的 `sourceReference` 均可回溯，3 种 Guide 文本均可通过标识或标题回溯到 Blueprint 任务；
+  - **快照键算法规范化**：重构 `createHandoffSnapshotKey` 为纯净的语义提取与规范排序算法，排除布局坐标与临时视图，补齐对属性键顺序不敏感、保存打开 roundtrip 一致、布局拖动不触发过期、语义属性变更立即过期的全量测试；
+  - **范围外附带改动披露**：对步骤 0 的全仓 `.gitignore` 明确披露为“范围外附带改动”，并经 `git ls-files -c -i --exclude-standard` 验证 0 跟踪文件受损；
+  - **测试用例统计更正**：更正此前“全仓 102 项测试”用词，细化为全仓 15 个包/应用按包列出（其中 `apps/web` 为 107 项测试，全工作区 30/30 Turbo 任务全量通过）。
 
 ---
 
@@ -63,9 +73,11 @@
 - **遵守架构事实来源铁律**：
   - 坚持 `ArchitectureProject` 是唯一事实来源，Ghost 只是外部未采纳提案的临时视觉投影，绝不能进入 Architecture IR 或持久化 LayoutState；
   - 明确审批语义必须复用既有经过验证的 Review 门禁，避免引入越权的伪自动化或多用户假设。
-- **单一事实来源与零伪造执行契约（Step 5.1）**：
+- **单一事实来源与零伪造执行契约（Step 5.1 & 5.1.1）**：
   - Handoff 产物必须且只能源自已接受的正式架构，未决候选提案绝对不能被执行流水线采纳；
-  - 杜绝生成空文档冒充成功；反演架构中必须显式标识 `inferred` 证据，保持架构师与 Coding Agent 之间完全对称的上下文。
+  - 杜绝生成空文档冒充成功；反演架构中必须显式标识 `inferred` 证据，保持架构师与 Coding Agent 之间完全对称的上下文；
+  - 剪贴板复制必须用真实的剪贴板读取进行逐字验证，拒绝静默假成功；
+  - 快照键必须严格基于语义事实，防止画布纯布局微调导致交接文档误失效。
 - **纯渲染与宿主隔离**：
   - Adapter 仅负责将 Blueprint 映射为 Guide 文本，绝不引入 Agent 运行时、调度器、执行引擎或外部 shell 工具。
 
@@ -73,33 +85,61 @@
 
 ## 3. 验证结果 / Verification
 
-- **Git 规则检查**：`git status` 确认工作区完全干净，中间生成物与构建产物全部被规则隔离；
+- **Git 规则检查**：`git status` 确认工作区完全干净，中间生成物与构建产物全部被规则隔离；`git ls-files -c -i --exclude-standard` 输出为空，确认无跟踪文件被误忽略；
 - **设计备忘录校验**：`docs/phase-5-design-memo.md` 包含全部 7 项必需章节，中英双语齐备，逻辑自洽，无代码入侵；
-- **步骤 5.1 自动化测试矩阵（全部通过）**：
-  - Web 单元测试：`execution-handoff.test.ts` 7/7 通过；
-  - Web 集成测试：`execution-handoff.integration.test.ts` 4/4 通过；
-  - Web 端全量测试：16 个单元测试文件（89/89 通过），4 个集成测试文件（13/13 通过）；
-  - Playwright E2E 浏览器测试（`apps/web/e2e/handoff.spec.ts`）：
-    - 在 dev 模式与 preview 模式下，全部 3 个端到端测试均通过（覆盖 Greenfield 批准流程、三 Guide 切换、画布双向聚焦、剪贴板复制比对、文件导出校验、架构变更过期检测、未决候选隔离断言、Brownfield 反演架构 inferred 证据横幅展示）；
-    - 完整 web E2E 套件（29 个测试）在 dev 和 production preview 下 100% 通过，保持 100% ELK 布局求解器守卫（零 fallback）；
-  - 全仓构建与测试：15 个包与应用全部通过构建，30/30 测试套件通过；
-  - 严格 CI 门禁：`CI=true TURBO_FORCE=true pnpm ci:verify` 全量通过；
-  - 原始日志保存于 `logs/validation/p5-handoff/` 并建立索引 [README.md](../logs/validation/p5-handoff/README.md)。
+- **自动化测试按包分类统计 (Package Test Breakdown)**：
+  - `@coding-cad/architecture-ir`: 1 文件，通过 (`dist/architecture-project.test.js`)；
+  - `@coding-cad/component-registry`: 1 文件，通过 (`dist/registry.test.js`)；
+  - `@coding-cad/architecture-dsl`: 1 文件，通过 (`dist/parser.test.js`)；
+  - `@coding-cad/architecture-layout`: 7 测试文件全数通过 (passes, elk-adapter, compiler, elk-engine, incremental-layout, ghost-layout, performance-budget)；
+  - `@coding-cad/architecture-validator`: 1 文件，通过 (`dist/validator.test.js`)；
+  - `@coding-cad/execution-blueprint`: 1 文件，通过 (`dist/generator.test.js`)；
+  - `@coding-cad/architecture-agent`: 1 文件，通过 (`dist/agent.test.js`)；
+  - `@coding-cad/agent-adapter`: 1 文件，通过 (`dist/adapter.test.js`)；
+  - `@coding-cad/workspace`: 1 文件，通过 (`dist/workspace.test.js`)；
+  - `@coding-cad/implementation-analyzer`: 2 测试套件通过 (`evidence-codec`, `dist/analyzer.test.js`)；
+  - `@coding-cad/implementation-validator`: 2 测试套件通过 (`brownfield-compliance`, `dist/validator.test.js`)；
+  - `@coding-cad/architecture-review`: 1 文件，通过 (`dist/review.test.js`)；
+  - `@coding-cad/cli`: 集成与 E2E 通过；
+  - `@coding-cad/server`: 安全隔离与路由验证通过 (19/19 测试)；
+  - `@coding-cad/web`:
+    - 单元测试 (vitest unit)：16 个测试文件，94/94 项通过；
+    - 集成测试 (vitest integration)：4 个测试文件，13/13 项通过；
+    - 合计 Web 端单元 + 集成测试通过总数：107 项；
+    - Playwright 浏览器 E2E (`handoff.spec.ts`)：dev 模式 4/4 通过，preview 模式 4/4 通过，包含逐字剪贴板比对与权限拒绝降级路径。
+
+---
+
+## 4. 来源追踪覆盖表 / Provenance Coverage Table
+
+| Blueprint 条目类别 (Category) | 字段 (Field) | 来源 id 字段 (Source ID Field) | 是否保证非空 (Guaranteed Non-empty) | 是否有测试 (Has Test) | 说明 (Notes) |
+| --- | --- | --- | --- | --- | --- |
+| 实施任务 (Task - Component) | `ImplementationTask` | `task.relatedComponents` (`[component.id]`) | 是 (Yes) | 是 (Yes) | 来源于 `architecture.components`，每个 id 均在正式架构中存在 |
+| 实施任务 (Task - Connection) | `ImplementationTask` | `task.relatedComponents` (`[from, to]`) | 是 (Yes) | 是 (Yes) | 来源于 `architecture.connections`，两端端点 id 均在正式架构中存在 |
+| 实施任务 (Task - Consistency) | `ImplementationTask` | `task.relatedComponents` | 是 (Yes) | 是 (Yes) | 来源于 consistency 约束，关联 service 与 storage 组件 id |
+| 约束 (Constraint - Architecture) | `ImplementationConstraint` | `sourceReference` (`constraint.type`) | 是 (Yes) | 是 (Yes) | 来源于 `architecture.constraints`，type 与正式约束一致 |
+| 约束 (Constraint - Decision) | `ImplementationConstraint` | `sourceReference` (`decision.title`) | 是 (Yes) | 是 (Yes) | 来源于 `architecture.decisions`，title 与正式决策一致 |
+| 约束 (Constraint - Validator Issue) | `ImplementationConstraint` | `sourceReference` (`issue.id`) | 是 (Yes) | 是 (Yes) | 来源于 `validatorResult.issues`，校验规则 issue id |
+| 约束 (Constraint - Limitation) | `ImplementationConstraint` | `sourceReference` (`${component.id}:${limitation.id}`) | 是 (Yes) | 是 (Yes) | 包含组件 id 与限制项 id，targetComponentId 指向正式组件 |
+| 指引 (Guide - Decisions) | `AgentGuide.decisions` | 字符串内包含 `decision.title` | 是 (Yes) | 是 (Yes) | 格式化文本，标题回溯到正式决策 |
+| 指引 (Guide - Tasks in generic/codex/claude) | `AgentInstruction.content` | 段落包含 `Task ID: ${task.id}` 与标题 | 是 (Yes) | 是 (Yes) | 3 种 Guide 渲染文本均可通过正则匹配到全部 Blueprint task id |
 
 ---
 
 ## 提交记录与回退表 / Commits & Rollback Crosswalk
 
 | 步骤 / Step | 提交哈希 / Commit | 提交信息 / Message | 回退命令 / Revert Command | 连带影响 / Cascade Impact |
-| --- | --- | --- | --- | --- |
-| 0 | `7400cd4` | `chore(git): perfect gitignore rules across workspace packages and apps` | `git revert 7400cd4` | 回退各目录 `.gitignore`，可能导致本地构建产生未跟踪文件 |
+| --- | --- | --- | --- | --- | --- |
+| 0 | `7400cd4` | `chore(git): perfect gitignore rules across workspace packages and apps` | `git revert 7400cd4` | 回退各目录 `.gitignore`，可能导致本地构建产生未跟踪文件（范围外附带改动） |
 | 5.0 | `77e446a` | `docs(phase-5): add phase 5 design memo and initialize PR draft` | `git revert 77e446a` | 回退备忘录与 PR 草稿初始版 |
 | 5.1 | `2797f9c` | `feat(handoff): implement execution handoff preview, copy, export, and provenance tracking` | `git revert 2797f9c` | 移除 Execution Handoff 产品化能力、Web 依赖及对应 E2E/单元测试，恢复合规基线连接 |
+| 5.1.1 | TBD | `test(handoff): correct baseline provenance, add copy fallback, and enforce canonical snapshot key` | `git revert HEAD` | 回退 5.1.1 补齐测试与快照算法规范化 |
 
 ### 逆序回退分析 / Cascading Rollback Analysis
 
 若需回退本阶段提交，请严格按照逆序操作：
-1. **回退 5.1** (`git revert 2797f9c`)：将安全移除 Handoff 弹窗、对焦控制与导出的全部功能代码及测试，不会损坏底层已有的 Greenfield/Brownfield/Review 核心逻辑。
-2. **回退 5.0** (`git revert 77e446a`)：若在 5.1 未回退时强行回退 5.0，会导致 PR 草稿和设计备忘录丢失，使得 5.1 的架构依据与决策索引失效。
-3. **回退 0** (`git revert 7400cd4`)：若在后续步骤未回退时单独回退，会导致 `.svelte-kit/`、`.turbo/` 等产生未跟踪文件污染工作区，但不影响业务代码运行。
+1. **回退 5.1.1** (`git revert HEAD`)：恢复 5.1 初始快照实现与测试；
+2. **回退 5.1** (`git revert 2797f9c`)：将安全移除 Handoff 弹窗、对焦控制与导出的全部功能代码及测试，不会损坏底层已有的 Greenfield/Brownfield/Review 核心逻辑；
+3. **回退 5.0** (`git revert 77e446a`)：若在 5.1 未回退时强行回退 5.0，会导致 PR 草稿和设计备忘录丢失，使得 5.1 的架构依据与决策索引失效；
+4. **回退 0** (`git revert 7400cd4`)：若在后续步骤未回退时单独回退，会导致 `.svelte-kit/`、`.turbo/` 等产生未跟踪文件污染工作区，但不影响业务代码运行。
 

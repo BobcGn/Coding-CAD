@@ -32,10 +32,12 @@
     if (!textToCopy) return;
 
     try {
-      if (typeof navigator !== "undefined" && navigator.clipboard) {
+      if (typeof navigator !== "undefined" && navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
         await navigator.clipboard.writeText(textToCopy);
+        copyFeedback = "已复制全文 (Copied to clipboard)";
+      } else {
+        copyFeedback = "复制失败 (Clipboard unavailable)";
       }
-      copyFeedback = "已复制全文 (Copied to clipboard)";
       setTimeout(() => {
         copyFeedback = "";
       }, 2500);

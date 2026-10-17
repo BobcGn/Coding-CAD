@@ -1568,3 +1568,75 @@ PR #3首次远端CI在额外security:audit步骤报告7high，本地旧ci:verify
   - 风险：若浏览器不支持 `navigator.clipboard.writeText`，回退至安全通知提示用户手动选择复制。
   - 回退方式：`git revert <commit-hash>`。
 
+## 2026-10-17 - 阶段 5 步骤 5.1.1：订正与补齐证据 / Phase 5 Step 5.1.1: Corrections & Evidence Completion
+
+### 1. 做了什么 / What
+- 基线依赖改动手工溯源与文档注解：
+  - 对 `apps/web/package.json` 进行差异审计，确认第 18 行 `@coding-cad/agent-adapter` 与第 25 行 `@coding-cad/execution-blueprint` 系由 commit `2797f9c` 引入，从而在基线中合法引入 `web -> agent-adapter` 与 `web -> execution-blueprint` 两条依赖边；
+  - 确认 `coding-cad-golden.json` 中的 `web -> implementation-validator` 对应 `apps/web/package.json` 第 27 行，系由阶段 4 commit `638a90e` 引入并在 5.1 中补齐；
+  - 在 `logs/State/current.md` 明确注明阶段 4 验收报告中的“15 组件 / 40 边”为历史数字，阶段 5 起代码依赖真实边数为 42 边；阶段 4 历史报告保持不变。
+- 剪贴板复制逐字比对断言与错误降级强化：
+  - 在 `apps/web/src/lib/cad/handoff/ExecutionHandoffModal.svelte` 中增强剪贴板调用判断，当 `navigator.clipboard` 缺失或抛出异常时显式展示“复制失败”，杜绝静默假成功；
+  - 在 `apps/web/e2e/handoff.spec.ts` 中通过 `navigator.clipboard.readText()` 实测断言剪贴板文本与预览展示内容逐字一致；
+  - 在 `apps/web/e2e/handoff.spec.ts` 中新增针对剪贴板写入异常的降级路径自动化测试，验证失败提示正常展示。
+- 来源追踪全覆盖表与验证：
+  - 建立 Blueprint 任务、约束、决策与指引四类条目的来源回溯对照矩阵；
+  - 在 `apps/web/src/lib/architecture/handoff/execution-handoff.test.ts` 补齐测试：断言每个任务的 `relatedComponents` 均存在于当前正式架构，每个约束的 `sourceReference` 均有确定来源并可解析，3 种 Guide 文本均可通过 ID 或标题模式回溯到 Blueprint 任务。
+- 快照键算法规范化与不变性验证：
+  - 重构 `createHandoffSnapshotKey`：对组件、连接、约束、决策按照稳定键进行严格规范排序并提取语义字段，彻底排除布局坐标（x, y, width, height）与临时视图状态；
+  - 补齐单元测试：验证仅拖动画布节点不使快照过期；修改描述、增删组件/连接、修改约束或决策使快照立即过期；Save -> Open（JSON 序列化与反序列化）保持快照键完全一致；对象属性定义顺序对快照键生成完全不敏感。
+- 范围外改动披露与环境校验：
+  - 对步骤 0 的全仓 `.gitignore` 提交披露为“范围外附带改动”，并经 `git ls-files -c -i --exclude-standard` 校验输出为空（0 跟踪文件受损）；
+  - 将此前报告中的“全仓 102 项测试”用词更正为按包分别列出（其中 `apps/web` 为 107 项测试，全工作区 30/30 Turbo 任务全量通过）。
+- D-007 决策正式记录：
+  - 在 `docs/architecture-layout-decisions.md` 中将 D-007 标记为 APPROVED（Option B: Local Extension via Web Adapter），写入硬约束条件。
+
+- Baseline Dependency Provenance and Historical Documentation:
+  - Manually audited diffs in `apps/web/package.json` to confirm lines 18 and 25 introduced dependencies on `@coding-cad/agent-adapter` and `@coding-cad/execution-blueprint` in commit `2797f9c`.
+  - Confirmed line 27 `@coding-cad/implementation-validator` was introduced in Phase 4 commit `638a90e` and synchronized into `coding-cad-golden.json`.
+  - Added an explicit note in `logs/State/current.md` clarifying that "15 components / 40 edges" from Phase 4 is a historical record, and the repo baseline is now 42 edges.
+- Clipboard Verbatim Assertions & Graceful Degradation:
+  - Enhanced `ExecutionHandoffModal.svelte` to explicitly surface failure feedback when `navigator.clipboard` is unavailable or rejects, eliminating false successes.
+  - Asserted verbatim equality between preview text and `navigator.clipboard.readText()` in `apps/web/e2e/handoff.spec.ts`.
+  - Added E2E test covering clipboard rejection/failure degradation.
+- Provenance Coverage Matrix & Unit Verification:
+  - Compiled full provenance crosswalk across all Blueprint tasks, constraints, decisions, and guide paragraphs.
+  - Added unit tests in `execution-handoff.test.ts` ensuring all task component references exist in formal architecture, all constraint references are valid, and all guide paragraphs link back to blueprint tasks.
+- Canonical Snapshot Key Algorithm & Invariant Testing:
+  - Canonicalized `createHandoffSnapshotKey` to sort components, connections, constraints, and decisions, strictly omitting layout coordinates and ephemeral state.
+  - Added tests confirming node dragging does not trigger staleness, semantic edits immediately trigger staleness, Save -> Open is key-invariant, and property insertion order is ignored.
+- Out-of-scope Disclosure & Worktree Auditing:
+  - Explicitly disclosed Step 0 `.gitignore` as an out-of-scope ancillary chore, verified with `git ls-files -c -i --exclude-standard` (zero tracked files affected).
+  - Clarified test count nomenclature from "workspace 102 tests" to a package-by-package breakdown (107 tests in `apps/web`, 30/30 successful Turbo tasks).
+- Formalized D-007 Decision:
+  - Recorded user-approved Option B with hard constraints in `docs/architecture-layout-decisions.md`.
+
+### 2. 为什么这么做 / Why
+- 工程交付严谨性与审计防伪：基线改动必须直接溯源至 `package.json` 代码声明，杜绝从 Analyzer 输出反向抄写导致的循环论证；明确历史边数演进，防止审计混淆。
+- 真实性与测试有效性：剪贴板操作必须真正验证系统剪贴板中的字面内容，不能以 UI 状态提示代指写入成功；必须覆盖剪贴板无权限时的优雅降级。
+- 架构事实与视图状态分离铁律：画布拖拽调整节点布局不应当导致面向执行的 Handoff 蓝图与指引失效；只有真正的架构语义变化（组件、连接、描述、契约、决策）才应触发过期判定。
+- 决策归档完整性：在进入 Ghost 实现前，将用户对 D-007 的正式裁定与硬约束写入决策矩阵。
+
+- Engineering Rigor & Provenance Integrity: Baseline changes must be derived directly from `package.json` source declarations, avoiding circular copying from analyzer outputs; clarifies historical edge progression.
+- Test Validity: Clipboard copy assertions must inspect actual clipboard contents rather than UI feedback banners alone, with full coverage of permission-denied degradation.
+- Separation of Concerns: Canvas layout adjustments must not invalidate semantic execution blueprints; only architectural changes should trigger staleness.
+- Decision Traceability: Commits user-approved D-007 Option B and hard constraints before entering Ghost implementation.
+
+### 3. 验证结果 / Verification
+- 已实现并验证：
+  - Web 单元测试：`apps/web/src/lib/architecture/handoff/execution-handoff.test.ts` 12/12 项通过（新增 5 项快照与溯源测试）；
+  - Web 集成测试：`apps/web/src/lib/architecture/handoff/execution-handoff.integration.test.ts` 4/4 项通过；
+  - Web 全量测试：16 个单元测试文件（94/94 项通过），4 个集成测试文件（13/13 项通过），总计 107 项 Web 自动化测试全数通过；
+  - Playwright E2E 浏览器测试（`apps/web/e2e/handoff.spec.ts`）：
+    - dev 模式 4/4 通过（含逐字剪贴板比对与权限拒绝降级测试）；
+    - preview 模式 4/4 通过；
+  - 全工作区构建与测试：`CI=true TURBO_FORCE=true pnpm test` 全量通过（30/30 Turbo 任务成功，覆盖 15 个包与应用）；
+  - `git ls-files -c -i --exclude-standard`：输出为空（0 跟踪文件受损）；
+  - `docs/architecture-layout-decisions.md`：D-007 更新为 APPROVED（Option B）。
+- 未实现：
+  - Ghost 节点渲染与交互（步骤 5.2 范围）；
+  - Agent 运行时与 Terminal 功能（范围外）。
+- 风险与回退方式：
+  - 风险：若浏览器不支持 `navigator.clipboard`，已通过降级分支展示“复制失败”提示。
+  - 回退方式：`git revert HEAD`。
+

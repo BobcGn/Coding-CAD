@@ -82,6 +82,13 @@ test("execution handoff preview, guide switching, canvas focus, copy, export, an
   // 5. Copy content
   await page.getByTestId("handoff-copy-btn").click();
   await expect(page.getByTestId("copy-feedback")).toBeVisible();
+  await expect(page.getByTestId("copy-feedback")).toContainText("已复制全文");
+
+  // Assert clipboard text is verbatim identical to the displayed preview text
+  const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
+  const displayedText = await page.getByTestId("guide-content-display").textContent();
+  expect(clipboardText.length).toBeGreaterThan(0);
+  expect(clipboardText.trim()).toBe(displayedText?.trim());
 
   // 6. Export file
   const downloadPromise = page.waitForEvent("download");
@@ -177,5 +184,30 @@ test("execution handoff on brownfield reconstructed architecture presents inferr
   await expect(page.getByTestId("blueprint-view")).toBeVisible();
   await page.getByTestId("tab-generic").click();
   await expect(page.getByTestId("guide-view")).toBeVisible();
+});
+
+test("execution handoff copy displays failure feedback when clipboard write fails", async ({ page }) => {
+  await page.goto("/");
+
+  const handoffBtn = page.getByTestId("sidebar-execution-handoff");
+  await handoffBtn.click();
+  const modal = page.getByTestId("execution-handoff-modal");
+  await expect(modal).toBeVisible();
+
+  // Override navigator.clipboard.writeText to simulate rejection/permission failure
+  await page.evaluate(() => {
+    Object.defineProperty(navigator, "clipboard", {
+      value: {
+        writeText: () => Promise.reject(new Error("Clipboard permission denied")),
+        readText: () => Promise.reject(new Error("Clipboard permission denied"))
+      },
+      configurable: true
+    });
+  });
+
+  await page.getByTestId("handoff-copy-btn").click();
+  const feedback = page.getByTestId("copy-feedback");
+  await expect(feedback).toBeVisible();
+  await expect(feedback).toContainText("复制失败");
 });
 

@@ -62,24 +62,70 @@ export interface HandoffExportMetadata {
 
 /**
  * Deterministically constructs a snapshot key representing the approved architecture state.
- * Reuses existing ArchitectureProject fields (name, version, counts, signatures)
- * without adding new public IR APIs.
+ * Normalized and canonicalized:
+ * - Sorts components, connections, constraints, and decisions.
+ * - Extracts and serializes semantic properties (name, type, description, capabilities, constraints, decisions).
+ * - Strictly ignores layout coordinates (x, y, width, height) and ephemeral view state.
+ * - Insensitive to property ordering in input objects.
+ * - Save -> Open JSON roundtrip yields the exact same key.
  */
 export function createHandoffSnapshotKey(architecture: ArchitectureProject): string {
   if (!architecture || !architecture.intent) {
     return "empty@v0:0:0:0";
   }
+
   const name = architecture.intent.name || "unnamed";
-  const version = architecture.version ?? 1;
-  const components = architecture.architecture?.components ?? [];
-  const connections = architecture.architecture?.connections ?? [];
-  const constraints = architecture.constraints ?? [];
-  const decisions = architecture.decisions ?? [];
+  const version = architecture.version ?? "1";
+  const purpose = (architecture.intent.purpose ?? []).slice().sort().join(";");
 
-  const compHash = components.map((c) => c.id).sort().join(",");
-  const connHash = connections.map((c) => c.id).sort().join(",");
+  const components = (architecture.architecture?.components ?? [])
+    .slice()
+    .sort((a, b) => a.id.localeCompare(b.id));
+  const connections = (architecture.architecture?.connections ?? [])
+    .slice()
+    .sort((a, b) => a.id.localeCompare(b.id));
+  const constraints = (architecture.constraints ?? [])
+    .slice()
+    .sort((a, b) => {
+      const keyA = `${a.type}:${a.description}:${String(a.value ?? "")}`;
+      const keyB = `${b.type}:${b.description}:${String(b.value ?? "")}`;
+      return keyA.localeCompare(keyB);
+    });
+  const decisions = (architecture.decisions ?? [])
+    .slice()
+    .sort((a, b) => a.title.localeCompare(b.title));
 
-  return `${name}@v${version}:${components.length}:${connections.length}:${constraints.length}:${decisions.length}[${compHash}][${connHash}]`;
+  const canonicalComponents = components.map((c) => {
+    const caps = (c.capabilities ?? []).slice().sort().join(",");
+    const limits = (c.limitations ?? []).slice().sort().join(",");
+    const tags = (c.tags ?? []).slice().sort().join(",");
+    return `${c.id}|${c.name}|${c.type}|${c.description ?? ""}|caps:${caps}|lims:${limits}|tags:${tags}`;
+  });
+
+  const canonicalConnections = connections.map((conn) => {
+    const contract = conn.contractName ?? "";
+    const desc = conn.description ?? "";
+    return `${conn.id}|${conn.from}->${conn.to}|${conn.protocol}|${contract}|${desc}`;
+  });
+
+  const canonicalConstraints = constraints.map((c) => {
+    return `${c.type}|${c.description}|${String(c.value ?? "")}`;
+  });
+
+  const canonicalDecisions = decisions.map((d) => {
+    const alts = (d.alternatives ?? []).slice().sort().join(",");
+    return `${d.title}|${d.context}|${d.decision}|${d.rationale}|alts:${alts}`;
+  });
+
+  return [
+    `v:${version}`,
+    `name:${name}`,
+    `purpose:${purpose}`,
+    `comps:[${canonicalComponents.join(";")}]`,
+    `conns:[${canonicalConnections.join(";")}]`,
+    `consts:[${canonicalConstraints.join(";")}]`,
+    `decs:[${canonicalDecisions.join(";")}]`
+  ].join("::");
 }
 
 /**

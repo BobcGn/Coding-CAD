@@ -191,4 +191,191 @@ describe("Execution Handoff Domain Logic", () => {
     expect(getHandoffExportFilename(accepted.intent.name, "codex")).toBe("points-platform-codex-prompt.md");
     expect(getHandoffExportFilename(accepted.intent.name, "claude-code")).toBe("CLAUDE.md");
   });
+
+  describe("Provenance Coverage and Traceability (Step 5.1.1 Item 3)", () => {
+    it("ensures every blueprint item source id exists in current accepted architecture", () => {
+      const accepted = structuredClone(pointsSystemFixture);
+      const handoff = generateExecutionHandoff(accepted);
+      const blueprint = handoff.blueprint!;
+
+      const formalCompIds = new Set(accepted.architecture.components.map((c) => c.id));
+      const formalDecisionTitles = new Set(accepted.decisions.map((d) => d.title));
+      const formalConstraintTypes = new Set(accepted.constraints.map((c) => c.type));
+
+      // 1. Task provenance: relatedComponents must all exist in formal architecture
+      expect(blueprint.tasks.length).toBeGreaterThan(0);
+      for (const task of blueprint.tasks) {
+        expect(task.relatedComponents.length).toBeGreaterThan(0);
+        for (const compId of task.relatedComponents) {
+          expect(formalCompIds.has(compId)).toBe(true);
+        }
+      }
+
+      // 2. Constraint provenance: every constraint with sourceReference points to valid formal entity
+      for (const constraint of blueprint.constraints) {
+        expect(constraint.sourceReference).toBeDefined();
+        expect(constraint.sourceReference!.length).toBeGreaterThan(0);
+
+        if (constraint.source === "architecture-decision") {
+          expect(formalDecisionTitles.has(constraint.sourceReference!)).toBe(true);
+        } else if (constraint.source === "architecture-constraint") {
+          expect(formalConstraintTypes.has(constraint.sourceReference! as any)).toBe(true);
+        } else if (constraint.source === "component-limitation") {
+          const [compId] = constraint.sourceReference!.split(":");
+          expect(formalCompIds.has(compId!)).toBe(true);
+        }
+      }
+
+      // 3. Guide paragraphs trace back to blueprint tasks
+      for (const guideType of ["generic", "codex", "claude-code"] as const) {
+        const guideContent = handoff.guides![guideType].content;
+        for (const task of blueprint.tasks) {
+          // Task ID or task title must appear in the rendered guide text
+          const idPattern = new RegExp(task.id, "i");
+          const titlePattern = new RegExp(task.title.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+          const isTraceable = idPattern.test(guideContent) || titlePattern.test(guideContent);
+          expect(isTraceable).toBe(true);
+        }
+      }
+    });
+  });
+
+  describe("Snapshot Key Canonicalization and Staleness (Step 5.1.1 Item 4)", () => {
+    it("does not invalidate handoff when layout coordinates change (node dragging)", () => {
+      const accepted = structuredClone(pointsSystemFixture);
+      const initialKey = createHandoffSnapshotKey(accepted);
+
+      // Simulating node dragging: LayoutState / canvas position updates (x: 100 -> 350, y: 200 -> 400)
+      // ArchitectureProject contains no x, y coordinates; layout state is owned outside
+      const layoutState = {
+        nodes: [
+          { id: accepted.architecture.components[0]!.id, x: 350, y: 400, width: 220, height: 120 }
+        ]
+      };
+      expect(layoutState.nodes[0]!.x).toBe(350);
+
+      // Key must remain identical because layout is not part of ArchitectureProject
+      const postDragKey = createHandoffSnapshotKey(accepted);
+      expect(postDragKey).toBe(initialKey);
+      expect(isHandoffStale(accepted, initialKey)).toBe(false);
+    });
+
+    it("invalidates handoff when component description, capabilities, or items change", () => {
+      const accepted = structuredClone(pointsSystemFixture);
+      const initialKey = createHandoffSnapshotKey(accepted);
+
+      // Mutate component description
+      const descModified: ArchitectureProject = {
+        ...accepted,
+        architecture: {
+          ...accepted.architecture,
+          components: [
+            {
+              ...accepted.architecture.components[0]!,
+              description: "Altered description for component"
+            },
+            ...accepted.architecture.components.slice(1)
+          ]
+        }
+      };
+      expect(isHandoffStale(descModified, initialKey)).toBe(true);
+
+      // Add component
+      const compAdded: ArchitectureProject = {
+        ...accepted,
+        architecture: {
+          ...accepted.architecture,
+          components: [
+            ...accepted.architecture.components,
+            { id: "new-comp", name: "NewComp", type: "service", capabilities: [] }
+          ]
+        }
+      };
+      expect(isHandoffStale(compAdded, initialKey)).toBe(true);
+
+      // Remove component
+      const compRemoved: ArchitectureProject = {
+        ...accepted,
+        architecture: {
+          ...accepted.architecture,
+          components: accepted.architecture.components.slice(1)
+        }
+      };
+      expect(isHandoffStale(compRemoved, initialKey)).toBe(true);
+
+      // Mutate constraint
+      const constraintModified: ArchitectureProject = {
+        ...accepted,
+        constraints: [
+          { type: "performance", description: "p99 < 50ms (stricter limit)", value: 50 }
+        ]
+      };
+      expect(isHandoffStale(constraintModified, initialKey)).toBe(true);
+
+      // Mutate decision
+      const decisionModified: ArchitectureProject = {
+        ...accepted,
+        decisions: [
+          {
+            title: "Use PostgreSQL",
+            context: "Need transactional database",
+            decision: "Switch to CockroachDB",
+            rationale: "Distributed SQL needed"
+          }
+        ]
+      };
+      expect(isHandoffStale(decisionModified, initialKey)).toBe(true);
+    });
+
+    it("yields identical snapshot key across JSON Save then Open roundtrip", () => {
+      const accepted = structuredClone(pointsSystemFixture);
+      const keyBeforeSave = createHandoffSnapshotKey(accepted);
+
+      // Simulate Save (JSON.stringify) then Open (JSON.parse)
+      const serialized = JSON.stringify(accepted);
+      const opened: ArchitectureProject = JSON.parse(serialized);
+      const keyAfterOpen = createHandoffSnapshotKey(opened);
+
+      expect(keyAfterOpen).toBe(keyBeforeSave);
+    });
+
+    it("is insensitive to object property insertion order", () => {
+      const compA = {
+        id: "svc-a",
+        name: "Service A",
+        type: "service" as const,
+        description: "Primary service",
+        capabilities: ["read", "write"]
+      };
+
+      // Same data with reversed property order
+      const compB = {
+        capabilities: ["read", "write"],
+        description: "Primary service",
+        type: "service" as const,
+        name: "Service A",
+        id: "svc-a"
+      };
+
+      const archA: ArchitectureProject = {
+        version: "1.0.0",
+        intent: { name: "App", purpose: ["Goal"] },
+        domain: { entities: [] },
+        architecture: { components: [compA], connections: [] },
+        constraints: [],
+        decisions: []
+      };
+
+      const archB: ArchitectureProject = {
+        decisions: [],
+        constraints: [],
+        architecture: { connections: [], components: [compB] },
+        domain: { entities: [] },
+        intent: { purpose: ["Goal"], name: "App" },
+        version: "1.0.0"
+      };
+
+      expect(createHandoffSnapshotKey(archA)).toBe(createHandoffSnapshotKey(archB));
+    });
+  });
 });

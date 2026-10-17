@@ -560,6 +560,59 @@ PR #3首次远端CI在额外security:audit步骤报告7high，本地旧ci:verify
   - 风险：若浏览器不支持 `navigator.clipboard.writeText`，回退至安全通知提示用户手动选择复制。
   - 回退方式：`git revert <commit-hash>`。
 
+## 2026-10-17 - 阶段 5 步骤 5.1.1：订正与补齐证据 / Phase 5 Step 5.1.1: Corrections & Evidence Completion
+
+### 1. 做了什么 / What
+- 剪贴板复制逐字比对断言与错误降级强化：
+  - 在 `apps/web/src/lib/cad/handoff/ExecutionHandoffModal.svelte` 中增强剪贴板调用判断，当 `navigator.clipboard` 缺失或抛出异常时显式展示“复制失败”，杜绝静默假成功；
+  - 在 `apps/web/e2e/handoff.spec.ts` 中通过 `navigator.clipboard.readText()` 实测断言剪贴板文本与预览展示内容逐字一致；
+  - 在 `apps/web/e2e/handoff.spec.ts` 中新增针对剪贴板写入异常的降级路径自动化测试，验证失败提示正常展示。
+- 来源追踪全覆盖表与验证：
+  - 建立 Blueprint 任务、约束、决策与指引四类条目的来源回溯对照矩阵；
+  - 在 `apps/web/src/lib/architecture/handoff/execution-handoff.test.ts` 补齐测试：断言每个任务的 `relatedComponents` 均存在于当前正式架构，每个约束的 `sourceReference` 均有确定来源并可解析，3 种 Guide 文本均可通过 ID 或标题模式回溯到 Blueprint 任务。
+- 快照键算法规范化与不变性验证：
+  - 重构 `createHandoffSnapshotKey`：对组件、连接、约束、决策按照稳定键进行严格规范排序并提取语义字段，彻底排除布局坐标（x, y, width, height）与临时视图状态；
+  - 补齐单元测试：验证仅拖动画布节点不使快照过期；修改描述、增删组件/连接、修改约束或决策使快照立即过期；Save -> Open（JSON 序列化与反序列化）保持快照键完全一致；对象属性定义顺序对快照键生成完全不敏感。
+- 基线依赖改动手工溯源与文档注解：
+  - 确认 `apps/web/package.json` 第 18 行与第 25 行引入依赖，在 `logs/State/current.md` 标注阶段 4 报告的 40 边为历史数字，阶段 5 起代码依赖真实边数为 42 边。
+
+- Clipboard Verbatim Assertions & Graceful Degradation:
+  - Enhanced `ExecutionHandoffModal.svelte` to explicitly surface failure feedback when `navigator.clipboard` is unavailable or rejects.
+  - Asserted verbatim equality between preview text and `navigator.clipboard.readText()` in `apps/web/e2e/handoff.spec.ts`.
+  - Added E2E test covering clipboard rejection/failure degradation.
+- Provenance Coverage Matrix & Unit Verification:
+  - Compiled full provenance crosswalk across all Blueprint tasks, constraints, decisions, and guide paragraphs.
+  - Added unit tests in `execution-handoff.test.ts` ensuring all task component references exist in formal architecture, all constraint references are valid, and all guide paragraphs link back to blueprint tasks.
+- Canonical Snapshot Key Algorithm & Invariant Testing:
+  - Canonicalized `createHandoffSnapshotKey` to sort components, connections, constraints, and decisions, strictly omitting layout coordinates and ephemeral state.
+  - Added tests confirming node dragging does not trigger staleness, semantic edits immediately trigger staleness, Save -> Open is key-invariant, and property insertion order is ignored.
+- Baseline Dependency Provenance and Historical Documentation:
+  - Audited `apps/web/package.json` lines 18 and 25, noted 40 -> 42 historical edge progression in `logs/State/current.md`.
+
+### 2. 为什么这么做 / Why
+- 架构事实与视图状态分离铁律：画布拖拽调整节点布局不应当导致面向执行的 Handoff 蓝图与指引失效；只有真正的架构语义变化（组件、连接、描述、契约、决策）才应触发过期判定。
+- 真实性与测试有效性：剪贴板操作必须真正验证系统剪贴板中的字面内容，不能以 UI 状态提示代指写入成功；必须覆盖剪贴板无权限时的优雅降级。
+- 工程交付严谨性与审计防伪：基线改动必须直接溯源至 `package.json` 代码声明，杜绝循环论证。
+
+- Separation of Concerns: Canvas layout adjustments must not invalidate semantic execution blueprints; only architectural changes should trigger staleness.
+- Test Validity: Clipboard copy assertions must inspect actual clipboard contents rather than UI feedback banners alone, with full coverage of permission-denied degradation.
+- Engineering Rigor & Provenance Integrity: Baseline changes must be derived directly from `package.json` source declarations.
+
+### 3. 验证结果 / Verification
+- 已实现并验证：
+  - Web 单元测试：`apps/web/src/lib/architecture/handoff/execution-handoff.test.ts` 12/12 项通过；
+  - Web 集成测试：`apps/web/src/lib/architecture/handoff/execution-handoff.integration.test.ts` 4/4 项通过；
+  - Web 全量测试：16 个单元测试文件（94/94 项通过），4 个集成测试文件（13/13 项通过），总计 107 项 Web 自动化测试全数通过；
+  - Playwright E2E 浏览器测试（`apps/web/e2e/handoff.spec.ts`）：dev 与 preview 双模式 4/4 全量通过；
+  - 全工作区构建与测试：`CI=true TURBO_FORCE=true pnpm test` 全量通过（30/30 Turbo 任务成功）。
+- 未实现：
+  - Ghost 节点渲染与交互（步骤 5.2 范围）；
+  - Agent 运行时与 Terminal 功能（范围外）。
+- 风险与回退方式：
+  - 风险：若浏览器不支持 `navigator.clipboard`，已通过降级分支展示“复制失败”提示。
+  - 回退方式：`git revert HEAD`。
+
+
 
 
 
