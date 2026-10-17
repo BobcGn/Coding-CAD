@@ -12,7 +12,7 @@
 - **A/B 对照实验设计**：对比纯代码/文档检索（对照组 A）与 Coding-CAD 架构工作区（实验组 B）；
 - **四类典型架构理解任务**：识别核心依赖、识别可疑/反向依赖、判断模块边界、评估改动影响范围；
 - **多维度评分量表**：基于 NASA-TLX 简化版的认知负荷、完成耗时与决策置信度；
-- **具体问答题库与客观标准答案**：涵盖真实仓库 `skill-central`、本工程 `Coding-CAD` 以及复杂拓扑合成夹具 `synthetic-hub-repo`，并均附代码与规范行号依据。
+- **具体问答题库与候选答案（待用户对照源码确认）**：涵盖真实仓库 `skill-central`、本工程 `Coding-CAD` 以及复杂拓扑合成夹具 `synthetic-hub-repo`，并均附代码与规范行号依据。
 
 Designed a human comprehension A/B evaluation protocol and question set for Phase 4 covering core dependency discovery, suspicious dependency detection, boundary identification, and impact assessment across `skill-central`, `Coding-CAD`, and `synthetic-hub-repo`.
 
@@ -50,8 +50,8 @@ Designed a human comprehension A/B evaluation protocol and question set for Phas
 
 > [!WARNING]
 > **评测底稿特别说明 / Evaluation Ground Truth Notice**：
-> 下列答案均为**“候选答案（待用户对照源码确认）”**。每条候选答案均已附源码文件路径作为依据。**未经用户显式核对源码并确认前，严禁宣称已有“客观标准答案”，且不得作为最终评分依据**。
-> The following answers are **candidate answers pending user confirmation against source code**. Each candidate answer includes explicit source file paths as evidence. Prior to user review and confirmation, they must NOT be claimed as "objective standard answers" or used as a scoring baseline.
+> 下列答案均为**“候选答案（待用户对照源码确认）”**。每条候选答案均已附源码文件路径作为依据。**未经用户显式核对源码并确认前，不得作为最终评分依据**。
+> The following answers are **candidate answers pending user confirmation against source code**. Each candidate answer includes explicit source file paths as evidence. Prior to user review and confirmation, they must NOT be used as a scoring baseline.
 
 ### 对象 1：真实开源代码库 `skill-central` (23 模块，77 依赖边)
 

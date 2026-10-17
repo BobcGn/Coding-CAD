@@ -1089,7 +1089,7 @@ PR #3首次远端CI在额外security:audit步骤报告7high，本地旧ci:verify
 ### 3. 验证结果 / Verification
 - 已实现并验证：
   - `pnpm --filter @coding-cad/implementation-analyzer test`：通过（7/7 测试全部通过，包含 codec 单测、单体、monorepo 与 7 大边缘用例）；
-  - `pnpm --filter @coding-cad/implementation-validator test`：通过（包含 analyzer-compatibility 实测，0 误报）；
+  - `pnpm --filter @coding-cad/implementation-validator test`：通过（包含 analyzer-compatibility 实测，自洽性检查通过 / 0 偏离项）；
   - `pnpm --filter @coding-cad/implementation-analyzer benchmark`：通过（所有 5 个夹具全部 PASS，resolved edges 计数全部严格 > 0）；
   - `pnpm build && pnpm test`：通过（全工作区 30 个任务全部成功）；
 - 未实现：无。
@@ -1345,7 +1345,7 @@ PR #3首次远端CI在额外security:audit步骤报告7high，本地旧ci:verify
 
 ### 2. 为什么这么做 / Why
 - 科学求实与杜绝粉饰：严禁将线性流水线的低交叉假象宣称为算法性能优越；通过复杂中心网状夹具真实呈现了 86 处交叉，并用实测数据证明了模块折叠对降低视觉杂乱度的决定性价值。
-- 严守主观评测真实性：人类可理解性评估必须由真实工程师执行，严禁 AI 编造用户评分；提供带客观标准答案的测试底稿，为后续人工验收奠定基础。
+- 严守主观评测真实性：人类可理解性评估必须由真实工程师执行，严禁 AI 编造用户评分；提供带候选答案与源码路径依据的测试底稿，为后续人工验收奠定基础。
 
 - Scientific Honesty: Acknowledged topology constraints in `synthetic-large-repo` while generating realistic 86-crossing mesh graphs to prove the 60.5% crossing drop from container collapse.
 - Subjective Evaluation Integrity: Human comprehension cannot be synthesized by AI; providing structured question sets with ground truth establishes a rigorous foundation for human review.
@@ -1456,6 +1456,53 @@ PR #3首次远端CI在额外security:audit步骤报告7high，本地旧ci:verify
   - `CI=true TURBO_FORCE=true pnpm ci:verify` (15/15 PASS)。
 - 已实现未验证 / Implemented but unverified:
   - 人工代码理解评估实操打分（等待人类架构师实操执行）。
+- 未实现及范围外 / Not implemented or out of scope:
+  - 阶段 5+（Ghost 节点、完整 Review、Execution Handoff、Terminal）。
+- 风险与回退方式 / Risks and Rollback:
+  - 回退方式：`git revert <commit-hash>`。
+
+---
+
+## [2026-10-17] 阶段 4 文档与注释专项订正（统一折叠阈值代码实际行为、明确 IR 正式建模时机、厘清根级引用样本与总体口径、全文清除残留）
+
+### 1. 做了什么 / What
+- 折叠阈值代码实际行为核准与口径统一：
+  - 读取 `apps/web/src/lib/cad/canvas/ArchitectureCanvas.svelte` 与唯一调用处 `apps/web/src/routes/+page.svelte`，确认当前代码实际运行行为：
+    1. **默认是否折叠**：主界面未传入 `defaultCollapseThreshold`（缺省为 `undefined`），默认完全平铺展开，不执行自动折叠；
+    2. **判断条件**：代码为严格的大于 **`> 50`**（`componentCount > defaultCollapseThreshold`），非 `≥ 50`；
+    3. **统计对象**：统计的是**组件数（`componentCount`，即 `kind === 'component'`）**，非顶层容器数，非可见节点数；
+    4. **常量属性**：`DEFAULT_UNAPPROVED_COLLAPSE_THRESHOLD = 50` 为未经批准临时预留常量，测试中的折叠收益（60.5% 降幅）系测试脚本模拟折叠所测得；
+  - 在 `ArchitectureCanvas.svelte` 代码注释、`docs/phase-4-exit-report.md`、`.github/pr-draft-phase4.md` 与 `logs/validation/p4-browser/benchmark-report.md` 中全面统一表述，消除“已自动折叠”的表述歧义，未改动任何产品运行时行为。
+- 待用户处理事项补全：
+  - 明确将“IR 正式建模时机”补回待决清单：决定推迟到阶段 5/6；在此期间任何新增消费方读取证据必须经 `evidence-codec`，不得各自解析 tags/constraints 字符串。
+- 根级引用数样本与总体口径厘清：
+  - 明确“漏检 8 条”为**样本级（n = 30）**抽样实测值（22 召回，8 漏检，8/30 = 26.7%）；
+  - 明确“约 39 条”为**全仓总体级（Population）**中 5 个根入口文件累计涉及的 import 引用总数；
+  - 纠正此前汇报中将二者混淆为“抽样中约占 39 个”的范围笔误，并在各报告中以严谨口径区分样本与总体。
+- 全文检索与敏感残留清除：
+  - 全文检索退出报告、PR 草稿、benchmark 报告、`logs/State/current.md` 及评估底稿，彻底清除 Coding-CAD 交叉数“0/0”、“客观标准答案”、“0 误报”与“盲测”残留表述。
+
+- Harmonized Collapse Threshold Behavior: Verified actual runtime behavior in `ArchitectureCanvas.svelte` and `+page.svelte` (default uncollapsed, threshold condition `componentCount > 50`, counts `kind === 'component'`, tests use simulated collapse) and unified docs and comments without altering product code.
+- Reinstated IR Modeling Decision: Formally specified postponement to Phase 5/6 and mandated all evidence reads go through `evidence-codec`.
+- Clarified Root Import Scopes: Distinguished sample-level misses (8/30) from full repo population root imports (~39).
+- Purged Sensitive Residuals: Fully cleared all occurrences of "0/0", "objective standard answers", "0 false positives", and "blind test".
+
+### 2. 为什么这么做 / Why
+- 严格遵循用户专项订正指令，只改文档与代码注释，坚决不改动产品运行时行为；
+- 维护工程事实与代码行为的 100% 绝对一致，杜绝文档脱离代码实际；
+- 明确统计学边界，区分样本统计量与总体参数，防止混淆。
+
+- Strictly comply with user directives to update only documentation and comments;
+- Ensure absolute fidelity between code behavior and documented claims;
+- Maintain rigorous statistical discipline across sampling and population parameters.
+
+### 3. 验证结果 / Verification
+- 已实现并验证 / Implemented and verified:
+  - `git grep -E "(0/0|客观标准答案|0[ ]?误报|盲测)"` 在 `docs/phase-4-exit-report.md`、`.github/pr-draft-phase4.md`、`logs/validation/p4-browser/benchmark-report.md`、`logs/State/current.md` 与 `docs/evaluation/p4-comprehension-eval.md` 中输出为 0（全部清洁通过）；
+  - `node scripts/ci/check-change-record.mjs` 通过；
+  - `CI=true TURBO_FORCE=true pnpm ci:verify` 15/15 任务全量通过。
+- 已实现未验证 / Implemented but unverified:
+  - 人工代码理解评估实操打分（待人类架构师对照源码实操执行）。
 - 未实现及范围外 / Not implemented or out of scope:
   - 阶段 5+（Ghost 节点、完整 Review、Execution Handoff、Terminal）。
 - 风险与回退方式 / Risks and Rollback:

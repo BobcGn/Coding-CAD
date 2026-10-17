@@ -20,10 +20,10 @@
 - **真实仓库边召回率 (Recall)**：实测 73.3% (22/30 抽检，95% CI: [55.55%, 85.82%])，提议批准阈值 **≥ 70.0%**（实测倒推提议）。
 
 ### 2. 需用户决策的架构事项 / Architecture Decisions Pending User Confirmation
-- **事项 1：证据与置信度的正式 IR 建模时机**：推荐保持现状至阶段 5/6 统一扩展，或授权开展专项扩展；
-- **事项 2：单体工程根目录单文件聚类规则与召回缺口量化**：被漏掉的 8 条 import（占抽样 26.7%，占未提取 100%）全部源于根级单文件（`src/index.ts`、`src/mcp.ts`、`src/app-metadata.ts`）；是否授权未来引入 `group:root-entry` 虚拟模块；
+- **事项 1：证据与置信度的正式 IR 建模时机**：推迟到阶段 5/6；在此期间任何新增消费方读取证据必须经 `evidence-codec`，不得各自解析 tags/constraints 字符串。待阶段 5（Ghost 节点呈现）与阶段 6（完整 Review 工作区规范）冻结后统一在 IR 引入首类领域字段；
+- **事项 2：单体工程根目录单文件聚类规则与召回缺口量化**：明确区分**抽样样本**（n=30 样本中漏检确切为 8 条，8/30 = 26.7%，全部源于 `src/` 根目录单文件）与**全仓总体**（全仓 290 文件中 5 个根入口文件累计涉及约 39 条引用关系）；澄清此前将二者混淆为“抽样中约占 39 个”的口径笔误；请用户裁定是否授权未来引入 `group:root-entry` 虚拟模块聚合根级入口文件；
 - **事项 3（新增）：是否批准新增不依赖期望架构的结构性检查规则类型**：现有 5 类规则均依赖期望基线；是否批准在验证器中新增独立的跨模块循环依赖检测（`cyclic-dependencies`）；
-- **事项 4（新增）：默认折叠阈值 N=50 的审批与确认**：代码已在 `ArchitectureCanvas.svelte` 导出 `DEFAULT_UNAPPROVED_COLLAPSE_THRESHOLD = 50` 并通过 `defaultCollapseThreshold` prop 支持配置，标注为“未经批准的临时值”，请用户裁定是否作为默认行为。
+- **事项 4（新增）：默认折叠阈值 N=50 的审批与确认**：代码已在 `ArchitectureCanvas.svelte` 导出 `DEFAULT_UNAPPROVED_COLLAPSE_THRESHOLD = 50`（临时值待裁定）。代码当前实际行为：**默认不折叠**（主界面未传入该 prop，保持完全展开），触发条件为组件数严格大于 **`> 50`**（统计 `kind === 'component'` 数量），测试中的折叠收益属于模拟折叠。请用户裁定是否作为默认行为启用。
 
 ### 3. 证据缺口与已知局限客观披露 / Objective Disclosure of Gaps & Limitations
 - 真实代码库实测证据仅来自单个单体仓库（`skill-central`），没有任何真实生产 Monorepo 证据；
@@ -31,7 +31,7 @@
 - **折叠机制已知局限**：实测显示 `skill-central` 的交叉数展开 152 处、模拟折叠 152 处（降幅 0.0%），由于该单体仓库平铺且无任何容器分组可折叠，**折叠机制对无容器分组的单体仓库无效**，作为已知局限客观记录，严禁表述为已解决。
 
 ### 4. 需人工执行的评估任务 / Human Comprehension Evaluation Pending Execution
-- 详见 [`docs/evaluation/p4-comprehension-eval.md`](file:///Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/docs/evaluation/p4-comprehension-eval.md)。评测答案均为附源码依据的候选答案（未经用户核对确认不得宣称客观标准答案），数据必须由真实人类架构师实测填写，严禁 AI 代填。
+- 详见 [`docs/evaluation/p4-comprehension-eval.md`](file:///Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/docs/evaluation/p4-comprehension-eval.md)。评测答案均为附源码依据的候选答案（未经用户核对确认不得作为评分依据），数据必须由真实人类架构师实测填写，严禁 AI 代填。
 
 ---
 
@@ -42,7 +42,7 @@
 - **步骤 2 & 2.1**：Analyzer 证据模型与分层提取（`c38ef3f` / `9ede079`）：实现 L1 清单、L2 AST 导入、L3 公开导出与 L4 目录聚类；L2 跨包交叉校验分类（`declared-and-used`、`declared-unused`、`undeclared-used`）；封装类型化证据编解码器 `evidence-codec.ts`；清除 `capabilities` 语义污染；覆盖 7 项边缘用例。独立修复门禁正则（`ddc11f2`）。
 - **步骤 3 & 3.1**：Brownfield 产品流水线与安全加固（`a6d5781` / `dfed3d5`）：实现 `/api/workspace/analyze-repository` 服务端安全路由与 19 项负控单测（Host 头/Origin 白名单、强制 application/json、超限截断告警、软链接防环与越界显式报告）；Web 控制器重建 `ArchitectureProject` 并触发 ELK 求解器，Canvas 与 Inspector 实现分组折叠/展开与证据先验展示。
 - **步骤 4 & 4.1**：架构期望基线合规检查与双向问题导航（`638a90e` / `320f92c`）：明确基线显式加载模型与显式不可用状态横幅；实现 Validator 目标解析与规则修复；更正技术未检出语义为“无法验证（Analyzer 未检出技术）”；UI 实现 4 类问题分流计数器与专用角标；画布实现受控自动展开折叠父分组与双向定位。
-- **步骤 5**：验收基线完善、复杂网状夹具与真实代码库实测（`2e838af`）：构造 57 模块复杂拓扑合成夹具 `synthetic-hub-repo`（86 交叉 -> 34 交叉，降幅 60.5%）；实测真实代码库 `skill-central`（23 模块、77 边、152 交叉、100% ELK 求解器），完成 Seed: 42 AI 抽样核对（Precision 100.0%、Recall 73.3%）；交付人工可理解性评估材料。
+- **步骤 5**：验收基线完善、复杂网状夹具与真实代码库实测（`2e838af`）：构造 57 模块复杂拓扑合成夹具 `synthetic-hub-repo`（全展开 86 交叉，测试中模拟折叠为 34 交叉，降幅 60.5%，非默认视图）；实测真实代码库 `skill-central`（23 模块、77 边、152 交叉、100% ELK 求解器），完成 Seed: 42 AI 抽样核对（Precision 100.0%、Recall 73.3%）；交付人工可理解性评估材料。
 - **步骤 6**：编写退出报告草稿 `docs/phase-4-exit-report.md`，完成 80 次真实浏览器重复测量，规范 N=50 可配置性与临时值标注，内嵌 4 张关键结论分析表，置顶“待用户处理事项”，结论严格表述为“有条件满足 / Conditionally Satisfied”。
 
 ---

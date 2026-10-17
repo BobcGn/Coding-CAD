@@ -40,12 +40,12 @@ Evaluated full end-to-end Brownfield pipeline metrics across a real Chromium bro
 
 ## 3. 为什么这么做 / Why & 统计学客观分析
 
-### 3.1 交叉数矛盾排查与此前 0/0 作废声明（订正 A）
-- **此前数字作废**：此前汇报总结中将 Coding-CAD 交叉数显示为 `0 / 0` **彻底作废**。
+### 3.1 交叉数矛盾排查与此前旧数据作废声明（订正 A）
+- **此前旧数据作废**：此前汇报总结表格中将 Coding-CAD 交叉数误填为 0 的记录**彻底作废**。
 - **成因排查**：
   1. **计数函数未变**：计数函数始终为 [`apps/web/e2e/layout-metrics.ts`](file:///Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/web/e2e/layout-metrics.ts#L35-L49) 的 `measureLayout` 函数（其线段相交逻辑 `segmentCrosses` 遍历各边每段 sections 计算交叉点）；
   2. **输入图与布局输出未变**：Coding-CAD 40 条边经 ELK 求解后，在“完全展开、默认布局”下产生的拓扑结构完全一致；
-  3. **制表笔误与混淆**：此前在生成总结 Markdown 表格时，制表人笔误将 `peerOverlaps: 0` 与 `containmentFailures: 0` 错填入交叉数列，导致 Coding-CAD 栏显示为 `0 / 0`。
+  3. **制表笔误与混淆**：此前在生成总结 Markdown 表格时，制表人笔误将 `peerOverlaps: 0` 与 `containmentFailures: 0` 错填入交叉数列，导致 Coding-CAD 栏显示混淆。
 - **交叉数计数函数定义与文件路径**：
   - **文件路径**：[`apps/web/e2e/layout-metrics.ts`](file:///Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/web/e2e/layout-metrics.ts#L35-L49)
   - **函数定义**：
@@ -70,6 +70,10 @@ Evaluated full end-to-end Brownfield pipeline metrics across a real Chromium bro
 
 ### 3.2 折叠收益口径客观声明与已知局限（订正 B）
 - **模拟折叠而非产品默认行为**：`synthetic-hub-repo` 的“60.5% 交叉降幅（86 处降至 34 处）”为**测试中模拟全部折叠的结果，绝非产品当前默认行为**。产品当前打开该夹具的默认视图为完全展开状态（首屏可见 71 个节点，产生 86 处交叉）。
+- **代码实际折叠行为核准**：
+  1. 代码判定条件为严格的大于 **`> 50`**（`componentCount > defaultCollapseThreshold`），**非 `≥ 50`**；
+  2. 统计对象为**组件数（`componentCount`，即 `kind === 'component'`）**，非顶层模块容器数，非可见节点数；
+  3. 主界面 `+page.svelte` 未传入 `defaultCollapseThreshold`（缺省为 `undefined`），**默认视图完全展开，不执行自动折叠**。
 - **单体工程折叠无改善（已知局限）**：`skill-central` 的交叉数展开为 152 处、折叠后依然为 152 处，改善率为 **0.0%**。其根本原因在于该仓库为平铺单体工程，当前 L4 聚类算法仅识别组件（23 个），未生成任何容器分组（0 个容器），导致不存在可折叠的分组。系统已将**“折叠机制对无容器的单体仓库无效”**明确列为已知局限，严禁写成已解决。
 - **默认状态下屏幕可见节点数（真实产品行为测定）**：
   - `Coding-CAD`：**30 个**（15 个组件 + 15 个容器，全展开）
@@ -85,15 +89,17 @@ Evaluated full end-to-end Brownfield pipeline metrics across a real Chromium bro
   - **结论**：单次实测数值受操作系统线程调度与冷启动影响存在正常方差，10 次重复测量的稳态中位数真实反映了系统的实际性能水平。
 
 ### 3.4 真实代码库 `skill-central` 抽样核对统计表述修正
-- **抽样方式**：由 AI 辅助执行、固定随机种子（Seed: 42）、单仓库（`skill-central`）、各项指标独立抽取 30 条样本；**严禁表述为“盲测”**。
+- **抽样方式**：由 AI 辅助执行、固定随机种子（Seed: 42）、单仓库（`skill-central`）、各项指标独立抽取 30 条样本；**明确为已知单体代码库抽查，非外部第三方随机抽检**。
 - **精确率（Precision）**：抽查 30 条检测到的依赖边，全部与源码中的跨模块调用相符（30/30，100.0%）。
   - **95% 置信区间 (Wilson score interval)**: **[88.65%, 100.00%]**（Clopper-Pearson 确切区间为 [88.43%, 100.00%]）。
 - **召回率（Recall）**：抽取 `src/` 下 30 处真实代码 `import` 语句，22 处正确匹配依赖边，8 处未提取（22/30，73.33%）。
   - **95% 置信区间 (Wilson score interval)**: **[55.55%, 85.82%]**。
 - **统计有效性注明**：
   由于样本量较小（$N=30$），置信区间较宽，以上数字**仅作为初步工程观察，不构成统计学完备的准确性证明**；后续重测时**严禁使用同一个种子（Seed: 42）在修复后重测来证明改进**，必须采用全新随机种子并扩大样本量。
-- **漏检量化归因**：
-  未提取的 8 处代码导入（占抽样总数 26.7%，占未提取总数 100%）全部发生在 `src/index.ts`、`src/mcp.ts` 与 `src/app-metadata.ts` 根级单文件中。由于单体工程的 L4 聚类仅对 `src/<subdir>` 二级目录推断模块，根级单文件未归组，导致跨模块调用被过滤。
+- **漏检量化归因与范围厘清（样本 vs 总体）**：
+  - **样本级（Sample Scope，n = 30）**：30 条抽样语句中，未提取项确切为 **8 条**（占抽样总数 26.7%，占样本未提取项 100%），全部源于 `src/` 根级单文件（`src/index.ts` 5 条、`src/mcp.ts` 2 条、`src/desktop/main.ts -> ../app-metadata.js` 1 条）。
+  - **全仓总体级（Population Scope，全仓 290 文件）**：`skill-central` 根目录下共有 5 个单文件（`index.ts`、`mcp.ts`、`init.ts`、`app-metadata.ts`、`version.ts`），其本身向外 import 以及被子模块反向 import 累计涉及**约 39 条引用关系**。
+  - **归因总结**：单体工程的 L4 聚类算法仅将 `src/<subdir>` 二级目录推断为模块组件，根级单文件未被分配组件身份，导致这约 39 条涉及根级文件的调用在全仓反演时被整体忽略。此前汇报中将二者混淆为“抽样中约占 39 个”系口径笔误，在此予以彻底更正。
 
 ---
 
@@ -107,6 +113,6 @@ Evaluated full end-to-end Brownfield pipeline metrics across a real Chromium bro
 | **大规模图首屏渲染耗时** | `synthetic-large-repo` (120 modules) | 292.65 ms (preview 中位数) / 377.81 ms (p95) | **≤ 1500 ms (稳态)** | **沿用已批准预算**：Checkpoints 2 批准的 1.5s 预算，实测仅约 300ms，大幅优于预算。 |
 | **服务端代码分析耗时** | `skill-central` (290 files) | 163.90 ms (preview 中位数) / 199.35 ms (p95) | **≤ 1000 ms (稳态)** | **实测倒推提议**：300 文件内通常在 200ms 内，提议 1000ms 作为安全预算。 |
 | **边交叉数 (Crossings) - 展开** | `synthetic-hub-repo` (57 modules) | 86 处交叉 | **仅作观测，不设硬门禁** | 网状图交叉数高度取决于图拓扑固征，不设硬门禁。 |
-| **边交叉数 (Crossings) - 折叠优化** | `synthetic-hub-repo` (14 containers) | 34 处交叉 (降幅 60.5%) | **折叠交叉降幅 ≥ 40%** | **实测倒推提议**：实测降幅 60.5%，提议 40% 门槛验证折叠有效性。 |
+| **边交叉数 (Crossings) - 折叠优化** | `synthetic-hub-repo` (14 containers) | 34 处交叉 (降幅 60.5%，注：测试模拟折叠) | **折叠交叉降幅 ≥ 40%** | **实测倒推提议**：测试中实测降幅 60.5%，提议 40% 门槛验证折叠有效性。 |
 | **代码依赖边精确率 (Precision)** | `skill-central` (30条样本) | 30/30 (100.0%, 95% CI: [88.65%, 100%]) | **≥ 90.0%** | **提议值**：保证反演依赖的高置信度。 |
 | **代码依赖边召回率 (Recall)** | `skill-central` (30条样本) | 22/30 (73.3%, 95% CI: [55.55%, 85.82%]) | **≥ 70.0%** | **实测倒推提议**：单体工程根入口脚本未聚类（漏检 8 条），提议 70% 作为 V1 阶段基准。 |

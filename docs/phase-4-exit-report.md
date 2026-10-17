@@ -33,27 +33,29 @@
 ### 2. 需用户决策的架构事项 / Architecture Decisions Pending User Confirmation
 
 - **事项 1：证据与置信度的正式 IR 建模时机**：
-  - **现状**：当前遵循用户决策，证据与置信度封装于 `evidence-codec.ts`，暂存于 `Component.tags` 与 `Connection.constraints` 中，未修改 `@coding-cad/architecture-ir` 公开类型。
-  - **选项 A（推荐）**：保持现状至阶段 5/6，待 Ghost 呈现与完整 Review 规范冻结后，统一在 IR 中增加 `evidence` 与 `confidence` 首类领域字段；
-  - **选项 B**：在阶段 4 退出后立即开展 IR 模式扩展专项重构。
+  - **现状与决定**：推迟到阶段 5/6；在此期间任何新增消费方读取证据必须经 `evidence-codec`，不得各自解析 tags/constraints 字符串。过渡期内，证据与置信度由 `packages/implementation-analyzer/src/evidence-codec.ts` 集中统一编码至 `Component.tags` 与 `Connection.constraints`，待阶段 5（Ghost 节点呈现）与阶段 6（完整 Review 工作区规范）冻结后，再正式向 `@coding-cad/architecture-ir` 引入首类领域字段。
 - **事项 2：单体工程根目录单文件聚类规则与召回缺口量化**：
-  - **现状与量化影响**：在 `skill-central` 抽样中，22/30 召回，**被漏掉的 8 条 import（占抽样总数 26.7%，占未提取总数 100%）全部源于 `src/` 根目录的单文件**：
-    - `src/index.ts`（调用 `commands/*`、`utils/*` 等）
-    - `src/mcp.ts`（调用 `server/*`、`tools/*` 等）
-    - `src/app-metadata.ts`（调用 `constants/*` 等）
-    由于单体工程的 L4 聚类仅对 `src/<subdir>` 二级目录识别模块，根级单文件未归组为组件，导致跨文件调用被过滤。
-  - **决策选项**：是否授权在未来切片中引入 `group:root-entry` 虚拟模块来聚合根级文件以消除单体仓库召回缺口。
+  - **统计方法与范围明确（样本 vs 总体）**：
+    - **抽样样本统计（Sample Scope，n = 30）**：在固定随机种子（Seed: 42）对 `skill-central` 抽样的 30 条内部 import 中，成功召回 22 条，**漏检确切为 8 条**（召回率 22/30 = 73.3%，95% CI: [55.55%, 85.82%]）。这 8 条漏检（占抽样总数 26.7%，占样本未提取项 100%）全部源于 `src/` 根目录单文件：`src/index.ts`（5 条）、`src/mcp.ts`（2 条）、`src/desktop/main.ts -> ../app-metadata.js`（1 条）。
+    - **全仓总体统计（Population Scope，全仓 290 文件）**：在 `skill-central` 全仓中，`src/` 根目录下共有 5 个顶层入口文件（`index.ts` 26 条、`mcp.ts` 7 条、`init.ts` 2 条、`app-metadata.ts` 1 条、`version.ts` 1 条，合计 37 条对外 import；加上子模块反向引用 `app-metadata.ts` 约 2 条，全仓总体共涉及约 39 条与根级文件相关的引用关系）。
+    - **二者关系与依据**：“8 条漏检”是**样本量 n=30 的抽检实测值**；“约 39 条引用”是**全仓总体（Population）中根级入口文件的全局引用总数**。此前汇报中混淆出现的“抽样中约占 39 个”系范围口径混淆笔误，现已彻底更正。
+  - **成因与决策选项**：单体工程的 L4 聚类仅对 `src/<subdir>` 二级目录识别模块组件，根级单文件未归组为组件，导致跨文件调用被过滤。请用户裁定：是否授权在未来切片中引入 `group:root-entry` 虚拟模块来聚合根级文件以消除单体仓库召回缺口。
 - **事项 3（新增）：是否批准新增不依赖期望架构的结构性检查规则类型**：
   - **现状**：现有 `packages/implementation-validator` 导出的五类规则（`allowed-dependencies`、`technology`、`layering`、`contract`、`naming`）**全部依赖显式加载的期望基线 (`expected ArchitectureProject`)**。系统当前不具备独立于期望架构之外的代码纯拓扑合规检查能力。
   - **决策选项**：是否批准在验证器中新增不依赖期望架构的“结构性健康检查规则类型”（最小集合：仅检测跨模块循环依赖 `cyclic-dependencies`，基于 declared 与 resolved 依赖边计算环路），此规则不属于现有五类规则。
 - **事项 4（新增）：默认折叠阈值 N=50 的审批与裁定**：
-  - **代码位置**：已在 `apps/web/src/lib/cad/canvas/ArchitectureCanvas.svelte` 明确定义并导出：
+  - **代码位置**：已在 `apps/web/src/lib/cad/canvas/ArchitectureCanvas.svelte` 导出常量：
     ```ts
     export const DEFAULT_UNAPPROVED_COLLAPSE_THRESHOLD = 50;
     ```
-  - **是否可配置**：已实现为 `ArchitectureCanvas` 的 `defaultCollapseThreshold` prop，可由调用方传入自定义数值或 `Infinity`（禁用自动折叠）。
+  - **代码实际运行行为**：
+    1. **默认是否折叠**：**默认不折叠（保持完全展开）**。主界面 `+page.svelte` 调用 `<ArchitectureCanvas>` 时未传入 `defaultCollapseThreshold`（缺省为 `undefined`），因此在产品默认开箱视图中，所有模块容器均平铺展开，不会自动折叠；
+    2. **判断条件**：代码判定条件为严格的大于 **`> 50`**（`componentCount > defaultCollapseThreshold`），**不是 `≥ 50`**；
+    3. **条件统计对象**：代码统计的是 **组件数（`componentCount`，即 `layoutGraph.nodes` 中 `kind === 'component'` 的数量）**，非顶层模块容器数，非屏幕可见节点数；
+    4. **触发效果**：仅当调用方显式传入该 prop 且组件数严格大于该阈值时，才会将其全部模块容器（`kind === 'group'`）加入 `collapsedGroupIds` 进行初始折叠；
+    5. **收益口径**：此前基准测试报告中显示的折叠收益（如 `synthetic-hub-repo` 60.5% 交叉数降幅）系在测试中通过程序模拟折叠（Simulated Collapse in Tests）测得，非当前产品默认行为。
   - **当前标注**：代码及接口注释中已严格标注为 `// 未经批准的临时值（待用户决策裁定） / Unapproved temporary value pending user decision`。
-  - **行为说明**：当前默认视图实际并未对 > 50 节点的大图强制静默折叠（以避免首屏隐藏关键入口节点影响端到端测试与预期），前期步骤 5 的 N > 50 度量数据系在测试夹具中模拟执行初始折叠所测得；正式是否启用‘N > 50 强制默认初始折叠’完全等待用户本轮决策裁定。
+  - **决策选项**：是否批准将该阈值（组件数 > 50）作为产品默认行为启用。
 
 ### 3. 证据缺口与已知局限客观披露 / Objective Disclosure of Gaps & Limitations
 - **真实仓库证据缺口**：当前真实代码库实证**仅来源于单个单体仓库（`skill-central`），没有任何真实生产级 Monorepo 的外部实测证据**；
@@ -62,7 +64,7 @@
 
 ### 4. 需人工执行的评估任务 / Human Comprehension Evaluation Pending Execution
 - **评估材料**：[`docs/evaluation/p4-comprehension-eval.md`](file:///Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/docs/evaluation/p4-comprehension-eval.md)
-- **说明**：该评估方案包含 A/B 对照实验设计、三类目标代码库问答题及附带源码依据的候选答案。**未经用户显式确认前不得宣称已有客观标准答案，数据必须由真实人类架构师实测填写，严禁 AI 代填**。
+- **说明**：该评估方案包含 A/B 对照实验设计、三类目标代码库问答题及附带源码依据的候选答案。**未经用户显式核对确认前不得作为评分依据，数据必须由真实人类架构师实测填写，严禁 AI 代填**。
 
 ---
 
@@ -93,14 +95,14 @@
    - 修正技术规则在技术未检出时的语义为“无法验证（Analyzer 未检出技术）”（非技术违规）；
    - 界面建立 4 类问题分流计数器（错误、警告、待人工确认、无法验证）与专用角标；
    - 画布实现受控自动展开：点击问题目标时精准展开隐藏该节点的已折叠父分组并高亮聚焦；点击节点联动 Inspector 展示关联问题；
-   - 建立 Golden 完全匹配与 Drifted 5 项偏离双基线夹具，实测 Coding-CAD 0 误报，Drifted 5 项偏离 100% 精确检出（0 项表外多余问题）。
+    - 建立 Golden 完全匹配与 Drifted 5 项偏离双基线夹具，实测 Coding-CAD 自洽性检查通过（0 偏差项），Drifted 5 项偏离 100% 精确检出（0 项表外多余问题）。
 6. **验收基线完善与实证材料就绪（步骤 5）**：
-   - 构造 57 模块、14 包的复杂拓扑合成夹具 `synthetic-hub-repo`（中心 Hub、环依赖、跨层调用、桥接器），测定完全展开 86 处交叉，应用 N > 50 初始折叠后降为 14 个容器、34 处交叉（降幅 60.5%）；
+   - 构造 57 模块、14 包的复杂拓扑合成夹具 `synthetic-hub-repo`（中心 Hub、环依赖、跨层调用、桥接器），测定完全展开 86 处交叉，在测试中应用组件数 > 50 模拟初始折叠后降为 14 个容器、34 处交叉（模拟折叠降幅 60.5%，非当前默认行为）；
    - 实测真实本地 TypeScript 代码库 `skill-central`（290 文件、23 模块、77 边、152 交叉、0 重叠、100% ELK 求解器），完成 Seed: 42 的 AI 抽样核对（Precision 100.0%、Recall 73.3%），诚实记录根级入口脚本能力边界；
-   - 交付带客观真值的人工可理解性评估材料 `docs/evaluation/p4-comprehension-eval.md`。
+   - 交付带候选答案与源码路径依据的人工可理解性评估材料 `docs/evaluation/p4-comprehension-eval.md`。
 7. **度量口径完善、重复测量与报告订正（步骤 6 订正）**：
    - 完成每夹具每模式各 10 次重复测量（80 次运行），汇编真实分布于 `logs/validation/p4-browser/benchmark-report.md`；
-   - 在代码与文档中规范默认折叠阈值 N=50 的可配置性与临时值标注；
+   - 在代码与文档中规范折叠阈值（组件数 > 50）的可配置性、非默认启用现状与临时值标注；
    - 在本报告正文内嵌 4 张关键结论分析表（见下文第 3.4 节）。
 
 ---
@@ -146,9 +148,9 @@
   - 打开本地代码仓库 -> 服务端安全扫描与 AST 解析 -> 重建 ArchitectureProject -> Browser Worker ELK 布局计算 -> Web Canvas / Inspector 呈现全流水线打通；
   - 真实 Chromium 浏览器（Playwright E2E）双模式下 100% 断言 ELK 求解器执行（零 fallback）；
   - 模块容器分组、折叠/展开、隐藏计数角标、问题导航受控自动展开与双向定位；
-  - 期望基线合规检查、4 类问题分流展示、无法验证透明标注、自洽性检查 0 误报、Drifted 5 项偏离 100% 精确检出（0 项表外问题）；
+  - 期望基线合规检查、4 类问题分流展示、无法验证透明标注、自洽性检查通过（0 偏差项）、Drifted 5 项偏离 100% 精确检出（0 项表外问题）；
   - 7 大复杂边缘用例矩阵 100% 达标；
-  - 复杂网状合成夹具 `synthetic-hub-repo`（57 模块、86 交叉 -> 34 交叉，降幅 60.5%）；
+  - 复杂网状合成夹具 `synthetic-hub-repo`（57 模块、全展开 86 交叉，测试中模拟折叠为 34 交叉，降幅 60.5%）；
   - 真实代码库 `skill-central` 端到端反演与 Seed: 42 AI 抽样核对（Precision 100.0%、Recall 73.3%）；
   - 80 次真实浏览器重复测量与统计分布汇总；
   - 变更记录自动化格式门禁。
@@ -224,7 +226,7 @@
 
 | 维度 / Dimension | 详细事实说明 / Detailed Facts |
 | --- | --- |
-| **期望基线来源与校对说明** | `coding-cad-expected.json` 在步骤 4 编写合规检查时建立，参考了 `packages/README.md` 与各子包 `package.json` 清单，并在开发过程中使用 `ImplementationAnalyzer` 反演输出进行过比对校对。**因其校对流程使用过 Analyzer 输出，该期望基线属于非独立基线（Non-independent Baseline）**。因此针对本仓库的比对结果**严格降级为“自洽性检查通过”**，严禁表述为“0 误报”以证明 Analyzer 的独立准确性（表 D 亦已同步注明）。 |
+| **期望基线来源与校对说明** | `coding-cad-expected.json` 在步骤 4 编写合规检查时建立，参考了 `packages/README.md` 与各子包 `package.json` 清单，并在开发过程中使用 `ImplementationAnalyzer` 反演输出进行过比对校对。**因其校对流程使用过 Analyzer 输出，该期望基线属于非独立基线（Non-independent Baseline）**。因此针对本仓库的比对结果**严格降级为“自洽性检查通过”**，严禁宣称零误报以证明 Analyzer 的独立准确性（表 D 亦已同步注明）。 |
 | **边数由 38 变为 40 的具体原因** | - **基线初始状态（38 边）**：阶段 3 退出时，各包清单声明了 37 条运行时内部依赖（`runtime`）+ 1 条测试依赖（`dev`：`architecture-review -> execution-blueprint`），合计 38 条依赖边。<br>- **新增第 1 条边（38 -> 39）**：<br>  - **源节点**：`web` (`apps/web`)<br>  - **目标节点**：`implementation-analyzer` (`@coding-cad/implementation-analyzer`)<br>  - **证据来源**：`declared`（`apps/web/package.json` 依赖声明）+ `resolved`（`apps/web/src/routes/api/workspace/analyze-repository/+server.ts` 源码引用）<br>  - **依赖种类**：`runtime` 依赖<br>  - **产生改动与提交**：步骤 3 提交 `a6d5781`（`feat(web): connect brownfield repository analysis pipeline with secure server route`），由服务端反演路由引入。<br>- **新增第 2 条边（39 -> 40）**：<br>  - **源节点**：`web` (`apps/web`)<br>  - **目标节点**：`implementation-validator` (`@coding-cad/implementation-validator`)<br>  - **证据来源**：`declared`（`apps/web/package.json` 依赖声明）+ `resolved`（`apps/web/src/routes/+page.svelte` 与 `workspace-shell-controller.ts` 源码引用）<br>  - **依赖种类**：`runtime` 依赖<br>  - **产生改动与提交**：步骤 4 提交 `638a90e`（`feat(compliance): implement expected architecture baseline validation and bidirectional problem navigation`），由前端合规检查加载引入。<br>- **与真值一致性判定**：对照手工整理的 `package.json` 声明真值（37 条）与已知的 1 条 devDependency（合计 38 条），这两条新增边均为阶段 4 业务流水线真实新增的代码与清单依赖，**属于客观真实依赖**（既不是 Analyzer 解析缺陷，也不是真值标注错误）。新增后全仓共 39 条 runtime 依赖 + 1 条 dev 依赖 = 40 条依赖。 |
 
 #### 表 B：7 项复杂边缘用例逐项结果矩阵表
@@ -246,7 +248,7 @@
 | **抽象粒度 (Abstraction Granularity)**：工作区 package 与核心功能模块应组织为第一级容器分组。 | Web 端与 Layout 编译期生成 `group:module:<pkgStem>` 容器节点包裹内部 services。 | **完全合规 (Fully Compliant)** |
 | **语义角色纯粹性 (Semantic Roles)**：分组角色仅作为布局投影分类，严禁写回 IR 领域对象。 | 分组信息仅保存在 VisualGraph 与 ViewState 中，未修改 `ArchitectureProject`。 | **完全合规 (Fully Compliant)** |
 | **隐藏计数与渐进披露 (Hidden Counts)**：折叠容器必须清晰展示内部被隐藏的节点计数。 | 容器标头在展开时显示 `(N)`，折叠时明确显示 `(N hidden)` 状态角标。 | **完全合规 (Fully Compliant)** |
-| **默认大图折叠策略 (Default Collapse)**：面对 > 50 节点的大图，需具备折叠收敛认知复杂度的机制。 | `ArchitectureCanvas` 提供 `defaultCollapseThreshold` 接口，定义 `DEFAULT_UNAPPROVED_COLLAPSE_THRESHOLD = 50`，标注为未经批准临时值待裁定。 | **完全合规 (Fully Compliant)** |
+| **大图折叠机制支持 (Collapse Support)**：面对组件数 > 50 的大图，需具备折叠收敛认知复杂度的能力。 | `ArchitectureCanvas` 导出 `DEFAULT_UNAPPROVED_COLLAPSE_THRESHOLD = 50`（临时值待裁定）并支持 `defaultCollapseThreshold` 属性（组件数 > 阈值时折叠容器）；默认调用处缺省为未折叠（完全展开）。 | **机制已具备，默认行为待裁定 (Compliant & Pending Decision)** |
 
 #### 表 D：漂移夹具偏差检出明细表（无偏差版本 0 项 vs 漂移版本 5 项）
 
