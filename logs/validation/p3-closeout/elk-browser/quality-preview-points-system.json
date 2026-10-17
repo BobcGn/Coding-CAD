@@ -93,7 +93,7 @@
     "relativeOrderReversed": false,
     "withinBudget": true
   },
-  "durationMs": 59.899999998509884,
+  "durationMs": 60.1000000089407,
   "raw": {
     "name": "points-system",
     "first": {
@@ -651,7 +651,7 @@
           }
         ]
       },
-      "durationMs": 59.899999998509884
+      "durationMs": 60.1000000089407
     },
     "repeated": {
       "projection": {
@@ -1208,7 +1208,7 @@
           }
         ]
       },
-      "durationMs": 56.100000001490116
+      "durationMs": 55.6000000089407
     },
     "incremental": {
       "projection": {
@@ -1753,7 +1753,7 @@
         "relativeOrderReversed": false,
         "withinBudget": true
       },
-      "durationMs": 55.5
+      "durationMs": 56.19999998807907
     },
     "editedId": "ledger",
     "inputImmutable": true,

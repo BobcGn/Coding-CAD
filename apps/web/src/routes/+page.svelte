@@ -22,7 +22,9 @@
   } from "$lib/cad/workspace/ui-settings.js";
   import type { ArchitectureProject } from "@coding-cad/architecture-ir";
   import {
+    isCannotVerifyIssue,
     isContractIssue,
+    isTechnologyUndetectedIssue,
     resolveIssueTarget,
     type ComplianceIssue
   } from "@coding-cad/implementation-validator";
@@ -477,6 +479,12 @@
             : "Select an authoritative ArchitectureProject baseline (no synthetic auto-expectations):"}
         </p>
         <div class="sidebar-actions" style="margin-bottom: 1rem; display: grid; gap: 0.5rem;">
+          <div class="preset-notice" data-testid="preset-notice" style="font-size: 0.75rem; color: #b45309; background: #fffbeb; padding: 0.4rem 0.6rem; border-radius: 6px; border: 1px solid #fde68a;">
+            <strong>{settings.locale === "zh" ? "注意" : "Note"}:</strong>
+            {settings.locale === "zh"
+              ? "以下为 Coding-CAD 本仓库的示例基线，仅适用于本仓库测试与演示，不适用于其他仓库。"
+              : "The presets below are example baselines for the Coding-CAD repository only, designed for tests and demos, not for other repositories."}
+          </div>
           <button
             type="button"
             class="sidebar-action"
@@ -484,7 +492,7 @@
             onclick={() => handleLoadExpected(CODING_CAD_EXPECTED_BASELINE)}
           >
             <strong>Coding-CAD Golden Baseline</strong>
-            <small style="display:block; color: var(--muted);">{settings.locale === "zh" ? "完全合规基线（预期通过，0 结构偏离）" : "Fully compliant baseline (0 structural deviations)"}</small>
+            <small style="display:block; color: var(--muted);">{settings.locale === "zh" ? "示例基线，仅适用于本仓库（完全合规基线）" : "Example baseline, only applies to this repository (Fully compliant baseline)"}</small>
           </button>
           <button
             type="button"
@@ -493,7 +501,7 @@
             onclick={() => handleLoadExpected(CODING_CAD_DRIFTED_BASELINE)}
           >
             <strong>Coding-CAD Drifted Baseline</strong>
-            <small style="display:block; color: var(--muted);">{settings.locale === "zh" ? "人工偏离基线（覆盖组件缺失、技术不符、未批准依赖等 5 种场景）" : "Drifted baseline (tests missing component, tech deviation, dependencies, contract)"}</small>
+            <small style="display:block; color: var(--muted);">{settings.locale === "zh" ? "示例基线，仅适用于本仓库（人工偏离基线）" : "Example baseline, only applies to this repository (Drifted baseline)"}</small>
           </button>
         </div>
         <div class="setting-row" style="display: grid; gap: 0.5rem;">
@@ -527,7 +535,7 @@
       </section>
 
   {#if errorMessage}
-    <section class="error" role="alert">{errorMessage}</section>
+    <section class="error" role="alert" data-testid="error-banner">{errorMessage}</section>
   {:else if noticeMessage}
     <section class="notice" aria-live="polite">{noticeMessage}</section>
   {/if}
@@ -770,11 +778,35 @@
               </button>
             </div>
           {:else}
+            {@const cannotVerifyCount = shell.complianceReport?.issues.filter(i => isCannotVerifyIssue(i)).length ?? 0}
+            {@const pendingCount = shell.complianceReport?.issues.filter(i => !isCannotVerifyIssue(i) && (
+              i.implementationEvidence.includes("inferred") ||
+              i.implementationEvidence.includes("0.6") ||
+              i.implementationEvidence.includes("0.5") ||
+              i.implementationEvidence.includes("0.4") ||
+              i.implementationEvidence.includes("Undeclared")
+            )).length ?? 0}
+            {@const errorCount = shell.complianceReport?.issues.filter(i => !isCannotVerifyIssue(i) && i.severity === "ERROR").length ?? 0}
+            {@const warningCount = shell.complianceReport?.issues.filter(i => !isCannotVerifyIssue(i) && i.severity === "WARNING" && !(
+              i.implementationEvidence.includes("inferred") ||
+              i.implementationEvidence.includes("0.6") ||
+              i.implementationEvidence.includes("0.5") ||
+              i.implementationEvidence.includes("0.4") ||
+              i.implementationEvidence.includes("Undeclared")
+            )).length ?? 0}
             <div class="compliance-header" data-testid="compliance-header">
-              <h3>{settings.locale === "zh" ? "实现合规检查" : "Compliance Verification"}</h3>
-              <span class="compliance-count">
-                {shell.complianceReport?.issues.length ?? 0} {settings.locale === "zh" ? "个偏差项" : "deviation(s)"}
-              </span>
+              <div class="compliance-header-title">
+                <h3>{settings.locale === "zh" ? "实现合规检查" : "Compliance Verification"}</h3>
+                <span class="compliance-count">
+                  {shell.complianceReport?.issues.length ?? 0} {settings.locale === "zh" ? "个项" : "item(s)"}
+                </span>
+              </div>
+              <div class="compliance-category-counters" data-testid="compliance-category-counters">
+                <span class="badge severity error" data-testid="counter-error">{settings.locale === "zh" ? "错误" : "Errors"}: {errorCount}</span>
+                <span class="badge severity warning" data-testid="counter-warning">{settings.locale === "zh" ? "警告" : "Warnings"}: {warningCount}</span>
+                <span class="badge pending-confirmation" data-testid="counter-pending">{settings.locale === "zh" ? "待人工确认" : "Pending"}: {pendingCount}</span>
+                <span class="badge cannot-verify" data-testid="counter-cannot-verify">{settings.locale === "zh" ? "无法验证" : "Cannot Verify"}: {cannotVerifyCount}</span>
+              </div>
               <button type="button" class="btn-sm" data-testid="clear-expected-btn" onclick={handleClearExpected}>
                 {settings.locale === "zh" ? "清除基线" : "Clear Baseline"}
               </button>
@@ -784,21 +816,27 @@
                 {#each shell.complianceReport.issues as issue (issue.id)}
                   {@const target = resolveIssueTarget(issue)}
                   {@const isContract = isContractIssue(issue)}
-                  {@const isPending = !isContract && (
+                  {@const isTechUndetected = isTechnologyUndetectedIssue(issue)}
+                  {@const isCannotVerify = isCannotVerifyIssue(issue)}
+                  {@const isPending = !isCannotVerify && (
                     issue.implementationEvidence.includes("inferred") ||
                     issue.implementationEvidence.includes("0.6") ||
                     issue.implementationEvidence.includes("0.5") ||
                     issue.implementationEvidence.includes("0.4") ||
-                    issue.implementationEvidence.includes("Undeclared") ||
-                    issue.implementationEvidence.includes("no matching technology") ||
-                    issue.id.startsWith("technology.deviation")
+                    issue.implementationEvidence.includes("Undeclared")
                   )}
-                  <li class={`compliance-issue ${issue.severity.toLowerCase()}`} data-testid="compliance-issue-item">
+                  <li class={`compliance-issue ${isCannotVerify ? "cannot-verify" : issue.severity.toLowerCase()}`} data-testid="compliance-issue-item">
                     <div class="issue-header">
-                      <span class={`badge severity ${issue.severity.toLowerCase()}`}>{issue.severity}</span>
+                      {#if !isCannotVerify}
+                        <span class={`badge severity ${issue.severity.toLowerCase()}`}>{issue.severity}</span>
+                      {/if}
                       {#if isContract}
                         <span class="badge cannot-verify" data-testid="badge-cannot-verify">
                           {settings.locale === "zh" ? "无法验证 (Analyzer 未提取契约)" : "Cannot Verify (Contracts not extracted)"}
+                        </span>
+                      {:else if isTechUndetected}
+                        <span class="badge cannot-verify" data-testid="badge-cannot-verify">
+                          {settings.locale === "zh" ? "无法验证 (Analyzer 未检出技术)" : "Cannot Verify (Technology undetected)"}
                         </span>
                       {/if}
                       {#if isPending}
@@ -977,12 +1015,14 @@
   .compliance-unavailable-banner { border: 1px solid #fde68a; background: #fffbeb; color: #92400e; padding: 0.75rem; border-radius: 8px; margin-bottom: 0.75rem; }
   .compliance-unavailable-banner h4 { margin: 0 0 0.25rem; font-size: 0.9rem; }
   .compliance-unavailable-banner p { margin: 0 0 0.5rem; font-size: 0.8rem; }
-  .compliance-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; }
-  .compliance-header h3 { margin: 0; font-size: 0.95rem; }
+  .compliance-header { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 0.5rem; }
+  .compliance-header-title { display: flex; align-items: center; justify-content: space-between; }
+  .compliance-category-counters { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0.2rem 0; }
   .compliance-count { font-size: 0.8rem; color: var(--muted); }
-  .btn-sm { font-size: 0.75rem; padding: 0.2rem 0.5rem; border: 1px solid var(--panel-border); border-radius: 6px; background: var(--panel-bg); cursor: pointer; color: var(--fg); }
+  .btn-sm { font-size: 0.75rem; padding: 0.2rem 0.5rem; border: 1px solid var(--panel-border); border-radius: 6px; background: var(--panel-bg); cursor: pointer; color: var(--fg); align-self: flex-start; }
   .compliance-issues-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.5rem; }
   .compliance-issue { border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.5rem; background: var(--panel-bg); }
+  .compliance-issue.cannot-verify { border-color: #cbd5e1; background: #f8fafc; }
   .compliance-issue.error { border-color: #fecaca; background: #fef2f2; }
   .compliance-issue.warning { border-color: #fde68a; background: #fffbeb; }
   .compliance-issue.info { border-color: #bfdbfe; background: #eff6ff; }

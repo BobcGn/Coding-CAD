@@ -97,6 +97,7 @@ test.describe("Brownfield Architecture Pipeline E2E", () => {
     // 3. Click Load Expected Baseline button from banner
     await page.getByTestId("load-expected-btn").click();
     await expect(page.getByTestId("load-expected-modal")).toBeVisible();
+    await expect(page.getByTestId("preset-notice")).toBeVisible();
 
     // Load Drifted baseline
     await page.getByTestId("load-preset-drifted").click();
@@ -104,6 +105,10 @@ test.describe("Brownfield Architecture Pipeline E2E", () => {
 
     // 4. Verify compliance report header and issues list
     await expect(page.getByTestId("compliance-header")).toBeVisible();
+    await expect(page.getByTestId("compliance-category-counters")).toBeVisible();
+    await expect(page.getByTestId("counter-error")).toContainText(/1/);
+    await expect(page.getByTestId("counter-warning")).toContainText(/2/);
+    await expect(page.getByTestId("counter-cannot-verify")).toContainText(/2/);
     await expect(page.getByTestId("compliance-issues-list")).toBeVisible();
 
     const issueItems = page.getByTestId("compliance-issue-item");
@@ -113,7 +118,7 @@ test.describe("Brownfield Architecture Pipeline E2E", () => {
     await expect(page.locator(".badge.severity.error").first()).toBeVisible();
     await expect(page.locator(".badge.severity.warning").first()).toBeVisible();
     await expect(page.getByTestId("badge-cannot-verify").first()).toBeVisible();
-    await expect(page.getByTestId("badge-pending-confirmation").first()).toBeVisible();
+    await expect(page.getByTestId("badge-cannot-verify").first()).toContainText(/无法验证|Cannot Verify/);
 
     // 6. Test Group Auto-Expansion via Problem Target Click
     const serverGroup = page.locator('.svelte-flow__node[data-id="group:module:server"]');
@@ -150,6 +155,39 @@ test.describe("Brownfield Architecture Pipeline E2E", () => {
     await expect(page.getByTestId("compliance-passed")).toContainText("0");
 
     // 9. Verify ELK layout telemetry
+    const observed = await page.evaluate(() => window.__p3ObservedLayouts ?? []);
+    expect(observed.length).toBeGreaterThan(0);
+    const lastLayout = observed.at(-1)!;
+    expect(lastLayout.result.status).toBe("success");
+    expect(layoutSource(lastLayout.result)).toBe("elk");
+  });
+
+  test("asserts unsupported structures warning banner on edge-cases-repo and error banner on invalid repo path", async ({ page }) => {
+    const edgeCasesRepo = path.join(repoRoot, "packages/implementation-analyzer/fixtures/edge-cases-repo");
+    await page.goto("/");
+
+    // 1. Analyze edge-cases-repo
+    await page.getByTestId("open-repository-btn").click();
+    await expect(page.getByTestId("repo-path-input")).toBeVisible();
+    await page.getByTestId("repo-path-input").fill(edgeCasesRepo);
+    await page.getByTestId("repo-analyze-submit").click();
+
+    // 2. Assert unsupported structures warning banner appears
+    const unsupportedBanner = page.getByTestId("unsupported-structures-banner");
+    await expect(unsupportedBanner).toBeVisible({ timeout: 15000 });
+    await expect(unsupportedBanner).toContainText("unparseable-syntax");
+    await expect(unsupportedBanner).toContainText("broken.ts");
+
+    // 3. Attempt to analyze non-existent directory -> assert error-banner
+    await page.getByTestId("open-repository-btn").click();
+    await page.getByTestId("repo-path-input").fill("/path/to/nonexistent/repo/12345678");
+    await page.getByTestId("repo-analyze-submit").click();
+
+    const errorBanner = page.getByTestId("error-banner");
+    await expect(errorBanner).toBeVisible();
+    await expect(errorBanner).toContainText(/ENOENT|Workspace request failed/);
+
+    // 4. Assert ELK solver is maintained
     const observed = await page.evaluate(() => window.__p3ObservedLayouts ?? []);
     expect(observed.length).toBeGreaterThan(0);
     const lastLayout = observed.at(-1)!;

@@ -31,9 +31,9 @@ async function runTests() {
   assert.equal(targetComp?.targetId, "audit-logger");
 
   const techDevIssue = {
-    id: "technology.deviation.server",
+    id: "technology.undetected.server",
     severity: "WARNING" as const,
-    title: "Technology deviation detected for Server",
+    title: "Cannot Verify: Technology undetected for Server",
     description: "",
     architectureExpectation: "",
     implementationEvidence: "",
@@ -123,10 +123,10 @@ async function runTests() {
     "Must report missing audit-logger component"
   );
 
-  // Verify technology deviation was caught
+  // Verify undetected technology was caught and marked cannot verify
   assert.ok(
-    driftedReport.issues.some((i) => i.id === "technology.deviation.server"),
-    "Must report technology deviation for server"
+    driftedReport.issues.some((i) => i.id === "technology.undetected.server"),
+    "Must report undetected technology for server as cannot verify"
   );
 
   // Verify missing required dependency was caught

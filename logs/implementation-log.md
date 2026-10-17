@@ -1270,6 +1270,57 @@ PR #3首次远端CI在额外security:audit步骤报告7high，本地旧ci:verify
   - 风险：若用户上传格式损坏的 JSON 期望文件，由解析层友好捕获并提示。
   - 回退方式：`git revert <commit-hash>`。
 
+## 2026-10-17 - 阶段 4 步骤 4.1：技术合规规则语义修正、四分类问题分流与证据补充 / Phase 4 Step 4.1: Technology Rule Semantic Refinement, Four-Category Issue Counters, and Evidence Replenishment
+
+### 1. 做了什么 / What
+- 技术规则语义修正（`packages/implementation-validator/src/rules/technology-rule.ts`）：
+  - 将技术未检出由技术偏差更正为“无法验证（Analyzer 未检出技术）”（`technology.undetected.${expected.id}`），消除分析器未提取技术所带来的假阳性；
+  - 在 `packages/implementation-validator/src/types.ts` 导出 `isTechnologyUndetectedIssue`、`isCannotVerifyIssue` 与目标解析映射；
+  - 更新 `packages/implementation-validator/src/brownfield-compliance.test.ts` 验证。
+- UI 四分类计数器与预设说明（`apps/web/src/routes/+page.svelte`）：
+  - 增加 4 类问题计数器（错误、警告、待人工确认、无法验证），避免无法验证项淹没真实架构偏离；
+  - 渲染 `[无法验证 (Analyzer 未检出技术)]` 专用角标；
+  - 在加载预设对话框中加入明显说明：“本预设仅供演示比对流程，不能用作 Analyzer 准确率的证据”；
+  - 补齐非法仓库路径错误横幅 `data-testid="error-banner"`。
+- E2E 浏览器验收断言（`apps/web/e2e/brownfield.spec.ts`）：
+  - 断言预设免责说明、4 类分类计数器数值（错误 1、警告 2、待确认 0、无法验证 2）与无法验证技术专用角标；
+  - 新增测试 3 断言 `edge-cases-repo` 语法错误横幅 `unsupported-structures-banner` 与非法路径 `error-banner`。
+- 补交验证证据与设计文档：
+  - `docs/brownfield-expected-baseline-provenance.md`：详细阐述期望基线生成依据、真值独立对照、边数 38->40 演进成因、自洽性检查降级说明与 5 项漂移逐项对照表（0 项表外问题）；
+  - `logs/validation/p4-baseline/l2-cross-validation-report.md`：L2 三类交叉校验明细与源文件路径归因表；
+  - `logs/validation/p4-baseline/edge-cases-matrix.md`：7 项复杂边缘用例全量逐项验证矩阵；
+  - `docs/d005-grouping-conformance.md`：D-005 原文与 `module:<pkgStem>` 分组实现逐条核验表，证明 100% 严格在既定范围内。
+
+- Technology Rule Semantic Refinement (`technology-rule.ts`, `types.ts`): Refined undetected actual technology to report as "Cannot Verify (Analyzer technology undetected)", avoiding false positive violations; exported classification helpers.
+- UI Four-Category Issue Counters & Preset Notice (`+page.svelte`): Implemented distinct UI counters for errors, warnings, pending confirmation, and cannot-verify issues; added specific undetected tech badge and preset disclaimer notice.
+- Browser E2E Assertions (`brownfield.spec.ts`): Added assertions for preset notice, four distinct counters, cannot-verify badge, unsupported-structures alert on `edge-cases-repo`, and error banner on invalid repo paths with 100% ELK solver.
+- Evidence & Documentation Replenishment:
+  - `docs/brownfield-expected-baseline-provenance.md`: Baseline provenance, independent ground truth comparison, edge count 38->40 evolution, consistency check downgrade, and 5-item drift table (0 extraneous issues).
+  - `logs/validation/p4-baseline/l2-cross-validation-report.md`: Fine-grained L2 cross-validation source file paths and root-cause breakdown.
+  - `logs/validation/p4-baseline/edge-cases-matrix.md`: 7-point edge case verification matrix.
+  - `docs/d005-grouping-conformance.md`: Point-by-point conformance review verifying that `module:<pkgStem>` grouping strictly adheres to D-005.
+
+### 2. 为什么这么做 / Why
+- 遵守诚实与零静默降级原则：Analyzer 仅依据依赖做轻量技术判定，未做深度代码框架 AST 语法识别；将“未检出”直接报告为违背架构属于误报，修正为“无法验证”诚实地暴露了分析器的能力边界。
+- 分类分流降低认知过载：四分类让用户清晰识别阻断性错误与工具限制性无法验证项，防止关键架构风险被遗漏。
+- 严谨的真值表述：反演输出校准的基线不可作为证明分析器准确率的证据，降级为自洽性检查并附带明确说明，遵守科学真实性原则。
+
+- Honesty and Zero Silent Degradation: Classification of unextracted technologies as "Cannot Verify" prevents false positives while preserving visibility into tool limitations.
+- Cognitive Clarity: Segregating errors, warnings, pending confirmation, and cannot-verify issues prevents unverified items from obscuring genuine architectural drift.
+- Scientific Ground Truth Integrity: Baselines aligned with tool outputs must be framed as consistency checks with explicit disclaimers rather than independent accuracy proofs.
+
+### 3. 验证结果 / Verification
+- 已实现并验证：
+  - `pnpm --filter @coding-cad/implementation-validator test`：全量通过；
+  - `pnpm --filter @coding-cad/web test:unit`：81/81 单测通过；
+  - `apps/web/e2e/brownfield.spec.ts`：在 dev 模式（4.7s）与 preview 模式（3.6s）下 3/3 浏览器测试全量通过；
+  - 100% ELK 布局求解器守卫通过（零 fallback）；
+  - 全仓 26 个 Playwright 测试全数通过。
+- 未实现：无。
+- 风险与回退方式：
+  - 回退方式：`git revert <commit-hash>`。
+
+
 
 
 

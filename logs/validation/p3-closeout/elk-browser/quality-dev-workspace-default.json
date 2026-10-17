@@ -93,7 +93,7 @@
     "relativeOrderReversed": false,
     "withinBudget": true
   },
-  "durationMs": 67.90000000596046,
+  "durationMs": 68.09999999403954,
   "raw": {
     "name": "workspace-default",
     "first": {
@@ -666,7 +666,7 @@
           }
         ]
       },
-      "durationMs": 67.90000000596046
+      "durationMs": 68.09999999403954
     },
     "repeated": {
       "projection": {
@@ -1238,7 +1238,7 @@
           }
         ]
       },
-      "durationMs": 65.40000000596046
+      "durationMs": 64
     },
     "incremental": {
       "projection": {
@@ -1798,7 +1798,7 @@
         "relativeOrderReversed": false,
         "withinBudget": true
       },
-      "durationMs": 65.90000000596046
+      "durationMs": 66
     },
     "editedId": "point-service",
     "inputImmutable": true,

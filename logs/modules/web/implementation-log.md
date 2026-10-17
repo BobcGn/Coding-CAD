@@ -468,4 +468,37 @@ PR #3首次远端CI在额外security:audit步骤报告7high，本地旧ci:verify
   - 风险：若用户加载的期望架构 JSON 与 IR 格式不匹配，由 JSON schema 校验拦截并给出友好提示。
   - 回退方式：`git revert <commit-hash>`。
 
+## 2026-10-17 - 阶段 4 步骤 4.1：Web 界面四类问题分流、预设说明与边缘告警断言 / Phase 4 Step 4.1: Four-Category Issue Counters, Preset Notice, and Edge-Case Alert Assertions
+
+### 1. 做了什么 / What
+- 界面问题分流与计数器（`apps/web/src/routes/+page.svelte`）：
+  - 实现了 4 类分类计数器：错误（`counter-error`）、警告（`counter-warning`）、待人工确认（`counter-pending`）、无法验证（`counter-cannot-verify`），防止“无法验证”类项（如未检出技术、未提取契约）淹没真实架构偏离；
+  - 为未检出技术渲染专用角标 `[无法验证 (Analyzer 未检出技术)]`；
+  - 在加载预设弹窗中新增明显说明：“本预设仅供演示比对流程，不能用作 Analyzer 准确率的证据 / This preset is for demonstration only and must not be used as evidence of Analyzer accuracy”；
+  - 补齐仓库路径非法或分析失败时的显式错误横幅 `data-testid="error-banner"`。
+- E2E 浏览器验收与断言扩展（`apps/web/e2e/brownfield.spec.ts`）：
+  - 更新测试 2：断言预设说明横幅渲染、4 类计数器精确数值（错误 1、警告 2、待确认 0、无法验证 2）与无法验证技术专用角标；
+  - 新增测试 3：断言在 `edge-cases-repo` 上展示 `unsupported-structures-banner`（显式暴露语法解析错误而不静默吞没），以及非法路径触发 `error-banner`。
+
+- Four-Category Issue Counters (`+page.svelte`): Implemented distinct UI counters for errors, warnings, pending confirmation, and cannot-verify issues, preventing unverified items from obscuring true violations.
+- Undetected Tech Badge & Preset Notice (`+page.svelte`): Added specific `[Cannot Verify (Technology undetected)]` badge, added prominent disclaimer regarding preset baseline demonstration scope, and added explicit `error-banner`.
+- Browser E2E Assertions (`brownfield.spec.ts`): Expanded suite to 3 tests, verifying preset notice, four distinct counters, cannot-verify badge, unsupported-structures alert on `edge-cases-repo`, and error banner on invalid repo paths with 100% ELK layout solver.
+
+### 2. 为什么这么做 / Why
+- 认知减负与真实性防护：合规排查时如果将分析器受限造成的“无法验证”与破坏架构规则的“违背”混合，会导致架构师误判；四分类展示提供了清晰的风险分级。
+- 诚实免责声明：明确说明预设基线仅作对比流程演示，杜绝用户将其误当作反向证明分析器准确率的基线。
+
+- Cognitive Clarity: Segregating unverified analyzer limitations from genuine architecture violations prevents misinterpretation.
+- Honest Disclaimer: Prominently identifies demo presets to prevent circular logic claims regarding analyzer accuracy.
+
+### 3. 验证结果 / Verification
+- 已实现并验证：
+  - `apps/web/e2e/brownfield.spec.ts`：在 dev 模式（4.7s）与 preview 模式（3.6s）下 3/3 浏览器测试全量通过；
+  - 100% ELK 布局求解器守卫通过（零 fallback）；
+  - 全仓 26 个 Playwright 测试全数通过。
+- 未实现：无。
+- 风险与回退方式：
+  - 回退方式：`git revert <commit-hash>`。
+
+
 

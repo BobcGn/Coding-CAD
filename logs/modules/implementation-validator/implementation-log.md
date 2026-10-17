@@ -73,3 +73,32 @@ Validation:
   - 风险：当代码库使用了非标准技术别名时可能触发技术偏离警告，需在 Analyzer 别名表中补充识别词。
   - 回退方式：`git revert <commit-hash>`。
 
+## 2026-10-17 - 阶段 4 步骤 4.1：技术合规规则语义修正与无法验证分类 / Phase 4 Step 4.1: Technology Rule Semantic Refinement and Cannot-Verify Classification
+
+### 1. 做了什么 / What
+- 技术规则语义修正（`packages/implementation-validator/src/rules/technology-rule.ts`）：
+  - 当期望架构中配置了特定技术，而实现中未检出对应组件技术时，不再直接报告为技术偏差（Technology deviation），而是精准报告为“无法验证（Analyzer 未检出技术）”（`technology.undetected.${expected.id}`，标题为 `Cannot Verify: Technology undetected for ${expected.name}`），避免将分析器未检出与实际代码违规相混淆。
+- 辅助与分类函数扩充（`packages/implementation-validator/src/types.ts`）：
+  - 导出 `isTechnologyUndetectedIssue(issue)` 与 `isCannotVerifyIssue(issue)`，支持前端与分析层将“无法验证”类问题（技术未检出、契约未提取）从硬性阻断错误中分离；
+  - 更新 `resolveIssueTarget`，精准解析 `technology.undetected.*` 对应目标组件。
+- 单元测试与断言更新（`packages/implementation-validator/src/brownfield-compliance.test.ts`）：
+  - 更新断言验证技术未检出被识别为 `Cannot Verify` 语义，漂移基线 5 项偏离中错误 1 项、警告 2 项、无法验证 2 项。
+
+- Semantic Refinement (`technology-rule.ts`): Refined undetected actual technology to report as "Cannot Verify (Analyzer technology undetected)" instead of a definitive technology deviation, avoiding conflation of unextracted facts with code violations.
+- Classification Helpers (`types.ts`): Exported `isTechnologyUndetectedIssue` and `isCannotVerifyIssue` to support UI separation of "Cannot Verify" items.
+- Tests (`brownfield-compliance.test.ts`): Updated test assertions to verify cannot-verify semantics across drifted baseline fixtures.
+
+### 2. 为什么这么做 / Why
+- 遵守诚实与零静默降级原则：Analyzer 仅依据 `package.json` 依赖做轻量技术判定，未做深度框架语法识别；若把“未检出”直接报告为“违背架构”，属于误报。将其归类为“无法验证”既诚实反映了分析器能力边界，又不会掩盖潜在风险。
+
+- Honesty and Zero Silent Degradation: Light-weight dependency heuristics cannot prove an absence of technology; classifying undetected items as "Cannot Verify" honestly reflects analyzer boundaries without false positives.
+
+### 3. 验证结果 / Verification
+- 已实现并验证：
+  - `pnpm --filter @coding-cad/implementation-validator test` 全量通过；
+  - 漂移基线 5 项偏离分类精确为：1 错误（缺失组件）、2 警告（未批准/缺失依赖）、0 待确认、2 无法验证（技术未检出、契约未提取）。
+- 未实现：无。
+- 风险与回退方式：
+  - 回退方式：`git revert <commit-hash>`。
+
+

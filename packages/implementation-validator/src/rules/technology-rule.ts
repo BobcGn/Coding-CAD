@@ -17,13 +17,13 @@ export const technologyComplianceRule: ComplianceRule = {
 
       if (actualTechnology === undefined) {
         return [{
-          id: `technology.deviation.${expected.id}`,
+          id: `technology.undetected.${expected.id}`,
           severity: "WARNING",
-          title: `Technology deviation detected for ${expected.name}`,
-          description: `Approved architecture requires technology '${expectedTechnology}', but no matching technology was detected in implementation.`,
-          architectureExpectation: `Architecture requires ${expectedTechnology} for component '${expected.name}'.`,
+          title: `Cannot Verify: Technology undetected for ${expected.name}`,
+          description: `Approved architecture specifies technology '${expectedTechnology}', but Analyzer did not detect a technology on '${expected.name}'.`,
+          architectureExpectation: `Architecture specifies ${expectedTechnology} for component '${expected.name}'.`,
           implementationEvidence: `Implementation Analyzer detected no matching technology for '${expected.name}'. Repository technologies: ${context.implementation.technology.databases.join(", ") || "none"}.`,
-          recommendation: `Use ${expectedTechnology}, or document and approve the architecture choice through Architecture Review.`
+          recommendation: `Verify whether component '${expected.name}' uses ${expectedTechnology}, or update detection rules.`
         }];
       }
 

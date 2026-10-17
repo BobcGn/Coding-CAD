@@ -96,6 +96,10 @@ export function resolveIssueTarget(issue: ComplianceIssue): IssueTarget | undefi
     const componentId = issue.id.replace("technology.deviation.", "");
     return { type: "component", targetId: componentId };
   }
+  if (issue.id.startsWith("technology.undetected.")) {
+    const componentId = issue.id.replace("technology.undetected.", "");
+    return { type: "component", targetId: componentId };
+  }
   if (issue.id.startsWith("component.limitation.")) {
     const parts = issue.id.split(".");
     const componentId = parts[2] ?? "";
@@ -123,5 +127,13 @@ export function resolveIssueTarget(issue: ComplianceIssue): IssueTarget | undefi
 
 export function isContractIssue(issue: ComplianceIssue): boolean {
   return issue.id.startsWith("contract.");
+}
+
+export function isTechnologyUndetectedIssue(issue: ComplianceIssue): boolean {
+  return issue.id.startsWith("technology.undetected.");
+}
+
+export function isCannotVerifyIssue(issue: ComplianceIssue): boolean {
+  return isContractIssue(issue) || isTechnologyUndetectedIssue(issue);
 }
 
