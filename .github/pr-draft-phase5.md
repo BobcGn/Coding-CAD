@@ -197,12 +197,12 @@
 | 5.4 (PR) | `634c355` | `docs(pr): update PR draft with Step 5.4 commit hash` | `git revert 634c355` | 同步回退 PR 草稿中步骤 5.4 提交哈希 |
 | 5.5 | `d529390` | `docs(phase-5): add phase 5 exit report and update execution plan` | `git revert d529390` | 回退阶段 5 初始退出报告 |
 | 5.5 (PR) | `71e76d0` | `docs(pr): update PR draft with Step 5.5 commit hash and final rollback crosswalk` | `git revert 71e76d0` | 同步回退 PR 草稿中步骤 5.5 提交哈希 |
-| 5.6 | *(Pending)* | `test(e2e): add real browser benchmarks for ghost placement and correct exit status` | `git revert <5.6-hash>` | 移除浏览器 E2E benchmark 测试套件与订正报告 |
+| 5.6 | `3f05c44` | `test(e2e): add real browser benchmarks for ghost placement and correct exit status` | `git revert 3f05c44` | 移除浏览器 E2E benchmark 测试套件与订正报告 |
 
 ### 逆序回退分析 / Cascading Rollback Analysis
 
 若需回退本阶段提交，请严格按照逆序操作：
-1. **回退 5.6** (`git revert <5.6-hash>`)：移除真实浏览器基准测试套件与订正报告；
+1. **回退 5.6** (`git revert 3f05c44`)：移除真实浏览器基准测试套件与订正报告；
 2. **回退 5.5** (`git revert 71e76d0` -> `git revert d529390`)：移除阶段 5 退出报告与状态标记；
 3. **回退 5.4** (`git revert 634c355` -> `git revert 7120770`)：移除增量布局稳定性测试与位移度量套件，不影响正式架构与 Ghost 交互；
 4. **回退 5.3** (`git revert b94e0fb` -> `git revert 9971e4d`)：移除过期提案检测、单提案严格阻断与 Review 接入硬化，恢复步骤 5.2 的基本 Ghost 投影；
