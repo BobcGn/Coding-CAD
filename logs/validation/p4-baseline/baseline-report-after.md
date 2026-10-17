@@ -1,6 +1,6 @@
 # Implementation Analyzer Baseline Report / 实现反演基线报告
 
-生成时间 / Generated at: 2026-10-17T00:08:48.201Z
+生成时间 / Generated at: 2026-10-17T01:03:16.064Z
 
 > **真值说明 / Ground Truth Notes:**
 > - **L1-manifest**: 真值与分析器均同源于 package.json 声明，仅用于验证清单解析完整性，不能作为代码级正确率指标。
@@ -9,8 +9,8 @@
 
 | Fixture | Truth Level | Passed? | Modules (D/E) | Mod P / R | Conns (D/E) | Conn P / R | Edge Cross-Val (Used/Unused/Undecl/Res) | Resolved Edges | Elapsed (ms) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Coding-CAD (this repository) | L1-manifest | PASS | 15/15 | 100.0% / 100.0% | 38/37 | 97.4% / 100.0% | 38 / 0 / 0 / 0 | **38** | 771.32 |
-| small-monorepo (pnpm workspace) | L2-hand-annotated | PASS | 3/3 | 100.0% / 100.0% | 3/3 | 100.0% / 100.0% | 3 / 0 / 0 / 0 | **3** | 4.94 |
-| small-single-repo (plain src/) | L2-hand-annotated | PASS | 4/4 | 100.0% / 100.0% | 4/4 | 100.0% / 100.0% | 0 / 0 / 0 / 4 | **4** | 2.37 |
-| edge-cases-repo (edge cases) | L2-hand-annotated | PASS | 5/5 | 100.0% / 100.0% | 4/4 | 100.0% / 100.0% | 3 / 0 / 1 / 0 | **4** | 7.23 |
-| synthetic-large-repo (SYNTHETIC) | synthetic | PASS | 120/120 | 100.0% / 100.0% | 147/147 | 100.0% / 100.0% | 0 / 0 / 147 / 0 | **147** | 38.59 |
+| Coding-CAD (this repository) | L1-manifest | PASS | 15/15 | 100.0% / 100.0% | 39/38 | 97.4% / 100.0% | 39 / 0 / 0 / 0 | **39** | 840.88 |
+| small-monorepo (pnpm workspace) | L2-hand-annotated | PASS | 3/3 | 100.0% / 100.0% | 3/3 | 100.0% / 100.0% | 3 / 0 / 0 / 0 | **3** | 2.67 |
+| small-single-repo (plain src/) | L2-hand-annotated | PASS | 4/4 | 100.0% / 100.0% | 4/4 | 100.0% / 100.0% | 0 / 0 / 0 / 4 | **4** | 1.87 |
+| edge-cases-repo (edge cases) | L2-hand-annotated | PASS | 5/5 | 100.0% / 100.0% | 4/4 | 100.0% / 100.0% | 3 / 0 / 1 / 0 | **4** | 3.41 |
+| synthetic-large-repo (SYNTHETIC) | synthetic | PASS | 120/120 | 100.0% / 100.0% | 147/147 | 100.0% / 100.0% | 0 / 0 / 147 / 0 | **147** | 29.15 |

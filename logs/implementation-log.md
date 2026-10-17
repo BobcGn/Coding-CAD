@@ -1097,3 +1097,62 @@ PR #3首次远端CI在额外security:audit步骤报告7high，本地旧ci:verify
   - 风险：若后续步骤有直接读取裸字符串 tags 的行为需统一走 `decodeComponentEvidence`；
   - 回退方式：`git revert <commit-hash>` 可完全独立回退步骤 2.1，不影响 `ddc11f2` 的 CI 检查修复。
 
+## 2026-10-16 - 阶段 4 步骤 3：Brownfield 产品流水线（服务端安全路由、ELK 布局、证据面板与分组折叠） / Phase 4 Step 3: Brownfield Product Pipeline (Secure Server Route, ELK Layout, Evidence Inspector, and Group Collapse)
+
+### 1. 做了什么 / What
+- 设计规范与宿主安全模型文档：编写 `docs/brownfield-pipeline-design.md`，定义从“打开仓库 -> 服务端路由调用 Analyzer -> 重建 ArchitectureProject -> Layout -> Svelte Flow Canvas / Inspector”的完整流水线，并在第 4 节明确“宿主边界与安全模型”（纯本机 loopback、显式根目录、realpath 规范化并在根目录内、拒绝 `..` 遍历、忽略敏感目录与凭据、超限显式截断非静默、DTO 排除源码正文、日志不打源码内容）。
+- 服务端安全分析路由与测试：
+  - 实现 `apps/web/src/routes/api/workspace/analyze-repository/+server.ts`；
+  - 实现 `apps/web/src/routes/api/workspace/analyze-repository/server.test.ts`（9/9 测试通过），覆盖非本机 403、路径遍历 400、外部软链接逃逸拦截、`.env*` 凭据过滤、DTO 源码正文排除、语法错误显式报告等安全负控。
+- 扫描器与映射器安全与分组增强：
+  - `packages/implementation-analyzer/src/repository/scanner.ts`：增加外部软链接跳过与敏感凭据（`.env*`, `*.pem`, `*.key`）忽略；
+  - `packages/implementation-analyzer/src/mapper/architecture-mapper.ts`：为模块生成 `module:<pkgStem>` 分组标签；
+  - `packages/implementation-analyzer/package.json`：导出纯类型解码子路径 `"./codec"`。
+- Web 工作区与画布/属性检查器打通：
+  - `apps/web/src/lib/architecture/workspace/workspace-bridge.ts`：导出 `analyzeRepository` 客户端；
+  - `apps/web/src/lib/architecture/greenfield/workspace-shell-controller.ts`：集成分析流水线，将反演结果重建为与 Greenfield 相同类型的 `ArchitectureProject`，触发 `BrowserWorkerLayoutEngine`（ELK）完成布局并驱动 Canvas；
+  - `apps/web/src/routes/+page.svelte`：新增“打开代码仓库 / Analyze Repository”弹窗、截断提示与不支持结构警告横幅；
+  - `apps/web/src/lib/cad/canvas/ArchitectureCanvas.svelte` 与 `ArchitectureNode.svelte`：实现模块/基础设施分组渲染、折叠/展开（带 `nodrag`/`nopan` 保护）与隐藏成员数量角标；
+  - `apps/web/src/lib/architecture/greenfield/inspector.ts` 与 `+page.svelte`：通过 `evidence-codec` 解码并展示来源类型、层级先验置信度解释（Layer Prior Explanation）、相对路径与公开导出符号；
+- 浏览器端 E2E 验证：
+  - 新增 `apps/web/e2e/brownfield.spec.ts`，验证真实浏览器中打开仓库、ELK 求解器布局（断言 `data-layout-solver="elk"`、`data-layout-status="success"` 与零 fallback 门禁）、证据审查以及分组折叠/展开与隐藏数量更新。
+
+- Design Specification & Host Security Model: Authored `docs/brownfield-pipeline-design.md` defining the complete Brownfield pipeline and Section 4 "Host Boundary & Security Model" (loopback only, explicit directory, realpath containment, reject path traversal, secret file ignore, explicit truncation, source text excluded from DTOs, no source code logging).
+- Secure Server Route & Negative Control Tests:
+  - Implemented `apps/web/src/routes/api/workspace/analyze-repository/+server.ts`.
+  - Implemented `apps/web/src/routes/api/workspace/analyze-repository/server.test.ts` (9/9 passed) validating non-loopback 403, traversal 400, outside symlink rejection, credential ignore, DTO source exclusion, and syntax error reports.
+- Scanner & Mapper Enhancements:
+  - Updated `scanner.ts` to prevent external symlink traversal and exclude secret files (`.env*`, `*.pem`, `*.key`).
+  - Added module grouping tags (`module:<pkgStem>`) in `architecture-mapper.ts`.
+  - Exported subpath `"./codec"` in `packages/implementation-analyzer/package.json`.
+- Web Integration (Canvas, Inspector, & Controller):
+  - Exported `analyzeRepository` in `workspace-bridge.ts`.
+  - Added `analyzeRepository` workflow in `workspace-shell-controller.ts`, reconstructing `ArchitectureProject` (same IR model as Greenfield) and laying out via ELK.
+  - Added repository open dialog, truncation warning, and unsupported structure warning banners in `+page.svelte`.
+  - Implemented container group rendering, interactive collapse/expand (with `nodrag`/`nopan`), and hidden member counts in `ArchitectureCanvas.svelte` and `ArchitectureNode.svelte`.
+  - Rendered decoded provenance, Layer Prior confidence explanations, relative paths, and public exports in `inspector.ts` and `+page.svelte`.
+- Browser E2E Automation:
+  - Added `apps/web/e2e/brownfield.spec.ts` asserting real ELK solver execution (`data-layout-solver="elk"`, zero fallback), inspector evidence verification, and group collapse/expand toggling.
+
+### 2. 为什么这么做 / Why
+- 架构一致性：Brownfield 反演产出的 `ArchitectureProject` 与 Greenfield 共享完全相同的单一事实源模型契约，后续 Layout 与 Inspector 均复用既有组件与投影，不为 Brownfield 建立第二套架构或视图模型。
+- 安全第一原则：由于 SvelteKit 服务端路由具备读取本地文件系统的能力，必须严格限制在 loopback 本机访问，并通过 realpath 严格限制在用户选择的目录范围内，严禁读取根目录外部的任何符号链接指向，绝不在网络 DTO 或日志中泄露源码正文，超限截断显式报告。
+- 可视化分组与逐级展开：大型代码库模块繁多，基于 `module:<pkgStem>` 的容器分组与折叠展开能够在保持整体架构可理解性的同时隐藏细节，折叠计数让用户明确感知隐藏节点数量。
+- Architecture Consistency: Reconstructed `ArchitectureProject` shares the identical IR model contract with Greenfield. Canvas, layout, and inspector are fully reused without creating a secondary architecture model.
+- Security-First: Because SvelteKit server routes can access the local filesystem, strict loopback isolation, realpath boundary containment, secret ignore lists, and source code redaction prevent unauthorized host traversal or data leakage.
+- Progressive Disclosure: Container grouping (`module:<pkgStem>`) and interactive collapse/expand allow scalable exploration while exposing exact hidden member counts.
+
+### 3. 验证结果 / Verification
+- 已实现并验证：
+  - `apps/web/src/routes/api/workspace/analyze-repository/server.test.ts`：9/9 测试通过；
+  - `pnpm --filter @coding-cad/web test:unit`：15/15 文件，68/68 测试通过；
+  - `pnpm --filter @coding-cad/web test:integration`：3/3 文件，9/9 测试通过；
+  - `pnpm --filter @coding-cad/web typecheck`：0 错误，0 警告；
+  - `pnpm --filter @coding-cad/web test:e2e`：全部 22 个 E2E 用例（dev 与 preview 模式各 22 个）全部通过，包含 `brownfield.spec.ts` 真实 ELK 求解器与路由断言；
+  - `pnpm --filter @coding-cad/implementation-analyzer benchmark`：5 个真值基准夹具全部通过；
+- 未实现：无。
+- 风险与回退方式：
+  - 风险：若后续需支持多用户环境需引入鉴权与容器沙箱；当前按批准的单机 loopback 模型实现。
+  - 回退方式：`git revert <commit-hash>` 可完全独立回退步骤 3 的改动。
+
+

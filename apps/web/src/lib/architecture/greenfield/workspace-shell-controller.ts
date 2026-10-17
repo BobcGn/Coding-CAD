@@ -17,7 +17,8 @@ import {
   WorkspaceRequestError,
   createProject as createProjectViaBridge,
   saveProject as saveProjectViaBridge,
-  openProject as openProjectViaBridge
+  openProject as openProjectViaBridge,
+  analyzeRepository as analyzeRepositoryViaBridge
 } from "../workspace/workspace-bridge.js";
 import type { GreenfieldShellState, ShellStatus } from "./workspace-shell.js";
 
@@ -49,6 +50,7 @@ export interface ShellController {
   reset(): void;
   saveProject(): Promise<string>;
   openProject(id: string): Promise<void>;
+  analyzeRepository(repositoryPath: string): Promise<void>;
 }
 
 export interface ShellControllerOptions {
@@ -268,6 +270,39 @@ export class WorkspaceShellController implements ShellController {
       ...this.shell,
       status: "ready",
       message: `Project opened: ${response.project.name}.`
+    };
+  }
+
+  async analyzeRepository(repositoryPath: string): Promise<void> {
+    this.pendingCommand = undefined;
+    this.shell = {
+      ...this.shell,
+      status: "layout",
+      message: "Analyzing local repository..."
+    };
+    const response = await analyzeRepositoryViaBridge({ repositoryPath });
+    const architecture = JSON.parse(response.architectureJson) as ArchitectureProject;
+    this.shell = {
+      accepted: architecture,
+      status: "layout",
+      message: "Repository analyzed. Running semantic layout...",
+      selectedNodeIds: [],
+      inspection: response.inspection
+    };
+    await this.layoutCandidate(architecture);
+    const issueCount = response.inspection.unsupportedStructures.length;
+    const truncated = response.inspection.truncated;
+    let finishMsg = `Repository analyzed (${architecture.architecture.components.length} components).`;
+    if (truncated) {
+      finishMsg += ` [TRUNCATED: ${truncated.hitLimit}]`;
+    }
+    if (issueCount > 0) {
+      finishMsg += ` (${issueCount} unsupported structure warning${issueCount > 1 ? "s" : ""})`;
+    }
+    this.shell = {
+      ...this.shell,
+      status: "ready",
+      message: finishMsg
     };
   }
 

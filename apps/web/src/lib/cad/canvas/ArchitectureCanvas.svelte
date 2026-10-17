@@ -42,10 +42,24 @@
   let flowNodes = $state.raw<ArchitectureFlowNode[]>([]);
   let flowEdges = $state.raw<ArchitectureFlowEdge[]>([]);
   let compact = $state(false);
+  let collapsedGroupIds = $state(new Set<string>());
   const nodeTypes = { architecture: ArchitectureNode };
 
+  function handleToggleCollapse(groupId: string): void {
+    const next = new Set(collapsedGroupIds);
+    if (next.has(groupId)) {
+      next.delete(groupId);
+    } else {
+      next.add(groupId);
+    }
+    collapsedGroupIds = next;
+  }
+
   $effect(() => {
-    const adapted = toSvelteFlowProjection(projection, layout, viewState);
+    const adapted = toSvelteFlowProjection(projection, layout, viewState, {
+      collapsedGroupIds,
+      onToggleCollapse: handleToggleCollapse
+    });
     flowNodes = [...adapted.nodes];
     flowEdges = [...adapted.edges];
   });
@@ -103,6 +117,8 @@
 <div
   class:semantic-compact={compact}
   data-density={compact ? "compact" : "standard"}
+  data-layout-status={layout.status}
+  data-layout-solver="elk"
   aria-label="Architecture Canvas"
   role="application"
   onclick={handleSectionClick}

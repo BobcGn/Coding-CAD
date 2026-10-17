@@ -1,6 +1,6 @@
 # Implementation Analyzer Before vs After Comparison / 实现反演改动前后对比报告
 
-生成时间 / Generated at: 2026-10-17T00:08:48.204Z
+生成时间 / Generated at: 2026-10-17T01:03:16.067Z
 
 > **对比说明 / Comparison Notes:**
 > - Before 阶段由于仅检查 src/，在 Monorepo 下检测到 0 模块失败；
@@ -11,11 +11,11 @@
 | Fixture | Truth Level | Stage | Status | Modules (D/E) | Mod P / R | Conns (D/E) | Conn P / R | Edge Cross-Val (Used/Unused/Undecl/Res) | Resolved Edges | Elapsed (ms) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Coding-CAD (this repository) | L1-manifest | **Before** | FAIL | 2/15 | 0.0% / 0.0% | 0/37 | 0.0% / 0.0% | 0 / 0 / 0 / 0 | 0 | 57.02 |
-| Coding-CAD (this repository) | L1-manifest | **After** | PASS | 15/15 | 100.0% / 100.0% | 38/37 | 97.4% / 100.0% | 38 / 0 / 0 / 0 | **38** | 771.32 |
+| Coding-CAD (this repository) | L1-manifest | **After** | PASS | 15/15 | 100.0% / 100.0% | 39/38 | 97.4% / 100.0% | 39 / 0 / 0 / 0 | **39** | 840.88 |
 | small-monorepo (pnpm workspace) | L2-hand-annotated | **Before** | FAIL | 0/3 | 0.0% / 0.0% | 0/3 | 0.0% / 0.0% | 0 / 0 / 0 / 0 | 0 | 0.59 |
-| small-monorepo (pnpm workspace) | L2-hand-annotated | **After** | PASS | 3/3 | 100.0% / 100.0% | 3/3 | 100.0% / 100.0% | 3 / 0 / 0 / 0 | **3** | 4.94 |
+| small-monorepo (pnpm workspace) | L2-hand-annotated | **After** | PASS | 3/3 | 100.0% / 100.0% | 3/3 | 100.0% / 100.0% | 3 / 0 / 0 / 0 | **3** | 2.67 |
 | small-single-repo (plain src/) | L2-hand-annotated | **Before** | PASS | 4/4 | 100.0% / 100.0% | 4/4 | 100.0% / 100.0% | 0 / 0 / 0 / 0 | 0 | 1.27 |
-| small-single-repo (plain src/) | L2-hand-annotated | **After** | PASS | 4/4 | 100.0% / 100.0% | 4/4 | 100.0% / 100.0% | 0 / 0 / 0 / 4 | **4** | 2.37 |
-| edge-cases-repo (edge cases) | L2-hand-annotated | **After** | PASS | 5/5 | 100.0% / 100.0% | 4/4 | 100.0% / 100.0% | 3 / 0 / 1 / 0 | **4** | 7.23 |
+| small-single-repo (plain src/) | L2-hand-annotated | **After** | PASS | 4/4 | 100.0% / 100.0% | 4/4 | 100.0% / 100.0% | 0 / 0 / 0 / 4 | **4** | 1.87 |
+| edge-cases-repo (edge cases) | L2-hand-annotated | **After** | PASS | 5/5 | 100.0% / 100.0% | 4/4 | 100.0% / 100.0% | 3 / 0 / 1 / 0 | **4** | 3.41 |
 | synthetic-large-repo (SYNTHETIC) | synthetic | **Before** | FAIL | 0/120 | 0.0% / 0.0% | 0/147 | 0.0% / 0.0% | 0 / 0 / 0 / 0 | 0 | 3.64 |
-| synthetic-large-repo (SYNTHETIC) | synthetic | **After** | PASS | 120/120 | 100.0% / 100.0% | 147/147 | 100.0% / 100.0% | 0 / 0 / 147 / 0 | **147** | 38.59 |
+| synthetic-large-repo (SYNTHETIC) | synthetic | **After** | PASS | 120/120 | 100.0% / 100.0% | 147/147 | 100.0% / 100.0% | 0 / 0 / 147 / 0 | **147** | 29.15 |

@@ -91,6 +91,7 @@
     { "from": "web", "to": "architecture-review" },
     { "from": "web", "to": "architecture-validator" },
     { "from": "web", "to": "component-registry" },
+    { "from": "web", "to": "implementation-analyzer" },
     { "from": "web", "to": "workspace" }
   ],
   "discrepancies": [

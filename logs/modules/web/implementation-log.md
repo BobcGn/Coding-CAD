@@ -348,3 +348,38 @@ PR #3首次远端CI在额外security:audit步骤报告7high，本地旧ci:verify
 
 
 本轮最终验证：冻结安装、源码build、安全high门禁及含审计的强制ci:verify均exit0；Web58unit/9integration/dev21/preview21，所有Turbo阶段0cached。pnpm audit --json仍exit1，因剩余2moderate/1low；不将其误标为零漏洞或环境错误。证据见logs/validation/p3-security-closeout/report.md；远端以PR Checks为准。 / Final local gates pass with forced source builds and all browser guards. Unfiltered JSON audit exits1 for remaining low/moderate findings, not a zero-vulnerability claim or environment error. Hosted status remains independently observable.
+
+## 2026-10-16 - 阶段 4 步骤 3：Brownfield Web 流水线与服务端安全路由 / Phase 4 Step 3: Brownfield Web Pipeline and Secure Server Route
+
+### 1. 做了什么 / What
+- 服务端分析路由：新建 `apps/web/src/routes/api/workspace/analyze-repository/+server.ts`，落实 loopback、realpath 目录内受控、拒绝路径遍历、凭据屏蔽（`.env*`, `*.pem`, `*.key`）与显式截断（文件数 > 5000，超时 > 30s）；编写 `server.test.ts` 覆盖全部安全负控。
+- Web 客户端与控制器：在 `workspace-bridge.ts` 导出 `analyzeRepository`，在 `workspace-shell-controller.ts` 中触发分析并把结果映射为 Greenfield 相同类型的 `ArchitectureProject`，触发 ELK 求解器。
+- 画布与属性检查器：
+  - 在 `ArchitectureCanvas.svelte` 与 `ArchitectureNode.svelte` 实现分组渲染、折叠/展开与隐藏计数；
+  - 在 `inspector.ts` 与 `+page.svelte` 通过 `evidence-codec` 解码并展示组件来源、置信度先验说明、相对路径与公开导出。
+- E2E 浏览器验收：新增 `apps/web/e2e/brownfield.spec.ts`，断言 ELK 求解器执行与分组折叠交互。
+
+- Secure Analysis Route: Created `api/workspace/analyze-repository/+server.ts` enforcing loopback, realpath containment, path traversal rejection, credential filtering, and explicit truncation; added `server.test.ts` covering negative controls.
+- Web Client & Controller: Exported `analyzeRepository` in `workspace-bridge.ts` and integrated pipeline in `workspace-shell-controller.ts` projecting to standard `ArchitectureProject` and running ELK layout.
+- Canvas & Inspector: Implemented group rendering, collapse/expand toggling, hidden count badges, and decoded evidence rendering in `ArchitectureCanvas.svelte`, `ArchitectureNode.svelte`, and `inspector.ts`.
+- E2E Browser Testing: Added `apps/web/e2e/brownfield.spec.ts` asserting ELK solver execution (`data-layout-solver="elk"`), zero fallback, and group collapse/expand toggling.
+
+### 2. 为什么这么做 / Why
+- 架构一致性：复用 Greenfield 相同架构模型与 Canvas/Inspector 交互，不引入第二套 UI 状态。
+- 安全保障：服务端路由读取本地文件时必须杜绝目录逃逸与源码正文外泄。
+- 可视化细节控制：提供分组折叠展开能力，避免大图信息过载。
+- Consistency: Reused Greenfield Architecture IR contracts and canvas components without duplicating UI models.
+- Security: Strictly contained local file reads within user-selected roots and excluded source text from DTOs.
+- Scalability: Group collapse/expand provides progressive disclosure on complex codebases.
+
+### 3. 验证结果 / Verification
+- 已实现并验证：
+  - `server.test.ts`：9/9 测试通过；
+  - `apps/web` unit 测试：15/15 文件，68/68 测试通过；
+  - `apps/web` integration 测试：3/3 文件，9/9 测试通过；
+  - `apps/web` typecheck：0 错误，0 警告；
+  - `apps/web` E2E 测试：22/22 测试在 dev 与 preview 双模式下全部通过（包含 `brownfield.spec.ts`）。
+- 未实现：无。
+- 风险与回退方式：
+  - 风险：多租户环境下需增加鉴权机制；当前为本机 loopback 模式。
+  - 回退方式：`git revert <step-3-commit>`。

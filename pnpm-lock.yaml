@@ -61,6 +61,9 @@ importers:
       '@coding-cad/component-registry':
         specifier: workspace:*
         version: link:../../packages/component-registry
+      '@coding-cad/implementation-analyzer':
+        specifier: workspace:*
+        version: link:../../packages/implementation-analyzer
       '@coding-cad/workspace':
         specifier: workspace:*
         version: link:../../packages/workspace

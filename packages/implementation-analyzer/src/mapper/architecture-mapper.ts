@@ -57,12 +57,15 @@ function moduleComponent(module: ImplementationModule, technology: TechnologyInf
     ],
     logicalRole: module.sourceType === "declared" ? "workspace-package" : "implementation-module",
     ...(technology.frameworks.length > 0 ? { technology: technology.frameworks.join(", ") } : {}),
-    tags: encodeComponentTags({
-      source: module.sourceType ?? "inferred",
-      confidence: module.confidence,
-      path: module.path,
-      exports: module.exports ?? []
-    })
+    tags: [
+      ...encodeComponentTags({
+        source: module.sourceType ?? "inferred",
+        confidence: module.confidence,
+        path: module.path,
+        exports: module.exports ?? []
+      }),
+      ...(module.group ? [`module:${module.group}`] : [])
+    ]
   };
 }
 

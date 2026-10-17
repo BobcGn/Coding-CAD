@@ -10,6 +10,7 @@
   import type { InspectorViewModel } from "$lib/architecture/greenfield/inspector.js";
   import type { ArchitectureCommand } from "$lib/architecture/commands/architecture-command.js";
   import type { GreenfieldShellState } from "$lib/architecture/greenfield/workspace-shell.js";
+  import { formatLayerPriorExplanation } from "@coding-cad/implementation-analyzer/codec";
   import {
     applyTheme,
     loadUiSettings,
@@ -227,6 +228,26 @@
     }
   }
 
+  let repoPathInput = $state("");
+  let repoModalOpen = $state(false);
+
+  async function handleAnalyzeRepository(): Promise<void> {
+    if (controller === undefined || busy || repoPathInput.trim().length === 0) return;
+    busy = true;
+    errorMessage = "";
+    try {
+      await controller.analyzeRepository(repoPathInput.trim());
+      repoModalOpen = false;
+    } catch (error) {
+      errorMessage = error instanceof Error ? error.message : "Repository analysis failed.";
+    } finally {
+      const failure = errorMessage;
+      syncFromController();
+      if (failure) errorMessage = failure;
+      busy = false;
+    }
+  }
+
   function handleAutoLayout(): void {
     if (controller === undefined || controller.layout() === undefined) return;
     const layout = controller.layout()!;
@@ -308,6 +329,9 @@
           <button type="button" class="sidebar-action" onclick={handleOpen} disabled={busy}>
             {t("open")}
           </button>
+          <button type="button" class="sidebar-action" data-testid="open-repository-btn" onclick={() => { repoModalOpen = true; }} disabled={busy}>
+            {settings.locale === "zh" ? "打开代码仓库" : "Analyze Repository"}
+          </button>
           <button type="button" class="sidebar-action" onclick={handleAutoLayout} disabled={busy || !layout}>
             {t("autoLayout")}
           </button>
@@ -368,6 +392,36 @@
       </div>
     {/if}
 
+    {#if repoModalOpen}
+      <div class="settings-overlay" role="presentation" onclick={() => { repoModalOpen = false; }}></div>
+      <div class="settings-panel" role="dialog" aria-label="Open Repository">
+        <div class="settings-panel-header">
+          <h3>{settings.locale === "zh" ? "打开本地代码仓库" : "Open Local Repository"}</h3>
+          <button type="button" class="settings-close" aria-label="Close" onclick={() => { repoModalOpen = false; }}>×</button>
+        </div>
+        <div class="setting-row">
+          <label for="repo-path-input">{settings.locale === "zh" ? "仓库绝对路径" : "Repository Path"}</label>
+          <input
+            id="repo-path-input"
+            data-testid="repo-path-input"
+            bind:value={repoPathInput}
+            placeholder="/path/to/repository"
+            disabled={busy}
+          />
+        </div>
+        <div class="actions" style="margin-top: 1rem;">
+          <button
+            type="button"
+            data-testid="repo-analyze-submit"
+            onclick={handleAnalyzeRepository}
+            disabled={busy || repoPathInput.trim().length === 0}
+          >
+            {busy ? (settings.locale === "zh" ? "分析中..." : "Analyzing...") : (settings.locale === "zh" ? "开始反演分析" : "Analyze Repository")}
+          </button>
+        </div>
+      </div>
+    {/if}
+
     <div class="content">
       <section class="requirement">
         <label for="requirement">{t("requirement")}</label>
@@ -385,6 +439,26 @@
 
   {#if shell?.layoutWarning}
     <p role="status" class="warn">Layout fallback: {shell.layoutWarning}</p>
+  {/if}
+
+  {#if shell?.inspection?.truncated}
+    <section class="truncation-banner warn" role="alert" data-testid="truncation-banner">
+      <strong>{settings.locale === "zh" ? "分析已被截断" : "Analysis Truncated"}:</strong>
+      {shell.inspection.truncated.message}
+    </section>
+  {/if}
+
+  {#if shell?.inspection?.unsupportedStructures && shell.inspection.unsupportedStructures.length > 0}
+    <section class="unsupported-structures-banner warn" aria-label="Unsupported structures" data-testid="unsupported-structures-banner">
+      <strong>{settings.locale === "zh" ? "检测到不支持的仓库结构" : "Unsupported structures detected"} ({shell.inspection.unsupportedStructures.length}):</strong>
+      <ul>
+        {#each shell.inspection.unsupportedStructures as item}
+          <li>
+            <code>{item.type}</code>: {item.reason} ({item.scope})
+          </li>
+        {/each}
+      </ul>
+    </section>
   {/if}
 
   {#if shell?.status === "generating" || shell?.status === "layout"}
@@ -533,6 +607,34 @@
                   }}>Add contract</button>
               </dd>
             </dl>
+            {#if inspector.evidence}
+              <div class="evidence-panel" data-testid="evidence-panel">
+                <h3>{settings.locale === "zh" ? "代码证据与反演来源" : "Implementation Evidence"}</h3>
+                <dl>
+                  <dt>{settings.locale === "zh" ? "来源类型" : "Provenance"}</dt>
+                  <dd data-testid="evidence-source">{inspector.evidence.source}</dd>
+                  <dt>{settings.locale === "zh" ? "层级先验" : "Layer Prior"}</dt>
+                  <dd data-testid="evidence-confidence">
+                    {inspector.evidence.confidence.toFixed(2)}
+                    <small class="muted" style="display: block;">
+                      {formatLayerPriorExplanation(inspector.evidence.source, inspector.evidence.confidence)}
+                    </small>
+                  </dd>
+                  <dt>{settings.locale === "zh" ? "相对路径" : "Relative Path"}</dt>
+                  <dd data-testid="evidence-path"><code>{inspector.evidence.path}</code></dd>
+                  {#if inspector.evidence.exports.length > 0}
+                    <dt>{settings.locale === "zh" ? "公共导出符号" : "Exported Symbols"}</dt>
+                    <dd>
+                      <ul class="chips">
+                        {#each inspector.evidence.exports as exp (exp)}
+                          <li>{exp}</li>
+                        {/each}
+                      </ul>
+                    </dd>
+                  {/if}
+                </dl>
+              </div>
+            {/if}
             {#if inspector.issues.length > 0}
               <p class="warn">This component has {inspector.issues.length} validation issue(s).</p>
             {/if}
@@ -667,5 +769,9 @@
   .status { display: grid; place-items: center; min-height: 20rem; border-radius: 12px; background: var(--panel); color: var(--muted); }
   .error { border: 1px solid #fecaca; border-radius: 8px; background: #fef2f2; color: #b91c1c; padding: 0.5rem 0.75rem; }
   .notice { border: 1px solid #bbf7d0; border-radius: 8px; background: #f0fdf4; color: #166534; padding: 0.5rem 0.75rem; }
+  .evidence-panel { margin-top: 1rem; padding: 0.75rem; border-radius: 8px; background: var(--panel); border: 1px solid var(--panel-border); }
+  .evidence-panel h3 { margin: 0 0 0.5rem; font-size: 0.85rem; color: var(--fg); }
+  .unsupported-structures-banner, .truncation-banner { border: 1px solid #fde68a; background: #fffbeb; color: #92400e; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 0.75rem; }
+  .unsupported-structures-banner ul { margin: 0.25rem 0 0; padding-left: 1.25rem; font-size: 0.85rem; }
 </style>
 

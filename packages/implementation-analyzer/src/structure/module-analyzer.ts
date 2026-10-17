@@ -15,6 +15,7 @@ export interface ImplementationModule {
   readonly sourceType: EvidenceSourceType;
   readonly exports?: readonly string[];
   readonly packageJsonName?: string;
+  readonly group?: string | undefined;
 }
 
 const SOURCE_EXTENSION = /\.(?:ts|tsx|js|jsx|mjs|cjs)$/;
@@ -70,7 +71,8 @@ export class ModuleAnalyzer {
             confidence: 1.0,
             sourceType: "declared",
             evidence: `Declared workspace package in ${pkg.packageJsonFile} containing service ${serviceFile}.`,
-            packageJsonName: pkg.name
+            packageJsonName: pkg.name,
+            group: pkgStem
           });
         }
       } else if (serviceFiles.length === 1) {
@@ -88,7 +90,8 @@ export class ModuleAnalyzer {
           confidence: 1.0,
           sourceType: "declared",
           evidence: `Declared workspace package in ${pkg.packageJsonFile} with service ${serviceFile}.`,
-          packageJsonName: pkg.name
+          packageJsonName: pkg.name,
+          group: pkgStem
         });
       } else {
         // Dedicated package without service files (e.g. Coding-CAD core packages and apps)
@@ -102,7 +105,8 @@ export class ModuleAnalyzer {
           confidence: 1.0,
           sourceType: "declared",
           evidence: `Declared workspace package in ${pkg.packageJsonFile} (name: ${pkg.name}).`,
-          packageJsonName: pkg.name
+          packageJsonName: pkg.name,
+          group: pkgStem
         });
       }
     }

@@ -134,3 +134,33 @@ Validation:
   - 风险：若后续步骤有直接读取裸字符串 tags 的行为需统一走 `decodeComponentEvidence`；
   - 回退方式：`git revert <commit-hash>` 可完全独立回退步骤 2.1，不影响 `ddc11f2` 的 CI 检查修复。
 
+## 2026-10-16 - 阶段 4 步骤 3：扫描器外部链接安全防护、包分组与编解码导出 / Phase 4 Step 3: Scanner External Symlink Safety, Package Grouping, and Pure Codec Export
+
+### 1. 做了什么 / What
+- 扫描器安全加固：在 `scanner.ts` 中使用 `realpath` 解析符号链接目标，若目标超出 `rootPath` 范围则跳过不追踪；同时过滤敏感文件（`.env*`, `*.pem`, `*.key`, `id_rsa*`）。
+- 包分组提取：在 `module-analyzer.ts` 与 `architecture-mapper.ts` 中提取并生成 `module:<pkgStem>` 分组标签，供布局引擎生成层次化容器与可视化折叠。
+- 纯净编解码器导出：在 `package.json` 中配置 subpath `"./codec"`，提供类型化 `evidence-codec.js`，允许浏览器端安全导入而无需引入 Node.js `fs`/`path` 依赖。
+
+- Scanner Security Hardening: Used `realpath` in `scanner.ts` to inspect symlink targets, skipping any links pointing outside `rootPath`, and excluded sensitive credential patterns (`.env*`, `*.pem`, `*.key`, `id_rsa*`).
+- Package Grouping: Extracted and attached `module:<pkgStem>` group tags in `module-analyzer.ts` and `architecture-mapper.ts` to enable hierarchical layout containers and interactive collapse.
+- Pure Codec Export: Added subpath export `"./codec"` in `package.json` for pure, browser-safe imports of `evidence-codec.ts`.
+
+### 2. 为什么这么做 / Why
+- 防止主机穿透：防止恶意软链接读取仓库外的敏感系统文件（如 `/etc/passwd`）。
+- 模块语义聚类：使工作区包能够自然聚类为模块分组容器。
+- 浏览器沙箱兼容：浏览器 UI 需要编解码置信度与证据，但不能导入依赖 Node.js 的扫描器。
+- Security: Prevents symlink-based directory traversal attacks outside of the repository root.
+- Visualization: Enables container-based layout grouping.
+- Portability: Pure codec export allows browser consumption without Node.js polyfills.
+
+### 3. 验证结果 / Verification
+- 已实现并验证：
+  - `pnpm --filter @coding-cad/implementation-analyzer test`：全部通过；
+  - `pnpm --filter @coding-cad/implementation-analyzer benchmark`：5 个真值夹具全部通过；
+  - `apps/web/src/routes/api/workspace/analyze-repository/server.test.ts`：软链接安全负控与凭据忽略全部通过。
+- 未实现：无。
+- 风险与回退方式：
+  - 风险：若用户仓库合法引用了外部符号链接，此类链接将被安全忽略；
+  - 回退方式：`git revert <step-3-commit>`。
+
+

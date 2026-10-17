@@ -4,7 +4,7 @@
     "rootPath": "/Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD",
     "truthLevel": "L1-manifest",
     "passed": true,
-    "elapsedMs": 771.318958,
+    "elapsedMs": 840.8752079999999,
     "modules": {
       "detected": 15,
       "expected": 15,
@@ -15,12 +15,12 @@
       "recall": 1
     },
     "connections": {
-      "detected": 38,
-      "expected": 37,
-      "truePositives": 37,
+      "detected": 39,
+      "expected": 38,
+      "truePositives": 38,
       "falsePositives": 1,
       "falseNegatives": 0,
-      "precision": 0.9737,
+      "precision": 0.9744,
       "recall": 1
     },
     "evidenceBreakdown": {
@@ -29,12 +29,12 @@
       "inferred": 0
     },
     "connectionEvidence": {
-      "declaredAndUsed": 38,
+      "declaredAndUsed": 39,
       "declaredUnused": 0,
       "undeclaredUsed": 0,
       "codeOnlyResolved": 0,
       "inferred": 0,
-      "resolvedCount": 38
+      "resolvedCount": 39
     },
     "detectedComponents": [
       "agent-adapter",
@@ -88,6 +88,7 @@
       "web->architecture-review",
       "web->architecture-validator",
       "web->component-registry",
+      "web->implementation-analyzer",
       "web->workspace",
       "workspace->architecture-ir",
       "workspace->architecture-validator",
@@ -99,7 +100,7 @@
     "rootPath": "/Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-analyzer/fixtures/small-monorepo",
     "truthLevel": "L2-hand-annotated",
     "passed": true,
-    "elapsedMs": 4.939291000000026,
+    "elapsedMs": 2.673958999999968,
     "modules": {
       "detected": 3,
       "expected": 3,
@@ -147,7 +148,7 @@
     "rootPath": "/Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-analyzer/fixtures/small-single-repo",
     "truthLevel": "L2-hand-annotated",
     "passed": true,
-    "elapsedMs": 2.367208000000005,
+    "elapsedMs": 1.8700410000000147,
     "modules": {
       "detected": 4,
       "expected": 4,
@@ -197,7 +198,7 @@
     "rootPath": "/Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-analyzer/fixtures/edge-cases-repo",
     "truthLevel": "L2-hand-annotated",
     "passed": true,
-    "elapsedMs": 7.226625000000013,
+    "elapsedMs": 3.4109589999999343,
     "modules": {
       "detected": 5,
       "expected": 5,
@@ -248,7 +249,7 @@
     "rootPath": "/Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-analyzer/fixtures/synthetic-large-repo",
     "truthLevel": "synthetic",
     "passed": true,
-    "elapsedMs": 38.586415999999986,
+    "elapsedMs": 29.152416000000017,
     "modules": {
       "detected": 120,
       "expected": 120,

@@ -71,3 +71,43 @@ it("converts absolute child coordinates to parent-relative without changing IR/L
   expect(toSvelteFlowProjection(grouped, result).nodes[1]?.position).toEqual({ x: 24, y: 24 });
   expect(result).toEqual(before);
 });
+
+it("marks child nodes and connected edges as hidden when parent group is collapsed", () => {
+  const grouped = {
+    ...projection,
+    visualGraph: {
+      ...projection.visualGraph,
+      nodes: [
+        { ...projection.visualGraph.nodes[0]!, id: "group", sourceId: "group", kind: "group" as const },
+        { ...projection.visualGraph.nodes[0]!, id: "child-1", sourceId: "child-1", parentId: "group" },
+        { ...projection.visualGraph.nodes[0]!, id: "standalone", sourceId: "standalone" }
+      ],
+      edges: [{ id: "edge-1", sourceId: "edge-1", from: "child-1", to: "standalone", asynchronous: false }]
+    }
+  };
+  const result: LayoutResult = {
+    ...layout,
+    nodes: [
+      { id: "group", sourceId: "group", kind: "group", position: { x: 0, y: 0 }, size: { width: 300, height: 200 } },
+      { id: "child-1", sourceId: "child-1", kind: "component", position: { x: 20, y: 20 }, size: { width: 100, height: 50 }, parentId: "group" },
+      { id: "standalone", sourceId: "standalone", kind: "component", position: { x: 400, y: 100 }, size: { width: 100, height: 50 } }
+    ],
+    edges: [{ id: "edge-1", sourceId: "edge-1", from: "child-1", to: "standalone", sections: [] }]
+  };
+
+  // Test expanded
+  const expanded = toSvelteFlowProjection(grouped, result);
+  expect(expanded.nodes.find((n) => n.id === "group")?.data.memberCount).toBe(1);
+  expect(expanded.nodes.find((n) => n.id === "group")?.data.collapsed).toBe(false);
+  expect(expanded.nodes.find((n) => n.id === "child-1")?.hidden).toBe(false);
+  expect(expanded.edges.find((e) => e.id === "edge-1")?.hidden).toBe(false);
+
+  // Test collapsed
+  const collapsed = toSvelteFlowProjection(grouped, result, undefined, {
+    collapsedGroupIds: new Set(["group"])
+  });
+  expect(collapsed.nodes.find((n) => n.id === "group")?.data.collapsed).toBe(true);
+  expect(collapsed.nodes.find((n) => n.id === "group")?.data.hiddenCount).toBe(1);
+  expect(collapsed.nodes.find((n) => n.id === "child-1")?.hidden).toBe(true);
+  expect(collapsed.edges.find((e) => e.id === "edge-1")?.hidden).toBe(true);
+});

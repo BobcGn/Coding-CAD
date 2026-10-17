@@ -1,4 +1,4 @@
-import { readFile, readdir, stat } from "node:fs/promises";
+import { readFile, readdir, realpath, stat } from "node:fs/promises";
 import path from "node:path";
 import ts from "typescript";
 import { detectLanguages } from "../detector/language-detector.js";
@@ -6,6 +6,8 @@ import type { RepositorySnapshot, TsconfigPathsConfig, UnsupportedStructureRepor
 
 const IGNORED_DIRECTORIES = new Set([
   ".git",
+  ".svn",
+  ".hg",
   ".turbo",
   ".next",
   "node_modules",
@@ -17,6 +19,10 @@ const IGNORED_DIRECTORIES = new Set([
   "fixtures",
   "fixture"
 ]);
+
+function isIgnoredFile(name: string): boolean {
+  return name.startsWith(".env") || name.endsWith(".pem") || name.endsWith(".key") || name.startsWith("id_rsa");
+}
 
 const CONFIG_FILE_NAMES = new Set([
   "package.json",
@@ -93,10 +99,33 @@ async function collectFiles(rootPath: string): Promise<string[]> {
   async function visit(directory: string): Promise<void> {
     const entries = await readdir(directory, { withFileTypes: true });
     for (const entry of entries.sort((left, right) => left.name.localeCompare(right.name))) {
-      if (entry.isDirectory()) {
-        if (!IGNORED_DIRECTORIES.has(entry.name)) await visit(path.join(directory, entry.name));
+      const fullPath = path.join(directory, entry.name);
+      if (entry.isSymbolicLink()) {
+        try {
+          const resolvedTarget = await realpath(fullPath);
+          if (!resolvedTarget.startsWith(rootPath + path.sep) && resolvedTarget !== rootPath) {
+            // Symlink points outside root: do not follow
+            continue;
+          }
+          const targetStat = await stat(resolvedTarget);
+          if (targetStat.isDirectory()) {
+            if (!IGNORED_DIRECTORIES.has(entry.name)) {
+              await visit(resolvedTarget);
+            }
+          } else if (targetStat.isFile()) {
+            if (!isIgnoredFile(entry.name)) {
+              files.push(toRepositoryPath(path.relative(rootPath, resolvedTarget)));
+            }
+          }
+        } catch {
+          // ignore broken symlink
+        }
+      } else if (entry.isDirectory()) {
+        if (!IGNORED_DIRECTORIES.has(entry.name)) await visit(fullPath);
       } else if (entry.isFile()) {
-        files.push(toRepositoryPath(path.relative(rootPath, path.join(directory, entry.name))));
+        if (!isIgnoredFile(entry.name)) {
+          files.push(toRepositoryPath(path.relative(rootPath, fullPath)));
+        }
       }
     }
   }

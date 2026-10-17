@@ -19,20 +19,25 @@
   - 将 `export:<Symbol>` 移出 `capabilities` 消除语义污染，将 warnings 移出 `intent.purpose`；
   - 实测 `ImplementationValidator` 兼容性（0 误报）；
   - 全量基准测试 5 个夹具全部 PASS，代码导入边（resolvedCount）全部非 0。
+- 步骤 3：Brownfield 产品流水线（服务端安全路由、ELK 布局、证据面板与分组折叠）：
+  - 编写 `docs/brownfield-pipeline-design.md` 说明宿主边界与安全模型；
+  - 实现 `/api/workspace/analyze-repository` 服务端路由及 `server.test.ts` 负控测试（9/9 通过）；
+  - `scanner.ts` 过滤外部软链接与 `.env*`/`.pem`/`.key` 敏感文件，`architecture-mapper.ts` 附加 `module:<pkgStem>` 分组标签；
+  - Web 端控制器重建 `ArchitectureProject` 并触发 ELK 求解器，Canvas 与 Inspector 实现分组折叠/展开与证据先验展示；
+  - 新增 `apps/web/e2e/brownfield.spec.ts` 并通过真实 ELK 求解器双模式验收。
 - 新建并增量维护阶段 4 PR 草稿 `.github/pr-draft-phase4.md`，未触碰未跟踪文件 `.github/pr-draft-phase3.md`。
 
 - Step 0: Standardized the unified recording format for PR descriptions, exit reports, change records, and step reports; updated PR template, AGENTS.md, CLAUDE.md, docs, logs, and check-change-record scripts.
 - Step 1: Ground truth benchmarks and pre-change baseline; authored `coding-cad-golden.json`, added fixtures (`small-monorepo`, `small-single-repo`, `synthetic-large-repo`), built `benchmark.ts`, and recorded pre-change baseline.
 - Step 2: Analyzer evidence model and layered extraction (`c38ef3f`).
-- Step 2.1: Analyzer hardening: cross-package L2 cross-validation, typed evidence codec, and semantic pollution defense:
-  - Standalone commit `ddc11f2` fixing CI change record gate regex, verified with negative controls.
-  - L2 cross-validation classification (`declared-and-used`, `declared-unused`, `undeclared-used`) and dependency kinds (`runtime`, `dev`, `peer`).
-  - Honest distinction between `L1-manifest` and `L2-hand-annotated` truth levels.
-  - New `edge-cases-repo` covering barrel `export *`, `import type`, `await import(...)`, `tsconfig paths` alias, circular imports, undeclared workspace imports, and syntax errors.
-  - Typed evidence codec `evidence-codec.ts` defining Layer Priors.
-  - Removed `export:<Symbol>` from `capabilities` and warnings from `intent.purpose` to prevent semantic pollution.
-  - Verified `ImplementationValidator` compatibility with 0 false positives.
-  - All 5 benchmark fixtures pass with non-zero resolved code imports.
+- Step 2.1: Analyzer hardening: cross-package L2 cross-validation, typed evidence codec, and semantic pollution defense.
+- Step 3: Brownfield product pipeline:
+  - Authored `docs/brownfield-pipeline-design.md` detailing host boundaries and security rules.
+  - Built secure server route `/api/workspace/analyze-repository` with negative controls in `server.test.ts`.
+  - Added external symlink skip and credential filtering in `scanner.ts`; attached module group tags in mapper; exported pure `./codec`.
+  - Integrated shell controller to reconstruct Greenfield-equivalent `ArchitectureProject` and layout via ELK.
+  - Implemented container group rendering, collapse/expand toggling, hidden count badges, and decoded evidence inspection.
+  - Added `apps/web/e2e/brownfield.spec.ts` asserting ELK solver execution and zero fallback.
 - Maintained `.github/pr-draft-phase4.md` incrementally without touching untracked `.github/pr-draft-phase3.md`.
 
 ---
@@ -44,12 +49,16 @@
 - 保护既有分支与文件：严格基于最新 main（Phase 3 exit `bf3726b`）工作，避免污染其他分支历史或遗留文件。
 - 数据驱动改进：在改动 Analyzer 提取逻辑前确立严格的真值对照与客观基线；分层提取改造完成后，通过基准测试脚本自动计算 Precision 与 Recall，以实测数据量化证明提取质量。
 - 严守架构与模型边界：拒绝为反演器特化而篡改 Architecture IR 公开类型，利用现有 `tags` 与 `constraints` 承载证据与置信度；通过带类型的编解码器 `evidence-codec.ts` 隔绝底层字符串格式变动；清除 `capabilities` 语义污染，避免下游 Validator 与 Blueprint 误读。
+- 安全优先设计：SvelteKit 服务端路由读取本地目录必须限制在 loopback 本机，通过 realpath 拦截目录逃逸符号链接，过滤凭据文件并从 DTO 中彻底剔除源码正文。
+- 渐进式呈现与架构保真：采用 `module:<pkgStem>` 分组容器与折叠交互降低大图视觉过载，并通过角标明确显示折叠成员数量。
 
 - Unified engineering governance and audit trail: enforce the 3-section sequence (What -> Why -> Verification) in bilingual format across all records.
 - Automated gate protection: test and enforce format validation during `pnpm check:changelog` and `pnpm ci:verify`.
 - Protect branch and file boundaries: work strictly from latest main (`bf3726b`) without touching untracked legacy files.
 - Data-driven iteration: established ground truth and pre-change baseline in Step 1, followed by automated evaluation in Step 2 proving massive recall improvements.
 - Strict architecture boundary preservation: rejected altering Architecture IR public types, leveraging existing tags and constraints via typed codec; purged `capabilities` semantic pollution to protect downstream validators and blueprints.
+- Security-first host boundary: strictly contained server route filesystem access to loopback, sanitized paths with realpath, ignored secret files, and excluded source text from DTOs.
+- Progressive disclosure: container grouping and collapse/expand badges manage visual density on large graphs.
 
 ---
 
@@ -63,32 +72,28 @@
   - `pnpm --filter @coding-cad/implementation-analyzer test`: passed on all unit test suites (codec, example-project, small-monorepo, edge-cases-repo).
   - `pnpm --filter @coding-cad/implementation-validator test`: passed, confirming 0 false positives from evidence strings/tags on Coding-CAD and synthetic fixtures.
   - 基线对比数据 / Baseline Comparison (`pnpm --filter @coding-cad/implementation-analyzer benchmark`):
-    - **Coding-CAD 本仓库** (L1-manifest):
-      - 模块: 从 Before 0% (2/15) 提升至 After **100.0% P / 100.0% R** (15/15 核心包与应用全部识别，来源均为 `declared`，置信度 1.00)。
-      - 连接: 从 Before 0% (0/37) 提升至 After **97.4% P / 100.0% R** (38/37，100% 召回 package.json 声明边，38 条边全部经 AST 代码导入确认，Resolved Edges = 38)。
-    - **small-monorepo** (L2-hand-annotated):
-      - 模块: 从 Before 0% (0/3) 提升至 After **100.0% P / 100.0% R** (3/3)。
-      - 连接: 从 Before 0% (0/3) 提升至 After **100.0% P / 100.0% R** (3/3，全部 3 条边经 AST 代码导入确认，Resolved Edges = 3)。
-    - **small-single-repo** (L2-hand-annotated):
-      - 模块与连接: 均保持 **100.0% P / 100.0% R** (4/4 模块，4/4 边，Resolved Edges = 4)。
-    - **edge-cases-repo** (L2-hand-annotated):
-      - 模块与连接: **100.0% P / 100.0% R** (5/5 模块，4/4 边，包含 3 声明且使用，1 未声明使用，1 语法错误显式报告，Resolved Edges = 4)。
-    - **synthetic-large-repo** (synthetic):
-      - 模块: 从 Before 0% (0/120) 提升至 After **100.0% P / 100.0% R** (120/120)。
-      - 连接: 从 Before 0% (0/147) 提升至 After **100.0% P / 100.0% R** (147/147，Resolved Edges = 147)。
+    - **Coding-CAD 本仓库** (L1-manifest): 15/15 模块 (100.0% P / 100.0% R), 39/38 边 (97.4% P / 100.0% R, Resolved Edges = 39).
+    - **small-monorepo** (L2-hand-annotated): 3/3 模块 (100.0% P / 100.0% R), 3/3 边 (100.0% P / 100.0% R, Resolved Edges = 3).
+    - **small-single-repo** (L2-hand-annotated): 4/4 模块 (100.0% P / 100.0% R), 4/4 边 (100.0% P / 100.0% R, Resolved Edges = 4).
+    - **edge-cases-repo** (L2-hand-annotated): 5/5 模块 (100.0% P / 100.0% R), 4/4 边 (100.0% P / 100.0% R, Resolved Edges = 4).
+    - **synthetic-large-repo** (synthetic): 120/120 模块 (100.0% P / 100.0% R), 147/147 边 (100.0% P / 100.0% R, Resolved Edges = 147).
+  - 服务端安全路由负控 / Server route tests (`apps/web/src/routes/api/workspace/analyze-repository/server.test.ts`): 9/9 passed.
+  - Web unit 测试: 15/15 文件, 68/68 passed.
+  - Web integration 测试: 3/3 文件, 9/9 passed.
+  - Web typecheck: 0 errors, 0 warnings.
+  - Playwright E2E 测试 (`pnpm --filter @coding-cad/web test:e2e`): 22/22 tests passed in both dev and preview modes, including `brownfield.spec.ts` asserting ELK solver source, zero fallback, and group collapse/expand.
   - `pnpm build && pnpm test`: 全工作区 30/30 任务全部成功通过。
 - [ ] 已实现未验证 / Implemented but unverified:
-  - 步骤 3 的 Web 产品流水线连接（打开仓库 -> 反演 -> 重建 IR -> Layout -> 展示）。
   - 步骤 4 的 Validator 问题双向导航与契约检查状态展示。
-  - 步骤 5 的真实浏览器 E2E 双模式验收（断言 ELK 来源）。
   - 步骤 5 的用户人工可理解性评估表（需待用户实际填写验收）。
 - [ ] 未实现 / Not implemented:
-  - 阶段 4 后续功能（Brownfield 流水线、合规导航、阶段验收与退出报告）。
+  - 阶段 4 后续功能（合规导航、阶段验收与退出报告）。
 
 ### 风险与回退方式 / Risks and Rollback
 - 风险 / Risk: 针对非标准工作区（如使用 lerna 或自定义路径）可能需要额外模式适配；已通过 `UnsupportedStructureReport` 提供显式告警而非静默降级。
 - 回退方式 / Rollback: 每个步骤拥有独立提交，可严格逆序回退：
-  - 回退步骤 2.1: `git revert <step-2.1-commit-hash>`
+  - 回退步骤 3: `git revert <step-3-commit-hash>`
+  - 回退步骤 2.1: `git revert 9ede079`
   - 回退步骤 2: `git revert c38ef3f`
   - 回退步骤 0 门禁修复: `git revert ddc11f2`
   - 回退步骤 1: `git revert f78a2e5`

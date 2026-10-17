@@ -2,6 +2,7 @@ import type { ArchitectureProject } from "@coding-cad/architecture-ir";
 import type { LayoutState } from "@coding-cad/architecture-layout";
 import type { ValidationResult } from "@coding-cad/architecture-validator";
 import type { Proposal } from "@coding-cad/architecture-review";
+import type { InspectionReportDto } from "../workspace/contract.js";
 
 /**
  * P3.3 Workspace shell state.
@@ -31,6 +32,7 @@ export interface GreenfieldShellState {
   readonly status: ShellStatus;
   readonly message: string;
   readonly selectedNodeIds: readonly string[];
+  readonly inspection?: InspectionReportDto | undefined;
 }
 
 export interface GreenfieldShellActions {
