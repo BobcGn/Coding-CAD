@@ -5,7 +5,8 @@ import {
   type ArchitectureLayoutProjection,
   type LayoutEngine,
   type LayoutResult,
-  type LayoutState
+  type LayoutState,
+  type MovementReport
 } from "@coding-cad/architecture-layout";
 
 import {
@@ -61,6 +62,7 @@ export interface ShellController {
   openProject(id: string): Promise<void>;
   analyzeRepository(repositoryPath: string): Promise<void>;
   updateAcceptedArchitecture(project: ArchitectureProject): Promise<void>;
+  movement(): MovementReport | undefined;
 }
 
 export interface ShellControllerOptions {
@@ -104,6 +106,10 @@ export class WorkspaceShellController implements ShellController {
 
   layout(): LayoutResult | undefined {
     return this.layoutValue;
+  }
+
+  movement(): MovementReport | undefined {
+    return this.shell.movement;
   }
 
   async generateFromRequirement(requirement: string, signal?: AbortSignal): Promise<void> {
@@ -449,7 +455,7 @@ export class WorkspaceShellController implements ShellController {
     const projection = compileArchitectureProjection(architecture);
     const engine = this.engineFactory();
     try {
-      const { result: layout } = await layoutArchitectureGraph(projection.layoutGraph, {
+      const { result: layout, movement } = await layoutArchitectureGraph(projection.layoutGraph, {
         mode: "INCREMENTAL", previousState: this.shell.layoutState, signal, timeoutMs: 5_000
       }, engine);
 
@@ -467,6 +473,7 @@ export class WorkspaceShellController implements ShellController {
       this.layoutValue = layout;
       this.shell = {
         ...this.shell,
+        movement,
         layoutWarning: layout.status === "fallback" ? layout.diagnostics.map((diagnostic) => diagnostic.message).join("; ") : undefined,
         ...(this.shell.candidate === undefined
           ? { layoutState: nextState }

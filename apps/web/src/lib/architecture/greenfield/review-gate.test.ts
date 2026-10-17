@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import type { ArchitectureProject } from "@coding-cad/architecture-ir";
 import { ArchitectureReview } from "@coding-cad/architecture-review";
 import { ArchitectureValidator } from "@coding-cad/architecture-validator";
 import { pointsSystemFixture } from "../projection/points-system-fixture.js";
@@ -153,8 +154,13 @@ describe("Step 5.3 Review Integration & Lifecycle Hardening (Ghost & Stale Propo
     expect(controller.state().isProposalStale).toBeUndefined();
 
     // External reload/update of formal architecture
-    const externalProject = structuredClone(pointsSystemFixture);
-    externalProject.intent.description = "Updated externally by another contributor";
+    const externalProject: ArchitectureProject = {
+      ...pointsSystemFixture,
+      intent: {
+        ...pointsSystemFixture.intent,
+        mission: "Updated externally by another contributor"
+      }
+    };
     await controller.updateAcceptedArchitecture(externalProject);
 
     // Detected as stale

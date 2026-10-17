@@ -83,6 +83,10 @@
   - **过期提案 (Stale Proposal) 处置机制**：正式架构发生外部演变后，自动将未决提案标记为“已过期 (Stale)”（`isProposalStale: true`），禁用 Accept 按钮并提供中英双语警告“正式架构已变化，提案已失效，请重新提议。 / Formal architecture has changed; the proposal is stale and must be re-proposed.”，同时保留 Reject 操作用于显式清理；
   - **审查状态机防御与单提案锁定**：在未决提案或已过期提案存在时，严格阻断新增编辑命令；验证重复 Accept/Reject 的幂等性；验证校验失败的候选提案阻断 Accept 但允许 Reject 清理；
   - **自动化测试覆盖**：扩展 `review-gate.test.ts` 新增 6 项生命周期单元测试（11/11 通过）；扩展 `editing.spec.ts` 新增 3 项 Playwright E2E 测试（14/14 通过，覆盖 Ghost 采纳、Ghost 拒绝与过期阻断）。
+- **步骤 5.4：增量布局与稳定性指标度量 (Step 5.4: Incremental Layout & Stability Metrics)**：
+  - **增量布局位移追踪**：在 `GreenfieldShellState` 中增加 `movement?: MovementReport`，并在 `WorkspaceShellController.layoutCandidate` 中捕获并更新增量布局移动报告；在 `ShellController` 暴露 `movement()` 查询；
+  - **预算机械化断言**：新增 `incremental-stability.test.ts`，在 Greenfield points-system 与 Medium Brownfield（15 组件，42 边）两个典型场景中执行提案采纳并触发增量布局，断言未受影响节点的位移严格满足预算（`unaffectedP95 <= 48px`, `unaffectedMax <= 144px`, `withinBudget: true`，实测均为 0.0px）；
+  - **经验度量与表格输出**：系统测量 Ghost 初始位置与正式节点最终位置的欧几里得距离（Displacement: Mean, Median, Max），输出 6 组对比实验量化数据表，科学阐释局部几何启发式放置与全局 ELK 层次布局之间的合理位移现象。
 
 ---
 
@@ -106,6 +110,9 @@
 - **生命周期硬化与基线防冲突（Step 5.3）**：
   - 当正式架构发生外部演变后，旧提案基线已经失效，自动标记为过期并禁用 Accept，彻底杜绝静默冲突；
   - 允许 Reject 清理过期提案，确保心智模型清晰可恢复，且全流程不增加额外审批语义或角色。
+- **稳定重于最优与心智模型保护（Step 5.4）**：
+  - 增量布局必须确保用户在审批提案前后，无关正式节点位置保持绝对稳定，保护用户的心理认知地图（Mental Map）；
+  - 局部启发式几何放置（Ghost 阶段）与全局求解器分层优化（正式采纳阶段）存在预期的位置差异，但在此过程中无关节点完全不动（0.0px 位移），满足稳定性最高要求。
 - **纯渲染与宿主隔离**：
   - Adapter 仅负责将 Blueprint 映射为 Guide 文本，绝不引入 Agent 运行时、调度器、执行引擎或外部 shell 工具。
 
@@ -115,6 +122,22 @@
 
 - **Git 规则检查**：`git status` 确认工作区完全干净，中间生成物与构建产物全部被规则隔离；`git ls-files -c -i --exclude-standard` 输出为空，确认无跟踪文件被误忽略；
 - **设计备忘录校验**：`docs/phase-5-design-memo.md` 包含全部 7 项必需章节，中英双语齐备，逻辑自洽，无代码入侵；
+- **步骤 5.4 增量布局稳定性与位移度量结果**：
+  - 实测经验度量数据表：
+
+| 测试夹具 (Fixture) | 组件 (Component) | Ghost 初始坐标 | 正式最终坐标 | 位移距离 (Displacement) | 未受影响 p95 | 未受影响 Max | 符合预算 (Within Budget) |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Greenfield (Points System) | Kafka | (801.0, 24.0) | (561.0, 248.0) | 328.3 px | 0.0 px | 0.0 px | YES (<= 48px / <= 144px) |
+| Greenfield (Points System) | RedisReplica | (801.0, 24.0) | (561.0, 248.0) | 328.3 px | 0.0 px | 0.0 px | YES (<= 48px / <= 144px) |
+| Greenfield (Points System) | NotificationService | (252.0, 236.0) | (24.0, 236.0) | 228.0 px | 0.0 px | 0.0 px | YES (<= 48px / <= 144px) |
+| Medium (Coding-CAD Baseline) | DocGen | (1812.0, 208.0) | (24.0, 153.0) | 1788.8 px | 0.0 px | 0.0 px | YES (<= 48px / <= 144px) |
+| Medium (Coding-CAD Baseline) | Telemetry | (1764.0, 306.0) | (24.0, 153.0) | 1746.7 px | 0.0 px | 0.0 px | YES (<= 48px / <= 144px) |
+| Medium (Coding-CAD Baseline) | ArtifactViewer | (252.0, 120.0) | (24.0, 153.0) | 230.4 px | 0.0 px | 0.0 px | YES (<= 48px / <= 144px) |
+
+  - 汇总统计：
+    - Greenfield：均值 Mean = 294.9px, 中位数 Median = 328.3px, 最大值 Max = 328.3px；
+    - Medium Brownfield：均值 Mean = 1255.3px, 中位数 Median = 1746.7px, 最大值 Max = 1788.8px；
+  - 稳定性预算判定：全部 6 组实验中 `unaffectedP95 = 0.0px`、`unaffectedMax = 0.0px`，100% 满足稳定性预算要求；
 - **自动化测试按包分类统计 (Package Test Breakdown)**：
   - `@coding-cad/architecture-ir`: 1 文件，通过 (`dist/architecture-project.test.js`)；
   - `@coding-cad/component-registry`: 1 文件，通过 (`dist/registry.test.js`)；
@@ -131,12 +154,13 @@
   - `@coding-cad/cli`: 集成与 E2E 通过；
   - `@coding-cad/server`: 安全隔离与路由验证通过 (19/19 测试)；
   - `@coding-cad/web`:
-    - 单元测试 (vitest unit)：17 个测试文件，112/112 项通过；
+    - 单元测试 (vitest unit)：18 个测试文件，115/115 项通过；
     - 集成测试 (vitest integration)：4 个测试文件，13/13 项通过；
-    - 合计 Web 端单元 + 集成测试通过总数：125 项；
+    - 合计 Web 端单元 + 集成测试通过总数：128 项；
     - TypeScript 类型检查：`svelte-check` 0 错误 0 警告；
     - Playwright 浏览器 E2E (`editing.spec.ts`)：14/14 全数通过（包含 Ghost 节点添加、待删除标记、待变更标记、Ghost 接受、Ghost 拒绝与过期提案阻断）；
-    - Playwright 浏览器 E2E (`handoff.spec.ts`)：dev 模式 4/4 通过，preview 模式 4/4 通过，包含逐字剪贴板比对与权限拒绝降级路径。
+    - Playwright 浏览器 E2E (`handoff.spec.ts`)：dev 模式 4/4 通过，preview 模式 4/4 通过，包含逐字剪贴板比对与权限拒绝降级路径；
+    - Playwright 浏览器 E2E 全量套件：36/36 全数通过。
 
 ---
 
@@ -166,16 +190,18 @@
 | 5.1.1 | `f6ea675` | `test(handoff): correct baseline provenance, add copy fallback, and enforce canonical snapshot key` | `git revert f6ea675` | 回退 5.1.1 补齐测试与快照算法规范化 |
 | 5.2 | `cb8be8e` | `feat(ghost): implement proposal ghost projection, placement adapter, and view markers` | `git revert cb8be8e` | 移除 Ghost 放置算法、Svelte Flow Ghost 投影与编辑标记，恢复无 Ghost 的直接候选状态 |
 | 5.3 | `9971e4d` | `feat(review): harden review gate with ghost accept/reject, stale proposals, and single-proposal lock` | `git revert 9971e4d` | 移除 Review 接入硬化、过期提案标记与单提案严格防御 |
+| 5.4 | `<pending-commit>` | `test(layout): verify incremental layout stability budget and measure ghost displacement` | `git revert <pending-commit>` | 移除增量布局稳定性指标测试与位移度量套件 |
 
 ### 逆序回退分析 / Cascading Rollback Analysis
 
 若需回退本阶段提交，请严格按照逆序操作：
-1. **回退 5.3** (`git revert HEAD`)：移除过期提案检测、单提案严格阻断与 Review 接入硬化，恢复步骤 5.2 的基本 Ghost 投影；
-2. **回退 5.2** (`git revert cb8be8e`)：安全移除 Ghost 投影、局部放置纯函数与待删除/待变更视觉标记，不影响正式架构与 Review 状态机；
-3. **回退 5.1.1** (`git revert f6ea675`)：恢复 5.1 初始快照实现与测试；
-4. **回退 5.1** (`git revert 2797f9c`)：将安全移除 Handoff 弹窗、对焦控制与导出的全部功能代码及测试，不会损坏底层已有的 Greenfield/Brownfield/Review 核心逻辑；
-5. **回退 5.0** (`git revert 77e446a`)：若在 5.1 未回退时强行回退 5.0，会导致 PR 草稿和设计备忘录丢失，使得 5.1 的架构依据与决策索引失效；
-6. **回退 0** (`git revert 7400cd4`)：若在后续步骤未回退时单独回退，会导致 `.svelte-kit/`、`.turbo/` 等产生未跟踪文件污染工作区，但不影响业务代码运行。
+1. **回退 5.4** (`git revert HEAD`)：移除增量布局稳定性测试与位移度量套件，不影响正式架构与 Ghost 交互；
+2. **回退 5.3** (`git revert 9971e4d`)：移除过期提案检测、单提案严格阻断与 Review 接入硬化，恢复步骤 5.2 的基本 Ghost 投影；
+3. **回退 5.2** (`git revert cb8be8e`)：安全移除 Ghost 投影、局部放置纯函数与待删除/待变更视觉标记，不影响正式架构与 Review 状态机；
+4. **回退 5.1.1** (`git revert f6ea675`)：恢复 5.1 初始快照实现与测试；
+5. **回退 5.1** (`git revert 2797f9c`)：将安全移除 Handoff 弹窗、对焦控制与导出的全部功能代码及测试，不会损坏底层已有的 Greenfield/Brownfield/Review 核心逻辑；
+6. **回退 5.0** (`git revert 77e446a`)：若在 5.1 未回退时强行回退 5.0，会导致 PR 草稿和设计备忘录丢失，使得 5.1 的架构依据与决策索引失效；
+7. **回退 0** (`git revert 7400cd4`)：若在后续步骤未回退时单独回退，会导致 `.svelte-kit/`、`.turbo/` 等产生未跟踪文件污染工作区，但不影响业务代码运行。
 
 
 

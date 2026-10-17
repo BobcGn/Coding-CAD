@@ -1,5 +1,5 @@
 import type { ArchitectureProject } from "@coding-cad/architecture-ir";
-import type { LayoutState } from "@coding-cad/architecture-layout";
+import type { LayoutState, MovementReport } from "@coding-cad/architecture-layout";
 import type { ValidationResult } from "@coding-cad/architecture-validator";
 import type { Proposal } from "@coding-cad/architecture-review";
 import type { ComplianceReport } from "@coding-cad/implementation-validator";
@@ -38,6 +38,7 @@ export interface GreenfieldShellState {
   readonly complianceReport?: ComplianceReport | undefined;
   readonly isCommandProposal?: boolean | undefined;
   readonly isProposalStale?: boolean | undefined;
+  readonly movement?: MovementReport | undefined;
 }
 
 export interface GreenfieldShellActions {

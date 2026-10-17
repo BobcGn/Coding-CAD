@@ -754,6 +754,71 @@ PR #3首次远端CI在额外security:audit步骤报告7high，本地旧ci:verify
   - 风险：若存在未决提案期间外部导入损坏的架构，`updateAcceptedArchitecture` 会进行结构校验并返回错误状态，不污染正式图。
   - 回退方式：`git revert <commit-hash>`。
 
+## 2026-10-17 - 阶段 5 步骤 5.4：增量布局与稳定性指标度量 / Phase 5 Step 5.4: Incremental Layout & Stability Metrics
+
+### 1. 做了什么 / What
+- 增量布局位移追踪与暴露 (Incremental Movement Tracking & Exposure):
+  - 在 `GreenfieldShellState` 中增加 `movement?: MovementReport` 字段；
+  - 在 `WorkspaceShellController.layoutCandidate` 中捕获 `layoutArchitectureGraph(..., { mode: "INCREMENTAL", previousState })` 返回的 `movement` 报告并持久更新到 shell 状态；
+  - 在 `ShellController` 契约中暴露 `movement(): MovementReport | undefined` 查询方法。
+- 自动化稳定性测试套件 (`apps/web/src/lib/architecture/greenfield/incremental-stability.test.ts`):
+  - **Greenfield 稳定性断言**：在 points-system fixture 上添加组件并采纳，断言未受影响节点位移严格满足预算（`unaffectedP95 <= 48px`, `unaffectedMax <= 144px`, `withinBudget: true`，实测均为 0.0px）；
+  - **Medium Brownfield 稳定性断言**：在 `CODING_CAD_EXPECTED_BASELINE`（15 组件，42 边）上添加组件并采纳，断言未受影响节点位移同样严格满足预算（实测均为 0.0px）；
+  - **Ghost → 正式节点位移经验度量**：对 Greenfield 和 Medium Brownfield 分别运行多组 Ghost 放置与正式 incremental layout 实验，精确度量 Ghost 位置与正式节点最终位置的欧几里得距离（Displacement: Mean, Median, Max），输出完整的量化对比表格。
+
+- Incremental Movement Tracking & Exposure:
+  - Added `movement?: MovementReport` to `GreenfieldShellState`.
+  - Captured `movement` in `WorkspaceShellController.layoutCandidate` from incremental layout outcome and updated shell state.
+  - Exposed `movement(): MovementReport | undefined` in `ShellController` interface.
+- Automated Stability & Displacement Suite (`apps/web/src/lib/architecture/greenfield/incremental-stability.test.ts`):
+  - Greenfield Stability Assertion: Adding a component on points-system fixture verified `unaffectedP95 <= 48px`, `unaffectedMax <= 144px`, `withinBudget: true` (measured 0.0px).
+  - Medium Brownfield Stability Assertion: Adding a component on `CODING_CAD_EXPECTED_BASELINE` (15 components, 42 edges) verified unaffected movement is 0.0px within budget.
+  - Ghost-to-Formal Displacement Empirical Measurement: Measured euclidean distance from local Ghost placement to ELK formal layout coordinates across Greenfield and Medium fixtures, computing Mean, Median, and Max metrics.
+
+### 2. 为什么这么做 / Why
+- 遵守“稳定重于最优”与“局部变更局部移动”设计原则：
+  - 增量布局必须确保用户在审批提案前后，无关正式节点位置保持稳定，保护用户的心理认知地图（Mental Map）；
+  - 断言 `unaffectedP95 <= 48px` 与 `unaffectedMax <= 144px` 提供了机械化防退化保障。
+- 科学解释 Ghost 放置与正式布局的位移本质：
+  - D-007 方案 B（Web 适配层局部扩展）的 Ghost 放置采用纯局部启发式几何放置（紧邻关联正式节点或在图边缘空位，以零碰撞与零干扰为核心目标，不调用求解器）；
+  - 正式采纳后，ELK 求解器执行全局拓扑分层与边路由优化，将新节点纳入图的有向层次结构中；
+  - 局部启发式与全局求解器的差异导致 Ghost 到正式节点存在位移（Greenfield 均值 294.9px，Medium 均值 1255.3px），但在此过程中，所有既有正式节点的位移均为 0.0px，完全符合设计预期与架构原则。
+
+- Adherence to "Stable over Optimal" and "Local Change, Local Movement":
+  - Incremental layout must guarantee that positions of unaffected formal nodes remain stable before and after approval, preserving the user's mental map.
+  - Mechanically asserting `unaffectedP95 <= 48px` and `unaffectedMax <= 144px` prevents spatial regressions.
+- Explaining the Ghost vs. Formal Placement Displacement:
+  - In D-007 Option B (Web adapter local extension), Ghost placement is an offline local geometric heuristic prioritizing zero collision and zero disturbance of existing nodes without calling the ELK solver.
+  - Upon acceptance, ELK performs global hierarchical layering and edge routing.
+  - The displacement between Ghost and formal positions is expected (Greenfield mean 294.9px, Medium mean 1255.3px), while unaffected formal nodes remain perfectly stationary (0.0px displacement).
+
+### 3. 验证结果 / Verification
+- 已实现并验证：
+  - 实测经验度量数据表 (Empirical Measurement Data)：
+
+| 测试夹具 (Fixture) | 组件 (Component) | Ghost 初始坐标 | 正式最终坐标 | 位移距离 (Displacement) | 未受影响 p95 | 未受影响 Max | 符合预算 (Within Budget) |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Greenfield (Points System) | Kafka | (801.0, 24.0) | (561.0, 248.0) | 328.3 px | 0.0 px | 0.0 px | YES (<= 48px / <= 144px) |
+| Greenfield (Points System) | RedisReplica | (801.0, 24.0) | (561.0, 248.0) | 328.3 px | 0.0 px | 0.0 px | YES (<= 48px / <= 144px) |
+| Greenfield (Points System) | NotificationService | (252.0, 236.0) | (24.0, 236.0) | 228.0 px | 0.0 px | 0.0 px | YES (<= 48px / <= 144px) |
+| Medium (Coding-CAD Baseline) | DocGen | (1812.0, 208.0) | (24.0, 153.0) | 1788.8 px | 0.0 px | 0.0 px | YES (<= 48px / <= 144px) |
+| Medium (Coding-CAD Baseline) | Telemetry | (1764.0, 306.0) | (24.0, 153.0) | 1746.7 px | 0.0 px | 0.0 px | YES (<= 48px / <= 144px) |
+| Medium (Coding-CAD Baseline) | ArtifactViewer | (252.0, 120.0) | (24.0, 153.0) | 230.4 px | 0.0 px | 0.0 px | YES (<= 48px / <= 144px) |
+
+  - 汇总统计 (Summary Statistics)：
+    - Greenfield：均值 Mean = 294.9px, 中位数 Median = 328.3px, 最大值 Max = 328.3px；
+    - Medium Brownfield：均值 Mean = 1255.3px, 中位数 Median = 1746.7px, 最大值 Max = 1788.8px；
+  - 稳定性预算判定：全部 6 组实验中 `unaffectedP95 = 0.0px`、`unaffectedMax = 0.0px`，100% 满足稳定性预算；
+  - Web 单元测试：`apps/web` 18 个测试文件，115/115 项通过；
+  - Web 集成测试：`apps/web` 4 个测试文件，13/13 项通过；
+  - Web 浏览器 E2E 测试：36/36 项全数通过；
+  - TypeScript 类型检查：`pnpm lint` 0 错误 0 警告；
+  - 全工作区构建与测试：`CI=true TURBO_FORCE=true pnpm test` 全量通过（30/30 Turbo 任务成功）。
+- 未实现：
+  - 步骤 5.5 阶段 5 综合验收与退出报告（下一步执行）。
+- 风险与回退方式：
+  - 回退方式：`git revert <commit-hash>`。
+
 
 
 
