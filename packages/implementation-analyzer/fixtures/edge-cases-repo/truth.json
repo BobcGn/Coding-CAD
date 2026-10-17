@@ -1,0 +1,65 @@
+{
+  "name": "edge-cases-repo",
+  "type": "hand-annotated-l2",
+  "note": "Hand-annotated ground truth for edge cases: barrel export *, type-only import, dynamic import, tsconfig paths alias, circular import, undeclared workspace import, and unparseable syntax.",
+  "modules": [
+    {
+      "id": "pkg-core",
+      "name": "PkgCore",
+      "package": "@edge/pkg-core",
+      "path": "packages/pkg-core"
+    },
+    {
+      "id": "pkg-consumer",
+      "name": "PkgConsumer",
+      "package": "@edge/pkg-consumer",
+      "path": "packages/pkg-consumer"
+    },
+    {
+      "id": "pkg-circular-a",
+      "name": "PkgCircularA",
+      "package": "@edge/pkg-circular-a",
+      "path": "packages/pkg-circular-a"
+    },
+    {
+      "id": "pkg-circular-b",
+      "name": "PkgCircularB",
+      "package": "@edge/pkg-circular-b",
+      "path": "packages/pkg-circular-b"
+    },
+    {
+      "id": "pkg-undeclared",
+      "name": "PkgUndeclared",
+      "package": "@edge/pkg-undeclared",
+      "path": "packages/pkg-undeclared"
+    }
+  ],
+  "connections": [
+    {
+      "from": "pkg-consumer",
+      "to": "pkg-core",
+      "type": "declared-and-used"
+    },
+    {
+      "from": "pkg-circular-a",
+      "to": "pkg-circular-b",
+      "type": "declared-and-used"
+    },
+    {
+      "from": "pkg-circular-b",
+      "to": "pkg-circular-a",
+      "type": "declared-and-used"
+    },
+    {
+      "from": "pkg-undeclared",
+      "to": "pkg-core",
+      "type": "undeclared-used"
+    }
+  ],
+  "expectedUnsupportedReports": [
+    {
+      "type": "unparseable-syntax",
+      "scope": "packages/pkg-undeclared/src/broken.ts"
+    }
+  ]
+}

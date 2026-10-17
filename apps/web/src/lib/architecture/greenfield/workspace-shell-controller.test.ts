@@ -213,3 +213,61 @@ describe("minimal Inspector contract editing through the production gate", () =>
     expectSameAccepted(controller, before);
   });
 });
+
+describe("P4 brownfield compliance check in workspace shell controller", () => {
+  it("starts with undefined expected architecture and compliance report", () => {
+    const controller = createController();
+    assert.equal(controller.state().expectedArchitecture, undefined);
+    assert.equal(controller.state().complianceReport, undefined);
+  });
+
+  it("handles malformed JSON or invalid project gracefully", () => {
+    const controller = createController();
+    controller.loadExpectedArchitectureJson("{ bad json ");
+    assert.equal(controller.state().status, "error");
+    assert.ok(controller.state().message.includes("Failed to parse expected architecture JSON"));
+
+    controller.loadExpectedArchitecture({} as any);
+    assert.equal(controller.state().status, "error");
+    assert.ok(controller.state().message.includes("Invalid ArchitectureProject"));
+  });
+
+  it("loads expected architecture and runs compliance check when inspection is present", () => {
+    const controller = createController();
+    // Simulate brownfield mode by setting inspection on shell
+    (controller as any).shell = {
+      ...controller.state(),
+      inspection: {
+        languages: ["TypeScript"],
+        configFiles: ["package.json"],
+        dependencies: ["@coding-cad/architecture-ir"],
+        unsupportedStructures: []
+      }
+    };
+
+    // Expected architecture has a missing component
+    const expected = structuredClone(pointsSystemFixture);
+    (expected.architecture as any).components = [
+      ...expected.architecture.components,
+      {
+        id: "audit-service",
+        name: "AuditService",
+        type: "service",
+        capabilities: ["audit-logging"]
+      }
+    ];
+
+    controller.loadExpectedArchitecture(expected);
+    const state = controller.state();
+    assert.ok(state.expectedArchitecture !== undefined);
+    assert.ok(state.complianceReport !== undefined);
+    assert.equal(state.complianceReport?.passed, false);
+    assert.ok(state.complianceReport?.issues.some((i) => i.id === "component.missing.audit-service"));
+
+    // Clear expected architecture
+    controller.clearExpectedArchitecture();
+    assert.equal(controller.state().expectedArchitecture, undefined);
+    assert.equal(controller.state().complianceReport, undefined);
+  });
+});
+

@@ -1,19 +1,34 @@
-import { readFile, readdir, stat } from "node:fs/promises";
+import { readFile, readdir, realpath, stat } from "node:fs/promises";
 import path from "node:path";
+import ts from "typescript";
 import { detectLanguages } from "../detector/language-detector.js";
-import type { RepositorySnapshot } from "./snapshot.js";
+import type { RepositorySnapshot, TsconfigPathsConfig, UnsupportedStructureReport, WorkspacePackageInfo } from "./snapshot.js";
 
 const IGNORED_DIRECTORIES = new Set([
   ".git",
+  ".svn",
+  ".hg",
   ".turbo",
   ".next",
   "node_modules",
+  ".pnpm-store",
+  ".yarn",
+  ".svelte-kit",
+  ".code-review-graph",
+  ".cache",
+  ".output",
   "dist",
   "build",
   "coverage",
   "target",
-  "vendor"
+  "vendor",
+  "fixtures",
+  "fixture"
 ]);
+
+function isIgnoredFile(name: string): boolean {
+  return name.startsWith(".env") || name.endsWith(".pem") || name.endsWith(".key") || name.startsWith("id_rsa");
+}
 
 const CONFIG_FILE_NAMES = new Set([
   "package.json",
@@ -26,44 +41,180 @@ const CONFIG_FILE_NAMES = new Set([
   "nest-cli.json"
 ]);
 
+export interface ScannerOptions {
+  readonly maxFiles?: number | undefined;
+  readonly maxFileSizeBytes?: number | undefined;
+  readonly timeoutMs?: number | undefined;
+}
+
 export class RepositoryScanner {
-  async scan(rootPath: string): Promise<RepositorySnapshot> {
+  async scan(rootPath: string, options: ScannerOptions = {}): Promise<RepositorySnapshot> {
     const absoluteRoot = path.resolve(rootPath);
     const rootStats = await stat(absoluteRoot).catch(() => undefined);
     if (rootStats === undefined || !rootStats.isDirectory()) {
       throw new Error(`Repository path is not a directory: ${absoluteRoot}.`);
     }
 
-    const files = await collectFiles(absoluteRoot);
+    const unsupportedStructures: UnsupportedStructureReport[] = [];
+    const { files, isTruncated, truncationReason } = await collectFiles(
+      absoluteRoot,
+      options,
+      unsupportedStructures
+    );
     const configFiles = files.filter(isConfigFile);
     const dependencies = await readDependencies(absoluteRoot, configFiles);
+    const languages = detectLanguages(files);
+
+    // Detect unsupported languages
+    for (const language of languages) {
+      if (!["TypeScript", "JavaScript"].includes(language)) {
+        unsupportedStructures.push({
+          type: "unsupported-language",
+          reason: `Language '${language}' detected. Phase 4 analyzer extracts module and dependency structure for TypeScript/JavaScript repositories.`,
+          scope: rootPath
+        });
+      }
+    }
+
+    // Detect unsupported manifests
+    for (const configFile of configFiles) {
+      const base = path.posix.basename(configFile);
+      if (["pom.xml", "go.mod", "Cargo.toml", "requirements.txt", "pyproject.toml", "composer.json"].includes(base)) {
+        unsupportedStructures.push({
+          type: "unsupported-manifest",
+          reason: `Manifest '${base}' is not supported for module resolution in Phase 4.`,
+          scope: configFile
+        });
+      }
+    }
+
+    // Discover workspace packages (L1)
+    const { workspacePackages, workspaceReports } = await discoverWorkspacePackages(absoluteRoot, files);
+    unsupportedStructures.push(...workspaceReports);
+
+    // Read tsconfig paths for alias resolution (L2)
+    const tsconfigPaths = await readTsconfigPaths(absoluteRoot, files);
 
     return {
       rootPath: absoluteRoot,
       files,
-      languages: detectLanguages(files),
+      languages,
       configFiles,
-      dependencies
+      dependencies,
+      workspacePackages,
+      unsupportedStructures,
+      tsconfigPaths,
+      ...(isTruncated ? { isTruncated, truncationReason } : {})
     };
   }
 }
 
-async function collectFiles(rootPath: string): Promise<string[]> {
+async function collectFiles(
+  rootPath: string,
+  options: ScannerOptions,
+  unsupportedStructures: UnsupportedStructureReport[]
+): Promise<{ files: string[]; isTruncated?: boolean | undefined; truncationReason?: string | undefined }> {
   const files: string[] = [];
+  const visitedDirs = new Set<string>();
+  const startTime = performance.now();
+  let isTruncated = false;
+  let truncationReason: string | undefined;
 
   async function visit(directory: string): Promise<void> {
+    if (isTruncated) return;
+
+    if (options.timeoutMs && performance.now() - startTime > options.timeoutMs) {
+      isTruncated = true;
+      truncationReason = "timeout";
+      return;
+    }
+
     const entries = await readdir(directory, { withFileTypes: true });
     for (const entry of entries.sort((left, right) => left.name.localeCompare(right.name))) {
-      if (entry.isDirectory()) {
-        if (!IGNORED_DIRECTORIES.has(entry.name)) await visit(path.join(directory, entry.name));
+      if (isTruncated) return;
+
+      if (options.maxFiles && files.length >= options.maxFiles) {
+        isTruncated = true;
+        truncationReason = "file-count";
+        return;
+      }
+
+      if (options.timeoutMs && performance.now() - startTime > options.timeoutMs) {
+        isTruncated = true;
+        truncationReason = "timeout";
+        return;
+      }
+
+      const fullPath = path.join(directory, entry.name);
+      if (entry.isSymbolicLink()) {
+        try {
+          const resolvedTarget = await realpath(fullPath);
+          if (!resolvedTarget.startsWith(rootPath + path.sep) && resolvedTarget !== rootPath) {
+            // Symlink points outside root: do not follow and report explicitly
+            unsupportedStructures.push({
+              type: "symlink-outside-root",
+              reason: `Symlink '${path.relative(rootPath, fullPath)}' points outside repository root to '${resolvedTarget}' and was skipped.`,
+              scope: fullPath
+            });
+            continue;
+          }
+
+          const targetStat = await stat(resolvedTarget);
+          if (targetStat.isDirectory()) {
+            if (visitedDirs.has(resolvedTarget)) {
+              // Cycle detected; do not recurse infinitely
+              continue;
+            }
+            visitedDirs.add(resolvedTarget);
+            if (!IGNORED_DIRECTORIES.has(entry.name)) {
+              await visit(resolvedTarget);
+            }
+          } else if (targetStat.isFile()) {
+            if (options.maxFileSizeBytes && targetStat.size > options.maxFileSizeBytes) {
+              unsupportedStructures.push({
+                type: "oversized-file",
+                reason: `File size (${targetStat.size} bytes) exceeds limit (${options.maxFileSizeBytes} bytes).`,
+                scope: fullPath
+              });
+              continue;
+            }
+            if (!isIgnoredFile(entry.name)) {
+              files.push(toRepositoryPath(path.relative(rootPath, resolvedTarget)));
+            }
+          }
+        } catch {
+          // ignore broken symlink
+        }
+      } else if (entry.isDirectory()) {
+        const realDir = await realpath(fullPath).catch(() => fullPath);
+        if (visitedDirs.has(realDir)) {
+          continue;
+        }
+        visitedDirs.add(realDir);
+        if (!IGNORED_DIRECTORIES.has(entry.name)) await visit(fullPath);
       } else if (entry.isFile()) {
-        files.push(toRepositoryPath(path.relative(rootPath, path.join(directory, entry.name))));
+        if (options.maxFileSizeBytes) {
+          const fileStat = await stat(fullPath).catch(() => undefined);
+          if (fileStat && fileStat.size > options.maxFileSizeBytes) {
+            unsupportedStructures.push({
+              type: "oversized-file",
+              reason: `File size (${fileStat.size} bytes) exceeds limit (${options.maxFileSizeBytes} bytes).`,
+              scope: fullPath
+            });
+            continue;
+          }
+        }
+        if (!isIgnoredFile(entry.name)) {
+          files.push(toRepositoryPath(path.relative(rootPath, fullPath)));
+        }
       }
     }
   }
 
+  const rootReal = await realpath(rootPath).catch(() => rootPath);
+  visitedDirs.add(rootReal);
   await visit(rootPath);
-  return files.sort();
+  return { files: files.sort(), isTruncated, truncationReason };
 }
 
 function isConfigFile(file: string): boolean {
@@ -72,7 +223,8 @@ function isConfigFile(file: string): boolean {
     || /^tsconfig(?:\.[^.]+)?\.json$/.test(name)
     || /^package-lock\.json$/.test(name)
     || /^pnpm-lock\.yaml$/.test(name)
-    || /^yarn\.lock$/.test(name);
+    || /^yarn\.lock$/.test(name)
+    || /^pnpm-workspace\.yaml$/.test(name);
 }
 
 async function readDependencies(rootPath: string, configFiles: readonly string[]): Promise<string[]> {
@@ -122,12 +274,185 @@ async function addMavenDependencies(file: string, output: Set<string>): Promise<
   for (const match of source.matchAll(/<artifactId>\s*([^<]+)\s*<\/artifactId>/g)) output.add(match[1]!);
 }
 
+/** Discovers workspace packages based on pnpm-workspace.yaml or root package.json workspaces. */
+async function discoverWorkspacePackages(
+  rootPath: string,
+  files: readonly string[]
+): Promise<{ workspacePackages: WorkspacePackageInfo[]; workspaceReports: UnsupportedStructureReport[] }> {
+  const workspacePackages: WorkspacePackageInfo[] = [];
+  const workspaceReports: UnsupportedStructureReport[] = [];
+
+  const workspacePatterns = await readWorkspacePatterns(rootPath, files);
+  if (workspacePatterns.length === 0) {
+    return { workspacePackages, workspaceReports };
+  }
+
+  // Find all package.json files in subdirectories
+  const packageJsonFiles = files.filter(
+    (file) => file.endsWith("/package.json") && file !== "package.json"
+  );
+
+  for (const pkgFile of packageJsonFiles) {
+    const pkgDir = path.posix.dirname(pkgFile);
+    if (!matchesAnyPattern(pkgDir, workspacePatterns)) {
+      continue;
+    }
+
+    const absolutePkgPath = path.join(rootPath, pkgFile);
+    try {
+      const content = await readFile(absolutePkgPath, "utf8");
+      const pkg = JSON.parse(content) as Record<string, unknown>;
+      const name = typeof pkg["name"] === "string" ? pkg["name"] : path.posix.basename(pkgDir);
+      const dependencies = isRecord(pkg["dependencies"]) ? Object.keys(pkg["dependencies"]) : [];
+      const devDependencies = isRecord(pkg["devDependencies"]) ? Object.keys(pkg["devDependencies"]) : [];
+      const peerDependencies = isRecord(pkg["peerDependencies"]) ? Object.keys(pkg["peerDependencies"]) : [];
+      const main = typeof pkg["main"] === "string" ? pkg["main"] : undefined;
+      const types = typeof pkg["types"] === "string" ? pkg["types"] : undefined;
+
+      workspacePackages.push({
+        name,
+        path: pkgDir,
+        packageJsonFile: pkgFile,
+        dependencies,
+        devDependencies,
+        peerDependencies,
+        main,
+        types
+      });
+    } catch (error) {
+      workspaceReports.push({
+        type: "unsupported-manifest",
+        reason: `Failed to parse workspace package.json: ${errorMessage(error)}`,
+        scope: pkgFile
+      });
+    }
+  }
+
+  if (workspacePackages.length === 0 && workspacePatterns.length > 0) {
+    workspaceReports.push({
+      type: "unknown-workspace-layout",
+      reason: `Workspace patterns declared (${workspacePatterns.join(", ")}), but no matching package.json files found.`,
+      scope: rootPath
+    });
+  }
+
+  return {
+    workspacePackages: workspacePackages.sort((left, right) => left.path.localeCompare(right.path)),
+    workspaceReports
+  };
+}
+
+async function readWorkspacePatterns(rootPath: string, files: readonly string[]): Promise<string[]> {
+  const patterns: string[] = [];
+
+  // Check pnpm-workspace.yaml
+  if (files.includes("pnpm-workspace.yaml")) {
+    try {
+      const content = await readFile(path.join(rootPath, "pnpm-workspace.yaml"), "utf8");
+      let inPackages = false;
+      for (const line of content.split(/\r?\n/)) {
+        const trimmed = line.trim();
+        if (trimmed.startsWith("packages:")) {
+          inPackages = true;
+          continue;
+        }
+        if (inPackages) {
+          if (trimmed.startsWith("-")) {
+            const raw = trimmed.replace(/^-\s*/, "").replace(/^['"]|['"]$/g, "").trim();
+            if (raw.length > 0) patterns.push(raw);
+          } else if (trimmed.length > 0 && !trimmed.startsWith("#")) {
+            // Next YAML section
+            inPackages = false;
+          }
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  // Check root package.json workspaces
+  if (files.includes("package.json") && patterns.length === 0) {
+    try {
+      const content = await readFile(path.join(rootPath, "package.json"), "utf8");
+      const pkg = JSON.parse(content) as Record<string, unknown>;
+      if (Array.isArray(pkg["workspaces"])) {
+        for (const item of pkg["workspaces"]) {
+          if (typeof item === "string") patterns.push(item);
+        }
+      } else if (isRecord(pkg["workspaces"]) && Array.isArray(pkg["workspaces"]["packages"])) {
+        for (const item of pkg["workspaces"]["packages"]) {
+          if (typeof item === "string") patterns.push(item);
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  return patterns;
+}
+
+function matchesAnyPattern(dir: string, patterns: readonly string[]): boolean {
+  return patterns.some((pattern) => {
+    // Pattern like "packages/*"
+    if (pattern.endsWith("/*")) {
+      const prefix = pattern.slice(0, -2);
+      if (dir.startsWith(`${prefix}/`)) {
+        const remaining = dir.slice(prefix.length + 1);
+        return !remaining.includes("/");
+      }
+      return false;
+    }
+    // Pattern like "packages/**"
+    if (pattern.endsWith("/**")) {
+      const prefix = pattern.slice(0, -3);
+      return dir === prefix || dir.startsWith(`${prefix}/`);
+    }
+    // Exact directory pattern
+    return dir === pattern;
+  });
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 function toRepositoryPath(value: string): string {
   return value.split(path.sep).join("/");
+}
+
+async function readTsconfigPaths(
+  rootPath: string,
+  files: readonly string[]
+): Promise<TsconfigPathsConfig | undefined> {
+  const tsconfigFile = files.find((f) => f === "tsconfig.json");
+  if (!tsconfigFile) return undefined;
+
+  try {
+    const content = await readFile(path.join(rootPath, tsconfigFile), "utf8");
+    const result = ts.parseConfigFileTextToJson(tsconfigFile, content);
+    if (result.config && typeof result.config === "object") {
+      const compilerOptions = result.config["compilerOptions"];
+      if (compilerOptions && typeof compilerOptions === "object") {
+        const baseUrl = typeof compilerOptions["baseUrl"] === "string" ? compilerOptions["baseUrl"] : undefined;
+        const rawPaths = compilerOptions["paths"];
+        let paths: Record<string, string[]> | undefined;
+        if (rawPaths && typeof rawPaths === "object") {
+          paths = {};
+          for (const [key, value] of Object.entries(rawPaths)) {
+            if (Array.isArray(value)) {
+              paths[key] = value.filter((v): v is string => typeof v === "string");
+            }
+          }
+        }
+        return { baseUrl, paths };
+      }
+    }
+  } catch {
+    // ignore
+  }
+  return undefined;
 }
 
 function errorMessage(error: unknown): string {

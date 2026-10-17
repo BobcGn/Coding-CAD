@@ -7,3 +7,4 @@ export * from "./structure/module-analyzer.js";
 export * from "./graph/dependency-graph.js";
 export * from "./mapper/architecture-mapper.js";
 export * from "./analyzer.js";
+export * from "./codec/evidence-codec.js";

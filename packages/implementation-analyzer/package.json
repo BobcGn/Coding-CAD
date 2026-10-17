@@ -10,6 +10,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./codec": {
+      "types": "./dist/codec/evidence-codec.d.ts",
+      "default": "./dist/codec/evidence-codec.js"
     }
   },
   "scripts": {
@@ -17,10 +21,12 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "pnpm test:unit",
     "test:unit": "tsc -p tsconfig.json && node dist/analyzer.test.js",
+    "benchmark": "tsc -p tsconfig.json && node dist/benchmark.js",
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@coding-cad/architecture-ir": "workspace:*"
+    "@coding-cad/architecture-ir": "workspace:*",
+    "typescript": "^5.9.2"
   },
   "devDependencies": {
     "typescript": "^5.9.2"

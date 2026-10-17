@@ -27,4 +27,9 @@ describe("Architecture Canvas", () => {
     });
     expect(screen.getByRole("application", { name: "Architecture Canvas" })).toBeInTheDocument();
   });
+
+  it("exports DEFAULT_UNAPPROVED_COLLAPSE_THRESHOLD as 50 and handles configurable collapse threshold", async () => {
+    const { DEFAULT_UNAPPROVED_COLLAPSE_THRESHOLD } = await import("./ArchitectureCanvas.svelte");
+    expect(DEFAULT_UNAPPROVED_COLLAPSE_THRESHOLD).toBe(50);
+  });
 });

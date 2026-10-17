@@ -71,3 +71,40 @@ export function isWorkspaceProjectDto(value: unknown): value is WorkspaceProject
     typeof record.updatedAt === "string"
   );
 }
+
+export interface AnalyzeRepositoryOptionsDto {
+  readonly maxFiles?: number | undefined;
+  readonly timeoutMs?: number | undefined;
+  readonly maxFileSizeBytes?: number | undefined;
+}
+
+/** Analyze an external source repository (Phase 4 Brownfield). */
+export interface AnalyzeRepositoryRequest {
+  readonly repositoryPath: string;
+  readonly options?: AnalyzeRepositoryOptionsDto | undefined;
+}
+
+export interface UnsupportedStructureDto {
+  readonly type: string;
+  readonly reason: string;
+  readonly scope: string;
+}
+
+export interface TruncationReportDto {
+  readonly hitLimit: "file-count" | "file-size" | "timeout";
+  readonly message: string;
+}
+
+export interface InspectionReportDto {
+  readonly languages: readonly string[];
+  readonly configFiles: readonly string[];
+  readonly dependencies: readonly string[];
+  readonly unsupportedStructures: readonly UnsupportedStructureDto[];
+  readonly truncated?: TruncationReportDto | undefined;
+}
+
+export interface AnalyzeRepositoryResponse {
+  readonly architectureJson: string;
+  readonly inspection: InspectionReportDto;
+}
+

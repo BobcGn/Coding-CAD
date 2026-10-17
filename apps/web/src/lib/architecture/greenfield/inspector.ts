@@ -1,5 +1,6 @@
 import type { Component, Contract } from "@coding-cad/architecture-ir";
 import type { ValidationIssue } from "@coding-cad/architecture-validator";
+import { decodeComponentEvidence, type ComponentEvidence } from "@coding-cad/implementation-analyzer/codec";
 
 /**
  * P3.5 Semantic Inspector view model.
@@ -24,12 +25,18 @@ export interface InspectorViewModel {
   readonly limitations: readonly string[];
   readonly contracts: readonly Contract[];
   readonly issues: readonly ValidationIssue[];
+  readonly evidence?: ComponentEvidence | undefined;
 }
 
 export function projectInspector(
   component: Component,
   issues: readonly ValidationIssue[]
 ): InspectorViewModel {
+  const hasEvidence = component.tags?.some(
+    (tag) => tag === "implementation-analyzer" || tag.startsWith("source:") || tag.startsWith("path:")
+  );
+  const evidence = hasEvidence ? decodeComponentEvidence(component) : undefined;
+
   return {
     componentId: component.id,
     name: component.name,
@@ -41,6 +48,7 @@ export function projectInspector(
     issues: issues.filter((issue) =>
       issue.affectedComponent === component.id ||
       issue.affectedComponent === component.name
-    )
+    ),
+    evidence
   };
 }

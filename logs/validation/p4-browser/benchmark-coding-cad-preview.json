@@ -1,0 +1,15 @@
+{
+  "fixture": "Coding-CAD (this repository)",
+  "mode": "preview",
+  "serverDurationMs": 308.629,
+  "firstScreenRenderMs": 491.86691700000006,
+  "totalNodeCount": 30,
+  "visibleNodeCount": 30,
+  "hiddenCountAfterCollapse": 15,
+  "solverSource": "elk",
+  "peerOverlaps": 0,
+  "containmentFailures": 0,
+  "routedCrossings": 21,
+  "routedEdges": 40,
+  "totalEdges": 40
+}

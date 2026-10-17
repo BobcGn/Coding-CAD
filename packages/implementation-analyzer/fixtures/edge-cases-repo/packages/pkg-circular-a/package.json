@@ -1,0 +1,8 @@
+{
+  "name": "@edge/pkg-circular-a",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "dependencies": {
+    "@edge/pkg-circular-b": "workspace:*"
+  }
+}

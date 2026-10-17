@@ -2,6 +2,8 @@ import type { ArchitectureProject } from "@coding-cad/architecture-ir";
 import type { LayoutState } from "@coding-cad/architecture-layout";
 import type { ValidationResult } from "@coding-cad/architecture-validator";
 import type { Proposal } from "@coding-cad/architecture-review";
+import type { ComplianceReport } from "@coding-cad/implementation-validator";
+import type { InspectionReportDto } from "../workspace/contract.js";
 
 /**
  * P3.3 Workspace shell state.
@@ -31,6 +33,9 @@ export interface GreenfieldShellState {
   readonly status: ShellStatus;
   readonly message: string;
   readonly selectedNodeIds: readonly string[];
+  readonly inspection?: InspectionReportDto | undefined;
+  readonly expectedArchitecture?: ArchitectureProject | undefined;
+  readonly complianceReport?: ComplianceReport | undefined;
 }
 
 export interface GreenfieldShellActions {
@@ -39,6 +44,9 @@ export interface GreenfieldShellActions {
   rejectCandidate(rationale: string): void;
   updateLayoutState(next: LayoutState): void;
   selectNodeIds(nodeIds: readonly string[]): void;
+  loadExpectedArchitecture(project: ArchitectureProject): void;
+  loadExpectedArchitectureJson(json: string): void;
+  clearExpectedArchitecture(): void;
   reset(): void;
 }
 

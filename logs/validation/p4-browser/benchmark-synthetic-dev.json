@@ -1,0 +1,15 @@
+{
+  "fixture": "synthetic-large-repo (120 modules)",
+  "mode": "dev",
+  "serverDurationMs": 94.49183299999959,
+  "firstScreenRenderMs": 305.94616700000006,
+  "totalNodeCount": 150,
+  "visibleNodeCount": 150,
+  "hiddenCountAfterCollapse": 120,
+  "solverSource": "elk",
+  "peerOverlaps": 0,
+  "containmentFailures": 0,
+  "routedCrossings": 1,
+  "routedEdges": 147,
+  "totalEdges": 147
+}

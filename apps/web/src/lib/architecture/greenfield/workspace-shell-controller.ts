@@ -8,6 +8,11 @@ import {
   type LayoutState
 } from "@coding-cad/architecture-layout";
 
+import {
+  ImplementationValidator,
+  createImplementationModel,
+  type ComplianceReport
+} from "@coding-cad/implementation-validator";
 import { BrowserWorkerLayoutEngine } from "$lib/layout/worker/browser-worker-layout-engine.js";
 import { resetToGeneratedLayout } from "$lib/architecture/state/workspace-view-state.js";
 import { CandidateFlow } from "./candidate-flow.js";
@@ -17,7 +22,8 @@ import {
   WorkspaceRequestError,
   createProject as createProjectViaBridge,
   saveProject as saveProjectViaBridge,
-  openProject as openProjectViaBridge
+  openProject as openProjectViaBridge,
+  analyzeRepository as analyzeRepositoryViaBridge
 } from "../workspace/workspace-bridge.js";
 import type { GreenfieldShellState, ShellStatus } from "./workspace-shell.js";
 
@@ -46,9 +52,13 @@ export interface ShellController {
   executeCommand(command: ArchitectureCommand): Promise<void>;
   updateLayoutState(next: LayoutState): void;
   selectNodeIds(nodeIds: readonly string[]): void;
+  loadExpectedArchitecture(project: ArchitectureProject): void;
+  loadExpectedArchitectureJson(json: string): void;
+  clearExpectedArchitecture(): void;
   reset(): void;
   saveProject(): Promise<string>;
   openProject(id: string): Promise<void>;
+  analyzeRepository(repositoryPath: string): Promise<void>;
 }
 
 export interface ShellControllerOptions {
@@ -209,13 +219,67 @@ export class WorkspaceShellController implements ShellController {
     this.shell = { ...this.shell, selectedNodeIds: [...nodeIds] };
   }
 
+  loadExpectedArchitecture(project: ArchitectureProject): void {
+    if (!project || typeof project !== "object" || !project.architecture || !Array.isArray(project.architecture.components)) {
+      this.shell = {
+        ...this.shell,
+        status: "error",
+        message: "Invalid ArchitectureProject: Expected an object with architecture.components array."
+      };
+      return;
+    }
+
+    let complianceReport: ComplianceReport | undefined = undefined;
+    if (this.shell.inspection !== undefined) {
+      const validator = new ImplementationValidator();
+      const implementation = createImplementationModel(this.shell.inspection, this.shell.accepted);
+      complianceReport = validator.validate({
+        architecture: project,
+        implementation
+      });
+    }
+
+    this.shell = {
+      ...this.shell,
+      expectedArchitecture: project,
+      complianceReport,
+      message: complianceReport !== undefined
+        ? `Loaded expected architecture: ${project.intent?.purpose || "Baseline"} (${complianceReport.issues.length} compliance issue${complianceReport.issues.length === 1 ? "" : "s"}).`
+        : `Loaded expected architecture: ${project.intent?.purpose || "Baseline"}.`
+    };
+  }
+
+  loadExpectedArchitectureJson(json: string): void {
+    try {
+      const project = JSON.parse(json) as ArchitectureProject;
+      this.loadExpectedArchitecture(project);
+    } catch (err) {
+      this.shell = {
+        ...this.shell,
+        status: "error",
+        message: `Failed to parse expected architecture JSON: ${err instanceof Error ? err.message : String(err)}`
+      };
+    }
+  }
+
+  clearExpectedArchitecture(): void {
+    this.shell = {
+      ...this.shell,
+      expectedArchitecture: undefined,
+      complianceReport: undefined,
+      message: "Expected architecture cleared. Compliance check unavailable."
+    };
+  }
+
   reset(): void {
     this.pendingCommand = undefined;
     this.shell = {
       accepted: this.shell.accepted,
       status: "idle",
       message: "",
-      selectedNodeIds: []
+      selectedNodeIds: [],
+      expectedArchitecture: undefined,
+      complianceReport: undefined
     };
     this.projectionValue = undefined;
     this.layoutValue = undefined;
@@ -268,6 +332,51 @@ export class WorkspaceShellController implements ShellController {
       ...this.shell,
       status: "ready",
       message: `Project opened: ${response.project.name}.`
+    };
+  }
+
+  async analyzeRepository(repositoryPath: string): Promise<void> {
+    this.pendingCommand = undefined;
+    this.shell = {
+      ...this.shell,
+      status: "layout",
+      message: "Analyzing local repository..."
+    };
+    const response = await analyzeRepositoryViaBridge({ repositoryPath });
+    const architecture = JSON.parse(response.architectureJson) as ArchitectureProject;
+    this.shell = {
+      accepted: architecture,
+      status: "layout",
+      message: "Repository analyzed. Running semantic layout...",
+      selectedNodeIds: [],
+      inspection: response.inspection
+    };
+    await this.layoutCandidate(architecture);
+    const issueCount = response.inspection.unsupportedStructures.length;
+    const truncated = response.inspection.truncated;
+
+    let complianceReport: ComplianceReport | undefined = undefined;
+    if (this.shell.expectedArchitecture !== undefined) {
+      const validator = new ImplementationValidator();
+      const implementation = createImplementationModel(response.inspection, architecture);
+      complianceReport = validator.validate({
+        architecture: this.shell.expectedArchitecture,
+        implementation
+      });
+    }
+
+    let finishMsg = `Repository analyzed (${architecture.architecture.components.length} components).`;
+    if (truncated) {
+      finishMsg += ` [TRUNCATED: ${truncated.hitLimit}]`;
+    }
+    if (issueCount > 0) {
+      finishMsg += ` (${issueCount} unsupported structure warning${issueCount > 1 ? "s" : ""})`;
+    }
+    this.shell = {
+      ...this.shell,
+      complianceReport,
+      status: "ready",
+      message: finishMsg
     };
   }
 

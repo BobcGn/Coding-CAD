@@ -61,6 +61,12 @@ importers:
       '@coding-cad/component-registry':
         specifier: workspace:*
         version: link:../../packages/component-registry
+      '@coding-cad/implementation-analyzer':
+        specifier: workspace:*
+        version: link:../../packages/implementation-analyzer
+      '@coding-cad/implementation-validator':
+        specifier: workspace:*
+        version: link:../../packages/implementation-validator
       '@coding-cad/workspace':
         specifier: workspace:*
         version: link:../../packages/workspace
@@ -251,7 +257,6 @@ importers:
       '@coding-cad/architecture-ir':
         specifier: workspace:*
         version: link:../architecture-ir
-    devDependencies:
       typescript:
         specifier: ^5.9.2
         version: 5.9.3

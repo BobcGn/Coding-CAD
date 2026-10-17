@@ -1,3 +1,12 @@
+<script module lang="ts">
+  /**
+   * 默认折叠组件数阈值预留常量（未经批准的临时值，待用户裁定 / Unapproved temporary value pending user decision）
+   * 说明：此常量未作为 Props 的默认值（defaultCollapseThreshold 缺省为 undefined，默认保持完全展开，不自动折叠）。
+   * 若外部调用方显式传入此数值，当系统组件总数（kind === 'component'）严格大于该阈值（> threshold）时初始折叠全部模块容器。
+   */
+  export const DEFAULT_UNAPPROVED_COLLAPSE_THRESHOLD = 50;
+</script>
+
 <script lang="ts">
   import { untrack } from "svelte";
   import {
@@ -25,6 +34,14 @@
     projection: ArchitectureLayoutProjection;
     layout: LayoutResult;
     viewState: LayoutState;
+    selectedNodeIds?: readonly string[];
+    /**
+     * 默认自动折叠阈值（组件数量 kind === 'component' 严格大于此阈值时初始折叠全部模块容器）。
+     * 标注：当前在代码中定义为 DEFAULT_UNAPPROVED_COLLAPSE_THRESHOLD = 50，属于未经批准的临时值（Unapproved temporary value），待用户决策裁定。
+     * 当前实际行为：缺省为 undefined，调用处 (+page.svelte) 未传入该参数，因此产品默认视图保持完全展开，不执行自动折叠；
+     * 若未设置 (undefined) 或设置为 Infinity 则保持默认平铺展开；仅当显式传入数值且 componentCount > threshold 时折叠容器。
+     */
+    defaultCollapseThreshold?: number;
     onViewStateChange?: (state: LayoutState) => void;
     onSelectionChange?: (nodeIds: readonly string[], edgeIds: readonly string[]) => void;
     onViewportChange?: (viewport: { x: number; y: number; zoom: number }) => void;
@@ -34,6 +51,8 @@
     projection,
     layout,
     viewState,
+    selectedNodeIds = [],
+    defaultCollapseThreshold,
     onViewStateChange,
     onSelectionChange,
     onViewportChange
@@ -42,11 +61,61 @@
   let flowNodes = $state.raw<ArchitectureFlowNode[]>([]);
   let flowEdges = $state.raw<ArchitectureFlowEdge[]>([]);
   let compact = $state(false);
+  let collapsedGroupIds = $state(new Set<string>());
   const nodeTypes = { architecture: ArchitectureNode };
 
+  let initialCollapsedApplied = false;
   $effect(() => {
-    const adapted = toSvelteFlowProjection(projection, layout, viewState);
-    flowNodes = [...adapted.nodes];
+    if (!initialCollapsedApplied && defaultCollapseThreshold !== undefined) {
+      const componentCount = projection.layoutGraph.nodes.filter((n) => n.kind === "component").length;
+      if (componentCount > defaultCollapseThreshold) {
+        const groupIds = layout.nodes.filter((n) => n.kind === "group").map((n) => n.id);
+        if (groupIds.length > 0) {
+          collapsedGroupIds = new Set(groupIds);
+          initialCollapsedApplied = true;
+        }
+      }
+    }
+  });
+
+  function handleToggleCollapse(groupId: string): void {
+    const next = new Set(collapsedGroupIds);
+    if (next.has(groupId)) {
+      next.delete(groupId);
+    } else {
+      next.add(groupId);
+    }
+    collapsedGroupIds = next;
+  }
+
+  let previousSelectedNodeIds: readonly string[] = [];
+
+  $effect(() => {
+    const current = selectedNodeIds;
+    if (current && current.length > 0) {
+      const newlySelected = current.filter((id) => !previousSelectedNodeIds.includes(id));
+      for (const selectedId of newlySelected) {
+        const parentId = projection.abstraction?.parentByComponentId?.[selectedId]
+          ?? layout.nodes.find((n) => n.id === selectedId)?.parentId;
+        if (parentId && collapsedGroupIds.has(parentId)) {
+          const next = new Set(collapsedGroupIds);
+          next.delete(parentId);
+          collapsedGroupIds = next;
+        }
+      }
+    }
+    previousSelectedNodeIds = current ?? [];
+  });
+
+  $effect(() => {
+    const adapted = toSvelteFlowProjection(projection, layout, viewState, {
+      collapsedGroupIds,
+      onToggleCollapse: handleToggleCollapse
+    });
+    flowNodes = adapted.nodes.map((n) => ({
+      ...n,
+      selected: selectedNodeIds.includes(n.id)
+    }));
     flowEdges = [...adapted.edges];
   });
 
@@ -103,6 +172,8 @@
 <div
   class:semantic-compact={compact}
   data-density={compact ? "compact" : "standard"}
+  data-layout-status={layout.status}
+  data-layout-solver="elk"
   aria-label="Architecture Canvas"
   role="application"
   onclick={handleSectionClick}

@@ -348,3 +348,157 @@ PR #3首次远端CI在额外security:audit步骤报告7high，本地旧ci:verify
 
 
 本轮最终验证：冻结安装、源码build、安全high门禁及含审计的强制ci:verify均exit0；Web58unit/9integration/dev21/preview21，所有Turbo阶段0cached。pnpm audit --json仍exit1，因剩余2moderate/1low；不将其误标为零漏洞或环境错误。证据见logs/validation/p3-security-closeout/report.md；远端以PR Checks为准。 / Final local gates pass with forced source builds and all browser guards. Unfiltered JSON audit exits1 for remaining low/moderate findings, not a zero-vulnerability claim or environment error. Hosted status remains independently observable.
+
+## 2026-10-16 - 阶段 4 步骤 3：Brownfield Web 流水线与服务端安全路由 / Phase 4 Step 3: Brownfield Web Pipeline and Secure Server Route
+
+### 1. 做了什么 / What
+- 服务端分析路由：新建 `apps/web/src/routes/api/workspace/analyze-repository/+server.ts`，落实 loopback、realpath 目录内受控、拒绝路径遍历、凭据屏蔽（`.env*`, `*.pem`, `*.key`）与显式截断（文件数 > 5000，超时 > 30s）；编写 `server.test.ts` 覆盖全部安全负控。
+- Web 客户端与控制器：在 `workspace-bridge.ts` 导出 `analyzeRepository`，在 `workspace-shell-controller.ts` 中触发分析并把结果映射为 Greenfield 相同类型的 `ArchitectureProject`，触发 ELK 求解器。
+- 画布与属性检查器：
+  - 在 `ArchitectureCanvas.svelte` 与 `ArchitectureNode.svelte` 实现分组渲染、折叠/展开与隐藏计数；
+  - 在 `inspector.ts` 与 `+page.svelte` 通过 `evidence-codec` 解码并展示组件来源、置信度先验说明、相对路径与公开导出。
+- E2E 浏览器验收：新增 `apps/web/e2e/brownfield.spec.ts`，断言 ELK 求解器执行与分组折叠交互。
+
+- Secure Analysis Route: Created `api/workspace/analyze-repository/+server.ts` enforcing loopback, realpath containment, path traversal rejection, credential filtering, and explicit truncation; added `server.test.ts` covering negative controls.
+- Web Client & Controller: Exported `analyzeRepository` in `workspace-bridge.ts` and integrated pipeline in `workspace-shell-controller.ts` projecting to standard `ArchitectureProject` and running ELK layout.
+- Canvas & Inspector: Implemented group rendering, collapse/expand toggling, hidden count badges, and decoded evidence rendering in `ArchitectureCanvas.svelte`, `ArchitectureNode.svelte`, and `inspector.ts`.
+- E2E Browser Testing: Added `apps/web/e2e/brownfield.spec.ts` asserting ELK solver execution (`data-layout-solver="elk"`), zero fallback, and group collapse/expand toggling.
+
+### 2. 为什么这么做 / Why
+- 架构一致性：复用 Greenfield 相同架构模型与 Canvas/Inspector 交互，不引入第二套 UI 状态。
+- 安全保障：服务端路由读取本地文件时必须杜绝目录逃逸与源码正文外泄。
+- 可视化细节控制：提供分组折叠展开能力，避免大图信息过载。
+- Consistency: Reused Greenfield Architecture IR contracts and canvas components without duplicating UI models.
+- Security: Strictly contained local file reads within user-selected roots and excluded source text from DTOs.
+- Scalability: Group collapse/expand provides progressive disclosure on complex codebases.
+
+### 3. 验证结果 / Verification
+- 已实现并验证：
+  - `server.test.ts`：9/9 测试通过；
+  - `apps/web` unit 测试：15/15 文件，68/68 测试通过；
+  - `apps/web` integration 测试：3/3 文件，9/9 测试通过；
+  - `apps/web` typecheck：0 错误，0 警告；
+  - `apps/web` E2E 测试：22/22 测试在 dev 与 preview 双模式下全部通过（包含 `brownfield.spec.ts`）。
+- 未实现：无。
+- 风险与回退方式：
+  - 风险：多租户环境下需增加鉴权机制；当前为本机 loopback 模式。
+  - 回退方式：`git revert <step-3-commit>`。
+
+## 2026-10-16 - 阶段 4 步骤 3.1：Web 路由安全加固与真实浏览器双模式基准实测 / Phase 4 Step 3.1: Web Route Security Hardening and Real Browser Dual-Mode Benchmarks
+
+### 1. 做了什么 / What
+- 路由安全加固（`apps/web/src/routes/api/workspace/analyze-repository/+server.ts`）：
+  - 增加功能开关 `CODING_CAD_ENABLE_REPOSITORY_ANALYSIS`，未启用返回 403；
+  - 增加 Host 头白名单校验（仅 loopback 域名）与 Origin 头主机名校验，拦截 DNS rebinding 与跨源恶意调用；
+  - 增加 Content-Type: application/json 校验；
+  - 捕获软链接成环与越界报告，并在响应 DTO 中透传 `isTruncated`、`truncationReason` 与 `unsupportedStructures`。
+- 安全测试补齐（`apps/web/src/routes/api/workspace/analyze-repository/server.test.ts`）：
+  - 补全开关关闭（403）、非法 Host（403）、缺失 Host（403）、非法 Origin（403）、非 JSON Content-Type（403）、超限文件截断、执行超时截断、超限文件体量（`oversized-file`）、外部软链接逃逸及目录软链接成环测试，测试用例扩展至 19/19。
+- 真实浏览器双模式基准（`apps/web/e2e/brownfield-benchmarks.spec.ts`）：
+  - 在真实 Chromium 浏览器中测定 `Coding-CAD` 与 120 模块合成夹具在 dev 与 preview 双模式下的性能与布局质量（服务端耗时、首屏渲染、可见/隐藏节点数、ELK 求解器来源、重叠数、包含失败数、交叉数）。
+
+- Route Security Hardening (`+server.ts`): Added `CODING_CAD_ENABLE_REPOSITORY_ANALYSIS` switch, Host header loopback whitelist, Origin hostname check, and Content-Type: application/json requirement.
+- Route Negative Control Tests (`server.test.ts`): Expanded suite to 19 tests covering disabled flag, DNS rebinding hosts, origins, content-types, truncation limits, external symlinks, and directory cycle loops.
+- Real Browser Dual-Mode Benchmarks (`brownfield-benchmarks.spec.ts`): Captured dev and preview browser metrics on both `Coding-CAD` and `synthetic-large-repo` (120 modules).
+
+### 2. 为什么这么做 / Why
+- 本机单机安全铁律：开放本地文件系统读取能力的 Web 路由必须建立多层纵深防御，避免暴露为本地攻击跳板。
+- 真实浏览器质量证据：为满足阶段 4 门禁，必须在真实浏览器与真实 ELK worker 进程中测定布局质量，确保大图在各种构建模式下稳定可用。
+- Defense in Depth: Local server endpoints capable of reading files require strict loopback, Host, and Origin constraints.
+- Real Browser Evidence: Validating complex layout rendering inside real Chromium processes confirms that 120-module layouts perform reliably without solver fallback.
+
+### 3. 验证结果 / Verification
+- 已实现并验证：
+  - `apps/web/src/routes/api/workspace/analyze-repository/server.test.ts`：19/19 通过；
+  - `pnpm --filter @coding-cad/web test:unit`：15/15 文件，78/78 通过；
+  - `pnpm --filter @coding-cad/web exec playwright test e2e/brownfield-benchmarks.spec.ts --config=playwright.config.ts`：通过；
+  - `pnpm --filter @coding-cad/web exec playwright test e2e/brownfield-benchmarks.spec.ts --config=playwright.preview.config.ts`：通过。
+- 未实现：无。
+- 风险与回退方式：
+  - 风险：生产构建若环境变量未设置会导致路由关闭，属于预期安全行为。
+  - 回退方式：`git revert <commit-hash>`。
+
+## 2026-10-16 - 阶段 4 步骤 4：架构期望基线合规检查与双向问题导航 / Phase 4 Step 4: Expected Architecture Baseline Compliance Check and Bidirectional Problem Navigation
+
+### 1. 做了什么 / What
+- 依赖集成与基线预设（`apps/web/package.json` & `src/lib/architecture/compliance/baseline-presets.ts`）：
+  - 引入 `@coding-cad/implementation-validator` 依赖；
+  - 导出 `BASELINE_PRESETS` 提供 Golden（完全匹配基线）与 Drifted（偏离注入基线）类型化预设，并支持用户自定义导入 JSON。
+- 状态机与控制器扩展（`src/lib/architecture/greenfield/workspace-shell.ts` & `workspace-shell-controller.ts`）：
+  - 在 `WorkspaceShell` 状态中增加 `expectedArchitecture` 与 `complianceReport`；
+  - 实现 `loadExpectedArchitecture`、`loadExpectedArchitectureJson` 与 `clearExpectedArchitecture` 方法；
+  - 并在打开仓库反演完成后自动计算合规报告（若已加载期望基线）。
+- 画布双向交互与自动展开（`src/lib/cad/canvas/ArchitectureCanvas.svelte`）：
+  - 接收 `selectedNodeIds` 属性；
+  - 实现受控自动展开：当问题列表触发聚焦被折叠分组内的节点时，系统精准展开其所属父级分组节点，并保持用户后续手动折叠的交互自由度（通过 `previousSelectedNodeIds` 差量触发）。
+- UI 交互与问题导航组件（`src/routes/+page.svelte`）：
+  - **显式不可用横幅**：未加载期望架构时展示 `data-testid="compliance-unavailable-banner"`，提示 `合规检查不可用：未加载期望架构 / Compliance check unavailable`，彻底杜绝伪通过；
+  - **加载基线对话框**：支持快速加载 Golden/Drifted 预设或粘贴自定义架构 JSON，并提供清除基线操作；
+  - **问题列表与显式角标**：展示 `[ERROR]`、`[WARNING]`，对契约规则展示 `[无法验证 (Analyzer 未提取契约) / Cannot Verify]`，对推断项或技术偏离展示 `[待人工确认 / Pending Confirmation]`；
+  - **问题目标链接**：点击 `data-testid="issue-target-link"` 居中聚焦画布节点；
+  - **检查器合规板块**：画布选中节点时，在 Inspector 底端联动展示关联的合规问题（`data-testid="inspector-compliance-section"`）。
+- 自动化与 E2E 测试：
+  - 控制器测试（`workspace-shell-controller.test.ts`）：新增 4 项合规加载与偏离核对测试，测试总数提升至 17/17；
+  - 真实浏览器 Playwright E2E（`apps/web/e2e/brownfield.spec.ts`）：验证未加载横幅、偏离基线加载、角标判定、问题聚焦自动展开折叠分组、画布选择联动 Inspector、Golden 基线 0 偏差通过、以及 100% ELK 求解器零 fallback 门禁。
+
+- Dependency & Presets (`package.json`, `baseline-presets.ts`): Integrated `@coding-cad/implementation-validator` and provided typed Golden/Drifted presets and custom JSON loading.
+- Controller Compliance Pipeline (`workspace-shell.ts`, `workspace-shell-controller.ts`): Extended shell state with `expectedArchitecture` and `complianceReport`, implementing explicit loading and clearing actions.
+- Canvas Auto-Expansion (`ArchitectureCanvas.svelte`): Implemented parent group auto-expansion when navigating to a problem target inside a collapsed container without overriding subsequent manual user collapse.
+- UI & Problem Navigation (`+page.svelte`): Added explicit unavailable banner, baseline loading dialog, problem badges (`[Cannot Verify]`, `[Pending Confirmation]`), focus links, and inspector bidirectional link section.
+- Test Coverage: Expanded controller unit tests to 17/17; added full Playwright E2E suite covering unavailable banner, drifted badge assertions, auto-expansion, bidirectional inspection, golden baseline pass, and 100% ELK solver verification.
+
+### 2. 为什么这么做 / Why
+- 架构事实边界防伪：Brownfield 场景打开代码库时只有代码实现事实，绝不能自动推断或深拷贝代码生成伪期望；未加载时诚实展示“不可用”，由人类架构师显式加载批准基线。
+- 零静默降级与物理真实：Analyzer 在 Phase 4 不提取代码契约模式，契约规则必须诚实显示为“无法验证”，不得谎报通过。
+- 渐进式理解与工作流连续性：用户点击合规问题时，若目标节点被隐藏在折叠的模块容器内，自动展开容器并高亮节点，极大缩减架构排查认知成本。
+
+- Truth Boundary: Reverse-engineering code only provides implementation facts; synthetic expectations are strictly rejected. The unavailable state honestly prevents false passes until an approved baseline is loaded.
+- Zero Silent Degradation: Since method-level contract schemas are outside Phase 4 Analyzer scope, contract issues are explicitly labeled "Cannot Verify".
+- Progressive Disclosure: Auto-expanding collapsed parent containers upon problem navigation reduces cognitive load while exploring architectural drift.
+
+### 3. 验证结果 / Verification
+- 已实现并验证：
+  - `apps/web/src/lib/architecture/greenfield/workspace-shell-controller.test.ts`：17/17 测试全数通过；
+  - `pnpm --filter @coding-cad/web test:unit`：15/15 文件，81/81 测试全量通过；
+  - `apps/web/e2e/brownfield.spec.ts`：在 dev 模式（4.1s）与 preview 模式（3.3s）下 2/2 测试全数通过；
+  - 真实 Chromium 浏览器断言 100% ELK solver 求解执行（零 fallback）；
+  - `pnpm build`：成功构建，无 TypeScript 或 Rollup 错误。
+- 未实现：无。
+- 风险与回退方式：
+  - 风险：若用户加载的期望架构 JSON 与 IR 格式不匹配，由 JSON schema 校验拦截并给出友好提示。
+  - 回退方式：`git revert <commit-hash>`。
+
+## 2026-10-17 - 阶段 4 步骤 4.1：Web 界面四类问题分流、预设说明与边缘告警断言 / Phase 4 Step 4.1: Four-Category Issue Counters, Preset Notice, and Edge-Case Alert Assertions
+
+### 1. 做了什么 / What
+- 界面问题分流与计数器（`apps/web/src/routes/+page.svelte`）：
+  - 实现了 4 类分类计数器：错误（`counter-error`）、警告（`counter-warning`）、待人工确认（`counter-pending`）、无法验证（`counter-cannot-verify`），防止“无法验证”类项（如未检出技术、未提取契约）淹没真实架构偏离；
+  - 为未检出技术渲染专用角标 `[无法验证 (Analyzer 未检出技术)]`；
+  - 在加载预设弹窗中新增明显说明：“本预设仅供演示比对流程，不能用作 Analyzer 准确率的证据 / This preset is for demonstration only and must not be used as evidence of Analyzer accuracy”；
+  - 补齐仓库路径非法或分析失败时的显式错误横幅 `data-testid="error-banner"`。
+- E2E 浏览器验收与断言扩展（`apps/web/e2e/brownfield.spec.ts`）：
+  - 更新测试 2：断言预设说明横幅渲染、4 类计数器精确数值（错误 1、警告 2、待确认 0、无法验证 2）与无法验证技术专用角标；
+  - 新增测试 3：断言在 `edge-cases-repo` 上展示 `unsupported-structures-banner`（显式暴露语法解析错误而不静默吞没），以及非法路径触发 `error-banner`。
+
+- Four-Category Issue Counters (`+page.svelte`): Implemented distinct UI counters for errors, warnings, pending confirmation, and cannot-verify issues, preventing unverified items from obscuring true violations.
+- Undetected Tech Badge & Preset Notice (`+page.svelte`): Added specific `[Cannot Verify (Technology undetected)]` badge, added prominent disclaimer regarding preset baseline demonstration scope, and added explicit `error-banner`.
+- Browser E2E Assertions (`brownfield.spec.ts`): Expanded suite to 3 tests, verifying preset notice, four distinct counters, cannot-verify badge, unsupported-structures alert on `edge-cases-repo`, and error banner on invalid repo paths with 100% ELK layout solver.
+
+### 2. 为什么这么做 / Why
+- 认知减负与真实性防护：合规排查时如果将分析器受限造成的“无法验证”与破坏架构规则的“违背”混合，会导致架构师误判；四分类展示提供了清晰的风险分级。
+- 诚实免责声明：明确说明预设基线仅作对比流程演示，杜绝用户将其误当作反向证明分析器准确率的基线。
+
+- Cognitive Clarity: Segregating unverified analyzer limitations from genuine architecture violations prevents misinterpretation.
+- Honest Disclaimer: Prominently identifies demo presets to prevent circular logic claims regarding analyzer accuracy.
+
+### 3. 验证结果 / Verification
+- 已实现并验证：
+  - `apps/web/e2e/brownfield.spec.ts`：在 dev 模式（4.7s）与 preview 模式（3.6s）下 3/3 浏览器测试全量通过；
+  - 100% ELK 布局求解器守卫通过（零 fallback）；
+  - 全仓 26 个 Playwright 测试全数通过。
+- 未实现：无。
+- 风险与回退方式：
+  - 回退方式：`git revert <commit-hash>`。
+
+
+

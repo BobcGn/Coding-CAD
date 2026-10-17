@@ -198,10 +198,21 @@ UI/Layout 工作必须同步以下文档：
 
 Git history uses Conventional Commits, for example `feat(core): ...`, `fix(ci): ...`, and `docs(logs): ...`. PRs should include summary, validation evidence, linked issues when applicable, and screenshots for UI work. Follow `.github/pull_request_template.md`; run `pnpm ci:verify` before review.
 
+All PR descriptions, phase exit reports, change records (change-record), and step reports must strictly follow the bilingual three-part structure in order:
+1. 做了什么 / What: changes and scope, locatable to commit hashes and file paths.
+2. 为什么这么做 / Why: motivation, alternatives considered, tradeoffs, and reasons for rejected options.
+3. 验证结果 / Verification: executed commands, actual results, test file paths; categorize as "Implemented and verified / Implemented but unverified / Not implemented"; unverified items and reasons; risks and rollback instructions.
+
 提交遵循 Conventional Commits。PR 必须说明摘要、验证结果、相关 Issue，以及 UI 变更截图。
+
+所有 PR 描述、阶段退出报告、变更记录（change-record）、每个步骤的汇报，统一按以下顺序书写，中英双语：
+1. 做了什么 / What：改动内容与范围，可定位到提交哈希与文件路径。
+2. 为什么这么做 / Why：动机、考虑过的备选方案与取舍、被放弃的方案及原因。
+3. 验证结果 / Verification：运行的命令、实际结果、测试文件路径；区分“已实现并验证 / 已实现未验证 / 未实现”；未验证项与原因；风险与回退方式。
 
 ## Coding Agent First Law / Coding Agent 第一铁律
 
 Human judgment sets direction; engineering rails protect delivery. Before acting, restore facts from repository files, Git state, rules, and `logs/` when present. Establish Intent, Boundary, and Done Criteria. Choose workflow depth by risk: architecture, release, security, data, migration, or cross-module work needs checkpoints and rollback. Execute in narrow slices, prefer existing patterns, and avoid opportunistic refactors. Verify with external evidence: tests, builds, schema checks, dry runs, command output, runtime inspection, review, or user confirmation. Final handoff must state changes, verification, gaps, risk, and rollback guidance.
 
 人的判断设方向，工程轨道保交付。行动前先恢复事实；明确意图、边界、完成标准；按风险选择流程；窄切片执行；用外部证据验证；交付时说明变更、验证、未验证、风险和回退方式。`logs/` 存在时，非平凡任务必须先读日志、后更新日志。
+

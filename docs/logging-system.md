@@ -47,12 +47,20 @@ Module logs use the same shape as the root logs, but they only describe the loca
 3. Update `Links/current.md` with files, commands, decisions, and validation evidence.
 4. Keep active TODO items in `Todo/current.md`; other logs should reference TODO IDs instead of duplicating the full text.
 5. Append historical slices to `implementation-log.md`; do not rewrite old entries.
+6. Every entry in `implementation-log.md` must strictly follow the bilingual three-part structure in order:
+   1. 做了什么 / What: changes and scope, locatable to commit hashes and file paths.
+   2. 为什么这么做 / Why: motivation, alternatives considered, tradeoffs, and reasons for rejected options.
+   3. 验证结果 / Verification: executed commands, actual results, test file paths; categorize as "Implemented and verified / Implemented but unverified / Not implemented"; unverified items and reasons; risks and rollback instructions.
 
 1. 有意义的实施切片开始前，先更新 `Scope/current.md` 和 `Standards/current.md`。
 2. `State/current.md` 只记录已经观察或验证过的事实。
 3. `Links/current.md` 记录文件、命令、决策和验证证据。
 4. 有效 TODO 统一维护在 `Todo/current.md`，其他日志引用 TODO ID，不重复正文。
 5. 历史实施切片追加到 `implementation-log.md`，不要重写旧记录。
+6. `implementation-log.md` 的每条新增记录必须严格按以下顺序书写，中英双语：
+   1. 做了什么 / What：改动内容与范围，可定位到提交哈希与文件路径。
+   2. 为什么这么做 / Why：动机、考虑过的备选方案与取舍、被放弃的方案及原因。
+   3. 验证结果 / Verification：运行的命令、实际结果、测试文件路径；区分“已实现并验证 / 已实现未验证 / 未实现”；未验证项与原因；风险与回退方式。
 
 ## Documentation Language / 文档语言
 

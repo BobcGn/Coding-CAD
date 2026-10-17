@@ -1,0 +1,45 @@
+{
+  "type": "pnpm-workspace",
+  "packages": [
+    "@small-monorepo/auth",
+    "@small-monorepo/billing",
+    "@small-monorepo/gateway"
+  ],
+  "modules": [
+    {
+      "id": "auth-service",
+      "name": "AuthService",
+      "package": "@small-monorepo/auth",
+      "path": "packages/auth"
+    },
+    {
+      "id": "billing-service",
+      "name": "BillingService",
+      "package": "@small-monorepo/billing",
+      "path": "packages/billing"
+    },
+    {
+      "id": "gateway-service",
+      "name": "GatewayService",
+      "package": "@small-monorepo/gateway",
+      "path": "packages/gateway"
+    }
+  ],
+  "connections": [
+    {
+      "from": "billing-service",
+      "to": "auth-service",
+      "type": "package-dependency"
+    },
+    {
+      "from": "gateway-service",
+      "to": "auth-service",
+      "type": "package-dependency"
+    },
+    {
+      "from": "gateway-service",
+      "to": "billing-service",
+      "type": "package-dependency"
+    }
+  ]
+}

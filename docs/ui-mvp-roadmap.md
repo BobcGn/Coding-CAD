@@ -6,9 +6,9 @@
 
 This roadmap advances by increasing risk. Each checkpoint must be accepted independently; later stages must not be marked complete while earlier Acceptance Criteria remain unmet. Technology choices and public APIs may be frozen only after the corresponding Decision receives user approval.
 
-状态词：`Pending`、`Ready`、`In Progress`、`Verified`、`Blocked by Decision`。Documentation First、Phase 1 与 Phase 2 已验证并合并；Phase 3 在当前未合并分支满足定义的退出条件，真实ELK双模式验收已通过。
+状态词：`Pending`、`Ready`、`In Progress`、`Verified`、`Blocked by Decision`。Documentation First、Phase 1 与 Phase 2 已验证并合并；Phase 3 满足既定退出条件；Phase 4 (Checkpoint 5) 达到“有条件满足 / Conditionally Satisfied”，待用户裁决置顶事项。
 
-Status words: `Pending`, `Ready`, `In Progress`, `Verified`, and `Blocked by Decision`. Documentation First, Phase 1, and Phase 2 are verified and merged. Phase 3 satisfies defined exit criteria on the current unmerged branch, including real ELK acceptance in both browser modes.
+Status words: `Pending`, `Ready`, `In Progress`, `Verified`, and `Blocked by Decision`. Documentation First, Phase 1, and Phase 2 are verified and merged. Phase 3 satisfies defined exit criteria. Phase 4 (Checkpoint 5) has reached "Conditionally Satisfied / 有条件满足", pending user decisions on top-level items.
 
 ## Master Phase Alignment / Master Phase 对齐
 
@@ -228,7 +228,7 @@ P3.0 contract/host freeze → P3.1 Workspace host bridge → P3.2 requirement-to
 
 ## Checkpoint 5 — Brownfield Repository Can Display / Brownfield 仓库可显示
 
-**Status / 状态:** Pending
+**Status / 状态:** Conditionally Satisfied / 有条件满足（等待用户审批阈值、IR 模式演进时机与人工可理解性评估执行 / Pending user confirmation on thresholds, IR evolution, and human evaluation execution）
 
 **Goal / 目标**
 

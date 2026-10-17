@@ -1,4 +1,6 @@
 import type {
+  AnalyzeRepositoryRequest,
+  AnalyzeRepositoryResponse,
   CreateProjectRequest,
   CreateProjectResponse,
   OpenProjectRequest,
@@ -58,4 +60,9 @@ export async function openProject(req: OpenProjectRequest): Promise<OpenProjectR
 /** Save the accepted ArchitectureProject snapshot on the server boundary. */
 export async function saveProject(req: SaveProjectRequest): Promise<SaveProjectResponse> {
   return request<SaveProjectResponse>(`${WORKSPACE_ENDPOINT}/${encodeURIComponent(req.id)}`, jsonInit("PUT", req));
+}
+
+/** Analyze an external codebase on the server boundary (Phase 4 Brownfield). */
+export async function analyzeRepository(req: AnalyzeRepositoryRequest): Promise<AnalyzeRepositoryResponse> {
+  return request<AnalyzeRepositoryResponse>(`${WORKSPACE_ENDPOINT}/analyze-repository`, jsonInit("POST", req));
 }

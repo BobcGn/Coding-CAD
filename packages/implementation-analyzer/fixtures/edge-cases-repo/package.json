@@ -1,0 +1,7 @@
+{
+  "name": "edge-cases-repo",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ]
+}

@@ -14,9 +14,9 @@ Before finishing any work that changes repository analysis, architecture decisio
 - `Links/current.md`：需求、事件、变更和验证之间的证据链 / evidence chain between requests, events, changes, and validation
 - `Todo/current.md`：仍有效的待办、人工确认项、当前处理和解除条件 / active TODOs, human confirmations, current handling, and exit conditions
 
-`implementation-log.md` 记录历史实施流水；五个 `current.md` 只描述最新状态。
+`implementation-log.md` 记录历史实施流水；五个 `current.md` 只描述最新状态。`implementation-log.md` 中的每条新增记录必须严格按“1. 做了什么 / What -> 2. 为什么这么做 / Why -> 3. 验证结果 / Verification”顺序书写，中英双语。
 
-`implementation-log.md` records historical implementation slices; the five `current.md` files describe the latest state only.
+`implementation-log.md` records historical implementation slices; the five `current.md` files describe the latest state only. Every entry in `implementation-log.md` must strictly follow the bilingual three-part structure in order: 1. 做了什么 / What -> 2. 为什么这么做 / Why -> 3. 验证结果 / Verification.
 
 ## Module Logs / 模块日志
 

@@ -1,4 +1,4 @@
-export type * from "./types.js";
+export * from "./types.js";
 export * from "./rules/component-rule.js";
 export * from "./rules/technology-rule.js";
 export * from "./rules/constraint-rule.js";

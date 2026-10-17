@@ -1,0 +1,5 @@
+{
+  "name": "small-monorepo",
+  "private": true,
+  "description": "Small monorepo test fixture with pnpm workspace"
+}

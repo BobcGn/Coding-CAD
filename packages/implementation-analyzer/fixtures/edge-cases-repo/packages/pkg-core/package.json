@@ -1,0 +1,6 @@
+{
+  "name": "@edge/pkg-core",
+  "version": "1.0.0",
+  "main": "src/barrel.ts",
+  "dependencies": {}
+}

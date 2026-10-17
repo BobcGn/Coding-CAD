@@ -5,9 +5,35 @@
   let { data }: { data: ArchitectureNodeData } = $props();
 </script>
 
-<article class="architecture-node" class:group={data.kind === "group"} data-role={data.role} aria-label={`${data.label}, ${data.role}`}>
+<article
+  class="architecture-node"
+  class:group={data.kind === "group"}
+  class:collapsed={data.collapsed}
+  data-role={data.role}
+  data-kind={data.kind}
+  aria-label={`${data.label}, ${data.role}`}
+>
   {#if data.kind === "group"}
-    <span class="group-label">{data.label}</span>
+    <div class="group-header">
+      <span class="group-label">{data.label}</span>
+      {#if data.memberCount !== undefined && data.memberCount > 0}
+        <span class="group-count" data-testid="group-hidden-count">
+          {data.collapsed ? `(${data.hiddenCount} hidden)` : `(${data.memberCount})`}
+        </span>
+        <button
+          type="button"
+          class="group-toggle nodrag nopan"
+          data-testid="group-toggle-collapse"
+          onclick={(e) => {
+            e.stopPropagation();
+            if (data.groupId) data.onToggleCollapse?.(data.groupId);
+          }}
+          aria-label={data.collapsed ? `Expand ${data.label}` : `Collapse ${data.label}`}
+        >
+          {data.collapsed ? "+" : "−"}
+        </button>
+      {/if}
+    </div>
   {:else}
   <Handle type="target" position={Position.Left} />
   <span class="compact" aria-hidden="true">{data.compactLabel}</span>
@@ -36,7 +62,42 @@
   }
 
   .group { position: relative; background: rgb(226 232 240 / 35%); border-style: dashed; box-shadow: none; }
-  .group-label { position: absolute; top: 3px; left: 8px; font-size: 11px; color: #475569; }
+  .group-header {
+    position: absolute;
+    top: 4px;
+    left: 8px;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font-size: 11px;
+    color: #475569;
+    z-index: 10;
+    pointer-events: auto;
+  }
+  .group-label { font-weight: 600; }
+  .group-count { font-size: 10px; color: #64748b; font-weight: 500; }
+  .group-toggle {
+    background: transparent;
+    border: 1px solid #94a3b8;
+    border-radius: 4px;
+    padding: 0 4px;
+    font-size: 10px;
+    line-height: 14px;
+    cursor: pointer;
+    color: #475569;
+    position: relative;
+    z-index: 20;
+    pointer-events: auto;
+  }
+  .group-toggle:hover {
+    background: #e2e8f0;
+  }
+  .collapsed {
+    min-height: 48px;
+    border-style: solid;
+  }
 
   .standard {
     display: grid;
