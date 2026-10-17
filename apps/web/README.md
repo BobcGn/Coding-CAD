@@ -102,6 +102,10 @@ Phase 2 establishes Vitest, Svelte component tests, and Playwright for adapter, 
 
 2026-10-16：产品审批、编辑、最小契约及Save/Open与真实ELK浏览器布局均已有源码验证。dev/preview各21项浏览器测试禁止任何fallback；默认图无重叠、确定，编辑/添加无关组件移动0px。阶段3在已定义范围内满足退出条件；未合并或启动后续阶段。详见[退出报告](../../docs/phase-3-exit-report.md)。 / Source verification now includes real browser ELK as well as product gate/edit/minimal-contract/Save-Open flows. Both 21-test suites reject fallback; default fixtures are non-overlapping and deterministic, with zero unrelated-component movement after edits/addition. Defined Phase 3 exit criteria are satisfied; no merge or later-phase execution is claimed. See the report.
 
+## Phase 4 Brownfield Workspace Evidence / 阶段4棕地工作区证据
+
+2026-10-17：打开本地代码仓库、安全分析路由（loopback/Host/Origin白名单/realpath）、ArchitectureProject重构、Worker ELK布局、模块容器折叠/展开、问题合规检查、4类问题分流及双向导航均已有源码与真实浏览器双模式（dev/preview各26项测试）验证。100% 断言 ELK 求解器，零 fallback。阶段 4 达到“有条件满足 / Conditionally Satisfied”退出状态，详见[退出报告](../../docs/phase-4-exit-report.md)。 / Source verification now includes repository opening, secure analysis route (loopback/Host/Origin whitelist/realpath), ArchitectureProject reconstruction, Worker ELK layout, module container collapse/expand, compliance issue checking, 4-category issue breakdown, and bidirectional navigation in both dev and preview browser modes (26 tests each). 100% ELK solver asserted, zero fallback. Phase 4 has reached "Conditionally Satisfied / 有条件满足" exit status; see the exit report.
+
 ## Browser Solver Acceptance / 浏览器solver验收
 
 test:e2e先从源码构建layout-acceptance模式，再执行dev及production preview两套Playwright；每个用例全局观察真实Worker结果，要求ELK success、无diagnostics/fallback，retries=0。ci:verify复用此入口。 / test:e2e source-builds acceptance mode and runs both browser suites with a real-worker guard and no retries; ci:verify uses this entry.

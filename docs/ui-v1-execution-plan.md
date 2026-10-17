@@ -2,9 +2,9 @@
 
 ## Document Status / 文档状态
 
-状态：Phase 0–2 保留既有验收/合并记录；Phase 3 在当前分支满足定义的退出条件，尚未合并。P3-D1–P3-D3及本次澄清已确认；源码CI与dev/preview真实ELK验收通过。下一阶段为Phase 4，本次未启动。
+状态：Phase 0–2 保留既有验收/合并记录；Phase 3 满足既定退出条件；Phase 4 (Brownfield Architecture Workspace) 在当前分支 `codex/phase-4-brownfield-workspace` 达到“有条件满足 / Conditionally Satisfied”退出状态，待用户裁定推荐数值阈值、IR 模式演进时机与人工可理解性评估执行。下一步等待用户裁决后推进 Phase 5 或合并。
 
-Status: Phases 0–2 retain historical acceptance/merge records. Phase 3 satisfies defined exit criteria on the current unmerged branch. Decisions and clarifications are approved; source CI and real ELK in dev/preview pass. Phase 4 is next and has not started in this task.
+Status: Phases 0–2 retain historical acceptance/merge records. Phase 3 satisfies defined exit criteria. Phase 4 (Brownfield Architecture Workspace) has reached "Conditionally Satisfied / 有条件满足" exit status on branch `codex/phase-4-brownfield-workspace`, pending user confirmation on recommended numerical thresholds, IR schema evolution timing, and human comprehension evaluation execution. Next step awaits user decision before Phase 5 or merge.
 
 本文是 UI V1 从规划到 Terminal 的主执行顺序。`docs/ui-mvp-roadmap.md` 保留细粒度 capability checkpoints；本文定义跨模块 Phase 依赖、退出门槛和报告格式。发生冲突时，先遵守用户已批准的 Decision，再遵守本计划；未批准的架构冲突必须停止并询问用户。
 
@@ -627,7 +627,7 @@ Greenfield E2E 和所有验收标准通过；Workspace/IR/View State 边界评�
 
 ### Exit Condition / 退出条件
 
-中型 fixture 的 workflow、可理解性、性能与 issue navigation 通过；无依赖手动排版的默认体验。 / The medium-fixture workflow, understandability, performance, and issue navigation pass, with a default experience that does not depend on manual arrangement.
+中型 fixture 的 workflow、可理解性、性能与 issue navigation 通过；无依赖手动排版的默认体验。当前状态：有条件满足（分支 `codex/phase-4-brownfield-workspace`，详见 `docs/phase-4-exit-report.md`，待用户裁定阈值与人工评估执行）。 / The medium-fixture workflow, understandability, performance, and issue navigation pass, with a default experience that does not depend on manual arrangement. Current status: Conditionally Satisfied (branch `codex/phase-4-brownfield-workspace`, see `docs/phase-4-exit-report.md`, pending user threshold approval and human evaluation execution).
 
 ## Phase 5 — Ghost Architecture + Review + Execution Handoff / Ghost 架构、审核与执行交接
 

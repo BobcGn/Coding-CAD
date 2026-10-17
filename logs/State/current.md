@@ -15,7 +15,9 @@
 - **步骤 4（合规检查与双向问题导航）**：已完成并验证。编写 `docs/brownfield-compliance-design.md` 说明基线来源模型与 5 条规则在棕地下的物理边界；扩展 `packages/implementation-validator` 导出 `IssueTarget`、`resolveIssueTarget`、`isContractIssue` 与 `createImplementationModel`；修复 `technology-rule.ts` 漏报缺陷；建立 `coding-cad-expected.json` 与 `coding-cad-drifted.json` 双基线夹具并通过自动化验证；Web 端实现基线加载预设、未加载显式不可用横幅、角标渲染（`[无法验证]`、`[待人工确认]`）、画布受控自动展开折叠分组以及 Inspector 双向联动；Playwright E2E（`brownfield.spec.ts`）在 dev 与 preview 双模式全数通过，100% 验证 ELK 求解器。
 - **步骤 4.1（澄清与补齐证据）**：已完成并验证。更正技术合规规则在技术未检出时的语义为“无法验证（Analyzer 未检出技术）”（非技术违规）；在 Web 端实现 4 类分类计数器（错误、警告、待确认、无法验证）与专用角标；增加预设演示免责声明与非法路径错误横幅；补充 E2E 断言；交付四份关键证据文档（期望基线独立来源与边数 38->40 演进分析、L2 交叉校验文件路径与归因表、7 项边缘场景逐项矩阵、D-005 分组实现逐条合规核验表）。
 - **步骤 5（验收基线完善、复杂网状夹具与真实代码库实测）**：已完成并验证。建立 57 模块、14 包的中心网状合成夹具 `synthetic-hub-repo`（中心 Hub、环依赖、跨层调用、桥接器），实测展开 86 处交叉，应用 N > 50 初始折叠后降至 14 容器、34 交叉（降幅 60.5%）；对真实本地 TypeScript 代码库 `skill-central`（290 文件、23 模块、77 边、152 交叉、0 重叠、100% ELK）执行端到端分析，并完成种子 42 的 AI 抽样核对（Precision 100.0%、Recall 73.3%，诚实界定根级文件 L4 聚类边界）；交付人工可理解性评估材料 `docs/evaluation/p4-comprehension-eval.md`（带客观依据与标准答案，状态标注为待人工执行）；汇总全量物理指标于 `logs/validation/p4-browser/benchmark-report.md`。
-- **步骤 6**：待推进（退出报告与 PR 草稿定稿）。
+- **步骤 6（退出报告与阶段状态对齐）**：已完成。完成中英双语《阶段 4 退出报告》（`docs/phase-4-exit-report.md`），明确置顶“待用户处理事项”，退出结论严格标注为“有条件满足 / Conditionally Satisfied”，全面同步更新 PR 草稿（`.github/pr-draft-phase4.md`）、执行计划、路线图与各模块状态。
+
+阶段 4 最终退出结论：**有条件满足 / CONDITIONALLY SATISFIED**（待用户裁定推荐数值阈值、IR 模式演进时机与人工可理解性评估执行）。
 
 ## 已实现并验证 / Implemented and verified
 
@@ -35,7 +37,8 @@
 - 真实浏览器 Playwright E2E 验证（双模式下 `brownfield.spec.ts` 与 `brownfield-benchmarks.spec.ts` 全量通过，断言 ELK 求解器执行与零 fallback）；
 - 步骤 5 的复杂拓扑夹具（`synthetic-hub-repo` 57 模块、14 包）与 N > 50 折叠优化度量（86 交叉 -> 34 交叉，降幅 60.5%）；
 - 步骤 5 的真实外部代码库盲测（`skill-central` 23 模块、77 边、152 交叉、100% ELK 求解器、0 重叠、0 包含失败）与种子 42 AI 抽样核对（Precision 100.0%、Recall 73.3%）；
-- 步骤 5 的全量物理度量报告汇总（`logs/validation/p4-browser/benchmark-report.md`）。
+- 步骤 5 的全量物理度量报告汇总（`logs/validation/p4-browser/benchmark-report.md`）；
+- 步骤 6 的退出报告草稿（`docs/phase-4-exit-report.md`）与 PR 草稿（`.github/pr-draft-phase4.md`），置顶“待用户处理事项”，结论严格标注“有条件满足 / Conditionally Satisfied”，并同步更新全量设计文档。
 
 ## 已实现未验证 / Implemented but unverified
 

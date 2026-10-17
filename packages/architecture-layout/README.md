@@ -4,9 +4,9 @@
 
 `architecture-layout` is a pure TypeScript Architecture Visualization Intelligence Layer over Architecture IR. It compiles architecture semantics into a renderer-independent layout projection that helps humans understand software architecture.
 
-当前状态：Phase 1 与 Phase 2 集成已验证。Checkpoint 1–3、Incremental/Stability core、Ghost core protocol、Web adapter 与 solver-only worker host integration 已通过验证；Ghost 产品行为尚未实现。
+当前状态：Phase 1、Phase 2 与 Phase 4（棕地工作区与渐进披露）集成已验证。Checkpoint 1–3、Checkpoint 5、Incremental/Stability core、Ghost core protocol、Web adapter 与 solver-only worker host integration（真实 ELK 求解器）已通过验证；Ghost 产品行为尚未实现。
 
-Current status: Phase 1 and Phase 2 integration are verified. Checkpoints 1–3, the Incremental/Stability core, Ghost core protocol, Web adapter, and solver-only worker host integration pass verification; Ghost product behavior remains unimplemented.
+Current status: Phase 1, Phase 2, and Phase 4 (Brownfield Workspace with Progressive Disclosure) integrations are verified. Checkpoints 1–3, Checkpoint 5, the Incremental/Stability core, Ghost core protocol, Web adapter, and solver-only worker host integration (real ELK solver) pass verification; Ghost product behavior remains unimplemented.
 
 ## 预期流水线 / Intended Pipeline
 
