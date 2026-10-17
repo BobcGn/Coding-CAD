@@ -102,7 +102,8 @@
     // The Canvas may show a candidate (pending) or the accepted architecture;
     // inspect whichever projection is currently rendered.
     const source = state.candidate ?? state.accepted;
-    const component = source.architecture.components.find((entry) => entry.id === nodeIds[0]);
+    const targetId = nodeIds[0].replace(/^ghost:/, "");
+    const component = source.architecture.components.find((entry) => entry.id === targetId);
     if (component === undefined) {
       inspector = undefined;
       return;
@@ -660,8 +661,9 @@
         <ArchitectureCanvas
           projection={projection}
           layout={layout}
-          viewState={(shell.candidate ? shell.candidateLayoutState : shell.layoutState) ?? shell.layoutState!}
+          viewState={(shell.candidate && !shell.isCommandProposal ? shell.candidateLayoutState : shell.layoutState) ?? shell.layoutState!}
           selectedNodeIds={selectedNodeIds}
+          ghostProposal={shell?.isCommandProposal && pendingReview ? shell.proposal : undefined}
           onViewStateChange={(next) => controller?.updateLayoutState(next)}
           onSelectionChange={(nodeIds) => {
             selectedNodeIds = [...nodeIds];

@@ -23,6 +23,7 @@
   import "@xyflow/svelte/dist/style.css";
   import type { ArchitectureLayoutProjection, LayoutResult, LayoutState } from "@coding-cad/architecture-layout";
   import ArchitectureNode from "./nodes/ArchitectureNode.svelte";
+  import type { Proposal } from "@coding-cad/architecture-review";
   import {
     toSvelteFlowProjection,
     type ArchitectureFlowEdge,
@@ -35,6 +36,7 @@
     layout: LayoutResult;
     viewState: LayoutState;
     selectedNodeIds?: readonly string[];
+    ghostProposal?: Proposal | undefined;
     /**
      * 默认自动折叠阈值（组件数量 kind === 'component' 严格大于此阈值时初始折叠全部模块容器）。
      * 标注：当前在代码中定义为 DEFAULT_UNAPPROVED_COLLAPSE_THRESHOLD = 50，属于未经批准的临时值（Unapproved temporary value），待用户决策裁定。
@@ -52,6 +54,7 @@
     layout,
     viewState,
     selectedNodeIds = [],
+    ghostProposal,
     defaultCollapseThreshold,
     onViewStateChange,
     onSelectionChange,
@@ -110,7 +113,8 @@
   $effect(() => {
     const adapted = toSvelteFlowProjection(projection, layout, viewState, {
       collapsedGroupIds,
-      onToggleCollapse: handleToggleCollapse
+      onToggleCollapse: handleToggleCollapse,
+      ghostProposal
     });
     flowNodes = adapted.nodes.map((n) => ({
       ...n,

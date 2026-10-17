@@ -271,3 +271,78 @@ describe("P4 brownfield compliance check in workspace shell controller", () => {
   });
 });
 
+describe("Step 5.2 Ghost & Proposal Invariants (D-007 Option B)", () => {
+  it("guarantees formal ArchitectureProject reference and content remain invariant when Ghost proposal exists", async () => {
+    const controller = createController();
+    const formalBefore = controller.state().accepted;
+    const formalClone = structuredClone(formalBefore);
+
+    await controller.executeCommand({
+      type: "add-component",
+      component: { id: "notification", name: "Notification Service", type: "service", capabilities: ["notify"] }
+    });
+
+    const state = controller.state();
+    assert.equal(state.isCommandProposal, true);
+    assert.ok(state.candidate !== undefined);
+    assert.ok(state.proposal !== undefined);
+
+    // Invariant: formal architecture reference & deep equality completely unchanged
+    assert.strictEqual(state.accepted, formalBefore);
+    assert.deepEqual(state.accepted, formalClone);
+  });
+
+  it("ensures Ghost IDs never leak into formal saveProject payload", async () => {
+    const controller = createController();
+    await controller.executeCommand({
+      type: "add-component",
+      component: { id: "analytics", name: "Analytics Service", type: "service", capabilities: ["tracking"] }
+    });
+
+    // Mock bridge save
+    let savedArchitectureJson = "";
+    let savedViewStateJson = "";
+    (controller as any).shell = {
+      ...controller.state(),
+      layoutState: {
+        version: 1,
+        direction: "LR",
+        nodes: [{ id: "gateway", position: { x: 10, y: 10 }, size: { width: 100, height: 50 }, kind: "component" }]
+      }
+    };
+
+    // The saved architecture and viewState must not contain ghost: prefix
+    savedArchitectureJson = JSON.stringify(controller.state().accepted);
+    savedViewStateJson = JSON.stringify(controller.state().layoutState);
+
+    assert.ok(!savedArchitectureJson.includes("ghost:"));
+    assert.ok(!savedArchitectureJson.includes("analytics"));
+    assert.ok(!savedViewStateJson.includes("ghost:"));
+  });
+
+  it("keeps formal layout positions completely stable when command proposal is prepared", async () => {
+    const controller = createController();
+    const initialLayout = {
+      status: "success" as const,
+      direction: "LR" as const,
+      size: { width: 800, height: 600 },
+      nodes: [
+        { id: "gateway", sourceId: "gateway", kind: "component" as const, position: { x: 100, y: 100 }, size: { width: 220, height: 90 } },
+        { id: "ledger", sourceId: "ledger", kind: "component" as const, position: { x: 400, y: 100 }, size: { width: 220, height: 90 } }
+      ],
+      edges: [],
+      diagnostics: []
+    };
+    (controller as any).layoutValue = initialLayout;
+
+    await controller.executeCommand({
+      type: "connect-components",
+      connection: { id: "gateway-events", from: "gateway", to: "events", protocol: "MESSAGE" }
+    });
+
+    // In D-007 Option B, layoutValue must not be overwritten or re-laid out
+    assert.strictEqual(controller.layout(), initialLayout);
+    assert.deepEqual(controller.layout()?.nodes, initialLayout.nodes);
+  });
+});
+

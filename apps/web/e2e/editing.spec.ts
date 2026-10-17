@@ -167,3 +167,77 @@ test("save and open failures remain visible and a retry preserves architecture",
   expect(await saveFacts(page)).toEqual(before);
   expect(await reopenFacts(page)).toEqual(before);
 });
+
+test("Add component renders Ghost node with badge, dashed border, zero overlap and stable formal nodes", async ({ page }) => {
+  await generate(page);
+  const pointServiceBefore = await page.locator(".svelte-flow__node").filter({ hasText: "PointService" }).boundingBox();
+  expect(pointServiceBefore).not.toBeNull();
+
+  // Add component from palette
+  await page.locator("button.palette-item").filter({ hasText: "Kafka" }).click();
+
+  // Ghost node is visible with badge and accessible label
+  const ghostNode = page.locator(".svelte-flow__node article[data-ghost='true']");
+  await expect(ghostNode).toBeVisible();
+  await expect(ghostNode.getByTestId("ghost-badge")).toHaveText(/待审批 \/ Proposed/);
+  await expect(ghostNode).toHaveAttribute("aria-label", /待审批 \/ Proposed/);
+
+  // Formal node position remains stable (no displacement)
+  const pointServiceAfter = await page.locator(".svelte-flow__node").filter({ hasText: "PointService" }).boundingBox();
+  expect(pointServiceAfter?.x).toBeCloseTo(pointServiceBefore!.x, 1);
+  expect(pointServiceAfter?.y).toBeCloseTo(pointServiceBefore!.y, 1);
+
+  // Geometric zero-overlap between Ghost and formal node
+  const ghostBox = await ghostNode.boundingBox();
+  expect(ghostBox).not.toBeNull();
+  const overlaps = (
+    ghostBox!.x < pointServiceAfter!.x + pointServiceAfter!.width &&
+    ghostBox!.x + ghostBox!.width > pointServiceAfter!.x &&
+    ghostBox!.y < pointServiceAfter!.y + pointServiceAfter!.height &&
+    ghostBox!.y + ghostBox!.height > pointServiceAfter!.y
+  );
+  expect(overlaps).toBe(false);
+
+  // Rejecting proposal removes Ghost node immediately
+  await page.getByLabel("Review rationale").fill("Reject ghost addition");
+  await page.getByRole("button", { name: "Reject", exact: true }).click();
+  await expect(page.locator(".svelte-flow__node article[data-ghost='true']")).toHaveCount(0);
+});
+
+test("Remove component marks formal node with [待删除 / Pending Deletion] without mutating formal IR", async ({ page }) => {
+  await generate(page);
+  await page.getByLabel("Component to remove").fill("redis");
+  await page.getByLabel("Confirm cascade removal").check();
+  await page.getByRole("button", { name: "Remove component", exact: true }).click();
+
+  // Marked with pending deletion in view layer
+  const redisNode = page.locator(".svelte-flow__node article[data-ghost-status='pending-deletion']");
+  await expect(redisNode).toBeVisible();
+  await expect(redisNode.getByTestId("ghost-badge")).toHaveText(/待删除 \/ Pending Deletion/);
+
+  // Formal architecture before accept still contains redis
+  const facts = await saveFacts(page);
+  expect(facts.architecture.components.some((c) => c.id === "redis")).toBe(true);
+
+  // Rejecting clears the marker
+  await page.getByLabel("Review rationale").fill("Reject deletion");
+  await page.getByRole("button", { name: "Reject", exact: true }).click();
+  await expect(page.locator(".svelte-flow__node article[data-ghost-status='pending-deletion']")).toHaveCount(0);
+});
+
+test("Inspector edit marks formal node with [待变更 / Pending Change]", async ({ page }) => {
+  await generate(page);
+  const node = page.locator(".svelte-flow__node").filter({ hasText: "PointService" });
+  await node.click();
+  await page.getByLabel("Component type", { exact: true }).selectOption("gateway");
+
+  // Marked with pending change badge
+  const pendingNode = page.locator(".svelte-flow__node article[data-ghost-status='pending-change']");
+  await expect(pendingNode).toBeVisible();
+  await expect(pendingNode.getByTestId("ghost-badge")).toHaveText(/待变更 \/ Pending Change/);
+
+  // Reject clears marker
+  await page.getByLabel("Review rationale").fill("Keep original type");
+  await page.getByRole("button", { name: "Reject", exact: true }).click();
+  await expect(page.locator(".svelte-flow__node article[data-ghost-status='pending-change']")).toHaveCount(0);
+});

@@ -4,7 +4,14 @@ import type {
   LayoutSemanticRole,
   LayoutState
 } from "@coding-cad/architecture-layout";
+import type { Proposal } from "@coding-cad/architecture-review";
 import type { Edge, Node } from "@xyflow/svelte";
+import {
+  calculateGhostPlacement,
+  type Rect
+} from "../../cad/canvas/adapters/ghost-placement.js";
+
+export type GhostStatus = "proposed" | "pending-change" | "pending-deletion";
 
 export interface ArchitectureNodeData extends Record<string, unknown> {
   readonly label: string;
@@ -16,10 +23,20 @@ export interface ArchitectureNodeData extends Record<string, unknown> {
   readonly hiddenCount?: number;
   readonly collapsed?: boolean;
   readonly onToggleCollapse?: (groupId: string) => void;
+  readonly isGhost?: boolean;
+  readonly ghostStatus?: GhostStatus;
+  readonly ghostLabel?: string;
+  readonly ghostNotice?: string;
+}
+
+export interface ArchitectureEdgeData extends Record<string, unknown> {
+  readonly isGhost?: boolean;
+  readonly ghostStatus?: "proposed" | "pending-deletion";
+  readonly ghostLabel?: string;
 }
 
 export type ArchitectureFlowNode = Node<ArchitectureNodeData, "architecture">;
-export type ArchitectureFlowEdge = Edge<Record<string, never>, "smoothstep">;
+export type ArchitectureFlowEdge = Edge<ArchitectureEdgeData, "smoothstep">;
 
 export interface SvelteFlowProjection {
   readonly nodes: readonly ArchitectureFlowNode[];
@@ -29,6 +46,7 @@ export interface SvelteFlowProjection {
 export interface SvelteFlowAdapterOptions {
   readonly collapsedGroupIds?: ReadonlySet<string>;
   readonly onToggleCollapse?: (groupId: string) => void;
+  readonly ghostProposal?: Proposal | undefined;
 }
 
 /** The sole one-way anti-corruption adapter from solver-neutral layout to Svelte Flow. */
@@ -41,6 +59,14 @@ export function toSvelteFlowProjection(
   const visualById = new Map(projection.visualGraph.nodes.map((node) => [node.id, node]));
   const positionById = new Map(viewState?.nodes.map((node) => [node.id, node.position]) ?? []);
   const collapsedGroupIds = options.collapsedGroupIds ?? new Set<string>();
+
+  const proposal = options.ghostProposal;
+  const isPendingProposal = proposal !== undefined && (proposal.status === "draft" || proposal.status === "in-review");
+  const diff = isPendingProposal ? proposal.impactAnalysis?.diff : undefined;
+
+  const removedComponentIds = new Set(diff?.components.removed.map((c) => c.id) ?? []);
+  const changedComponentIds = new Set(diff?.components.changed.map((c) => c.after.id) ?? []);
+  const removedConnectionIds = new Set(diff?.connections.removed.map((c) => c.id) ?? []);
 
   // Count members per group
   const memberCounts = new Map<string, number>();
@@ -74,6 +100,25 @@ export function toSvelteFlowProjection(
     const memberCount = isGroup ? (memberCounts.get(node.id) ?? 0) : undefined;
     const isHidden = hiddenNodeIds.has(node.id);
 
+    const isPendingDeletion = removedComponentIds.has(node.id);
+    const isPendingChange = changedComponentIds.has(node.id);
+
+    const ghostStatus: GhostStatus | undefined = isPendingDeletion
+      ? "pending-deletion"
+      : isPendingChange
+      ? "pending-change"
+      : undefined;
+
+    const ghostLabel = isPendingDeletion
+      ? "[待删除 / Pending Deletion]"
+      : isPendingChange
+      ? "[待变更 / Pending Change]"
+      : undefined;
+
+    const ariaLabel = ghostLabel
+      ? `${ghostLabel} ${visual.label}, ${visual.role}`
+      : `${visual.label}, ${visual.role}`;
+
     return {
       id: node.id,
       type: "architecture",
@@ -82,7 +127,7 @@ export function toSvelteFlowProjection(
       height: node.size.height,
       parentId: node.parentId,
       hidden: isHidden,
-      ariaLabel: `${visual.label}, ${visual.role}`,
+      ariaLabel,
       data: {
         label: visual.label,
         compactLabel: visual.label.slice(0, 2).toUpperCase(),
@@ -92,7 +137,10 @@ export function toSvelteFlowProjection(
         memberCount,
         hiddenCount: isCollapsed ? memberCount : 0,
         collapsed: isCollapsed,
-        onToggleCollapse: options.onToggleCollapse
+        onToggleCollapse: options.onToggleCollapse,
+        isGhost: false,
+        ghostStatus,
+        ghostLabel
       }
     };
   });
@@ -103,6 +151,8 @@ export function toSvelteFlowProjection(
       throw new Error(`Layout edge ${edge.id} has an invalid endpoint.`);
     }
     const isHidden = hiddenNodeIds.has(edge.from) || hiddenNodeIds.has(edge.to);
+    const isPendingDeletion = removedConnectionIds.has(edge.id);
+
     return {
       id: edge.id,
       type: "smoothstep",
@@ -110,10 +160,108 @@ export function toSvelteFlowProjection(
       target: edge.to,
       focusable: true,
       hidden: isHidden,
-      ariaLabel: `Connection from ${edge.from} to ${edge.to}`,
-      data: {}
+      ariaLabel: isPendingDeletion
+        ? `[待删除 / Pending Deletion] Connection from ${edge.from} to ${edge.to}`
+        : `Connection from ${edge.from} to ${edge.to}`,
+      label: isPendingDeletion ? "[待删除 / Pending Deletion]" : undefined,
+      style: isPendingDeletion ? "stroke: #ef4444; stroke-dasharray: 5 5; stroke-width: 2px;" : undefined,
+      data: {
+        isGhost: false,
+        ghostStatus: isPendingDeletion ? "pending-deletion" : undefined,
+        ghostLabel: isPendingDeletion ? "[待删除 / Pending Deletion]" : undefined
+      }
     };
   });
 
-  return { nodes, edges };
+  // Project Ghost nodes (newly proposed components)
+  const ghostNodes: ArchitectureFlowNode[] = [];
+  if (diff && diff.components.added.length > 0) {
+    const formalRects: Rect[] = result.nodes.map((n) => {
+      const pos = positionById.get(n.id) ?? n.position;
+      return {
+        id: n.id,
+        x: pos.x,
+        y: pos.y,
+        width: n.size.width,
+        height: n.size.height,
+        parentId: n.parentId,
+        kind: n.kind
+      };
+    });
+
+    for (const added of diff.components.added) {
+      const relatedFormalIds = (diff.connections.added ?? [])
+        .filter((c) => c.from === added.id || c.to === added.id)
+        .map((c) => (c.from === added.id ? c.to : c.from))
+        .filter((id) => formalRects.some((r) => r.id === id));
+
+      const placement = calculateGhostPlacement({
+        ghostId: added.id,
+        relatedComponentIds: relatedFormalIds,
+        formalNodes: formalRects,
+        direction: result.direction
+      });
+
+      const parentPos = placement.parentId === undefined ? undefined
+        : positionById.get(placement.parentId) ?? resultById.get(placement.parentId)?.position;
+      const flowPos = parentPos === undefined ? placement.position : {
+        x: placement.position.x - parentPos.x,
+        y: placement.position.y - parentPos.y
+      };
+
+      const role: LayoutSemanticRole = added.type === "external-service"
+        ? "external"
+        : (added.type as LayoutSemanticRole) ?? "service";
+
+      ghostNodes.push({
+        id: `ghost:${added.id}`,
+        type: "architecture",
+        position: flowPos,
+        width: 220,
+        height: 90,
+        parentId: placement.parentId,
+        ariaLabel: `[待审批 / Proposed] ${added.name}, ${role}`,
+        data: {
+          label: added.name,
+          compactLabel: added.name.slice(0, 2).toUpperCase(),
+          role,
+          kind: "component",
+          isGhost: true,
+          ghostStatus: "proposed",
+          ghostLabel: "[待审批 / Proposed]",
+          ghostNotice: placement.containerNotice
+        }
+      });
+    }
+  }
+
+  // Project Ghost edges (newly proposed connections)
+  const ghostEdges: ArchitectureFlowEdge[] = [];
+  if (diff && diff.connections.added.length > 0) {
+    const addedCompIdSet = new Set(diff.components.added.map((c) => c.id));
+    for (const conn of diff.connections.added) {
+      const sourceId = addedCompIdSet.has(conn.from) ? `ghost:${conn.from}` : conn.from;
+      const targetId = addedCompIdSet.has(conn.to) ? `ghost:${conn.to}` : conn.to;
+      ghostEdges.push({
+        id: `ghost:connection:${conn.id}`,
+        type: "smoothstep",
+        source: sourceId,
+        target: targetId,
+        focusable: true,
+        ariaLabel: `[待审批 / Proposed] Connection from ${conn.from} to ${conn.to}`,
+        label: "[待审批 / Proposed]",
+        style: "stroke: #8b5cf6; stroke-dasharray: 5 5; stroke-width: 2px;",
+        data: {
+          isGhost: true,
+          ghostStatus: "proposed",
+          ghostLabel: "[待审批 / Proposed]"
+        }
+      });
+    }
+  }
+
+  return {
+    nodes: [...nodes, ...ghostNodes],
+    edges: [...edges, ...ghostEdges]
+  };
 }

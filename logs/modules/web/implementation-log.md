@@ -612,6 +612,83 @@ PR #3首次远端CI在额外security:audit步骤报告7high，本地旧ci:verify
   - 风险：若浏览器不支持 `navigator.clipboard`，已通过降级分支展示“复制失败”提示。
   - 回退方式：`git revert HEAD`。
 
+## 2026-10-17 - 阶段 5 步骤 5.2：Proposal 与 Ghost 投影 / Phase 5 Step 5.2: Proposal & Ghost Projection
+
+### 1. 做了什么 / What
+- Proposal 复用与单提案锁定：
+  - 复用现有 `ArchitectureReview` 状态机的 Proposal 与 CandidateCommand 模型，不新增类型；
+  - 在 `WorkspaceShellController` 中引入单提案锁定，未决提案期间阻止新的编辑命令并给出明确提示；
+  - 增加 `isCommandProposal` 标识，区分全局需求候选与单命令编辑提案。
+- D-007 方案 B（Web 适配层局部扩展）纯函数放置算法：
+  - 新增 `apps/web/src/lib/cad/canvas/adapters/ghost-placement.ts`，实现 `calculateGhostPlacement` 纯函数；
+  - 锚点优先策略：根据连接关系优先在关联正式节点相邻空位放置，保证与所有正式节点及容器边界严格零重叠（Zero Overlap）；
+  - 容器保护策略：若指定容器内部无空位，不改动正式容器布局，放置于容器外侧并附带文字提示；
+  - 纯几何算法保证在 Node.js 和浏览器中具备确定性无碰撞输出。
+- Svelte Flow 适配层 Ghost 投影：
+  - 更新 `apps/web/src/lib/layout/adapters/svelte-flow-adapter.ts`，扩展 `ArchitectureNodeData` 与 `ArchitectureFlowEdge`；
+  - 将 `diff.components.added` 映射为带有 `ghost:${id}` 独立 ID 的 Ghost 节点与 `[待审批 / Proposed]` 状态徽章；
+  - 将 `diff.connections.added` 映射为紫色虚线 Ghost 连接；
+  - 将 `diff.components.changed` 映射为带有 `[待变更 / Pending Change]` 黄色徽章的正式节点标记；
+  - 将 `diff.components.removed` 映射为带有 `[待删除 / Pending Deletion]` 红色徽章与删除线样式的正式节点标记；
+  - 将 `diff.connections.removed` 映射为红色虚线 `[待删除 / Pending Deletion]` 连接；
+  - 所有 Ghost 与标记均具有明确文本徽章与 `aria-label`，符合无障碍标准，绝不单纯依赖颜色区分。
+- 画布与节点视图渲染：
+  - 更新 `ArchitectureNode.svelte`：实现紫/黄/红高对比度虚线边框、半透明背景、状态徽章条、容器提示与删除线样式；
+  - 更新 `ArchitectureCanvas.svelte` 与 `+page.svelte`：在命令提案未决时传递 `ghostProposal`，并在 Inspector 聚焦时自动解析底层组件 ID。
+- 自动化测试与不变量断言：
+  - 新增 `ghost-placement.test.ts`（5/5 通过）：验证碰撞检测、相邻空位、容器内部及溢出外置逻辑；
+  - 扩展 `svelte-flow-adapter.test.ts`（8/8 通过）：验证 Ghost 节点/连接独立 ID、待变更/待删除标记、几何零重叠、无关正式节点不发生位移、非未决状态不投影 Ghost；
+  - 扩展 `workspace-shell-controller.test.ts`（20/20 通过）：验证存在 Ghost 时正式架构引用与内容不变、Ghost ID 绝不进入 `saveProject` 载荷、命令提案不重新触发全图重布局；
+  - 扩展 `apps/web/e2e/editing.spec.ts`（11/11 全数通过）：验证添加组件渲染 Ghost 节点且与正式节点零重叠、删除组件标记为待删除且不修改正式 IR、编辑属性标记为待变更、拒绝提案即刻清除 Ghost 投影。
+
+- Proposal Reuse & Single Proposal Lock:
+  - Reused existing `ArchitectureReview` state machine and CandidateCommand models without introducing new types.
+  - Enforced single-proposal lock in `WorkspaceShellController`, preventing concurrent edits during pending proposals.
+  - Added `isCommandProposal` flag to distinguish single-command editing proposals from full requirement candidates.
+- D-007 Option B (Local Extension via Web Adapter) Pure Placement Algorithm:
+  - Created `apps/web/src/lib/cad/canvas/adapters/ghost-placement.ts` with `calculateGhostPlacement` pure function.
+  - Anchor-based placement: places ghost adjacent to connected formal nodes with zero overlap with formal nodes and containers.
+  - Container preservation: places outside container with notice if inside space is insufficient, preserving formal container layout.
+- Svelte Flow Adapter Ghost Projection:
+  - Updated `apps/web/src/lib/layout/adapters/svelte-flow-adapter.ts` with ghost types and data mappings.
+  - Maps added components to `ghost:${id}` nodes with `[待审批 / Proposed]` badges and purple dashed edges.
+  - Maps modified components to `[待变更 / Pending Change]` badges and removed components to `[待删除 / Pending Deletion]` with strikethrough.
+  - All ghost elements and markers include textual badges and accessible `aria-label` attributes.
+- Canvas & Node View Rendering:
+  - Updated `ArchitectureNode.svelte` with dashed borders, badge bars, notices, and strikethrough styles.
+  - Updated `ArchitectureCanvas.svelte` and `+page.svelte` to pass `ghostProposal` and resolve component IDs on inspection.
+- Automated Invariant Tests:
+  - Added `ghost-placement.test.ts` (5/5 passed) for geometric collision-free validation.
+  - Added ghost test suite in `svelte-flow-adapter.test.ts` (8/8 passed) verifying independent IDs, zero overlap, and stable formal nodes.
+  - Added invariant tests in `workspace-shell-controller.test.ts` (20/20 passed) ensuring formal IR immutability, zero ghost leak in saveProject, and stable formal layout.
+  - Added Playwright E2E tests in `apps/web/e2e/editing.spec.ts` (11/11 passed) verifying browser rendering, zero overlap, and reject clearance.
+
+### 2. 为什么这么做 / Why
+- D-007 方案 B 硬约束合规：满足用户确认的零重叠、局部放置、不改动 `architecture-layout` 公开 API、不改动 D-010 Worker 边界四项硬条件。
+- 架构事实唯一来源铁律：Ghost 拥有独立身份，其 ID 绝不进入正式 `ArchitectureProject`、持久化 `LayoutState`、Save 产物或 Handoff 蓝图；Save 后 Open 不残留 Ghost 或未决提案。
+- 审批语义完全复用：沿用既有通过检验的 Review 门禁（`local-user`、必填理由），不额外增加越权审批状态。
+- 无障碍与可访问性：所有 Ghost 与标记均包含清晰的文字徽章与 ARIA 名称，不依赖单一颜色传达语义。
+
+- D-007 Option B Hard Constraints: Satisfies zero overlap, local placement, zero `architecture-layout` public API changes, and zero D-010 worker boundary changes.
+- Architecture Source of Truth Invariant: Ghost elements possess independent identity (`ghost:...`) and never leak into formal `ArchitectureProject`, persisted `LayoutState`, Save artifacts, or Handoff blueprints.
+- Approval Semantics Reuse: Reuses the established Review gate (`local-user`, required rationale) without ad-hoc approval states.
+- Accessibility: All ghost artifacts and markers feature explicit text badges and accessible ARIA labels.
+
+### 3. 验证结果 / Verification
+- 已实现并验证：
+  - Web 单元测试：`apps/web` 17 个测试文件，106/106 项通过；
+  - Web 集成测试：`apps/web` 4 个测试文件，13/13 项通过；
+  - Web 浏览器 E2E 测试：`apps/web/e2e/editing.spec.ts` 11/11 项通过；
+  - TypeScript 类型检查：`pnpm --filter @coding-cad/web typecheck` 0 错误 0 警告；
+  - 全工作区构建与测试：`CI=true TURBO_FORCE=true pnpm test` 全量通过（30/30 Turbo 任务成功，覆盖 15 个包与应用）。
+- 未实现：
+  - 步骤 5.3 审核接入强化与过期提案自动失效（步骤 5.3 范围）；
+  - 步骤 5.4 增量布局稳定性位移量化指标测量（步骤 5.4 范围）。
+- 风险与回退方式：
+  - 风险：若极密集图在特定容器内无空间，Ghost 置于容器外侧并附带 notice 提示，不破坏正式容器边界。
+  - 回退方式：`git revert <commit-hash>`。
+
+
 
 
 

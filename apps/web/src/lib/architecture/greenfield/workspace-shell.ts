@@ -36,6 +36,7 @@ export interface GreenfieldShellState {
   readonly inspection?: InspectionReportDto | undefined;
   readonly expectedArchitecture?: ArchitectureProject | undefined;
   readonly complianceReport?: ComplianceReport | undefined;
+  readonly isCommandProposal?: boolean | undefined;
 }
 
 export interface GreenfieldShellActions {

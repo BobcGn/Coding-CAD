@@ -151,7 +151,7 @@ export class WorkspaceShellController implements ShellController {
       this.pendingCommand = undefined;
       this.shell = {
         ...this.shell, accepted: result.accepted, candidate: undefined, candidateLayoutState: undefined,
-        proposal: result.proposal, status: "layout", message: ""
+        proposal: result.proposal, isCommandProposal: undefined, status: "layout", message: ""
       };
       await this.layoutCandidate(result.accepted);
       this.shell = { ...this.shell, status: "ready", message: "Candidate accepted." };
@@ -171,8 +171,11 @@ export class WorkspaceShellController implements ShellController {
       const result = this.pendingCommand === undefined
         ? this.flow.decide(proposal.id, input)
         : this.commands.decide(this.pendingCommand, input);
+      this.pendingCommand = undefined;
       this.shell = {
-        ...this.shell, proposal: result.proposal, status: "ready",
+        ...this.shell,
+        proposal: result.proposal,
+        status: "ready",
         message: "Candidate rejected; accepted IR unchanged."
       };
     } catch (error) {
@@ -184,7 +187,7 @@ export class WorkspaceShellController implements ShellController {
   }
 
   async executeCommand(command: ArchitectureCommand): Promise<void> {
-    if (this.shell.proposal?.status === "draft" || this.shell.proposal?.status === "in-review") {
+    if (this.pendingCommand !== undefined || this.shell.proposal?.status === "draft" || this.shell.proposal?.status === "in-review") {
       this.shell = { ...this.shell, status: "error", message: "Review the pending candidate before editing." };
       return;
     }
@@ -192,12 +195,20 @@ export class WorkspaceShellController implements ShellController {
       const prepared = this.commands.prepare(this.shell.accepted, command);
       this.pendingCommand = prepared;
       this.shell = {
-        ...this.shell, candidate: prepared.candidate, validation: prepared.validation,
-        proposal: prepared.proposal, status: "ready",
+        ...this.shell,
+        candidate: prepared.candidate,
+        validation: prepared.validation,
+        proposal: prepared.proposal,
+        isCommandProposal: true,
+        status: "ready",
         message: prepared.validation.valid ? "Command candidate awaits review." : "Command candidate has validation errors."
       };
-      // Invalid endpoints must remain inspectable in Problems, never reach the solver.
-      if (prepared.validation.valid) await this.layoutCandidate(prepared.candidate);
+      // In D-007 Option B (Local Extension), command editing proposals do NOT re-layout
+      // the formal architecture with the solver. The formal layout remains stable, and
+      // Ghost elements/markers are projected locally by the Web adapter layer.
+      if (this.layoutValue === undefined) {
+        await this.layoutCandidate(this.shell.accepted);
+      }
     } catch (error) {
       const reason = error instanceof Error ? error.message : "Command failed.";
       this.shell = {
@@ -210,7 +221,7 @@ export class WorkspaceShellController implements ShellController {
   }
 
   updateLayoutState(next: LayoutState): void {
-    this.shell = this.shell.candidate === undefined
+    this.shell = (this.shell.candidate === undefined || this.shell.isCommandProposal)
       ? { ...this.shell, layoutState: next }
       : { ...this.shell, candidateLayoutState: next };
   }

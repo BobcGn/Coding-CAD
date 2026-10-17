@@ -2,22 +2,20 @@
 
 分支 / Branch: `codex/phase-5-ghost-handoff`  
 目标基线 / Target Baseline: `c060ffb` (main)  
-当前状态 / Current Status: 进行中（已完成全仓 gitignore 完善、步骤 5.0 设计备忘录与步骤 5.1 Execution Handoff 产品化；等待用户确认决策 Q-5.1~Q-5.5 以开启后续步骤） / IN PROGRESS (Gitignore perfection, Step 5.0 design memo, and Step 5.1 Execution Handoff completed; awaiting user decision on Q-5.1~Q-5.5 for subsequent steps)  
-退出结论 / Exit Conclusion: **未完成（阶段 5 进行中，Ghost 尚未实现） / IN PROGRESS (Ghost is NOT implemented in this round)**
+当前状态 / Current Status: 进行中（已完成全仓 gitignore 完善、步骤 5.0 设计备忘录、步骤 5.1 Execution Handoff 产品化、步骤 5.1.1 订正与补证据，以及步骤 5.2 Proposal 与 Ghost 投影；即将进入步骤 5.3 Review 接入与生命周期强化） / IN PROGRESS (Gitignore perfection, Step 5.0 design memo, Step 5.1 Execution Handoff, Step 5.1.1 corrections, and Step 5.2 Proposal & Ghost projection completed; proceeding to Step 5.3 Review Integration)  
+退出结论 / Exit Conclusion: **未完成（阶段 5 进行中，已完成 Ghost 投影与测试，待完成步骤 5.3–5.5 审核接入与增量布局指标） / IN PROGRESS (Ghost projection and invariant tests verified, awaiting Steps 5.3–5.5)**
 
 ---
 
-## 待用户决策的问题清单 / Question List Pending User Decision
+## 阶段 5 用户已批准决策 / Phase 5 User-Approved Decisions
 
-以下决策点直接引用自 [`docs/phase-5-design-memo.md`](../docs/phase-5-design-memo.md)，用于指导后续 Ghost 与 Review 接入开发：
-
-| 编号 / # | 决策事项 / Topic | 备选方案 / Options | 推荐建议 / Recommendation |
+| 编号 / # | 决策事项 / Topic | 选定方案 / Selected Option | 决策状态 / Status |
 | --- | --- | --- | --- |
-| **Q-5.1** | **D-007 Ghost 呈现形态裁定** | **A.** 覆盖层 (Overlay)<br>**B.** 画布级局部扩展 (Local Extension via Web Adapter)<br>**C.** 独立侧边/弹窗对比视图 (Separate Comparison View) | **推荐选择 B**。<br>不修改 `architecture-layout` 公开 API 与 Worker 边界，由 Web Adapter 渲染局部 Ghost 节点，拒绝零成本移除，最符合局部修改局部稳定的精神。 |
-| **Q-5.2** | **提案并发策略** | **A.** 单提案锁定（同一时间仅允许一个未决 Ghost 提案）<br>**B.** 多提案并行（允许多个 Ghost 提案以不同图层共存） | **推荐选择 A**。<br>单提案模式交互清晰，避免图层冲突和复杂的交叉依赖管理，适合 V1 MVP。 |
-| **Q-5.3** | **部分采纳 (Cherry-picking) 语义** | **A.** V1 仅支持全量接受/全量拒绝（不支持单项挑选）<br>**B.** 扩展支持复选框挑拣子变更并生成派生 Proposal | **推荐选择 A**。<br>不引入复杂的部分合并逻辑；若需挑选，用户拒绝后通过 Inspector 显式操作即可。 |
-| **Q-5.4** | **基线演变后的过期提案处置** | **A.** 自动标记“已过期 (Stale)”，禁用接受，要求重新评估<br>**B.** 尝试自动 Rebase 变基合并 | **推荐选择 A**。<br>保证架构事实源一致性，杜绝静默冲突。 |
-| **Q-5.5** | **Brownfield Handoff 的证据提示** | **A.** 在 Handoff 预览头部显著呈现“含 inferred 证据”提示横幅<br>**B.** 隐藏该提示，仅在 Inspector 显示 | **推荐选择 A**。<br>忠实呈现反演架构的不确定性，避免外部 Agent 将推断事实误认为设计基线。 |
+| **Q-5.1** | **D-007 Ghost 呈现形态裁定** | **方案 B**（画布级局部扩展 via Web Adapter）。硬约束：零重叠、局部放置、不改动 `architecture-layout` 公开 API、不改动 D-010 边界。 | **已批准 (APPROVED)** |
+| **Q-5.2** | **提案并发策略** | **方案 A**（单提案锁定）。同一时间仅允许一个未决 Ghost 提案；未决期间阻止新编辑并给出明确提示。 | **已批准 (APPROVED)** |
+| **Q-5.3** | **部分采纳 (Cherry-picking) 语义** | **方案 A**（V1 仅支持全量接受或全量拒绝）。拒绝后可通过 Inspector 针对性编辑。 | **已批准 (APPROVED)** |
+| **Q-5.4** | **基线演变后的过期提案处置** | **方案 A**（自动标记“已过期”，禁用接受，要求重新提议）。保证架构一致性。 | **已批准 (APPROVED)** |
+| **Q-5.5** | **Brownfield Handoff 的证据提示** | **方案 A**（显著呈现含 `inferred` 证据提示横幅）。已在 5.1 中落实并验证。 | **已批准 (APPROVED)** |
 
 ---
 
@@ -62,6 +60,24 @@
   - **快照键算法规范化**：重构 `createHandoffSnapshotKey` 为纯净的语义提取与规范排序算法，排除布局坐标与临时视图，补齐对属性键顺序不敏感、保存打开 roundtrip 一致、布局拖动不触发过期、语义属性变更立即过期的全量测试；
   - **范围外附带改动披露**：对步骤 0 的全仓 `.gitignore` 明确披露为“范围外附带改动”，并经 `git ls-files -c -i --exclude-standard` 验证 0 跟踪文件受损；
   - **测试用例统计更正**：更正此前“全仓 102 项测试”用词，细化为全仓 15 个包/应用按包列出（其中 `apps/web` 为 107 项测试，全工作区 30/30 Turbo 任务全量通过）。
+- **步骤 5.2：Proposal 与 Ghost 投影 (Step 5.2: Proposal & Ghost Projection)**：
+  - **Proposal 复用与单提案锁定**：复用现有 `ArchitectureReview` 状态机的 Proposal 与 CandidateCommand 模型，不新增类型；在 `WorkspaceShellController` 中增加单提案锁定门禁与 `isCommandProposal` 标记，未决提案期间编辑被明确阻断；
+  - **D-007 方案 B（Web 适配层局部扩展）纯函数放置算法 (`apps/web/src/lib/cad/canvas/adapters/ghost-placement.ts`)**：实现 `calculateGhostPlacement` 纯函数。对于新增 Ghost 组件，优先寻找关联正式节点锚点紧邻放置，并严格保证与所有正式节点及容器边界零重叠（Zero Overlap）；对于属于已有容器且容器无空位的情况，在容器外侧放置并附带文字提示，不改动正式容器布局；
+  - **Svelte Flow 适配层 Ghost 投影 (`apps/web/src/lib/layout/adapters/svelte-flow-adapter.ts`)**：
+    - 将 `diff.components.added` 映射为 `ghost:${id}` 独立 ID 的 Ghost 节点与 `[待审批 / Proposed]` 状态徽章；
+    - 将 `diff.connections.added` 映射为紫色虚线 Ghost 连接；
+    - 将 `diff.components.changed` 映射为带 `[待变更 / Pending Change]` 黄色徽章的正式节点标记；
+    - 将 `diff.components.removed` 映射为带 `[待删除 / Pending Deletion]` 红色徽章与删除线样式的正式节点标记；
+    - 将 `diff.connections.removed` 映射为红色虚线 `[待删除 / Pending Deletion]` 连接；
+    - 所有 Ghost 与标记均具备明确文字徽章与无障碍可访问名称（aria-label），不单纯依赖颜色区分；
+  - **画布与节点渲染支持 (`ArchitectureNode.svelte` & `ArchitectureCanvas.svelte`)**：
+    - 实现高对比度徽章、虚线边框、提示条与删除线；
+    - 在存在未决命令提案时传递 `ghostProposal`，并在 Inspector 选择时自动解析底层组件 ID；
+  - **自动化测试与不变量断言**：
+    - 新增 `ghost-placement.test.ts`（5/5 通过）：验证碰撞检测、相邻空位、容器内部及溢出外置逻辑；
+    - 扩展 `svelte-flow-adapter.test.ts`（8/8 通过）：验证 Ghost 节点/连接独立 ID、待变更/待删除标记、几何零重叠、无关正式节点不发生位移、非未决状态不投影 Ghost；
+    - 扩展 `workspace-shell-controller.test.ts`（20/20 通过）：验证存在 Ghost 时正式架构引用与内容不变、Ghost ID 绝不进入 `saveProject` 载荷、命令提案不重新触发全图重布局；
+    - 扩展 `apps/web/e2e/editing.spec.ts`（11/11 全数通过）：验证添加组件渲染 Ghost 节点且与正式节点零重叠、删除组件标记为待删除且不修改正式 IR、编辑属性标记为待变更、拒绝提案即刻清除 Ghost 投影。
 
 ---
 
@@ -78,6 +94,10 @@
   - 杜绝生成空文档冒充成功；反演架构中必须显式标识 `inferred` 证据，保持架构师与 Coding Agent 之间完全对称的上下文；
   - 剪贴板复制必须用真实的剪贴板读取进行逐字验证，拒绝静默假成功；
   - 快照键必须严格基于语义事实，防止画布纯布局微调导致交接文档误失效。
+- **D-007 方案 B 硬约束合规（Step 5.2）**：
+  - 严格满足用户裁定的“与正式节点零重叠、局部放置不触发无关节点移动、不改动 architecture-layout 公开 API、不改动 D-010 Worker 边界”四个硬条件；
+  - 容器内部无空间时放置于外侧并附带 notice 提示，不破坏正式容器布局；
+  - Ghost 拥有独立身份（`ghost:...`），其 ID 绝不进入正式 `ArchitectureProject`、持久化 `LayoutState`、Save 产物或 Handoff 蓝图；Save 后 Open 不残留 Ghost 或未决提案。
 - **纯渲染与宿主隔离**：
   - Adapter 仅负责将 Blueprint 映射为 Guide 文本，绝不引入 Agent 运行时、调度器、执行引擎或外部 shell 工具。
 
@@ -103,9 +123,11 @@
   - `@coding-cad/cli`: 集成与 E2E 通过；
   - `@coding-cad/server`: 安全隔离与路由验证通过 (19/19 测试)；
   - `@coding-cad/web`:
-    - 单元测试 (vitest unit)：16 个测试文件，94/94 项通过；
+    - 单元测试 (vitest unit)：17 个测试文件，106/106 项通过；
     - 集成测试 (vitest integration)：4 个测试文件，13/13 项通过；
-    - 合计 Web 端单元 + 集成测试通过总数：107 项；
+    - 合计 Web 端单元 + 集成测试通过总数：119 项；
+    - TypeScript 类型检查：`svelte-check` 0 错误 0 警告；
+    - Playwright 浏览器 E2E (`editing.spec.ts`)：11/11 全数通过（包含 Ghost 节点添加、待删除标记、待变更标记与拒绝撤销）；
     - Playwright 浏览器 E2E (`handoff.spec.ts`)：dev 模式 4/4 通过，preview 模式 4/4 通过，包含逐字剪贴板比对与权限拒绝降级路径。
 
 ---
@@ -133,13 +155,16 @@
 | 0 | `7400cd4` | `chore(git): perfect gitignore rules across workspace packages and apps` | `git revert 7400cd4` | 回退各目录 `.gitignore`，可能导致本地构建产生未跟踪文件（范围外附带改动） |
 | 5.0 | `77e446a` | `docs(phase-5): add phase 5 design memo and initialize PR draft` | `git revert 77e446a` | 回退备忘录与 PR 草稿初始版 |
 | 5.1 | `2797f9c` | `feat(handoff): implement execution handoff preview, copy, export, and provenance tracking` | `git revert 2797f9c` | 移除 Execution Handoff 产品化能力、Web 依赖及对应 E2E/单元测试，恢复合规基线连接 |
-| 5.1.1 | TBD | `test(handoff): correct baseline provenance, add copy fallback, and enforce canonical snapshot key` | `git revert HEAD` | 回退 5.1.1 补齐测试与快照算法规范化 |
+| 5.1.1 | `f6ea675` | `test(handoff): correct baseline provenance, add copy fallback, and enforce canonical snapshot key` | `git revert f6ea675` | 回退 5.1.1 补齐测试与快照算法规范化 |
+| 5.2 | TBD | `feat(ghost): implement proposal ghost projection, placement adapter, and view markers` | `git revert HEAD` | 移除 Ghost 放置算法、Svelte Flow Ghost 投影与编辑标记，恢复无 Ghost 的直接候选状态 |
 
 ### 逆序回退分析 / Cascading Rollback Analysis
 
 若需回退本阶段提交，请严格按照逆序操作：
-1. **回退 5.1.1** (`git revert HEAD`)：恢复 5.1 初始快照实现与测试；
-2. **回退 5.1** (`git revert 2797f9c`)：将安全移除 Handoff 弹窗、对焦控制与导出的全部功能代码及测试，不会损坏底层已有的 Greenfield/Brownfield/Review 核心逻辑；
-3. **回退 5.0** (`git revert 77e446a`)：若在 5.1 未回退时强行回退 5.0，会导致 PR 草稿和设计备忘录丢失，使得 5.1 的架构依据与决策索引失效；
-4. **回退 0** (`git revert 7400cd4`)：若在后续步骤未回退时单独回退，会导致 `.svelte-kit/`、`.turbo/` 等产生未跟踪文件污染工作区，但不影响业务代码运行。
+1. **回退 5.2** (`git revert HEAD`)：安全移除 Ghost 投影、局部放置纯函数与待删除/待变更视觉标记，不影响正式架构与 Review 状态机；
+2. **回退 5.1.1** (`git revert f6ea675`)：恢复 5.1 初始快照实现与测试；
+3. **回退 5.1** (`git revert 2797f9c`)：将安全移除 Handoff 弹窗、对焦控制与导出的全部功能代码及测试，不会损坏底层已有的 Greenfield/Brownfield/Review 核心逻辑；
+4. **回退 5.0** (`git revert 77e446a`)：若在 5.1 未回退时强行回退 5.0，会导致 PR 草稿和设计备忘录丢失，使得 5.1 的架构依据与决策索引失效；
+5. **回退 0** (`git revert 7400cd4`)：若在后续步骤未回退时单独回退，会导致 `.svelte-kit/`、`.turbo/` 等产生未跟踪文件污染工作区，但不影响业务代码运行。
+
 
