@@ -16,6 +16,7 @@ const allowedTypes = new Set([
   "chore",
   "revert"
 ]);
+const MAX_SUBJECT_LENGTH = 150;
 
 function parseArgs() {
   const args = process.argv.slice(2);
@@ -81,8 +82,8 @@ function validateSubject(subject) {
   if (scope && !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(scope)) {
     errors.push(`Invalid scope: ${scope}`);
   }
-  if (subject.length > 72) {
-    errors.push(`Subject exceeds 72 characters (${subject.length})`);
+  if (subject.length > MAX_SUBJECT_LENGTH) {
+    errors.push(`Subject exceeds ${MAX_SUBJECT_LENGTH} characters (${subject.length})`);
   }
   if (!/^[a-z]/.test(description)) {
     errors.push("Description must start with a lowercase letter");
