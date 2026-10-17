@@ -3,7 +3,7 @@ import { DependencyDetector, type TechnologyInfo } from "./detector/dependency-d
 import { DependencyGraphBuilder, type DependencyGraph } from "./graph/dependency-graph.js";
 import { ArchitectureMapper, type RepositoryAnalysisEvidence } from "./mapper/architecture-mapper.js";
 import { RepositoryScanner } from "./repository/scanner.js";
-import type { RepositorySnapshot } from "./repository/snapshot.js";
+import type { RepositorySnapshot, UnsupportedStructureReport } from "./repository/snapshot.js";
 import { ModuleAnalyzer, type ImplementationModule } from "./structure/module-analyzer.js";
 
 export interface RepositoryInspection {
@@ -11,6 +11,7 @@ export interface RepositoryInspection {
   readonly technology: TechnologyInfo;
   readonly modules: readonly ImplementationModule[];
   readonly dependencyGraph: DependencyGraph;
+  readonly unsupportedStructures?: readonly UnsupportedStructureReport[] | undefined;
 }
 
 export interface ImplementationAnalyzerDependencies {
@@ -40,14 +41,21 @@ export class ImplementationAnalyzer {
   async inspect(rootPath: string): Promise<RepositoryInspection> {
     const snapshot = await this.scanner.scan(rootPath);
     const technology = this.dependencyDetector.detect(snapshot.languages, snapshot.dependencies);
-    const modules = this.moduleAnalyzer.analyze(snapshot);
+    const modules = await this.moduleAnalyzer.analyze(snapshot);
     const dependencyGraph = await this.dependencyGraphBuilder.build(snapshot, modules);
-    return { snapshot, technology, modules, dependencyGraph };
+    const unsupportedStructures = [
+      ...(snapshot.unsupportedStructures ?? []),
+      ...(dependencyGraph.unsupportedReports ?? [])
+    ];
+    return { snapshot, technology, modules, dependencyGraph, unsupportedStructures };
   }
 
   async analyze(rootPath: string): Promise<ArchitectureProject> {
     const inspection = await this.inspect(rootPath);
-    return this.architectureMapper.map(inspection satisfies RepositoryAnalysisEvidence);
+    return this.architectureMapper.map({
+      ...inspection,
+      unsupportedStructures: inspection.unsupportedStructures
+    } satisfies RepositoryAnalysisEvidence);
   }
 }
 

@@ -251,7 +251,6 @@ importers:
       '@coding-cad/architecture-ir':
         specifier: workspace:*
         version: link:../architecture-ir
-    devDependencies:
       typescript:
         specifier: ^5.9.2
         version: 5.9.3

@@ -1,40 +1,45 @@
 # 当前状态 / Current State
 
 更新时间 / Updated at: 2026-10-16
-分支 / Branch: codex/phase-3-greenfield-workspace
+分支 / Branch: codex/phase-4-brownfield-workspace
 
-## 结论 / Conclusion
+## 阶段 4 进度总结 / Phase 4 Progress Summary
 
-阶段3在当前未合并分支满足定义的退出条件。原ELK浏览器阻塞已修复并以真实Worker结果、双模式质量断言和完整源码CI验证；fallback不计成功。P3-D1–P3-D3及用户批准的local-user/必填理由、最小Contract增删范围保持有效。 / Defined Phase 3 exit criteria are satisfied on the current unmerged branch. The ELK blocker is repaired and verified by real worker results, both browser modes and full source CI. Approved product decisions remain in force.
+阶段 4 (Brownfield Architecture Workspace) 正在按照既定步骤有序推进：
+- **步骤 0（固化记录格式与规则文档）**：已完成并提交（`876e07c`）。PR 模板、AGENTS.md、CLAUDE.md、文档规则及变更检查脚本均已统一为三段式中英双语格式（做了什么 / What -> 为什么这么做 / Why -> 验证结果 / Verification），已做正负控制验证。
+- **步骤 1（真值基准与当前基线）**：已完成并提交（`f78a2e5`）。建立了本仓库真值黄金文件、两个小型 TS 夹具（small-monorepo、small-single-repo）以及合成大型夹具（synthetic-large-repo），实测记录了修改前基线（本仓库 0/37 边，small-monorepo 0 模块）。
+- **步骤 2（Analyzer 证据模型与分层提取）**：已完成并提交（`c38ef3f`）。实现 L1 工作区 package 清单提取、L2 TypeScript Compiler API 文件级 import 解析、L3 公开导出提取、L4 目录归组与 UnsupportedStructureReport 显式报告。
+- **步骤 2.1（Analyzer 补强：跨包 L2 交叉校验、证据编解码与语义污染防御）**：已完成并验证。分离提交历史（`ddc11f2` 正则门禁独立修复）；实现 L2 交叉校验分类（`declared-and-used`、`declared-unused`、`undeclared-used`）与依赖种类（runtime/dev/peer）；诚实区分 L1 manifest 与 L2+ 手工真值；新增 `edge-cases-repo` 覆盖 barrel `export *`、`import type`、`await import(...)` 动态导入、`tsconfig paths` 别名、循环导入、未声明工作区依赖、语法错误文件；封装类型化证据编解码器 `evidence-codec.ts`（Layer Prior 定义）；将 `export:<Symbol>` 移出 `capabilities` 消除语义污染；实测 `ImplementationValidator` 兼容性（0 误报）；全量基准测试 5 个夹具全部 PASS，代码导入边（resolvedCount）全部非 0。
+- **步骤 3–6**：待推进。
 
 ## 已实现并验证 / Implemented and verified
 
-- requirement -> candidate -> Validator -> local-user Review -> accepted IR -> Canvas/edit/save/open，含无效/拒绝/异常与重复接受不变量。 / The product lifecycle and gate invariants are verified.
-- Add/Remove/Connect、Inspector最小契约与语义编辑、独立视图存储和有效位置恢复。 / Editing, minimal contracts and separate view persistence are verified.
-- 固定elkjs补丁，普通production与dev真实ELK success、3路由、无fallback/pageerror；公开API、solver版本与D-010不变。 / The pinned patch succeeds in ordinary production and dev without public API/solver/boundary changes.
-- 两fixture默认布局无重叠、容器包含正确、结果确定；真实产品描述编辑与Palette添加无关组件p95/max=0/0px，无顺序反转，满足既有48/144px预算。 / Default fixture quality and product-edit/addition movement pass existing criteria.
-- 顺序可写验证全部exit0，CI=true/TURBO_FORCE=true；build15/typecheck25/test30 task；Web unit58/integration9/dev21/preview21；完整本地CI零缓存。 / All ordered gates pass with forced source rebuilds and these task/test counts.
-- 任一次fallback使浏览器门禁失败，retries=0；预期失败负控exit1，不计为正向通过。 / Any fallback fails the browser gate with no retries; the negative control fails as expected.
+- 统一记录格式自动化门禁：`check:changelog` 校验三段式顺序与中英双语；
+- 5 套真值测试夹具与自动化度量脚本（`benchmark.ts`）；
+- `ImplementationAnalyzer` 分层提取与 Compiler API AST 导入解析；
+- L2 跨包交叉校验（declared-and-used / declared-unused / undeclared-used）与依赖种类（runtime/dev/peer）；
+- 类型化证据编解码模块（`evidence-codec.ts`）与 Layer Prior（层级先验）模型；
+- 语义字段污染清除（capabilities 保持纯净，warnings 移出 intent.purpose）；
+- `ImplementationValidator` 架构兼容性实测（Coding-CAD 与合成大图 0 限制关键词误报）；
+- 7 大边缘用例全面覆盖（barrel re-export、type-only、dynamic import、tsconfig paths、circular、undeclared workspace、unparseable syntax）；
+- 性能与基线验证：Coding-CAD 本仓库及合成大型夹具召回率达到 100%，所有夹具代码导入解析边数均 > 0。
 
 ## 已实现未验证 / Implemented but unverified
 
-未验证大型图的浏览器质量、多浏览器/移动端、真实生产部署；Node既有性能fixture不替代这些证明。 / Large browser graphs, other browsers/mobile and production deployment remain unverified; Node benchmarks do not prove them.
+- 步骤 3 的 Web 产品流水线连接（打开仓库 -> 反演 -> 重建 IR -> Layout -> 展示）；
+- 步骤 4 的 Validator 问题双向导航与契约检查状态展示；
+- 步骤 5 的真实浏览器 E2E 双模式验收（断言 ELK 来源）；
+- 步骤 5 的用户人工可理解性评估表（需待用户实际填写验收）。
 
 ## 未实现及范围外 / Not implemented or out of scope
 
-Schema编辑器、持久化审批历史、Brownfield、Ghost presentation、完整Review workspace、Handoff与Terminal不属于本次。Phase 4没有实施或新增授权；分支未合并/变基，原未跟踪PR草稿保留。 / These extensions and later-phase products are outside this task. No Phase 4 implementation/authorization, merge or rebase occurred; the original untracked PR draft is preserved.
+- Ghost 节点投影、完整 Review 工作区、Execution Handoff、Terminal（阶段 5+ 范围）；
+- 完整 AST 语义推理、类型推断、契约字段自动推断、多语言深度解析；
+- 自动修复建议；
+- 新增 package、改动 Architecture IR 公开类型、改动 D-010 worker 边界或更换 solver。
 
 ## 风险与回退 / Risks and rollback
 
-elkjs补丁与0.12.0绑定，升级须回归；chunk/adapter-auto警告仍在。新增节点可能超出固定viewport，需pan/zoom，不能声称自动适配。 / The version-pinned patch requires upgrade regression; chunk/deployment-adapter warnings remain. New nodes may require pan/zoom in the fixed viewport.
-
-证据、五步提交和逆序revert见[退出报告](../../docs/phase-3-exit-report.md)及logs/validation/p3-closeout/elk-browser/。历史implementation-log与旧失败输出保留为历史，不代表当前结论。 / See the exit report and evidence directory for separate commits and reverse-order reverts; historical failure logs remain historical.
-
-## 2026-10-16 PR #3 Security Gate Follow-up / PR #3安全门禁后续
-
-首次远端CI在依赖审计失败，不是本地ELK测试失败。用户授权定向更新三个补丁，并将同一high阈值审计加入ci:verify；锁文件仅移动undici8.10.0→8.10.2、devalue5.9.0→5.9.3、source-map-js1.2.1→1.2.2。ELK补丁hash、solver、Worker和公开API不变。 / The first remote failure was dependency auditing, not an ELK regression. The authorized narrow patch and local gate alignment preserve ELK and all layout boundaries.
-
-修复后审计high/critical=0；仍有2moderate（vitest及其mocker）与1low（cookie），没有忽略或声明零漏洞。安全门禁保持high阈值。最新验证及PR结果分别见logs/validation/p3-security-closeout/与PR #3 Checks；历史本地CI结果不代替远端验收。 / High/critical findings are zero; two moderate and one low remain without suppression. The unchanged gate threshold applies. New local evidence and PR checks are distinct.
-
-
-本轮最终验证：冻结安装、源码build、安全high门禁及含审计的强制ci:verify均exit0；Web58unit/9integration/dev21/preview21，所有Turbo阶段0cached。pnpm audit --json仍exit1，因剩余2moderate/1low；不将其误标为零漏洞或环境错误。证据见logs/validation/p3-security-closeout/report.md；远端以PR Checks为准。 / Final local gates pass with forced source builds and all browser guards. Unfiltered JSON audit exits1 for remaining low/moderate findings, not a zero-vulnerability claim or environment error. Hosted status remains independently observable.
+- 步骤 0–2 的提交均相互独立，如需回退某一步骤可严格逆序执行 `git revert`。
+- 未跟踪文件 `.github/pr-draft-phase3.md` 保持不受触碰。
+- 详细对比数据记录于 `logs/validation/p4-baseline/analyzer-comparison.md`。

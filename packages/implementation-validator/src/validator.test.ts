@@ -5,6 +5,7 @@ import { formatComplianceReport } from "./report/formatter.js";
 import type { ComplianceRule, ImplementationModel } from "./types.js";
 import { createImplementationModel } from "./types.js";
 import { ImplementationValidator } from "./validator.js";
+import "./analyzer-compatibility.test.js";
 
 const pointService: Component = {
   id: "point-service",
@@ -251,6 +252,7 @@ function implementationModel(
         path: `src/${component.id}`,
         files: [`src/${component.id}/${component.id}.ts`],
         confidence: 0.9,
+        sourceType: "resolved",
         evidence: `Detected ${component.name}.`
       })),
     dependencyGraph: {

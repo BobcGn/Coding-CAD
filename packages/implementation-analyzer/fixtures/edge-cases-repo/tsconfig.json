@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@utils/*": [
+        "packages/pkg-core/src/utils/*"
+      ]
+    }
+  }
+}

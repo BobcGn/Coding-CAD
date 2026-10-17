@@ -1,8 +1,9 @@
 import path from "node:path";
 import type { ArchitectureProject, Component, Connection } from "@coding-cad/architecture-ir";
+import { encodeComponentTags, encodeConnectionConstraints } from "../codec/evidence-codec.js";
 import { databaseForDependency, type TechnologyInfo } from "../detector/dependency-detector.js";
 import type { DependencyGraph } from "../graph/dependency-graph.js";
-import type { RepositorySnapshot } from "../repository/snapshot.js";
+import type { RepositorySnapshot, UnsupportedStructureReport } from "../repository/snapshot.js";
 import type { ImplementationModule } from "../structure/module-analyzer.js";
 
 export interface RepositoryAnalysisEvidence {
@@ -10,6 +11,7 @@ export interface RepositoryAnalysisEvidence {
   readonly technology: TechnologyInfo;
   readonly modules: readonly ImplementationModule[];
   readonly dependencyGraph: DependencyGraph;
+  readonly unsupportedStructures?: readonly UnsupportedStructureReport[] | undefined;
 }
 
 export class ArchitectureMapper {
@@ -41,18 +43,26 @@ export class ArchitectureMapper {
 }
 
 function moduleComponent(module: ImplementationModule, technology: TechnologyInfo): Component {
+  const exportsInfo = module.exports && module.exports.length > 0
+    ? ` Exports: ${module.exports.slice(0, 10).join(", ")}${module.exports.length > 10 ? ` (+${module.exports.length - 10} more)` : ""}.`
+    : "";
+
   return {
     id: module.id,
     name: module.name,
-    description: `${module.evidence} Repository path: ${module.path}.`,
+    description: `${module.evidence} Repository path: ${module.path}.${exportsInfo}`,
     type: "service",
-    capabilities: ["repository-derived-module"],
-    logicalRole: "implementation-module",
+    capabilities: [
+      module.sourceType === "declared" ? "workspace-package" : "repository-derived-module"
+    ],
+    logicalRole: module.sourceType === "declared" ? "workspace-package" : "implementation-module",
     ...(technology.frameworks.length > 0 ? { technology: technology.frameworks.join(", ") } : {}),
-    tags: [
-      "implementation-analyzer",
-      `confidence:${module.confidence.toFixed(2)}`
-    ]
+    tags: encodeComponentTags({
+      source: module.sourceType ?? "inferred",
+      confidence: module.confidence,
+      path: module.path,
+      exports: module.exports ?? []
+    })
   };
 }
 
@@ -65,7 +75,12 @@ function technologyComponent(technology: string): Component {
       capabilities: ["cache", "key-value"],
       limitations: ["not-primary-storage"],
       technology: "redis",
-      tags: ["implementation-analyzer", "detected-from-dependency"]
+      tags: encodeComponentTags({
+        source: "inferred",
+        confidence: 0.90,
+        path: "detected-from-dependency",
+        exports: []
+      })
     };
   }
 
@@ -75,7 +90,12 @@ function technologyComponent(technology: string): Component {
     type: "database",
     capabilities: databaseCapabilities(technology),
     technology: technology.toLowerCase(),
-    tags: ["implementation-analyzer", "detected-from-dependency"]
+    tags: encodeComponentTags({
+      source: "inferred",
+      confidence: 0.90,
+      path: "detected-from-dependency",
+      exports: []
+    })
   };
 }
 
@@ -94,7 +114,14 @@ function moduleConnections(graph: DependencyGraph): Connection[] {
     protocol: "module-import",
     description: edge.evidence,
     mode: "sync",
-    constraints: [`Detection confidence: ${edge.confidence.toFixed(2)}`]
+    constraints: encodeConnectionConstraints({
+      source: edge.sourceType,
+      confidence: edge.confidence,
+      dependencyKind: edge.dependencyKind,
+      usageStatus: edge.usageStatus,
+      evidencePath: edge.evidencePath,
+      humanDescription: edge.evidence
+    })
   }));
 }
 
@@ -115,7 +142,12 @@ function technologyConnections(
       to: target,
       protocol: database === "Redis" ? "Redis protocol" : "database-client",
       description: usage.evidence,
-      constraints: [`Detection confidence: ${usage.confidence.toFixed(2)}`]
+      constraints: encodeConnectionConstraints({
+        source: "inferred",
+        confidence: usage.confidence,
+        evidencePath: usage.evidence,
+        humanDescription: usage.evidence
+      })
     }];
   });
 }
