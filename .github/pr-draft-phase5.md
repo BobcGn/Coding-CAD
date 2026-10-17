@@ -191,17 +191,19 @@
 | 5.2 | `cb8be8e` | `feat(ghost): implement proposal ghost projection, placement adapter, and view markers` | `git revert cb8be8e` | 移除 Ghost 放置算法、Svelte Flow Ghost 投影与编辑标记，恢复无 Ghost 的直接候选状态 |
 | 5.3 | `9971e4d` | `feat(review): harden review gate with ghost accept/reject, stale proposals, and single-proposal lock` | `git revert 9971e4d` | 移除 Review 接入硬化、过期提案标记与单提案严格防御 |
 | 5.4 | `7120770` | `test(layout): verify incremental layout stability budget and measure ghost displacement` | `git revert 7120770` | 移除增量布局稳定性指标测试与位移度量套件 |
+| 5.5 | `d529390` | `docs(phase-5): add phase 5 exit report and update execution plan` | `git revert d529390` | 回退阶段 5 退出报告与主计划状态 |
 
 ### 逆序回退分析 / Cascading Rollback Analysis
 
 若需回退本阶段提交，请严格按照逆序操作：
-1. **回退 5.4** (`git revert HEAD`)：移除增量布局稳定性测试与位移度量套件，不影响正式架构与 Ghost 交互；
-2. **回退 5.3** (`git revert 9971e4d`)：移除过期提案检测、单提案严格阻断与 Review 接入硬化，恢复步骤 5.2 的基本 Ghost 投影；
-3. **回退 5.2** (`git revert cb8be8e`)：安全移除 Ghost 投影、局部放置纯函数与待删除/待变更视觉标记，不影响正式架构与 Review 状态机；
-4. **回退 5.1.1** (`git revert f6ea675`)：恢复 5.1 初始快照实现与测试；
-5. **回退 5.1** (`git revert 2797f9c`)：将安全移除 Handoff 弹窗、对焦控制与导出的全部功能代码及测试，不会损坏底层已有的 Greenfield/Brownfield/Review 核心逻辑；
-6. **回退 5.0** (`git revert 77e446a`)：若在 5.1 未回退时强行回退 5.0，会导致 PR 草稿和设计备忘录丢失，使得 5.1 的架构依据与决策索引失效；
-7. **回退 0** (`git revert 7400cd4`)：若在后续步骤未回退时单独回退，会导致 `.svelte-kit/`、`.turbo/` 等产生未跟踪文件污染工作区，但不影响业务代码运行。
+1. **回退 5.5** (`git revert HEAD`)：移除阶段 5 退出报告与状态标记；
+2. **回退 5.4** (`git revert 7120770`)：移除增量布局稳定性测试与位移度量套件，不影响正式架构与 Ghost 交互；
+3. **回退 5.3** (`git revert 9971e4d`)：移除过期提案检测、单提案严格阻断与 Review 接入硬化，恢复步骤 5.2 的基本 Ghost 投影；
+4. **回退 5.2** (`git revert cb8be8e`)：安全移除 Ghost 投影、局部放置纯函数与待删除/待变更视觉标记，不影响正式架构与 Review 状态机；
+5. **回退 5.1.1** (`git revert f6ea675`)：恢复 5.1 初始快照实现与测试；
+6. **回退 5.1** (`git revert 2797f9c`)：将安全移除 Handoff 弹窗、对焦控制与导出的全部功能代码及测试，不会损坏底层已有的 Greenfield/Brownfield/Review 核心逻辑；
+7. **回退 5.0** (`git revert 77e446a`)：若在 5.1 未回退时强行回退 5.0，会导致 PR 草稿和设计备忘录丢失，使得 5.1 的架构依据与决策索引失效；
+8. **回退 0** (`git revert 7400cd4`)：若在后续步骤未回退时单独回退，会导致 `.svelte-kit/`、`.turbo/` 等产生未跟踪文件污染工作区，但不影响业务代码运行。
 
 
 
