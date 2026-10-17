@@ -313,12 +313,12 @@
 | 5.6 (PR) | `966fd4c` | `docs(pr): update PR draft with Step 5.6 commit hash and rollback crosswalk` | `git revert 966fd4c` | 同步回退 PR 草稿中步骤 5.6 提交哈希 |
 | 5.7 | `338a489` | `docs(phase-5): add ghost predictive placement design memo evaluating options A, B, and C` | `git revert 338a489` | 移除 Ghost 预测位置设计备忘录 |
 | 5.7 (PR) | `df78264` | `docs(pr): update PR draft with Step 5.7 commit hash and rollback crosswalk` | `git revert df78264` | 同步回退 PR 草稿中步骤 5.7 提交哈希 |
-| 5.8.0 | *(本步提交)* | `docs(phase-5): reconcile test evidence, refine reason codes, and correct placement memo` | `git revert <hash>` | 回退 5.8.0 证据对齐、原因码细化与备忘录订正 |
+| 5.8.0 | `530002a` | `docs(phase-5): reconcile test evidence, refine reason codes, and correct placement memo` | `git revert 530002a` | 回退 5.8.0 证据对齐、原因码细化与备忘录订正 |
 
 ### 逆序回退分析 (Cascading Rollback Analysis)
 
 若需回退本阶段提交，请严格按照逆序操作：
-1. **回退 5.8.0** (`git revert <5.8.0-hash>`)：移除证据对齐、原因码细化与备忘录订正，恢复 5.7 状态；
+1. **回退 5.8.0** (`git revert 530002a`)：移除证据对齐、原因码细化与备忘录订正，恢复 5.7 状态；
 2. **回退 5.7** (`git revert df78264` -> `git revert 338a489`)：安全移除 Ghost 预测位置设计备忘录；
 3. **回退 5.6** (`git revert 966fd4c` -> `git revert 3f05c44`)：移除浏览器 E2E benchmark 测试套件与订正报告；
 4. **回退 5.5** (`git revert 71e76d0` -> `git revert d529390`)：移除阶段 5 退出报告及执行计划更新；
