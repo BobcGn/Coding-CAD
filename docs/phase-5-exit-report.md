@@ -10,7 +10,7 @@
 
 ### 待用户处理事项 / Items Pending User Action
 
-1. **Ghost 预测位置决策 (Ghost Predictive Placement Decision)**: 详见 [`docs/phase-5-ghost-placement-memo.md`](./phase-5-ghost-placement-memo.md)，需在方案 A (保持当前局部启发式)、方案 B (提案时触发未持久化 Dry-run 布局) 与方案 C (增强过渡动画与视觉引导) 之间裁定。
+1. **Ghost 预测位置实现与验收 (Ghost Predictive Placement Implementation & Verification)**: 用户已批准 D-011（采纳方案 B：未持久化试算布局预测 Ghost 位置，约束：试算与接受同一函数同一参数、绝对不持久化、失败降级、提案变化丢弃试算、不改动底层 API 与审批语义、三态标签提示）。步骤 5.8.0 已完成证据订正与细化分类，正在执行步骤 5.8 实现与验证。
 2. **xjb_coding 导出立项确认 (xjb_coding Export Project Decision)**: 是否正式立项将 Execution Blueprint 导出为 xjb_coding 配置格式。备忘录第 6 节已评估映射可行性：`task_graph` 可直接从 Blueprint Task 拓扑导出，但约束映射在复杂谓词下需转换，且存在单向导出不回写的边界限制。
 3. **人工可理解性评估尚未执行 (Human Interpretability Assessment Not Yet Executed)**: 尚未组织人工架构师进行可理解性评估，目前仅有自动化几何与语义断言覆盖。
 4. **阶段 4.5 未执行事项及决策状态 (Phase 4.5 Deferred Items & Decision Status)**: 根入口聚合 (Root Entrypoint Aggregation)、循环依赖检测 (Cyclic Dependency Detection)、默认折叠落实为默认行为 (Default Collapse Applied as Default View State) 仍处于递延状态，需明确是否纳入后续阶段。
@@ -89,7 +89,7 @@
 - 实测 6 组 Ghost 到正式节点的位移距离，量化局部启发式放置与全局分层布局之间的几何差距。
 
 ### 步骤 5.6：订正与补证据 (Step 5.6: Corrections & Evidence Completion)
-- 提交哈希：*(本步提交)*
+- 提交哈希：`3f05c44`, `966fd4c`
 - 退出结论更正为“有条件满足”，顶部建立待用户处理事项；
 - 真实浏览器 Playwright E2E 证据收集：建立 `apps/web/e2e/ghost-stability-benchmarks.spec.ts`，在 dev 与 preview 双模式下实测 6 个 Add 场景，零重叠、零容器包含失败、100% ELK solver、未受影响节点位移全为 0.0px；
 - 深入解答 Medium 夹具 (24, 153) 坐标归因与 DocGen (1812, 208) 候选顺序与回退条件；
@@ -98,9 +98,24 @@
 - 提交表规范化与按包测试统计。
 
 ### 步骤 5.7：Ghost 预测位置设计备忘录 (Step 5.7: Ghost Predictive Placement Memo, Read-only)
-- 提交哈希：*(后续提交)*
+- 提交哈希：`338a489`, `df78264`
 - 产出 [`docs/phase-5-ghost-placement-memo.md`](./phase-5-ghost-placement-memo.md)（只写文档，不实现任何产品代码）；
 - 详尽评估方案 A、方案 B (Dry-run 预测布局)、方案 C (动画过渡) 的可行性、API 影响、D-010 边界与性能开销，给出推荐与决策草案。
+
+### 步骤 5.8.0：订正证据与措辞 (Step 5.8.0: Evidence & Wording Corrections)
+- 提交哈希：*(本步提交)*
+- **备忘录订正**：`docs/phase-5-ghost-placement-memo.md` 中删除未经验证的具体延迟与准确率数字，替换为“待实现后验证”，并如实说明推导数据来源于 Node 单测路径而非浏览器运行时；
+- **放置原因码细化**：重新定义并规范化放置原因码：
+  - `near-anchor`：紧邻主锚点槽位（锚点距离 ≤ 300px）；
+  - `far-anchor-fallback`：主槽位冲突后向外扩展列（如 Telemetry 锚点距离为 967.5px）；
+  - `container-interior`：容器内部空位放置；
+  - `container-exterior`：容器无空位置于外侧边界；
+  - `global-fallback`：无锚点或全避碰后置于全局暂存区；
+- **测试数量对齐与原始输出归档**：
+  - 逐包执行 13 个 `packages/` + 2 个 `apps/`，全量原始输出保存至 [`logs/validation/p5-reconciliation/`](../logs/validation/p5-reconciliation/)；
+  - 编制 [`logs/validation/p5-reconciliation/README.md`](../logs/validation/p5-reconciliation/README.md) 索引全部 17 份日志，澄清 Node bundle (7) 与源码文件 (9) 的统计口径，说明 Web 测试演进（117 单元 + 13 集成 + 74 浏览器）；
+  - 核查 5 核心包零代码改动证据（`git diff --stat main..HEAD` 仅 30 行 `.gitignore`）；
+- **全量 CI 门禁执行**：`CI=true TURBO_FORCE=true pnpm ci:verify`，原始输出保存至 `ci-verify.log`，记录各个 stage 耗时，总耗时约 150s，74 项浏览器测试（37 dev + 37 preview）全部一次性通过。
 
 ---
 
@@ -125,22 +140,22 @@
 #### Dev 模式运行结果 (`ghost-benchmarks-dev.json`)
 | 夹具 (Fixture) | 组件 (Component) | 放置原因码 (Reason) | Ghost 位置 | 锚点距离 | 接受后位置 | 位移 (Displacement) | 接受前重叠数 | 接受后重叠数 | 容器包含失败 | Solver 来源 | 无关节点 p95 | 预算判定 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Greenfield (Points System) | AuditService | adjacent-anchor | (512, 236) | 257.7px | (24, 236) | 488.0px | 0 | 0 | 0 | elk | 0.0px | PASS |
-| Greenfield (Points System) | PaymentGateway | adjacent-anchor | (252, 236) | 257.7px | (24, 236) | 228.0px | 0 | 0 | 0 | elk | 0.0px | PASS |
-| Greenfield (Points System) | RedisCache | container-full-exterior | (801, 24) | 252.0px | (561, 248) | 328.3px | 0 | 0 | 0 | elk | 0.0px | PASS |
-| Coding-CAD (Medium Baseline) | Telemetry | adjacent-anchor | (1764, 306) | 967.5px | (24, 153) | 1746.7px | 0 | 0 | 0 | elk | 0.0px | PASS |
-| Coding-CAD (Medium Baseline) | DocGen | adjacent-anchor | (1812, 208) | 228.0px | (24, 153) | 1788.8px | 0 | 0 | 0 | elk | 0.0px | PASS |
-| Coding-CAD (Medium Baseline) | IsolatedMock | fallback-global | (1812, 35) | N/A | (24, 153) | 1791.9px | 0 | 0 | 0 | elk | 0.0px | PASS |
+| Greenfield (Points System) | AuditService | near-anchor | (512, 236) | 257.7px | (24, 236) | 488.0px | 0 | 0 | 0 | elk | 0.0px | PASS |
+| Greenfield (Points System) | PaymentGateway | near-anchor | (252, 236) | 257.7px | (24, 236) | 228.0px | 0 | 0 | 0 | elk | 0.0px | PASS |
+| Greenfield (Points System) | RedisCache | container-exterior | (801, 24) | 252.0px | (561, 248) | 328.3px | 0 | 0 | 0 | elk | 0.0px | PASS |
+| Coding-CAD (Medium Baseline) | Telemetry | far-anchor-fallback | (1764, 306) | 967.5px | (24, 153) | 1746.7px | 0 | 0 | 0 | elk | 0.0px | PASS |
+| Coding-CAD (Medium Baseline) | DocGen | near-anchor | (1812, 208) | 228.0px | (24, 153) | 1788.8px | 0 | 0 | 0 | elk | 0.0px | PASS |
+| Coding-CAD (Medium Baseline) | IsolatedMock | global-fallback | (1812, 35) | N/A | (24, 153) | 1791.9px | 0 | 0 | 0 | elk | 0.0px | PASS |
 
 #### Preview 模式运行结果 (`ghost-benchmarks-preview.json`)
 | 夹具 (Fixture) | 组件 (Component) | 放置原因码 (Reason) | Ghost 位置 | 锚点距离 | 接受后位置 | 位移 (Displacement) | 接受前重叠数 | 接受后重叠数 | 容器包含失败 | Solver 来源 | 无关节点 p95 | 预算判定 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Greenfield (Points System) | AuditService | adjacent-anchor | (512, 236) | 257.7px | (24, 236) | 488.0px | 0 | 0 | 0 | elk | 0.0px | PASS |
-| Greenfield (Points System) | PaymentGateway | adjacent-anchor | (252, 236) | 257.7px | (24, 236) | 228.0px | 0 | 0 | 0 | elk | 0.0px | PASS |
-| Greenfield (Points System) | RedisCache | container-full-exterior | (801, 24) | 252.0px | (561, 248) | 328.3px | 0 | 0 | 0 | elk | 0.0px | PASS |
-| Coding-CAD (Medium Baseline) | Telemetry | adjacent-anchor | (1764, 306) | 967.5px | (24, 153) | 1746.7px | 0 | 0 | 0 | elk | 0.0px | PASS |
-| Coding-CAD (Medium Baseline) | DocGen | adjacent-anchor | (1812, 208) | 228.0px | (24, 153) | 1788.8px | 0 | 0 | 0 | elk | 0.0px | PASS |
-| Coding-CAD (Medium Baseline) | IsolatedMock | fallback-global | (1812, 35) | N/A | (24, 153) | 1791.9px | 0 | 0 | 0 | elk | 0.0px | PASS |
+| Greenfield (Points System) | AuditService | near-anchor | (512, 236) | 257.7px | (24, 236) | 488.0px | 0 | 0 | 0 | elk | 0.0px | PASS |
+| Greenfield (Points System) | PaymentGateway | near-anchor | (252, 236) | 257.7px | (24, 236) | 228.0px | 0 | 0 | 0 | elk | 0.0px | PASS |
+| Greenfield (Points System) | RedisCache | container-exterior | (801, 24) | 252.0px | (561, 248) | 328.3px | 0 | 0 | 0 | elk | 0.0px | PASS |
+| Coding-CAD (Medium Baseline) | Telemetry | far-anchor-fallback | (1764, 306) | 967.5px | (24, 153) | 1746.7px | 0 | 0 | 0 | elk | 0.0px | PASS |
+| Coding-CAD (Medium Baseline) | DocGen | near-anchor | (1812, 208) | 228.0px | (24, 153) | 1788.8px | 0 | 0 | 0 | elk | 0.0px | PASS |
+| Coding-CAD (Medium Baseline) | IsolatedMock | global-fallback | (1812, 35) | N/A | (24, 153) | 1791.9px | 0 | 0 | 0 | elk | 0.0px | PASS |
 
 - **断言达成情况**：
   1. **接受前 Ghost 与正式节点重叠数**：全部 6 个场景严格为 **0**；
@@ -294,17 +309,23 @@
 | 5.4 (PR) | `634c355` | `docs(pr): update PR draft with Step 5.4 commit hash` | `git revert 634c355` | 同步回退 PR 草稿中步骤 5.4 提交哈希 |
 | 5.5 | `d529390` | `docs(phase-5): add phase 5 exit report and update execution plan` | `git revert d529390` | 回退阶段 5 初始退出报告 |
 | 5.5 (PR) | `71e76d0` | `docs(pr): update PR draft with Step 5.5 commit hash and final rollback crosswalk` | `git revert 71e76d0` | 同步回退 PR 草稿中步骤 5.5 提交哈希 |
-| 5.6 | *(Pending)* | `test(e2e): add real browser benchmarks for ghost placement and correct exit status` | `git revert <hash>` | 移除浏览器 E2E benchmark 测试与订正报告 |
+| 5.6 | `3f05c44` | `test(e2e): add real browser benchmarks for ghost placement and correct exit status` | `git revert 3f05c44` | 移除浏览器 E2E benchmark 测试与订正报告 |
+| 5.6 (PR) | `966fd4c` | `docs(pr): update PR draft with Step 5.6 commit hash and rollback crosswalk` | `git revert 966fd4c` | 同步回退 PR 草稿中步骤 5.6 提交哈希 |
+| 5.7 | `338a489` | `docs(phase-5): add ghost predictive placement design memo evaluating options A, B, and C` | `git revert 338a489` | 移除 Ghost 预测位置设计备忘录 |
+| 5.7 (PR) | `df78264` | `docs(pr): update PR draft with Step 5.7 commit hash and rollback crosswalk` | `git revert df78264` | 同步回退 PR 草稿中步骤 5.7 提交哈希 |
+| 5.8.0 | *(本步提交)* | `docs(phase-5): reconcile test evidence, refine reason codes, and correct placement memo` | `git revert <hash>` | 回退 5.8.0 证据对齐、原因码细化与备忘录订正 |
 
 ### 逆序回退分析 (Cascading Rollback Analysis)
 
 若需回退本阶段提交，请严格按照逆序操作：
-1. **回退 5.6** (`git revert <5.6-hash>`)：移除浏览器 E2E benchmark 测试套件与订正报告，恢复 5.5 状态；
-2. **回退 5.5** (`git revert 71e76d0` -> `git revert d529390`)：移除阶段 5 退出报告及执行计划更新；
-3. **回退 5.4** (`git revert 634c355` -> `git revert 7120770`)：安全移除增量布局稳定性指标测试与位移度量套件，不影响正式架构与 Ghost 交互；
-4. **回退 5.3** (`git revert b94e0fb` -> `git revert 9971e4d`)：移除过期提案检测、单提案严格阻断与 Review 接入硬化，恢复步骤 5.2 的基本 Ghost 投影；
-5. **回退 5.2** (`git revert baba8c0` -> `git revert cb8be8e`)：安全移除 Ghost 投影、局部放置纯函数与待删除/待变更视觉标记，不影响正式架构与 Review 状态机；
-6. **回退 5.1.1** (`git revert f6ea675`)：恢复 5.1 初始快照实现与测试；
-7. **回退 5.1** (`git revert 3f8d76a` -> `git revert 2797f9c`)：安全移除 Handoff 模态框、对焦控制与导出的全部功能代码及测试，不会损坏底层已有的 Greenfield/Brownfield/Review 核心逻辑；
-8. **回退 5.0** (`git revert 77e446a`)：若在 5.1 未回退时强行回退 5.0，会导致 PR 草稿和设计备忘录丢失；
-9. **回退范围外附带改动** (`git revert 7400cd4`)：若在后续步骤未回退时单独回退，会导致 `.svelte-kit/`、`.turbo/` 等产生未跟踪文件污染工作区，但不影响业务代码运行。
+1. **回退 5.8.0** (`git revert <5.8.0-hash>`)：移除证据对齐、原因码细化与备忘录订正，恢复 5.7 状态；
+2. **回退 5.7** (`git revert df78264` -> `git revert 338a489`)：安全移除 Ghost 预测位置设计备忘录；
+3. **回退 5.6** (`git revert 966fd4c` -> `git revert 3f05c44`)：移除浏览器 E2E benchmark 测试套件与订正报告；
+4. **回退 5.5** (`git revert 71e76d0` -> `git revert d529390`)：移除阶段 5 退出报告及执行计划更新；
+5. **回退 5.4** (`git revert 634c355` -> `git revert 7120770`)：安全移除增量布局稳定性指标测试与位移度量套件，不影响正式架构与 Ghost 交互；
+6. **回退 5.3** (`git revert b94e0fb` -> `git revert 9971e4d`)：移除过期提案检测、单提案严格阻断与 Review 接入硬化，恢复步骤 5.2 的基本 Ghost 投影；
+7. **回退 5.2** (`git revert baba8c0` -> `git revert cb8be8e`)：安全移除 Ghost 投影、局部放置纯函数与待删除/待变更视觉标记，不影响正式架构与 Review 状态机；
+8. **回退 5.1.1** (`git revert f6ea675`)：恢复 5.1 初始快照实现与测试；
+9. **回退 5.1** (`git revert 3f8d76a` -> `git revert 2797f9c`)：安全移除 Handoff 模态框、对焦控制与导出的全部功能代码及测试，不会损坏底层已有的 Greenfield/Brownfield/Review 核心逻辑；
+10. **回退 5.0** (`git revert 77e446a`)：若在 5.1 未回退时强行回退 5.0，会导致 PR 草稿和设计备忘录丢失；
+11. **回退范围外附带改动** (`git revert 7400cd4`)：若在后续步骤未回退时单独回退，会导致 `.svelte-kit/`、`.turbo/` 等产生未跟踪文件污染工作区，但不影响业务代码运行。

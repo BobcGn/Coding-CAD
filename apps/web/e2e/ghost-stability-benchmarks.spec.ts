@@ -13,7 +13,7 @@ interface BrowserGhostBenchmarkRecord {
   readonly proposalId: string;
   readonly componentId: string;
   readonly componentName: string;
-  readonly reasonCode: "adjacent-anchor" | "container-full-exterior" | "inside-container" | "fallback-global";
+  readonly reasonCode: "near-anchor" | "far-anchor-fallback" | "container-interior" | "container-exterior" | "global-fallback";
   readonly anchorId?: string;
   readonly ghostPos: { x: number; y: number };
   readonly distanceToAnchor?: number;
@@ -55,7 +55,7 @@ test.describe("Step 5.6 Real Browser Ghost Placement & Incremental Layout Benchm
         readonly capabilities: readonly string[];
         readonly tags?: readonly string[];
       };
-      readonly expectedReason: "adjacent-anchor" | "container-full-exterior" | "inside-container" | "fallback-global";
+      readonly expectedReason: "near-anchor" | "far-anchor-fallback" | "container-interior" | "container-exterior" | "global-fallback";
       readonly anchorId?: string;
     };
 
@@ -70,7 +70,7 @@ test.describe("Step 5.6 Real Browser Ghost Placement & Incremental Layout Benchm
           capabilities: ["audit-logging"],
           tags: ["anchor:ledger"]
         },
-        expectedReason: "adjacent-anchor",
+        expectedReason: "near-anchor",
         anchorId: "ledger"
       },
       {
@@ -83,7 +83,7 @@ test.describe("Step 5.6 Real Browser Ghost Placement & Incremental Layout Benchm
           capabilities: ["payment-forwarding"],
           tags: ["anchor:gateway"]
         },
-        expectedReason: "adjacent-anchor",
+        expectedReason: "near-anchor",
         anchorId: "gateway"
       },
       {
@@ -98,7 +98,7 @@ test.describe("Step 5.6 Real Browser Ghost Placement & Incremental Layout Benchm
         },
         // In pointsSystemFixture, group:infrastructure is tightly packed around database & events.
         // There is no open 220x90 slot inside, so Ghost is placed immediately to the right exterior.
-        expectedReason: "container-full-exterior",
+        expectedReason: "container-exterior",
         anchorId: "group:infrastructure"
       },
       {
@@ -111,7 +111,7 @@ test.describe("Step 5.6 Real Browser Ghost Placement & Incremental Layout Benchm
           capabilities: ["metrics-export"],
           tags: ["anchor:server"]
         },
-        expectedReason: "adjacent-anchor",
+        expectedReason: "far-anchor-fallback",
         anchorId: "server"
       },
       {
@@ -124,7 +124,7 @@ test.describe("Step 5.6 Real Browser Ghost Placement & Incremental Layout Benchm
           capabilities: ["markdown-docs"],
           tags: ["anchor:architecture-ir"]
         },
-        expectedReason: "adjacent-anchor",
+        expectedReason: "near-anchor",
         anchorId: "architecture-ir"
       },
       {
@@ -137,7 +137,7 @@ test.describe("Step 5.6 Real Browser Ghost Placement & Incremental Layout Benchm
           capabilities: ["unit-testing"],
           tags: []
         },
-        expectedReason: "fallback-global",
+        expectedReason: "global-fallback",
         anchorId: undefined
       }
     ];
@@ -227,13 +227,21 @@ test.describe("Step 5.6 Real Browser Ghost Placement & Incremental Layout Benchm
         });
 
         // Determine reason code
-        let reasonCode: "adjacent-anchor" | "container-full-exterior" | "inside-container" | "fallback-global" = "fallback-global";
+        let reasonCode: "near-anchor" | "far-anchor-fallback" | "container-interior" | "container-exterior" | "global-fallback" = "global-fallback";
         if (notice && notice.includes("内部无可用空间")) {
-          reasonCode = "container-full-exterior";
-        } else if (ghostElement?.parentElement?.classList.contains("group") || ghostRect.x > 0 && ghostRect.y > 0 && formalRects.some(r => r.kind === "group" && ghostRect.x >= r.x && ghostRect.x + ghostRect.width <= r.x + r.width)) {
-          reasonCode = "inside-container";
+          reasonCode = "container-exterior";
+        } else if (ghostElement?.parentElement?.classList.contains("group") || (ghostRect.x > 0 && ghostRect.y > 0 && formalRects.some(r => r.kind === "group" && ghostRect.x >= r.x && ghostRect.x + ghostRect.width <= r.x + r.width))) {
+          reasonCode = "container-interior";
         } else if (comp.tags?.some((t: string) => t.startsWith("anchor:"))) {
-          reasonCode = "adjacent-anchor";
+          const anchorTag = comp.tags.find((t: string) => t.startsWith("anchor:"));
+          const anchorNodeId = anchorTag ? anchorTag.replace("anchor:", "") : undefined;
+          const anchorFormal = formalRects.find((r) => r.id === anchorNodeId);
+          if (anchorFormal) {
+            const dist = Math.hypot(flowX - anchorFormal.x, flowY - anchorFormal.y);
+            reasonCode = dist <= 300 ? "near-anchor" : "far-anchor-fallback";
+          } else {
+            reasonCode = "global-fallback";
+          }
         }
 
         return {
@@ -248,6 +256,7 @@ test.describe("Step 5.6 Real Browser Ghost Placement & Incremental Layout Benchm
       // Pre-accept Assertions:
       // Zero overlap between Ghost and formal nodes
       expect(ghostInfo.preOverlaps, `Ghost ${scenario.component.id} must not overlap any formal node`).toBe(0);
+      expect(ghostInfo.reasonCode, `Ghost placement reason code for ${scenario.component.id}`).toBe(scenario.expectedReason);
 
       // Distance to anchor node if applicable
       let distanceToAnchor: number | undefined;
@@ -258,11 +267,16 @@ test.describe("Step 5.6 Real Browser Ghost Placement & Incremental Layout Benchm
             ghostInfo.ghostPos.x - anchorNode.position.x,
             ghostInfo.ghostPos.y - anchorNode.position.y
           );
+          if (scenario.expectedReason === "near-anchor") {
+            expect(distanceToAnchor).toBeLessThanOrEqual(300);
+          } else if (scenario.expectedReason === "far-anchor-fallback") {
+            expect(distanceToAnchor).toBeGreaterThan(300);
+          }
         }
       }
 
       // If container full expected, assert notice is present
-      if (scenario.expectedReason === "container-full-exterior") {
+      if (scenario.expectedReason === "container-exterior") {
         expect(ghostInfo.notice).toContain("内部无可用空间");
       }
 

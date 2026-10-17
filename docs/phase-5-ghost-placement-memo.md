@@ -41,7 +41,7 @@
 | 方案 / Option | 核心机制 (Mechanism) | 预测位移差距 (Displacement) | 响应时间 (Response Time) | 对架构稳定性/非持久化的影响 (Safety & Purity) |
 | --- | --- | --- | --- | --- |
 | **方案 A：保持当前局部启发式 (Keep Current Local Heuristic)** | 维持 5.2/5.6 实现，纯前端几何避碰，Ghost 仅作为局部意图标记。 | 大 (Greenfield ~300px, Medium ~1700px) | **0 ms**（纯同步计算） | **最高**（完全不触碰求解器通道，0 额外状态） |
-| **方案 B：提案生成时触发未持久化 Dry-run 布局 (Unpersisted Dry-run Layout on Proposal)** | 产生提案时，向 Web Worker 发起一次只读的增量布局计算，取新增节点坐标作为 Ghost 预览位置，但不持久化。 | **0 px**（与最终接受位置 100% 一致） | **45 ~ 85 ms**（中型图异步 Worker 通信） | **极高**（无副作用计算，严格不写入持久化状态与撤销栈） |
+| **方案 B：提案生成时触发未持久化 Dry-run 布局 (Unpersisted Dry-run Layout on Proposal)** | 产生提案时，向 Web Worker 发起一次只读的增量布局计算，取新增节点坐标作为 Ghost 预览位置，但不持久化。 | 理论预期 0 px（待实现后验证） | 待实现后验证（理论预期处于即时响应窗口内） | **极高**（无副作用计算，严格不写入持久化状态与撤销栈） |
 | **方案 C：增强过渡动画与视觉轨迹引导 (Transition Animation & Motion Trails)** | 保持方案 A 的初始位置，在点击 Accept 后沿运动路径播放 300ms 插值平滑动画，并绘制半透明运动轨迹。 | 不消除位移，但平滑视觉突变 | **0 ms** 初始计算，Accept 时增加 300ms 动画 | **中等**（增加 Svelte Flow 动画复杂度，跨屏幕飞行可能产生视觉混乱） |
 
 ---
@@ -76,25 +76,29 @@
 - **保存与打开一致性 (Save/Open Invariance)**：
   - 保存操作只序列化 `shell.accepted` 与 `shell.layoutState`，Dry-run 结果绝不落盘。
 
-### 3.4 浏览器端耗时估算与性能开销 (Browser Latency & Overhead)
-根据阶段 4 与阶段 5 在真实无头 Chromium 与 Web Worker 上的实测数据：
-- **小型 Greenfield 夹具 (4~5 组件)**：增量求解耗时为 **12 ~ 25 ms**；
-- **中型 Brownfield 夹具 (15 组件, 42 边)**：增量求解耗时为 **45 ~ 85 ms**；
-- **合成大型网状夹具 (57 组件, 14 包)**：增量求解耗时为 **120 ~ 210 ms**；
+### 3.4 浏览器端耗时估算与理论分析 (Browser Latency Estimation & Theoretical Analysis)
+> [!NOTE]
+> **真实数据来源说明**：由于方案 B 尚未在真实浏览器中作为 Dry-run 链路实现，以下推导数字来自阶段 4 基准与阶段 5.4 Node 单测 (`packages/architecture-layout/src/stability/incremental-stability.test.ts` 中基于 Node ElkEngine 运行 `controller.acceptCandidate` 的正式增量接受路径)，而非真实浏览器 Web Worker Dry-run 实测。真实浏览器端 Dry-run 耗时与开销待步骤 5.8 实现后实测验证。
+
+- **小型 Greenfield 夹具 (4~5 组件)**：理论推导增量求解约 12 ~ 25 ms（待实现后验证）；
+- **中型 Brownfield 夹具 (15 组件, 42 边)**：理论推导增量求解约 45 ~ 85 ms（待实现后验证）；
+- **合成大型网状夹具 (57 组件, 14 包)**：理论推导增量求解约 120 ~ 210 ms（待实现后验证）；
 - **用户感知评估**：
   - 人机工程学标准中，**< 100ms** 的响应被视为“即时响应（Instantaneous）”；
-  - 当架构师在 Palette 点击添加或在 Inspector 确认添加组件时，45~85ms 的异步 Worker 往返完全处于即时感知窗口内，界面完全不会产生卡顿感；
-  - 相比于节省 50ms 却造成 1700px 视觉突变的方案 A，方案 B 在人机交互质量上具有数量级的优势。
+  - 理论预期在 Palette 点击添加或在 Inspector 确认添加组件时，异步 Worker 往返处于即时感知窗口内；
+  - 实际性能与开销待步骤 5.8 真实浏览器端实现后提供 10 次重复实测分布数据。
 
-### 3.5 位置一致性指标与位移归零 (Displacement Reduction to 0px)
-在 5.6 实测的 6 个场景下应用方案 B：
-- `AuditService`: 位移从 488.0px 降低至 **0.0 px**（降低 100%）；
-- `PaymentGateway`: 位移从 228.0px 降低至 **0.0 px**（降低 100%）；
-- `RedisCache`: 位移从 328.3px 降低至 **0.0 px**（降低 100%）；
-- `Telemetry`: 位移从 1746.7px 降低至 **0.0 px**（降低 100%）；
-- `DocGen`: 位移从 1788.8px 降低至 **0.0 px**（降低 100%）；
-- `IsolatedMock`: 位移从 1791.9px 降低至 **0.0 px**（降低 100%）；
-- **预测准确率达到 100%，实现真正的“所见即所得（WYSIWYG）”。**
+### 3.5 位置一致性指标与位移归零理论分析 (Displacement Reduction Analysis)
+> [!NOTE]
+> 以下为基于试算布局与接受后布局走同一函数、同一固定状态、同一参数的理论一致性预期。实际位移消除效果待步骤 5.8 在真实浏览器中实现后验证：
+
+- `AuditService`: 理论预期位移从 488.0px 降低至 0.0 px（待实现后验证）；
+- `PaymentGateway`: 理论预期位移从 228.0px 降低至 0.0 px（待实现后验证）；
+- `RedisCache`: 理论预期位移从 328.3px 降低至 0.0 px（待实现后验证）；
+- `Telemetry`: 理论预期位移从 1746.7px 降低至 0.0 px（待实现后验证）；
+- `DocGen`: 理论预期位移从 1788.8px 降低至 0.0 px（待实现后验证）；
+- `IsolatedMock`: 理论预期位移从 1791.9px 降低至 0.0 px（待实现后验证）；
+- 理论上由于走完全一致的增量求解逻辑，预测准确率预期达到 100%，实际准确率与数值待实现后实测验证。
 
 ### 3.6 零重叠与局部性保证 (Zero Overlap & Locality Guarantee)
 - **零重叠保障**：ELK 求解器天生保证不同节点间严格无几何重叠（通过了所有 E2E 的 0 peer overlaps 门禁）；
@@ -124,9 +128,9 @@
 **强烈推荐采纳 方案 B（提案生成时触发未持久化 Dry-run 布局）。**
 
 **核心推荐理由**：
-1. **位移彻底归零**：将 Ghost 到正式节点的位移从 1700px+ 彻底归零（0.0px），消灭所有视觉跳跃感；
+1. **位移彻底归零**：理论上将 Ghost 到正式节点的位移从 1700px+ 彻底归零（0.0px），消灭所有视觉跳跃感（待 5.8 实测验证）；
 2. **零架构污染**：严格保持 `packages/architecture-layout` 公开 API 0 改动、D-010 Worker 边界 0 改动，实现纯 Web 适配层闭环；
-3. **性能极高**：中型图增加的异步 Worker 通信耗时仅 45~85ms，架构师完全感知不到延迟；
+3. **性能极高**：中型图增加的异步 Worker 通信耗时理论预期处于 100ms 即时响应窗口内（待 5.8 实测验证），架构师完全感知不到延迟；
 4. **所见即所得**：Ghost 呈现的位置即是采纳后的最终位置，大幅提升 CAD 专业建模工具的心智确定性。
 
 ---

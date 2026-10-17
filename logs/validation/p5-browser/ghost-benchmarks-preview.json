@@ -1,13 +1,13 @@
 {
   "layoutMode": "preview",
-  "timestamp": "2026-10-17T11:26:44.257Z",
+  "timestamp": "2026-10-17T15:39:10.435Z",
   "records": [
     {
       "fixtureName": "Greenfield (Points System)",
-      "proposalId": "a66a1097-5224-4a79-88bb-67452d3e686d",
+      "proposalId": "40c53bf1-e4da-4387-ba28-ff4906c819de",
       "componentId": "audit-svc",
       "componentName": "AuditService",
-      "reasonCode": "adjacent-anchor",
+      "reasonCode": "near-anchor",
       "anchorId": "ledger",
       "ghostPos": {
         "x": 512,
@@ -29,10 +29,10 @@
     },
     {
       "fixtureName": "Greenfield (Points System)",
-      "proposalId": "8eec4b2c-ecae-4bf1-829a-cd295e3704ca",
+      "proposalId": "c5fb5866-2c59-4eb8-9a5b-be342d0197f9",
       "componentId": "payment-gw",
       "componentName": "PaymentGateway",
-      "reasonCode": "adjacent-anchor",
+      "reasonCode": "near-anchor",
       "anchorId": "gateway",
       "ghostPos": {
         "x": 252,
@@ -54,10 +54,10 @@
     },
     {
       "fixtureName": "Greenfield (Points System)",
-      "proposalId": "be6e0aa4-5750-4794-9fdb-e74a5e249e2d",
+      "proposalId": "829e7947-5968-44d6-813c-08811d17a819",
       "componentId": "redis-cache",
       "componentName": "RedisCache",
-      "reasonCode": "container-full-exterior",
+      "reasonCode": "container-exterior",
       "anchorId": "group:infrastructure",
       "ghostPos": {
         "x": 801,
@@ -80,10 +80,10 @@
     },
     {
       "fixtureName": "Coding-CAD (Medium Baseline)",
-      "proposalId": "51252e62-cc2b-4b54-8544-f24573a2d154",
+      "proposalId": "e947fa2b-97d7-4f48-83e9-0ad0aa83ec99",
       "componentId": "telemetry-svc",
       "componentName": "Telemetry",
-      "reasonCode": "adjacent-anchor",
+      "reasonCode": "far-anchor-fallback",
       "anchorId": "server",
       "ghostPos": {
         "x": 1764,
@@ -105,10 +105,10 @@
     },
     {
       "fixtureName": "Coding-CAD (Medium Baseline)",
-      "proposalId": "524bdd98-1bb9-49eb-bdc5-77b319b7a2ad",
+      "proposalId": "46252c22-a074-4094-84e4-9a52479acb4b",
       "componentId": "architecture-doc-gen",
       "componentName": "DocGen",
-      "reasonCode": "adjacent-anchor",
+      "reasonCode": "near-anchor",
       "anchorId": "architecture-ir",
       "ghostPos": {
         "x": 1812,
@@ -130,10 +130,10 @@
     },
     {
       "fixtureName": "Coding-CAD (Medium Baseline)",
-      "proposalId": "2a6ed5a3-0824-4f0c-af76-35f41d07d993",
+      "proposalId": "99428aed-e530-46bf-9ee9-3d4f8c3455d1",
       "componentId": "isolated-mock",
       "componentName": "IsolatedMock",
-      "reasonCode": "fallback-global",
+      "reasonCode": "global-fallback",
       "ghostPos": {
         "x": 1812,
         "y": 35

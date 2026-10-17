@@ -34,6 +34,8 @@ describe("Ghost Placement Pure Adapter (D-007 Option B)", () => {
     // Local placement check: should be near auth-service (x ~ 668, y ~ 100)
     expect(result.position.x).toBeGreaterThanOrEqual(620);
     expect(result.position.y).toBeCloseTo(100, -2);
+    expect(result.reasonCode).toBe("near-anchor");
+    expect(result.distanceToAnchor).toBeLessThanOrEqual(300);
   });
 
   it("safely finds a collision-free slot when immediate adjacent slot is occupied", () => {
@@ -66,6 +68,36 @@ describe("Ghost Placement Pure Adapter (D-007 Option B)", () => {
     }
   });
 
+  it("classifies as far-anchor-fallback when primary adjacent slots collide and outward expansion is needed", () => {
+    // Anchor surrounded by obstacles in all primary, secondary, and tertiary slots (within 300px)
+    const formalNodes: Rect[] = [
+      { id: "anchor", x: 500, y: 500, width: 200, height: 80 },
+      { id: "block-right-1", x: 748, y: 500, width: 220, height: 90 },
+      { id: "block-right-below", x: 748, y: 628, width: 220, height: 90 },
+      { id: "block-right-above", x: 748, y: 362, width: 220, height: 90 },
+      { id: "block-below", x: 500, y: 628, width: 220, height: 90 },
+      { id: "block-above", x: 500, y: 362, width: 220, height: 90 },
+      { id: "block-left", x: 232, y: 500, width: 220, height: 90 }
+    ];
+
+    const result = calculateGhostPlacement({
+      ghostId: "ghost:far-node",
+      relatedComponentIds: ["anchor"],
+      formalNodes
+    });
+
+    expect(result.reasonCode).toBe("far-anchor-fallback");
+    expect(result.distanceToAnchor).toBeGreaterThan(300);
+    const ghostRect: Rect = {
+      id: "ghost:far-node",
+      x: result.position.x,
+      y: result.position.y,
+      width: 220,
+      height: 90
+    };
+    expect(hasAnyOverlap(ghostRect, formalNodes, 0)).toBe(false);
+  });
+
   it("places in global staging area when there are no related formal nodes", () => {
     const formalNodes: Rect[] = [
       { id: "node-1", x: 100, y: 100, width: 200, height: 80 },
@@ -89,6 +121,7 @@ describe("Ghost Placement Pure Adapter (D-007 Option B)", () => {
     // Placed to the right of the entire bounding box
     expect(result.position.x).toBeGreaterThanOrEqual(550);
     expect(hasAnyOverlap(ghostRect, formalNodes, 0)).toBe(false);
+    expect(result.reasonCode).toBe("global-fallback");
   });
 
   it("preserves container boundary without altering formal container when space is insufficient", () => {
@@ -121,6 +154,7 @@ describe("Ghost Placement Pure Adapter (D-007 Option B)", () => {
 
     expect(result.placedOutsideContainer).toBe(true);
     expect(result.containerNotice).toContain("module-core");
+    expect(result.reasonCode).toBe("container-exterior");
 
     const ghostRect: Rect = {
       id: "ghost:overflow",
@@ -165,6 +199,7 @@ describe("Ghost Placement Pure Adapter (D-007 Option B)", () => {
 
     expect(result.parentId).toBe("module-wide");
     expect(result.placedOutsideContainer).toBeFalsy();
+    expect(result.reasonCode).toBe("container-interior");
 
     const ghostRect: Rect = {
       id: "ghost:inside",

@@ -19,8 +19,10 @@
 - **步骤 5.3（Review 接入与生命周期硬化）**：已完成并提交（`9971e4d` / `b94e0fb`）。实现 Accept 推进正式变更并触发增量布局、Reject 即刻清除 Ghost 并保留候选；实现正式架构变化后自动标记未决提案为已过期（Stale）并禁用 Accept；审查状态机具备幂等性与无效候选防御。
 - **步骤 5.4（增量布局与稳定性指标度量）**：已完成并提交（`7120770` / `634c355`）。在 Greenfield 与 Medium Brownfield 上断言增量布局未受影响节点位移严格满足预算（实测均为 0.0px）；度量 Ghost 到正式节点欧几里得位移距离，输出完整经验表格与统计分析。
 - **步骤 5.5（阶段 5 初始验收与文档同步）**：已完成并提交（`d529390` / `71e76d0`）。初始交付物、不变量检查与退出报告初版完成。
-- **步骤 5.6（订正与补证据）**：进行中。退出结论变更为有条件满足；补充待用户处理事项；Playwright 真实浏览器实测（dev/preview 双模式覆盖 6 个 Add 场景，零重叠、零容器包含失败、100% ELK 求解器、无关节点 0.0px 位移）；回答 Medium 夹具 (24, 153) 归因与 DocGen 候选顺序；完成公开 API 与范围审计 (`git diff --stat main..HEAD`)；补齐拒绝后内存保留单元测试。
-- **步骤 5.7（Ghost 预测位置设计备忘录）**：即将开展。编写只读备忘录 `docs/phase-5-ghost-placement-memo.md`（评估方案 A/B/C，不实现产品代码）。
+- **步骤 5.6（订正与补证据）**：已完成并提交（`3f05c44` / `966fd4c`）。退出结论变更为有条件满足；补充待用户处理事项；Playwright 真实浏览器实测（dev/preview 双模式覆盖 6 个 Add 场景，零重叠、零容器包含失败、100% ELK 求解器、无关节点 0.0px 位移）；回答 Medium 夹具 (24, 153) 归因与 DocGen 候选顺序；完成公开 API 与范围审计 (`git diff --stat main..HEAD`)；补齐拒绝后内存保留单元测试。
+- **步骤 5.7（Ghost 预测位置设计备忘录）**：已完成并提交（`338a489` / `df78264`）。编写只读备忘录 `docs/phase-5-ghost-placement-memo.md`（评估方案 A/B/C，提供 D-011 决策草案）。
+- **步骤 5.8.0（订正证据与措辞）**：已完成。订正备忘录去除未经验证的具体数值并注明推导来源；细化 Ghost 放置原因码为 `near-anchor`、`far-anchor-fallback`、`container-interior`、`container-exterior`、`global-fallback`；逐包执行 15 包并归档 17 份原始日志至 `logs/validation/p5-reconciliation/`；执行全量可写环境 `CI=true TURBO_FORCE=true pnpm ci:verify`，74 项浏览器测试全部一次性通过；核验 5 核心包零代码改动。
+- **步骤 5.8（Ghost 预测位置实现, D-011）**：即将开展。落实已批准 D-011，在 Web 适配层实现未持久化的试算布局预测，保证与接受后增量布局同一函数、同一固定状态、同一参数，实现三态标签与安全降级。
 
 ## 阶段 4 进度总结 / Phase 4 Progress Summary
 

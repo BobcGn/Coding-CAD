@@ -33,11 +33,20 @@ export interface GhostPlacementInput {
   readonly targetContainerId?: string | undefined;
 }
 
+export type GhostPlacementReasonCode =
+  | "near-anchor"
+  | "far-anchor-fallback"
+  | "container-interior"
+  | "container-exterior"
+  | "global-fallback";
+
 export interface GhostPlacementResult {
   readonly position: { readonly x: number; readonly y: number };
   readonly parentId?: string | undefined;
   readonly placedOutsideContainer?: boolean | undefined;
   readonly containerNotice?: string | undefined;
+  readonly reasonCode: GhostPlacementReasonCode;
+  readonly distanceToAnchor?: number | undefined;
 }
 
 const DEFAULT_GHOST_SIZE = { width: 220, height: 90 };
@@ -81,7 +90,8 @@ export function calculateGhostPlacement(input: GhostPlacementInput): GhostPlacem
   // If there are no formal nodes, place at origin with default margin
   if (input.formalNodes.length === 0) {
     return {
-      position: { x: 100, y: 100 }
+      position: { x: 100, y: 100 },
+      reasonCode: "global-fallback"
     };
   }
 
@@ -111,7 +121,8 @@ export function calculateGhostPlacement(input: GhostPlacementInput): GhostPlacem
       if (insidePlacement) {
         return {
           position: insidePlacement,
-          parentId: targetContainer.id
+          parentId: targetContainer.id,
+          reasonCode: "container-interior"
         };
       }
       // If container has no free space, place immediately outside to the right of the container
@@ -126,7 +137,8 @@ export function calculateGhostPlacement(input: GhostPlacementInput): GhostPlacem
         return {
           position: { x: outsideCandidate.x, y: outsideCandidate.y },
           placedOutsideContainer: true,
-          containerNotice: `所属容器 '${targetContainer.id}' 内部无可用空间，Ghost 放置于容器外侧`
+          containerNotice: `所属容器 '${targetContainer.id}' 内部无可用空间，Ghost 放置于容器外侧`,
+          reasonCode: "container-exterior"
         };
       }
       // Fall through to general placement using container as anchor
@@ -146,8 +158,12 @@ export function calculateGhostPlacement(input: GhostPlacementInput): GhostPlacem
         height: ghostSize.height
       };
       if (!hasAnyOverlap(candidate, input.formalNodes, padding)) {
+        const distance = Math.hypot(slot.x - anchor.x, slot.y - anchor.y);
+        const reasonCode: GhostPlacementReasonCode = distance <= 300 ? "near-anchor" : "far-anchor-fallback";
         return {
-          position: slot
+          position: slot,
+          reasonCode,
+          distanceToAnchor: Math.round(distance * 10) / 10
         };
       }
     }
@@ -185,13 +201,14 @@ export function calculateGhostPlacement(input: GhostPlacementInput): GhostPlacem
     };
 
     if (!hasAnyOverlap(candidate, input.formalNodes, padding)) {
-      return { position: candidatePos };
+      return { position: candidatePos, reasonCode: "global-fallback" };
     }
   }
 
   // Mathematically guaranteed non-overlapping position
   return {
-    position: { x: maxX + padding * 4, y: minY }
+    position: { x: maxX + padding * 4, y: minY },
+    reasonCode: "global-fallback"
   };
 }
 

@@ -8,6 +8,7 @@ import type { Proposal } from "@coding-cad/architecture-review";
 import type { Edge, Node } from "@xyflow/svelte";
 import {
   calculateGhostPlacement,
+  type GhostPlacementReasonCode,
   type Rect
 } from "../../cad/canvas/adapters/ghost-placement.js";
 
@@ -27,6 +28,8 @@ export interface ArchitectureNodeData extends Record<string, unknown> {
   readonly ghostStatus?: GhostStatus;
   readonly ghostLabel?: string;
   readonly ghostNotice?: string;
+  readonly ghostReasonCode?: GhostPlacementReasonCode;
+  readonly ghostDistanceToAnchor?: number;
 }
 
 export interface ArchitectureEdgeData extends Record<string, unknown> {
@@ -251,7 +254,9 @@ export function toSvelteFlowProjection(
           isGhost: true,
           ghostStatus: "proposed",
           ghostLabel: "[待审批 / Proposed]",
-          ghostNotice: placement.containerNotice
+          ghostNotice: placement.containerNotice,
+          ghostReasonCode: placement.reasonCode,
+          ghostDistanceToAnchor: placement.distanceToAnchor
         }
       });
     }

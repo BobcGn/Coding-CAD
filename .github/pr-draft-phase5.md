@@ -87,6 +87,18 @@
   - **增量布局位移追踪**：在 `GreenfieldShellState` 中增加 `movement?: MovementReport`，并在 `WorkspaceShellController.layoutCandidate` 中捕获并更新增量布局移动报告；在 `ShellController` 暴露 `movement()` 查询；
   - **预算机械化断言**：新增 `incremental-stability.test.ts`，在 Greenfield points-system 与 Medium Brownfield（15 组件，42 边）两个典型场景中执行提案采纳并触发增量布局，断言未受影响节点的位移严格满足预算（`unaffectedP95 <= 48px`, `unaffectedMax <= 144px`, `withinBudget: true`，实测均为 0.0px）；
   - **经验度量与表格输出**：系统测量 Ghost 初始位置与正式节点最终位置的欧几里得距离（Displacement: Mean, Median, Max），输出 6 组对比实验量化数据表，科学阐释局部几何启发式放置与全局 ELK 层次布局之间的合理位移现象。
+- **步骤 5.6：订正与补齐证据 (Step 5.6: Corrections & Evidence Completion)**：
+  - 退出结论更正为“有条件满足 / CONDITIONALLY SATISFIED”，建立 5 项待用户处理事项；
+  - 建立 `apps/web/e2e/ghost-stability-benchmarks.spec.ts` 真实浏览器 Playwright E2E 基准，双模式测定 6 个 Add 提案，严格满足零重叠、100% ELK 求解器、无关节点 0.0px 位移；
+  - 回答 Medium 夹具 (24, 153) Sugiyama 分层归因与 DocGen 候选顺序及回退条件；
+  - 审计公开 API 零改动与 Review 门禁拒绝后候选保留语义。
+- **步骤 5.7：Ghost 预测位置设计备忘录 (Step 5.7: Ghost Predictive Placement Design Memo)**：
+  - 产出中英双语备忘录 `docs/phase-5-ghost-placement-memo.md`，深度评估方案 A/B/C，给出 D-011 决策草案。
+- **步骤 5.8.0：订正证据与措辞 (Step 5.8.0: Evidence & Wording Corrections)**：
+  - 备忘录订正：去除未经验证的具体延迟与准确率数值，注明理论推导源自 Node 单测；
+  - 放置原因码细化：重构为 `near-anchor`、`far-anchor-fallback`、`container-interior`、`container-exterior`、`global-fallback`；
+  - 测试证据对齐：逐包捕获 17 份原始日志于 `logs/validation/p5-reconciliation/`，编制索引 README.md；
+  - 全量 CI 验证：`CI=true TURBO_FORCE=true pnpm ci:verify` 全程约 150s，74 项浏览器测试全部 PASS，5 核心包零代码改动。
 
 ---
 
@@ -196,23 +208,27 @@
 | 5.4 | `7120770` | `test(layout): verify incremental layout stability budget and measure ghost displacement` | `git revert 7120770` | 移除增量布局稳定性指标测试与位移度量套件 |
 | 5.4 (PR) | `634c355` | `docs(pr): update PR draft with Step 5.4 commit hash` | `git revert 634c355` | 同步回退 PR 草稿中步骤 5.4 提交哈希 |
 | 5.5 | `d529390` | `docs(phase-5): add phase 5 exit report and update execution plan` | `git revert d529390` | 回退阶段 5 初始退出报告 |
+| 5.5 (PR) | `71e76d0` | `docs(pr): update PR draft with Step 5.5 commit hash and final rollback crosswalk` | `git revert 71e76d0` | 同步回退 PR 草稿中步骤 5.5 提交哈希 |
 | 5.6 | `3f05c44` | `test(e2e): add real browser benchmarks for ghost placement and correct exit status` | `git revert 3f05c44` | 移除浏览器 E2E benchmark 测试套件与订正报告 |
 | 5.6 (PR) | `966fd4c` | `docs(pr): update PR draft with Step 5.6 commit hash and rollback crosswalk` | `git revert 966fd4c` | 同步回退 PR 草稿中步骤 5.6 提交哈希 |
 | 5.7 | `338a489` | `docs(phase-5): add ghost predictive placement design memo evaluating options A, B, and C` | `git revert 338a489` | 移除 Ghost 预测位置设计备忘录 |
+| 5.7 (PR) | `df78264` | `docs(pr): update PR draft with Step 5.7 commit hash and rollback crosswalk` | `git revert df78264` | 同步回退 PR 草稿中步骤 5.7 提交哈希 |
+| 5.8.0 | *(本步提交)* | `docs(phase-5): reconcile test evidence, refine reason codes, and correct placement memo` | `git revert <hash>` | 回退 5.8.0 证据对齐、原因码细化与备忘录订正 |
 
 ### 逆序回退分析 / Cascading Rollback Analysis
 
 若需回退本阶段提交，请严格按照逆序操作：
-1. **回退 5.7** (`git revert 338a489`)：安全移除 Ghost 预测位置设计备忘录，不影响代码或测试；
-2. **回退 5.6** (`git revert 966fd4c` -> `git revert 3f05c44`)：移除真实浏览器基准测试套件与订正报告；
-3. **回退 5.5** (`git revert 71e76d0` -> `git revert d529390`)：移除阶段 5 退出报告与状态标记；
-4. **回退 5.4** (`git revert 634c355` -> `git revert 7120770`)：移除增量布局稳定性测试与位移度量套件，不影响正式架构与 Ghost 交互；
-5. **回退 5.3** (`git revert b94e0fb` -> `git revert 9971e4d`)：移除过期提案检测、单提案严格阻断与 Review 接入硬化，恢复步骤 5.2 的基本 Ghost 投影；
-6. **回退 5.2** (`git revert baba8c0` -> `git revert cb8be8e`)：安全移除 Ghost 投影、局部放置纯函数与待删除/待变更视觉标记，不影响正式架构与 Review 状态机；
-7. **回退 5.1.1** (`git revert f6ea675`)：恢复 5.1 初始快照实现与测试；
-8. **回退 5.1** (`git revert 3f8d76a` -> `git revert 2797f9c`)：将安全移除 Handoff 弹窗、对焦控制与导出的全部功能代码及测试，不会损坏底层已有的 Greenfield/Brownfield/Review 核心逻辑；
-9. **回退 5.0** (`git revert 77e446a`)：若在 5.1 未回退时强行回退 5.0，会导致 PR 草稿和设计备忘录丢失；
-10. **回退范围外附带改动** (`git revert 7400cd4`)：若在后续步骤未回退时单独回退，会导致 `.svelte-kit/`、`.turbo/` 等产生未跟踪文件污染工作区，但不影响业务代码运行。
+1. **回退 5.8.0** (`git revert <5.8.0-hash>`)：移除证据对齐、原因码细化与备忘录订正，恢复 5.7 状态；
+2. **回退 5.7** (`git revert df78264` -> `git revert 338a489`)：安全移除 Ghost 预测位置设计备忘录，不影响代码或测试；
+3. **回退 5.6** (`git revert 966fd4c` -> `git revert 3f05c44`)：移除真实浏览器基准测试套件与订正报告；
+4. **回退 5.5** (`git revert 71e76d0` -> `git revert d529390`)：移除阶段 5 退出报告与状态标记；
+5. **回退 5.4** (`git revert 634c355` -> `git revert 7120770`)：移除增量布局稳定性测试与位移度量套件，不影响正式架构与 Ghost 交互；
+6. **回退 5.3** (`git revert b94e0fb` -> `git revert 9971e4d`)：移除过期提案检测、单提案严格阻断与 Review 接入硬化，恢复步骤 5.2 的基本 Ghost 投影；
+7. **回退 5.2** (`git revert baba8c0` -> `git revert cb8be8e`)：安全移除 Ghost 投影、局部放置纯函数与待删除/待变更视觉标记，不影响正式架构与 Review 状态机；
+8. **回退 5.1.1** (`git revert f6ea675`)：恢复 5.1 初始快照实现与测试；
+9. **回退 5.1** (`git revert 3f8d76a` -> `git revert 2797f9c`)：将安全移除 Handoff 弹窗、对焦控制与导出的全部功能代码及测试，不会损坏底层已有的 Greenfield/Brownfield/Review 核心逻辑；
+10. **回退 5.0** (`git revert 77e446a`)：若在 5.1 未回退时强行回退 5.0，会导致 PR 草稿和设计备忘录丢失；
+11. **回退范围外附带改动** (`git revert 7400cd4`)：若在后续步骤未回退时单独回退，会导致 `.svelte-kit/`、`.turbo/` 等产生未跟踪文件污染工作区，但不影响业务代码运行。
 
 
 
