@@ -1,8 +1,8 @@
 {
   "fixture": "Coding-CAD (this repository)",
   "mode": "preview",
-  "serverDurationMs": 336.128917,
-  "firstScreenRenderMs": 521.0635829999999,
+  "serverDurationMs": 363.612791,
+  "firstScreenRenderMs": 548.412083,
   "totalNodeCount": 30,
   "visibleNodeCount": 30,
   "hiddenCountAfterCollapse": 15,

@@ -1410,3 +1410,53 @@ PR #3首次远端CI在额外security:audit步骤报告7high，本地旧ci:verify
   - 阶段 5+（Ghost 节点、完整 Review 工作区、Execution Handoff、Terminal）。
 - 风险与回退方式 / Risks and Rollback:
   - 回退方式: `git revert <commit-hash>`。
+
+---
+
+## [2026-10-17] 阶段 4 深度订正（订正 A–D：交叉数矛盾彻底澄清、折叠收益口径客观化、表 A 38->40 演进与非独立基线修正、候选答案评估材料规范）
+
+### 1. 做了什么 / What
+- 订正 A（交叉数矛盾排查与此前 0/0 作废）：
+  - 彻底排查此前总结表格将 Coding-CAD 交叉数显示为 0/0 的成因：计数函数（`apps/web/e2e/layout-metrics.ts` 之 `measureLayout` / `segmentCrosses`）未变，输入图与求解器输出未变，0/0 系总结制表时误将 `peerOverlaps: 0` 错填至交叉数列所致；正式声明此前 0/0 记录作废；
+  - 更新 `scripts/benchmarks/run-repeated-benchmarks.mjs`，在 10 次重复运行中实时拦截 Worker 消息并以 `measureLayout` 严格统计线段交叉数，在 dev 与 preview 下测得 Coding-CAD 交叉数恒定为 21（展开）/ 9（模拟折叠），synthetic-hub-repo 恒为 86（展开）/ 34（模拟折叠），skill-central 恒为 152（展开）/ 152（折叠）；
+  - 在 `docs/phase-4-exit-report.md`、`logs/validation/p4-browser/benchmark-report.md` 与 `.github/pr-draft-phase4.md` 中同步更正。
+- 订正 B（折叠收益客观口径与单体工程局限）：
+  - 在所有报告中明确声明：synthetic-hub-repo 交叉数 60.5% 降幅（86 -> 34）系测试中模拟全部折叠的结果，非当前产品默认行为（默认视图为全展开，可见 71 节点）；
+  - 新增记录：skill-central 展开交叉数 152、折叠 152，降幅 0.0%，因该平铺单体仓库无容器分组可折叠，明确将“折叠机制对无容器分组的单体仓库无效”列为已知局限；
+  - 测定并记录每个夹具默认状态下屏幕上同时可见的节点数（产品实际行为）：Coding-CAD 为 30 个、synthetic-large-repo 为 150 个、synthetic-hub-repo 为 71 个、skill-central 为 23 个。
+- 订正 C（表 A 38->40 演进与基线非独立性降级）：
+  - 纠正表 A 虚构边，详列两条真实新增边：`web -> implementation-analyzer`（步骤 3 提交 `a6d5781`，runtime 依赖）与 `web -> implementation-validator`（步骤 4 提交 `638a90e`，runtime 依赖），均为阶段 4 业务流水线客观真实依赖；
+  - 对照 package.json 声明真值（初始 37 条 runtime + 1 条 dev = 38 条；新增 2 条 runtime = 40 条）；
+  - 披露 `coding-cad-expected.json` 曾使用 Analyzer 输出校对，属于非独立基线，将“0 误报”严格降级为“自洽性检查通过”，并在表 D 明确注明；删除“补全 IR 契约依赖”虚假措辞。
+- 订正 D（评估材料规范）：
+  - 将 `docs/evaluation/p4-comprehension-eval.md` 中全部“客观标准答案”更正为“候选答案（待用户对照源码确认）”；
+  - 为每条候选答案附上明确源码文件路径作为依据，显式标注“未经用户确认，不得作为评分依据”，杜绝宣称已有客观标准答案。
+
+- Rectification A (Crossing Contradiction Investigation & 0/0 Invalidation): Invalidated the erroneous 0/0 crossing entry for Coding-CAD, identified it as a transcription mix-up with `peerOverlaps = 0`, verified layout stability, and updated `run-repeated-benchmarks.mjs` to record exact crossings (Coding-CAD 21 expanded / 9 collapsed; hub-repo 86 expanded / 34 collapsed; skill-central 152 / 152) across all documentation.
+- Rectification B (Objective Collapse Benefit Scope & Known Limitations): Formally stated that the 60.5% crossing drop in hub-repo is from simulated collapse in tests rather than default view behavior; documented skill-central's 0.0% collapse improvement (152/152) and listed "collapse mechanism ineffective for container-less monolithic repos" as a known limitation; recorded actual visible node counts in default state (30, 150, 71, 23).
+- Rectification C (Table A 38->40 True Edge Evolution & Non-independent Baseline Downgrade): Corrected Table A to detail the real additions: `web -> implementation-analyzer` (Step 3, `a6d5781`) and `web -> implementation-validator` (Step 4, `638a90e`); cross-checked against 37 runtime + 1 dev manifest baseline; disclosed Analyzer calibration in `coding-cad-expected.json`, downgraded "0 false positives" to "self-consistency check", and purged incorrect contract extraction phrasing.
+- Rectification D (Evaluation Materials Candidate Answers): Replaced all "objective standard answers" in `docs/evaluation/p4-comprehension-eval.md` with "candidate answers pending user confirmation against source code", attached source paths, and barred claiming objective ground truth prior to user review.
+
+### 2. 为什么这么做 / Why
+- 严格遵循用户对阶段 4 证据与报告的 4 项深度订正指令，杜绝任何数据自相矛盾与虚假断言；
+- 恪守科学求真与工程诚实原则：用真实测试分布与客观局限披露替代过度包装，保证所有结论经得起同行评审；
+- 严守架构事实来源铁律，严禁伪造不存在的架构边或虚假契约提取能力。
+
+- Strictly adhere to user's 4 rectification directives (A-D) without adding scope or falsifying metrics;
+- Preserve scientific integrity by invalidating mistaken reports, explaining variances, and disclosing known limitations;
+- Maintain strict fidelity to Architecture Source of Truth and code reality.
+
+### 3. 验证结果 / Verification
+- 已实现并验证 / Implemented and verified:
+  - 80 次真实浏览器重复基准测量（`node scripts/benchmarks/run-repeated-benchmarks.mjs`，包含交叉数、默认可见节点数、反演耗时与渲染耗时，80/80 PASS）；
+  - `docs/evaluation/p4-comprehension-eval.md` 候选答案与源码路径依据规范就绪；
+  - `docs/phase-4-exit-report.md`、`logs/validation/p4-browser/benchmark-report.md`、`.github/pr-draft-phase4.md` 全量同步更新；
+  - `pnpm --filter @coding-cad/web test:unit` (82/82 PASS)；
+  - `pnpm --filter @coding-cad/web test:e2e` (26/26 dev, 26/26 preview PASS)；
+  - `CI=true TURBO_FORCE=true pnpm ci:verify` (15/15 PASS)。
+- 已实现未验证 / Implemented but unverified:
+  - 人工代码理解评估实操打分（等待人类架构师实操执行）。
+- 未实现及范围外 / Not implemented or out of scope:
+  - 阶段 5+（Ghost 节点、完整 Review、Execution Handoff、Terminal）。
+- 风险与回退方式 / Risks and Rollback:
+  - 回退方式：`git revert <commit-hash>`。

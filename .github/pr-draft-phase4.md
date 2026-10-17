@@ -15,7 +15,7 @@
 - **大规模图首屏渲染耗时**：实测 preview 中位数 **292.65 ms**（p95: 377.81 ms），dev 中位数 **287.35 ms**，提议批准阈值 **≤ 1500 ms (稳态)**（沿用 Checkpoint 2 已批准预算）；
 - **服务端代码分析耗时**：实测 preview 中位数 **163.90 ms**（p95: 199.35 ms），dev 中位数 **163.50 ms**，提议批准阈值 **≤ 1000 ms (稳态)**（实测倒推提议）；
 - **边交叉数 (Crossings) - 展开**：实测 86 处交叉 (synthetic-hub-repo 57 模块)，提议**仅作观测，不设硬门禁**；
-- **边交叉数 (Crossings) - 折叠优化**：实测 34 处交叉 (降幅 60.5%)，提议批准阈值 **折叠交叉降幅 ≥ 40%**（实测倒推提议）；
+- **边交叉数 (Crossings) - 折叠优化**：实测 34 处交叉 (降幅 60.5%，注意：系测试中模拟折叠的结果，非产品当前默认行为)，提议批准阈值 **折叠交叉降幅 ≥ 40%**（实测倒推提议）；
 - **真实仓库边精确率 (Precision)**：实测 100.0% (30/30 抽检，95% CI: [88.65%, 100.00%])，提议批准阈值 **≥ 90.0%**；
 - **真实仓库边召回率 (Recall)**：实测 73.3% (22/30 抽检，95% CI: [55.55%, 85.82%])，提议批准阈值 **≥ 70.0%**（实测倒推提议）。
 
@@ -25,12 +25,13 @@
 - **事项 3（新增）：是否批准新增不依赖期望架构的结构性检查规则类型**：现有 5 类规则均依赖期望基线；是否批准在验证器中新增独立的跨模块循环依赖检测（`cyclic-dependencies`）；
 - **事项 4（新增）：默认折叠阈值 N=50 的审批与确认**：代码已在 `ArchitectureCanvas.svelte` 导出 `DEFAULT_UNAPPROVED_COLLAPSE_THRESHOLD = 50` 并通过 `defaultCollapseThreshold` prop 支持配置，标注为“未经批准的临时值”，请用户裁定是否作为默认行为。
 
-### 3. 证据缺口客观披露 / Objective Disclosure of Evidence Gaps
+### 3. 证据缺口与已知局限客观披露 / Objective Disclosure of Gaps & Limitations
 - 真实代码库实测证据仅来自单个单体仓库（`skill-central`），没有任何真实生产 Monorepo 证据；
-- `tsconfig.paths` 跨包别名、Monorepo 跨包桶文件引用等特性仅在合成夹具上验证，未在真实 Monorepo 上验证。
+- `tsconfig.paths` 跨包别名、Monorepo 跨包桶文件引用等特性仅在合成夹具上验证，未在真实 Monorepo 上验证；
+- **折叠机制已知局限**：实测显示 `skill-central` 的交叉数展开 152 处、模拟折叠 152 处（降幅 0.0%），由于该单体仓库平铺且无任何容器分组可折叠，**折叠机制对无容器分组的单体仓库无效**，作为已知局限客观记录，严禁表述为已解决。
 
 ### 4. 需人工执行的评估任务 / Human Comprehension Evaluation Pending Execution
-- 详见 [`docs/evaluation/p4-comprehension-eval.md`](file:///Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/docs/evaluation/p4-comprehension-eval.md)。评测数据必须由真实人类架构师实测填写，严禁 AI 代填。
+- 详见 [`docs/evaluation/p4-comprehension-eval.md`](file:///Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/docs/evaluation/p4-comprehension-eval.md)。评测答案均为附源码依据的候选答案（未经用户核对确认不得宣称客观标准答案），数据必须由真实人类架构师实测填写，严禁 AI 代填。
 
 ---
 
@@ -87,6 +88,7 @@
 > - `7e5111f`：在步骤 2.1 门禁拆分时已重写为 `ddc11f2`（门禁修复）与 `9ede079`（分层提取与补强）。
 
 经核验的完整真实提交列表与逆序回退命令：
+- 回退阶段 4 订正 (报告与实证): `git revert aea592a`（连带影响：仅撤销报告订正、80 次重复测量与阈值参数化，不影响前序核心功能）
 - 回退步骤 6 (文档与状态): `git revert 66b9fd0`（连带影响：仅撤销报告与标记）
 - 回退步骤 5 (验收与实证): `git revert 2e838af`（连带影响：撤销 hub 夹具与实证数据）
 - 回退步骤 4.1 (语义修正与证据): `git revert 320f92c`（连带影响：撤销 4 类计数器与语义修正）

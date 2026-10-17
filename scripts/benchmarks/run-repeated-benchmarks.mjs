@@ -142,6 +142,37 @@ async function runBenchmarkForMode(mode) {
 
   const browser = await chromium.launch({ channel: "chrome", headless: true });
   const context = await browser.newContext();
+  await context.addInitScript(() => {
+    window.__p3ObservedLayouts = [];
+    const OriginalWorker = window.Worker;
+    window.Worker = class extends OriginalWorker {
+      layoutRequests = new Map();
+      script;
+      constructor(url, options) {
+        super(url, options);
+        this.script = String(url);
+        this.addEventListener("message", ({ data }) => {
+          if (data?.type !== "result") return;
+          const graph = this.layoutRequests.get(data.requestId);
+          if (graph) {
+            window.__p3ObservedLayouts.push({
+              workerUrl: this.script,
+              graph,
+              result: structuredClone(data.result)
+            });
+            this.layoutRequests.delete(data.requestId);
+          }
+        });
+      }
+      postMessage(message, options) {
+        const isLayout = message?.type === "layout" && this.script.includes("layout-worker");
+        if (isLayout) {
+          this.layoutRequests.set(message.requestId, structuredClone(message.graph));
+        }
+        super.postMessage(message, options);
+      }
+    };
+  });
   const page = await context.newPage();
 
   const modeResults = {};
@@ -151,6 +182,9 @@ async function runBenchmarkForMode(mode) {
       console.log(`\nBenchmarking fixture: ${fixture.name} (10 iterations)...`);
       const serverDurations = [];
       const renderDurations = [];
+      const expandedCrossingsList = [];
+      const visibleNodesList = [];
+      const totalNodesList = [];
 
       for (let i = 1; i <= 10; i++) {
         await page.goto(BASE_URL, { waitUntil: "networkidle" });
@@ -185,9 +219,54 @@ async function runBenchmarkForMode(mode) {
           throw new Error(`Layout failure on fixture ${fixture.id}: solver=${solver}, status=${status}`);
         }
 
+        // Measure visible nodes in default state (actual product behavior)
+        const visibleNodes = await page.locator('.svelte-flow__node:not([style*="display: none"])').count();
+        const totalNodes = await page.locator('.svelte-flow__node').count();
+
+        // Measure crossings in fully expanded default layout using measureLayout definition
+        const quality = await page.evaluate(() => {
+          const layouts = window.__p3ObservedLayouts ?? [];
+          const last = layouts.at(-1);
+          if (!last || !last.result) return null;
+          const result = last.result;
+
+          const segmentCrosses = (a, b, c, d) => {
+            const cross = (p, q, r) => (q.x - p.x) * (r.y - p.y) - (q.y - p.y) * (r.x - p.x);
+            return cross(a, b, c) * cross(a, b, d) < 0 && cross(c, d, a) * cross(c, d, b) < 0;
+          };
+          let crossings = 0;
+          for (let i = 0; i < result.edges.length; i++) {
+            for (let j = i + 1; j < result.edges.length; j++) {
+              const a = result.edges[i];
+              const b = result.edges[j];
+              if ([a.from, a.to].some((id) => id === b.from || id === b.to)) continue;
+              for (const sa of a.sections) {
+                for (const sb of b.sections) {
+                  const pa = [sa.start, ...(sa.bendPoints || []), sa.end];
+                  const pb = [sb.start, ...(sb.bendPoints || []), sb.end];
+                  for (let x = 1; x < pa.length; x++) {
+                    for (let y = 1; y < pb.length; y++) {
+                      if (segmentCrosses(pa[x - 1], pa[x], pb[y - 1], pb[y])) crossings++;
+                    }
+                  }
+                }
+              }
+            }
+          }
+          return {
+            nodesCount: result.nodes.length,
+            edgesCount: result.edges.length,
+            crossings
+          };
+        });
+
         serverDurations.push(serverDurationMs);
         renderDurations.push(firstScreenRenderMs);
-        process.stdout.write(` [iter ${i}: srv=${serverDurationMs.toFixed(1)}ms, render=${firstScreenRenderMs.toFixed(1)}ms]`);
+        expandedCrossingsList.push(quality?.crossings ?? 0);
+        visibleNodesList.push(visibleNodes);
+        totalNodesList.push(totalNodes);
+
+        process.stdout.write(` [iter ${i}: srv=${serverDurationMs.toFixed(1)}ms, render=${firstScreenRenderMs.toFixed(1)}ms, vis=${visibleNodes}, cross=${quality?.crossings ?? 0}]`);
       }
       console.log("");
 
@@ -196,7 +275,10 @@ async function runBenchmarkForMode(mode) {
         components: fixture.components,
         edges: fixture.edges,
         serverDuration: calculateStats(serverDurations),
-        firstScreenRender: calculateStats(renderDurations)
+        firstScreenRender: calculateStats(renderDurations),
+        expandedCrossings: calculateStats(expandedCrossingsList),
+        visibleNodesDefault: calculateStats(visibleNodesList),
+        totalNodesDefault: calculateStats(totalNodesList)
       };
     }
   } finally {

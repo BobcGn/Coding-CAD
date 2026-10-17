@@ -46,7 +46,12 @@ Designed a human comprehension A/B evaluation protocol and question set for Phas
 
 ---
 
-## 4. 评估对象问答题与标准答案 / Evaluation Question Sets & Ground Truth
+## 4. 评估对象问答题与候选答案（待用户确认） / Evaluation Question Sets & Candidate Answers (Pending User Confirmation)
+
+> [!WARNING]
+> **评测底稿特别说明 / Evaluation Ground Truth Notice**：
+> 下列答案均为**“候选答案（待用户对照源码确认）”**。每条候选答案均已附源码文件路径作为依据。**未经用户显式核对源码并确认前，严禁宣称已有“客观标准答案”，且不得作为最终评分依据**。
+> The following answers are **candidate answers pending user confirmation against source code**. Each candidate answer includes explicit source file paths as evidence. Prior to user review and confirmation, they must NOT be claimed as "objective standard answers" or used as a scoring baseline.
 
 ### 对象 1：真实开源代码库 `skill-central` (23 模块，77 依赖边)
 
@@ -55,18 +60,21 @@ Designed a human comprehension A/B evaluation protocol and question set for Phas
 
 #### 任务 1：核心依赖识别 / Core Dependency Identification
 - **题目**：请找出该系统中最核心的基础数据与配置存储模块。
-- **客观标准答案**：`storage-service`（对应路径 `src/storage/`）。
-- **代码与证据依据**：在 `src/storage/` 下承载了 `config.ts`、`history.ts`、`cache.ts` 等全局状态，全仓共有 11 个业务子模块显式依赖它（如 `core`、`commands`、`desktop`、`mcp` 等），在依赖图上呈现为最大的汇聚入度节点（In-degree = 11）。
+- **候选答案（待用户对照源码确认）**：`storage-service`（对应路径 `src/storage/`）。
+- **源码文件路径依据**：[`/Users/bobcgn/AAA_Codings/Personal_Projects/skill-central/src/storage/config.ts`](file:///Users/bobcgn/AAA_Codings/Personal_Projects/skill-central/src/storage/config.ts)、[`src/storage/history.ts`](file:///Users/bobcgn/AAA_Codings/Personal_Projects/skill-central/src/storage/history.ts)、[`src/storage/cache.ts`](file:///Users/bobcgn/AAA_Codings/Personal_Projects/skill-central/src/storage/cache.ts)。全仓共有 11 个业务子模块显式依赖它（如 `core`、`commands`、`desktop`、`mcp` 等），在依赖图上呈现为最大的汇聚入度节点（In-degree = 11）。
+- **标注**：未经用户确认，不得作为评分依据。
 
 #### 任务 2：模块调用隔离与分层判断 / Tiering & Boundary Check
 - **题目**：桌面端主进程入口 `src/desktop/main.ts` 是否直接调用了底层 CLI 具体命令脚本（`src/commands/*`）？
-- **客观标准答案**：否。桌面主进程未直接引用 `commands/*`，而是由 `desktop-service` 隔离，通过事件委托间接执行。
-- **代码与证据依据**：检查 `src/desktop/main.ts` 的 import 语句（L1-L35），仅引入了 Electron、`app-metadata`、`ipc` 与 `window-manager`，不存在任何指向 `src/commands/` 的 import。
+- **候选答案（待用户对照源码确认）**：否。桌面主进程未直接引用 `commands/*`，而是由 `desktop-service` 隔离，通过事件委托间接执行。
+- **源码文件路径依据**：[`/Users/bobcgn/AAA_Codings/Personal_Projects/skill-central/src/desktop/main.ts#L1-L35`](file:///Users/bobcgn/AAA_Codings/Personal_Projects/skill-central/src/desktop/main.ts#L1-L35)。检查其 import 语句仅引入了 Electron、`app-metadata`、`ipc` 与 `window-manager`，不存在任何指向 `src/commands/` 的 import。
+- **标注**：未经用户确认，不得作为评分依据。
 
 #### 任务 3：单体工程边缘局限识别 / Boundary Heuristic Comprehension
 - **题目**：为什么根入口 `src/index.ts` 到 `commands-service` 的 import 没有作为一条有向边出现在架构图中？
-- **客观标准答案**：因为 `src/index.ts` 位于根目录，单体工程的 L4 聚类 Heuristic 仅针对 `src/<subdir>` 生成模块组件，根级单文件未归属于独立子模块。
-- **代码与证据依据**：[`packages/implementation-analyzer/src/structure/module-analyzer.ts`](file:///Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-analyzer/src/structure/module-analyzer.ts#L141-L161) 中 `analyzeSingleRepository` 仅识别 `src/` 的直接子目录，根文件 `fromMod === undefined`。
+- **候选答案（待用户对照源码确认）**：因为 `src/index.ts` 位于根目录，单体工程的 L4 聚类 Heuristic 仅针对 `src/<subdir>` 生成模块组件，根级单文件未归属于独立子模块。
+- **源码文件路径依据**：[`/Users/bobcgn/AAA_Codings/Personal_Projects/skill-central/src/index.ts`](file:///Users/bobcgn/AAA_Codings/Personal_Projects/skill-central/src/index.ts) 与 [`packages/implementation-analyzer/src/structure/module-analyzer.ts#L141-L161`](file:///Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-analyzer/src/structure/module-analyzer.ts#L141-L161)（`analyzeSingleRepository` 仅识别 `src/` 的直接子目录，根文件 `fromMod === undefined`）。
+- **标注**：未经用户确认，不得作为评分依据。
 
 ---
 
@@ -77,18 +85,21 @@ Designed a human comprehension A/B evaluation protocol and question set for Phas
 
 #### 任务 1：架构事实中心判定 / Source of Truth Identification
 - **题目**：在 Coding-CAD 架构中，哪个包是全系统唯一的架构事实来源（Single Source of Truth）？
-- **客观标准答案**：`@coding-cad/architecture-ir`（对应 `packages/architecture-ir`）。
-- **代码与证据依据**：根级 [`AGENTS.md`](file:///Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/AGENTS.md#L11-L26) 明确规定；全仓 15 个模块中有 12 个模块在 `package.json` 中直接依赖 `architecture-ir`，且无任何模块创建竞争性的架构数据结构。
+- **候选答案（待用户对照源码确认）**：`@coding-cad/architecture-ir`（对应 `packages/architecture-ir`）。
+- **源码文件路径依据**：根级 [`AGENTS.md#L11-L26`](file:///Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/AGENTS.md#L11-L26) 明确规定；[`packages/architecture-ir/package.json`](file:///Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-ir/package.json)；全仓 15 个模块中有 12 个模块在 `package.json` 中直接依赖 `architecture-ir`。
+- **标注**：未经用户确认，不得作为评分依据。
 
 #### 任务 2：依赖方向规则合规审查 / Dependency Direction Rule Check
 - **题目**：`packages/architecture-layout` 是否允许反向导入 `apps/web` 或 `@xyflow/svelte`？
-- **客观标准答案**：严格禁止。
-- **代码与证据依据**：架构决策 [D-009](file:///Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/docs/architecture-layout-decisions.md#L468-L510) 与根级规则规定：Canvas 渲染器类型只能保留在 `apps/web` 内部的 adapter 层，核心布局编译器必须保持 solver-neutral 与 UI-neutral。
+- **候选答案（待用户对照源码确认）**：严格禁止。
+- **源码文件路径依据**：架构决策 [D-009](file:///Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/docs/architecture-layout-decisions.md#L468-L510)、根级 [`AGENTS.md#L30-L54`](file:///Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/AGENTS.md#L30-L54) 与 [`packages/architecture-layout/package.json`](file:///Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-layout/package.json)（无任何 Svelte 或 Web 依赖）。
+- **标注**：未经用户确认，不得作为评分依据。
 
 #### 任务 3：阶段 4 依赖演进溯源 / Dependency Evolution Tracking
 - **题目**：阶段 4 相比阶段 3 退出时的 38 条依赖边，新增了哪两条依赖边？
-- **客观标准答案**：`web -> implementation-analyzer`（步骤 3 新增）与 `web -> implementation-validator`（步骤 4 新增）。
-- **代码与证据依据**：详见 [`docs/brownfield-expected-baseline-provenance.md`](file:///Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/docs/brownfield-expected-baseline-provenance.md#L68-L87)，两项均为真实新增的运行时依赖。
+- **候选答案（待用户对照源码确认）**：`web -> implementation-analyzer`（步骤 3 新增）与 `web -> implementation-validator`（步骤 4 新增）。
+- **源码文件路径依据**：[`apps/web/package.json`](file:///Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/web/package.json)（显式声明两项 workspace 依赖）、[`apps/web/src/routes/api/workspace/analyze-repository/+server.ts`](file:///Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/web/src/routes/api/workspace/analyze-repository/+server.ts) 以及 [`apps/web/src/routes/+page.svelte`](file:///Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/web/src/routes/+page.svelte)。详见 [`docs/brownfield-expected-baseline-provenance.md#L68-L87`](file:///Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/docs/brownfield-expected-baseline-provenance.md#L68-L87)。
+- **标注**：未经用户确认，不得作为评分依据。
 
 ---
 
@@ -99,23 +110,27 @@ Designed a human comprehension A/B evaluation protocol and question set for Phas
 
 #### 任务 1：中心共享包（Hub Package）判定
 - **题目**：该拓扑中最核心的中心共享包是哪一个？它被多少个包依赖？
-- **客观标准答案**：`pkg-hub-core`；被其余 13 个包全部依赖（入度 In-degree = 13）。
-- **代码与证据依据**：`packages/pkg-hub-core/package.json` 导出共享类型与总线，其余 13 个包的 `.service.ts` 均包含显式 `import from "../../pkg-hub-core/..."`。
+- **候选答案（待用户对照源码确认）**：`pkg-hub-core`；被其余 13 个包全部依赖（入度 In-degree = 13）。
+- **源码文件路径依据**：[`packages/implementation-analyzer/fixtures/synthetic-hub-repo/packages/pkg-hub-core/package.json`](file:///Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-analyzer/fixtures/synthetic-hub-repo/packages/pkg-hub-core/package.json)，其余 13 个包的源码文件（如 `packages/pkg-service-user/src/user-controller.service.ts`）均包含显式 `import from "../../pkg-hub-core/..."`。
+- **标注**：未经用户确认，不得作为评分依据。
 
 #### 任务 2：环依赖排查 / Cyclic Dependency Detection
 - **题目**：该拓扑中存在哪组直接相互引用的环依赖？
-- **客观标准答案**：`pkg-service-order` 与 `pkg-service-inventory` 互斥环依赖。
-- **代码与证据依据**：`packages/pkg-service-order/src/order-service.service.ts` 导入 `inventory-service`，同时 `packages/pkg-service-inventory/src/inventory-service.service.ts` 导入 `order-service`。
+- **候选答案（待用户对照源码确认）**：`pkg-service-order` 与 `pkg-service-inventory` 互斥环依赖。
+- **源码文件路径依据**：[`packages/implementation-analyzer/fixtures/synthetic-hub-repo/packages/pkg-service-order/src/order-service.service.ts`](file:///Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-analyzer/fixtures/synthetic-hub-repo/packages/pkg-service-order/src/order-service.service.ts)（导入 `inventory-service`）与 [`packages/pkg-service-inventory/src/inventory-service.service.ts`](file:///Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-analyzer/fixtures/synthetic-hub-repo/packages/pkg-service-inventory/src/inventory-service.service.ts)（导入 `order-service`）。
+- **标注**：未经用户确认，不得作为评分依据。
 
 #### 任务 3：桥接模块（Bridge Connector）识别
 - **题目**：连接传统遗留系统与现代微服务集群的桥接模块是哪一个？
-- **客观标准答案**：`pkg-bridge-connector`。
-- **代码与证据依据**：`packages/pkg-bridge-connector/src/legacy-adapter.service.ts` 导入 `pkg-legacy-crm`，`bridge-router.service.ts` 导入 `pkg-service-order` 与 `pkg-service-user`。
+- **候选答案（待用户对照源码确认）**：`pkg-bridge-connector`。
+- **源码文件路径依据**：[`packages/implementation-analyzer/fixtures/synthetic-hub-repo/packages/pkg-bridge-connector/src/legacy-adapter.service.ts`](file:///Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-analyzer/fixtures/synthetic-hub-repo/packages/pkg-bridge-connector/src/legacy-adapter.service.ts)（导入 `pkg-legacy-crm`）与 [`packages/pkg-bridge-connector/src/bridge-router.service.ts`](file:///Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-analyzer/fixtures/synthetic-hub-repo/packages/pkg-bridge-connector/src/bridge-router.service.ts)（导入 `pkg-service-order` 与 `pkg-service-user`）。
+- **标注**：未经用户确认，不得作为评分依据。
 
-#### 任务 4：大图默认折叠策略（N > 50）效果评估
-- **题目**：当采用 N > 50 初始折叠策略时，首屏可见节点数与连线交叉数发生了怎样的改善？
-- **客观标准答案**：首屏可见节点数由 71 个降为 14 个（降幅 80.3%），交叉数由 86 次降为 34 次（降幅 60.5%），有效消除了大图首屏的信息过载。
-- **实测数据依据**：详见 [`logs/validation/p4-browser/benchmark-report.md`](file:///Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/logs/validation/p4-browser/benchmark-report.md)。
+#### 任务 4：大图模拟折叠策略（N > 50）效果评估
+- **题目**：当在测试中模拟应用 N > 50 初始折叠策略时，首屏可见节点数与连线交叉数发生了怎样的改善？
+- **候选答案（待用户对照源码确认）**：首屏可见节点数由 71 个降为 14 个（降幅 80.3%），交叉数由 86 次降为 34 次（降幅 60.5%），有效消除了大图首屏的信息过载。（注意：此数据为测试中模拟折叠的结果，非当前产品默认未折叠行为）。
+- **源码文件与实测数据依据**：[`packages/implementation-analyzer/fixtures/synthetic-hub-repo/truth.json`](file:///Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-analyzer/fixtures/synthetic-hub-repo/truth.json) 与 [`logs/validation/p4-browser/benchmark-report.md`](file:///Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/logs/validation/p4-browser/benchmark-report.md)。
+- **标注**：未经用户确认，不得作为评分依据。
 
 ---
 

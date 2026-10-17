@@ -26,7 +26,7 @@
 | **大规模图首屏渲染耗时** | `synthetic-large-repo` (120 modules) | preview: **292.65 ms** / 377.81 ms / [278.53~377.81]<br>dev: **287.35 ms** / 373.37 ms / [274.90~373.37] | **≤ 1500 ms (稳态)** | **沿用已批准预算**：Checkpoint 2 批准的 1.5s 预算，实测仅约 300ms，大幅优于预算。 |
 | **服务端代码分析耗时** | `skill-central` (290 files) | preview: **163.90 ms** / 199.35 ms / [159.32~199.35]<br>dev: **163.50 ms** / 205.10 ms / [155.20~205.10] | **≤ 1000 ms (稳态)** | **实测倒推提议**：300 文件内单机耗时稳定在 160ms 左右，提议 1000ms 作为安全预算。 |
 | **边交叉数 (Crossings) - 展开** | `synthetic-hub-repo` (57 modules) | 实测 **86 处交叉** | **仅作观测，不设硬门禁** | 复杂网状图交叉数高度依赖图拓扑固征，不宜设统一硬门禁。 |
-| **边交叉数 (Crossings) - 折叠优化** | `synthetic-hub-repo` (14 containers) | 实测 **34 处交叉 (降幅 60.5%)** | **折叠交叉降幅 ≥ 40%** | **实测倒推提议**：实测降幅 60.5%，提议 40% 门槛验证容器折叠对首屏认知减负的有效性。 |
+| **边交叉数 (Crossings) - 折叠优化** | `synthetic-hub-repo` (14 containers) | 实测 **34 处交叉 (降幅 60.5%)** | **折叠交叉降幅 ≥ 40%** | **实测倒推提议**：实测降幅 60.5%（注意：此为测试中模拟折叠的结果，非当前产品默认行为），提议 40% 门槛验证容器折叠对首屏认知减负的有效性。 |
 | **代码依赖边精确率 (Precision)** | `skill-central` (AI 抽样 30 条) | 30/30 (100.0%)<br>95% CI (Wilson): **[88.65%, 100.00%]** | **≥ 90.0%** | **提议值**：保证反演出的跨模块依赖具备高置信度。 |
 | **代码依赖边召回率 (Recall)** | `skill-central` (AI 抽样 30 条) | 22/30 (73.3%)<br>95% CI (Wilson): **[55.55%, 85.82%]** | **≥ 70.0%** | **实测倒推提议**：单体工程根入口脚本未聚类（漏检 8 条），提议 70% 作为 V1 阶段基准。 |
 
@@ -55,13 +55,14 @@
   - **当前标注**：代码及接口注释中已严格标注为 `// 未经批准的临时值（待用户决策裁定） / Unapproved temporary value pending user decision`。
   - **行为说明**：当前默认视图实际并未对 > 50 节点的大图强制静默折叠（以避免首屏隐藏关键入口节点影响端到端测试与预期），前期步骤 5 的 N > 50 度量数据系在测试夹具中模拟执行初始折叠所测得；正式是否启用‘N > 50 强制默认初始折叠’完全等待用户本轮决策裁定。
 
-### 3. 证据缺口客观披露 / Objective Disclosure of Evidence Gaps
+### 3. 证据缺口与已知局限客观披露 / Objective Disclosure of Gaps & Limitations
 - **真实仓库证据缺口**：当前真实代码库实证**仅来源于单个单体仓库（`skill-central`），没有任何真实生产级 Monorepo 的外部实测证据**；
 - **高级特性验证缺口**：`tsconfig.paths` 别名映射、Monorepo 跨包桶文件（barrel exports）、pnpm/npm 工作区跨包软链接等特性，目前仅在合成测试夹具（`edge-cases-repo`）上验证过，尚未在生产级真实 Monorepo 上验证。
+- **折叠机制已知局限**：实测显示 `skill-central` 的交叉数展开 152 处、模拟折叠 152 处（降幅 0.0%），由于该单体仓库平铺且无任何容器分组可折叠，**折叠机制对无容器分组的单体仓库无效**，作为已知局限客观记录，严禁表述为已解决。
 
 ### 4. 需人工执行的评估任务 / Human Comprehension Evaluation Pending Execution
 - **评估材料**：[`docs/evaluation/p4-comprehension-eval.md`](file:///Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/docs/evaluation/p4-comprehension-eval.md)
-- **说明**：该评估方案包含 A/B 对照实验设计、三类目标代码库问答题及客观标准答案。**当前状态为待执行，评测数据必须由真实人类架构师实测填写，严禁 AI 代填**。
+- **说明**：该评估方案包含 A/B 对照实验设计、三类目标代码库问答题及附带源码依据的候选答案。**未经用户显式确认前不得宣称已有客观标准答案，数据必须由真实人类架构师实测填写，严禁 AI 代填**。
 
 ---
 
@@ -167,6 +168,7 @@
 
 | 提交哈希 / Hash | 对应步骤 / Step | 提交信息 / Commit Message | 验证状态 |
 | --- | --- | --- | --- |
+| `aea592a` | 阶段 4 订正 | `docs(exit-report): rectify phase 4 reports, evidence, repeated benchmarks, and rollback table` | 存在 (Verified) |
 | `66b9fd0` | 步骤 6 | `docs(exit-report): draft phase 4 exit report and synchronize phase status` | 存在 (Verified) |
 | `2e838af` | 步骤 5 | `feat(acceptance): establish complex mesh benchmark, real repo empirical test, and human evaluation materials` | 存在 (Verified) |
 | `320f92c` | 步骤 4.1 | `feat(compliance): refine technology rule semantics and replenish validation evidence` | 存在 (Verified) |
@@ -189,27 +191,29 @@
 
 回退时必须严格按照逆序执行 `git revert`：
 
-1. **回退步骤 6（退出报告与状态同步）**：`git revert 66b9fd0`
+1. **回退阶段 4 订正（报告与实证订正）**：`git revert aea592a`
+   - **连带影响**：仅撤销报告订正、80 次重复基准记录与折叠阈值参数化，不影响前序核心功能。
+2. **回退步骤 6（退出报告与状态同步）**：`git revert 66b9fd0`
    - **连带影响**：仅撤销退出报告与状态标记，不影响任何代码功能或前置步骤。
-2. **回退步骤 5（验收基线与实证材料）**：`git revert 2e838af`
+3. **回退步骤 5（验收基线与实证材料）**：`git revert 2e838af`
    - **连带影响**：撤销复杂网状夹具 `synthetic-hub-repo`、实测日志与人工评估底稿，步骤 6 中引用步骤 5 的实测数据将失去依据。
-3. **回退步骤 4.1（语义修正与证据补齐）**：`git revert 320f92c`
+4. **回退步骤 4.1（语义修正与证据补齐）**：`git revert 320f92c`
    - **连带影响**：撤销技术规则语义修正与 Web 端 4 类问题分流计数器，将导致依赖 4 类计数器的测试与界面表现失败。
-4. **回退步骤 4 补档文档**：`git revert 9ebfcb0`
+5. **回退步骤 4 补档文档**：`git revert 9ebfcb0`
    - **连带影响**：仅影响 40 边拓扑下的基准文档记录，无代码影响。
-5. **回退步骤 4（合规检查与双向导航）**：`git revert 638a90e`
+6. **回退步骤 4（合规检查与双向导航）**：`git revert 638a90e`
    - **连带影响**：撤销基线比对、双基线夹具与画布受控自动展开，破坏后续步骤 4.1 与步骤 5 对合规功能的依赖。
-6. **回退步骤 3.1（路由安全加固与浏览器实测）**：`git revert dfed3d5`
+7. **回退步骤 3.1（路由安全加固与浏览器实测）**：`git revert dfed3d5`
    - **连带影响**：撤销 Host/Origin 白名单、超限截断与软链接防环安全拦截，使步骤 3 路由回到初版基础状态。
-7. **回退步骤 3（Web 流水线与服务端安全路由）**：`git revert a6d5781`
+8. **回退步骤 3（Web 流水线与服务端安全路由）**：`git revert a6d5781`
    - **连带影响**：撤销 `/api/workspace/analyze-repository` 服务端路由与前端分析调用，导致步骤 3.1、4、4.1、5、6 全部 Web 棕地能力失效。
-8. **回退步骤 2 & 2.1（分析器分层提取与 L2 补强）**：`git revert 9ede079`
+9. **回退步骤 2 & 2.1（分析器分层提取与 L2 补强）**：`git revert 9ede079`
    - **连带影响**：撤销 AST import/export 提取、L2 交叉校验与 `evidence-codec.ts`，导致下游步骤 3+ 因缺失分析器数据与编解码器而全面编译/运行时失败。
-9. **回退步骤 2.1 门禁独立修复**：`git revert ddc11f2`
-   - **连带影响**：撤销变更检查脚本正则修复；若变更记录中包含带有章节关键词的列表项，`pnpm check:changelog` 与 CI 总门禁将报错拦截。
-10. **回退步骤 1（真值基准与当前基线）**：`git revert c38ef3f`
+10. **回退步骤 2.1 门禁独立修复**：`git revert ddc11f2`
+    - **连带影响**：撤销变更检查脚本正则修复；若变更记录中包含带有章节关键词的列表项，`pnpm check:changelog` 与 CI 总门禁将报错拦截。
+11. **回退步骤 1（真值基准与当前基线）**：`git revert c38ef3f`
     - **连带影响**：撤销 4 套基础真值夹具与 `benchmark.ts`，将破坏步骤 2 对夹具的依赖。
-11. **回退步骤 0（固化记录格式与规则文档）**：`git revert 876e07c`
+12. **回退步骤 0（固化记录格式与规则文档）**：`git revert 876e07c`
     - **连带影响**：撤销三段式记录格式规范与检查脚本，导致 CI 格式门禁失效。
 
 ---
@@ -220,8 +224,8 @@
 
 | 维度 / Dimension | 详细事实说明 / Detailed Facts |
 | --- | --- |
-| **期望基线独立来源** | `coding-cad-expected.json` 依据 `packages/README.md` 架构模块依赖表与各 package 根目录下的 `package.json` 声明依赖手动整理，**完全独立于 `ImplementationAnalyzer` 代码提取输出**。正因二者相互独立，本仓库比对结果仅能表述为“自洽性检查通过（0 误报）”，严禁作为 Analyzer 正确性的独立证明。 |
-| **边数由 38 变为 40 的具体原因** | - **原始 38 边**：产生于步骤 1 手工真值初步登记。<br>- **新增的第 1 条边**：`@coding-cad/architecture-agent -> @coding-cad/architecture-ir`。在步骤 2.1 引入 AST 源码深度扫描与 L2 交叉校验时，发现 `packages/architecture-agent/src/agent.ts` 源码中实际存在 `import type { ArchitectureProject } from "@coding-cad/architecture-ir"`，且其 `package.json` 明确声明了该依赖，属于客观真实存在的有效架构依赖。<br>- **新增的第 2 条边**：`@coding-cad/architecture-review -> @coding-cad/architecture-ir`。同样在 L2 AST 源码交叉校验中被证实存在类型契约导入并声明于清单中。<br>- **与真值一致性**：两条新增边均与代码真实事实和清单完全一致，补充进独立基线后使依赖图达到完备状态。 |
+| **期望基线来源与校对说明** | `coding-cad-expected.json` 在步骤 4 编写合规检查时建立，参考了 `packages/README.md` 与各子包 `package.json` 清单，并在开发过程中使用 `ImplementationAnalyzer` 反演输出进行过比对校对。**因其校对流程使用过 Analyzer 输出，该期望基线属于非独立基线（Non-independent Baseline）**。因此针对本仓库的比对结果**严格降级为“自洽性检查通过”**，严禁表述为“0 误报”以证明 Analyzer 的独立准确性（表 D 亦已同步注明）。 |
+| **边数由 38 变为 40 的具体原因** | - **基线初始状态（38 边）**：阶段 3 退出时，各包清单声明了 37 条运行时内部依赖（`runtime`）+ 1 条测试依赖（`dev`：`architecture-review -> execution-blueprint`），合计 38 条依赖边。<br>- **新增第 1 条边（38 -> 39）**：<br>  - **源节点**：`web` (`apps/web`)<br>  - **目标节点**：`implementation-analyzer` (`@coding-cad/implementation-analyzer`)<br>  - **证据来源**：`declared`（`apps/web/package.json` 依赖声明）+ `resolved`（`apps/web/src/routes/api/workspace/analyze-repository/+server.ts` 源码引用）<br>  - **依赖种类**：`runtime` 依赖<br>  - **产生改动与提交**：步骤 3 提交 `a6d5781`（`feat(web): connect brownfield repository analysis pipeline with secure server route`），由服务端反演路由引入。<br>- **新增第 2 条边（39 -> 40）**：<br>  - **源节点**：`web` (`apps/web`)<br>  - **目标节点**：`implementation-validator` (`@coding-cad/implementation-validator`)<br>  - **证据来源**：`declared`（`apps/web/package.json` 依赖声明）+ `resolved`（`apps/web/src/routes/+page.svelte` 与 `workspace-shell-controller.ts` 源码引用）<br>  - **依赖种类**：`runtime` 依赖<br>  - **产生改动与提交**：步骤 4 提交 `638a90e`（`feat(compliance): implement expected architecture baseline validation and bidirectional problem navigation`），由前端合规检查加载引入。<br>- **与真值一致性判定**：对照手工整理的 `package.json` 声明真值（37 条）与已知的 1 条 devDependency（合计 38 条），这两条新增边均为阶段 4 业务流水线真实新增的代码与清单依赖，**属于客观真实依赖**（既不是 Analyzer 解析缺陷，也不是真值标注错误）。新增后全仓共 39 条 runtime 依赖 + 1 条 dev 依赖 = 40 条依赖。 |
 
 #### 表 B：7 项复杂边缘用例逐项结果矩阵表
 
@@ -255,5 +259,5 @@
 | **组件命名规范偏离** (`execution-blueprint` 错误命名) | `naming` | 组件 `execution-blueprint` | **cannot-verify** | 标注 `[无法验证]`，计数器 `counter-cannot-verify` (+1) |
 
 > **问题总数严格对照**：
-> - **无偏差版本 (`coding-cad-golden.json`)**：检出问题总数 **0 项**（完全自洽合规）；
+> - **无偏差版本 (`coding-cad-golden.json`)**：检出问题总数 **0 项**（自洽性检查通过；注：基线非独立，曾使用 Analyzer 输出校准）；
 > - **漂移版本 (`coding-cad-drifted.json`)**：检出问题总数 **5 项**（上述 5 类偏差 100% 精确检出，**绝对无任何表外多余问题**）。
