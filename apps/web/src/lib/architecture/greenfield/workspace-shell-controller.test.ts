@@ -625,5 +625,58 @@ describe("Step 5.8 D-011 Ghost Predictive Placement (Option B: Dry-run Predictio
     });
     assert.ok(controller.state().proposal?.title.includes("new-svc"));
   });
+
+  it("f. bypasses dry-run prediction for connect-components and remove-component proposals", async () => {
+    let engineRuns = 0;
+    const trackingEngine = {
+      layout: async (graph: any) => {
+        engineRuns++;
+        return {
+          status: "success" as const,
+          direction: "LR" as const,
+          size: { width: 800, height: 600 },
+          nodes: graph.nodes.map((n: any, idx: number) => ({
+            id: n.id, sourceId: n.id, kind: n.kind, position: { x: 100 + idx * 250, y: 150 }, size: { width: 220, height: 90 }
+          })),
+          edges: [],
+          diagnostics: []
+        };
+      },
+      dispose: () => undefined
+    };
+
+    const controller = new WorkspaceShellController(pointsSystemFixture, {
+      engineFactory: () => trackingEngine as any
+    });
+    // Set initial layout
+    await (controller as any).layoutCandidate(pointsSystemFixture);
+    const initialEngineRuns = engineRuns;
+
+    // Execute connect-components
+    await controller.executeCommand({
+      type: "connect-components",
+      connection: { id: "test-conn", from: "gateway", to: "events", protocol: "MESSAGE" }
+    });
+
+    const connectState = controller.state();
+    assert.ok(connectState.proposal !== undefined);
+    assert.equal(connectState.ghostPrediction, undefined, "Connect proposals must bypass dry-run prediction");
+    assert.equal(engineRuns, initialEngineRuns, "Connect proposals must not trigger trial layout");
+
+    // Reject to reset
+    controller.rejectCandidate("Discard connect proposal");
+
+    // Execute remove-component
+    await controller.executeCommand({
+      type: "remove-component",
+      componentId: "events"
+    });
+
+    const removeState = controller.state();
+    assert.ok(removeState.proposal !== undefined);
+    assert.equal(removeState.ghostPrediction, undefined, "Remove proposals must bypass dry-run prediction");
+    assert.equal(engineRuns, initialEngineRuns, "Remove proposals must not trigger trial layout");
+  });
 });
+
 

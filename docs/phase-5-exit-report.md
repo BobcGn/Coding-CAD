@@ -215,6 +215,26 @@
   7. **容器满置于外侧通知**：在 `RedisCache` 场景中，Ghost 节点带有 `[data-testid="ghost-notice"]`，明确提示 `所属容器 'group:infrastructure' 内部无可用空间，Ghost 放置于容器外侧`。
   8. **试算延迟性能**：Dev 模式 131~251ms，Preview 模式 108~182ms，均远低于 5000ms 临时超时预算。
 
+### 步骤 5.8.1：内部验收钩子隔离、Connect/Remove 试算旁路与产物自动化检查 (Step 5.8.1: Test Hook Isolation, Connect/Remove Bypass & Bundle Verification)
+
+1. **内部验收钩子环境隔离**：
+   - 检查确认：在普通 production 构建产物中，此前存在 `window.__coding_cad_wait_for_prediction__` 等全局挂载；
+   - 修复实施：在 `apps/web/src/routes/+page.svelte` 中，将所有 `window.__coding_cad_*` 调试与内部验收钩子移入 `if (import.meta.env.DEV || import.meta.env.MODE === "layout-acceptance")` 块中；
+   - 验证效果：经 Vite/Rollup 生产打包死代码消除（DCE），普通生产产物中 `__coding_cad_` 与 `__p3LayoutAcceptance` 出现次数为 **0**。
+2. **Connect 与 Remove 提案的试算处理策略与界面表现**：
+   - **`Connect` 提案**：
+     - **处理策略**：**不运行试算** (`requiresPrediction = false`)；
+     - **决策理由**：`Connect` 提案连接的是两个已经处于正式架构中的既有节点（其位置已固定，受 D-007 保护不应被提案移动）。若在提案阶段执行 ELK 增量试算，输出的仅是既有节点的位置，而 Svelte Flow 画布视图层为了保证正式架构稳定，坚决不会采用试算结果去移动正式节点；且 Svelte Flow 原生 edge 具备 `smoothstep` 路径计算，直接在两端既有节点 handle 间渲染紫色虚线与 `[待审批 / Proposed]` 标签即可，无需求解器生成折线点。因此运行试算纯属空转浪费（~150ms worker cycle 计算结果完全不被使用）。改为不运行试算，节约开销并实现即时响应；
+     - **界面表现**：提案发起后无需等待试算，立即在两端关联正式节点之间渲染紫色虚线连接（`stroke: #8b5cf6; stroke-dasharray: 5 5;`），并标注 `[待审批 / Proposed]` 文字标签与 aria-label；两端既有节点坐标保持原位不变；
+   - **`Remove` 提案**：
+     - **处理策略**：**不运行试算** (`requiresPrediction = false`)；
+     - **决策理由**：`Remove` 提案仅将现有正式节点标记为待删除状态，绝不在正式架构或画布上删除该节点，更不引入未定位的新 Ghost 节点；在审查通过前，正式节点必须保持在当前原位以供用户辨认被删除的对象；若试算重新计算布局，会造成正式节点提前移动或收缩，违背“未批准提案不改变正式架构呈现”的 D-007 原则；
+     - **界面表现**：提案发起后无需等待试算，目标节点以 `[待删除 / Pending Deletion]` 红色徽章与中划线标记直接在原位展示；关联连接线以红色虚线与 `[待删除 / Pending Deletion]` 标记在原位展示；整张画布中所有节点与连接几何坐标严格保持不变。
+3. **生产产物自动化门禁脚本与负控测试**：
+   - 编写 `scripts/ci/check-production-bundle.mjs` 递归扫描 `apps/web/.svelte-kit/output`；
+   - 编写 `scripts/ci/check-production-bundle.test.mjs`，包含 4 项测试（含对 `__coding_cad_` 与 `__p3LayoutAcceptance` 的负控，确保故意带钩子时脚本以退出码 1 失败并精确汇报文件与行号）；
+   - 根目录 `package.json` 添加 `"check:prod-bundle"` 并纳入 `ci:verify`。
+
 ### Node 单测与真实浏览器测试的本质差别说明
 
 | 维度 | Node 单测 (`incremental-stability.test.ts`) | 真实浏览器测试 (`ghost-stability-benchmarks.spec.ts`) |
@@ -320,9 +340,10 @@
 
 | 代码包 / 应用 (Package / App) | 测试文件数 (Files) | 测试用例数 (Tests) | 验证状态 (Status) |
 | --- | --- | --- | --- |
-| `@coding-cad/web` (单元测试) | 18 | 125 | **全部通过 (100% Passed)** |
+| `@coding-cad/web` (单元测试) | 18 | 126 | **全部通过 (100% Passed)** |
 | `@coding-cad/web` (集成测试) | 4 | 13 | **全部通过 (100% Passed)** |
-| `@coding-cad/web` (浏览器 E2E) | 8 | 37 (dev) / 37 (preview) | **全部通过 (100% Passed)** |
+| `@coding-cad/web` (浏览器 E2E) | 8 | 37 (dev) / 37 (preview) = 74 项 | **全部通过 (100% Passed)** |
+| `scripts/ci` (生产产物检查器门禁测试) | 1 | 4 | **全部通过 (100% Passed, 含负控)** |
 | `@coding-cad/architecture-ir` | 1 | 14 | **全部通过 (100% Passed)** |
 | `@coding-cad/architecture-layout` | 9 | 36 | **全部通过 (100% Passed)** |
 | `@coding-cad/architecture-review` | 3 | 12 | **全部通过 (100% Passed)** |
@@ -340,7 +361,57 @@
 
 ---
 
-## 4. 提交历史与逆序回退分析 / Commits & Rollback Crosswalk
+### 状态分类清单 / Status Classification Breakdown
+
+依据项目规范，对所有工作项进行三分类盘点：
+1. **已实现并验证 (Implemented and verified)**：
+   - 阶段 5 范围内全部 9 项验收标准及对应功能；
+   - 范围外附带改动：工作区 `.gitignore` 规范隔离；
+   - 步骤 5.0：中英双语设计备忘录（`docs/phase-5-design-memo.md`）；
+   - 步骤 5.1 & 5.1.1：Execution Handoff 预览、三类 Guide、来源双向回溯、剪贴板比对与权限拒绝降级、规范化快照键与基线依赖溯源；
+   - 步骤 5.2：Proposal 与 Ghost 投影、D-007 方案 B 零碰撞局部放置、单提案锁定；
+   - 步骤 5.3：Review 状态机接入硬化、过期提案防御、内存保留与拒绝释放锁测试；
+   - 步骤 5.4：增量布局稳定性指标度量与未受影响节点位移 0.0px 预算断言；
+   - 步骤 5.6：真实浏览器 dev/preview 双模式基准测试与 Medium 归因审计；
+   - 步骤 5.7：Ghost 预测位置设计备忘录；
+   - 步骤 5.8：未持久化试算布局预测 Ghost 位置（D-011 落实）、三态标签映射与竞态取消防御；
+   - 步骤 5.8.1：内部验收钩子生产隔离、Connect/Remove 试算旁路与生产产物自动化门禁检查。
+2. **已实现未验证 (Implemented but unverified)**：
+   - **无 (None)**。所有已实现功能均具备对应的自动化测试或基准证据支撑。
+3. **未执行事项 (Not executed)**：
+   - **人工可理解性评估题库 (`docs/evaluation/p4-comprehension-eval.md`)**：设计方案与带标准答案的题库已就绪，但该评测必须由真实人类架构师实操测试打分，不可由 AI 代理代填，因此归为未执行。
+4. **递延与范围外事项 (Deferred / Out of scope)**：
+   - 阶段 4.5 未执行事项（根入口聚合、循环依赖检测、默认折叠落实为默认行为）：待用户确认是否立项；
+   - xjb_coding 导出：待用户确认是否立项；
+   - 观测指标阈值批准：实测耗时、交叉数与位移等指标目前仅作工程观测记录；
+   - D-004 钉住、D-006 布局持久化磁盘格式、Terminal：属于阶段 6+ 规划范围。
+
+---
+
+## 4. 合并建议、回滚方案与逐提交回退分析 / Merge, Rollback & Commits Crosswalk
+
+### 推荐合并方式 (Recommended Merge Strategy)
+
+建议通过非快进合并提交（Merge Commit）并入 `main`：
+```bash
+git checkout main
+git pull origin main
+git merge --no-ff codex/phase-5-ghost-handoff
+git push origin main
+```
+**理由**：采用 `--no-ff` 保留阶段 5 完整原子提交历史（包含步骤 5.0 至 5.8.1 及各修复切片），同时确立清晰的单一合并汇聚点，极大简化后续追溯与审计。
+
+### 统一回滚方案 (Unified Rollback Procedure)
+
+若合并后发现严重非预期异常需要全量回退阶段 5，只需对该合并提交执行单次回退命令：
+```bash
+git revert -m 1 <merge-commit-hash>
+```
+该命令将以单一 revert 提交干净撤销阶段 5 引入的全部改动，无需逐提交逆序回退，避免繁琐的多步操作与中间冲突风险。
+
+### 附录：逐提交回退表与连带影响分析 (Appendix: Per-Commit Cascading Rollback Table)
+
+若在合并前或开发分支上需要针对个别原子提交进行窄范围回退，可参考以下逐提交逆序回退表：
 
 ### 提交记录表
 
@@ -365,12 +436,14 @@
 | 5.7 (PR) | `df78264` | `docs(pr): update PR draft with Step 5.7 commit hash and rollback crosswalk` | `git revert df78264` | 同步回退 PR 草稿中步骤 5.7 提交哈希 |
 | 5.8.0 | `530002a` | `docs(phase-5): reconcile test evidence, refine reason codes, and correct placement memo` | `git revert 530002a` | 回退 5.8.0 证据对齐、原因码细化与备忘录订正 |
 | 5.8 | `831bab4` | `feat(web): implement ghost predictive placement via unpersisted dry-run layout (D-011)` | `git revert 831bab4` | 移除 Ghost 试算预测位置、三态标签与对应测试，恢复 5.8.0 纯启发式状态 |
+| 5.8.1 | [待提交 / Pending Commit] | `fix(web): isolate test hooks in production, bypass dry-run for connect/remove, and add bundle checks` | `git revert <commit-hash>` | 回退内部验收钩子隔离、Connect/Remove 试算旁路与产物自动化门禁检查 |
 
 ### 逆序回退分析 (Cascading Rollback Analysis)
 
 若需回退本阶段提交，请严格按照逆序操作：
-1. **回退 5.8** (`git revert 831bab4`)：移除 Ghost 试算预测位置实现、三态标签、对应单元测试与 E2E 基准测试，恢复 5.8.0 状态；
-2. **回退 5.8.0** (`git revert 530002a`)：移除证据对齐、原因码细化与备忘录订正，恢复 5.7 状态；
+1. **回退 5.8.1** (`git revert <commit-hash>`)：移除内部验收钩子隔离、Connect/Remove 试算旁路与产物自动化门禁检查，恢复 5.8 状态；
+2. **回退 5.8** (`git revert 831bab4`)：移除 Ghost 试算预测位置实现、三态标签、对应单元测试与 E2E 基准测试，恢复 5.8.0 状态；
+3. **回退 5.8.0** (`git revert 530002a`)：移除证据对齐、原因码细化与备忘录订正，恢复 5.7 状态；
 3. **回退 5.7** (`git revert df78264` -> `git revert 338a489`)：安全移除 Ghost 预测位置设计备忘录；
 4. **回退 5.6** (`git revert 966fd4c` -> `git revert 3f05c44`)：移除浏览器 E2E benchmark 测试套件与订正报告；
 5. **回退 5.5** (`git revert 71e76d0` -> `git revert d529390`)：移除阶段 5 退出报告及执行计划更新；

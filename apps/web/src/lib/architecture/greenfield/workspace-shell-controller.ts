@@ -249,7 +249,7 @@ export class WorkspaceShellController implements ShellController {
     try {
       const prepared = this.commands.prepare(this.shell.accepted, command);
       this.pendingCommand = prepared;
-      const requiresPrediction = command.type === "add-component" || command.type === "connect-components";
+      const requiresPrediction = command.type === "add-component";
       const token = ++this.predictionToken;
 
       this.shell = {

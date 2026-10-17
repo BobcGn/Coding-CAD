@@ -819,6 +819,34 @@ PR #3首次远端CI在额外security:audit步骤报告7high，本地旧ci:verify
 - 风险与回退方式：
   - 回退方式：`git revert <commit-hash>`。
 
+## 2026-10-17 - 内部验收钩子隔离、Connect/Remove 试算旁路与产物自动化检查 / Test Hook Isolation, Connect/Remove Dry-run Bypass & Bundle Verification
+
+### 1. 做了什么 / What
+- 内部验收钩子隔离：在 `apps/web/src/routes/+page.svelte` 中，将所有 `window.__coding_cad_*` 内部验收钩子（含 `__coding_cad_wait_for_prediction__` 等）移入 `if (import.meta.env.DEV || import.meta.env.MODE === "layout-acceptance")` 条件块，利用 Vite/Rollup 的静态代码替换与死代码消除（DCE），确保普通 production 构建产物中 100% 不含任何内部验收全局变量。
+- Connect 与 Remove 试算旁路：在 `apps/web/src/lib/architecture/greenfield/workspace-shell-controller.ts` 中，将 `requiresPrediction` 判定收窄为 `command.type === "add-component"`；对 `connect-components` 与 `remove-component` 旁路试算布局，避免对不引入新 Ghost 节点的提案进行无谓的求解器试算，并在 `workspace-shell-controller.test.ts` 中补充单元测试验证。
+- 产物自动化门禁脚本：编写 `scripts/ci/check-production-bundle.mjs` 递归扫描生产构建产物中的违规调试符号；编写带正负控制的单元测试 `scripts/ci/check-production-bundle.test.mjs`；在根目录 `package.json` 中配置 `"check:prod-bundle"` 并纳入 `ci:verify`。
+- Isolated test hooks: Moved all `window.__coding_cad_*` test hooks in `apps/web/src/routes/+page.svelte` into `if (import.meta.env.DEV || import.meta.env.MODE === "layout-acceptance")`, ensuring complete dead-code elimination in standard production builds.
+- Connect & Remove dry-run bypass: Refined `requiresPrediction` in `workspace-shell-controller.ts` to `command.type === "add-component"`, bypassing dry-run layout for Connect and Remove proposals since neither introduces unpositioned Ghost nodes; added unit tests.
+- Production bundle verification: Created `scripts/ci/check-production-bundle.mjs` and test suite `check-production-bundle.test.mjs` with negative controls, wired into `package.json` scripts and `ci:verify`.
+
+### 2. 为什么这么做 / Why
+- 防止内部测试钩子污染生产环境：生产构建代码应当纯净，不应暴露任何供自动化测试操控的全局函数或调试后门。
+- 消除无意义计算开销：`connect-components` 的端点为既有正式节点，其位置受 D-007 保护保持不可变，求解器试算的坐标不被 Svelte Flow 视图层消费；`remove-component` 节点原地标记为待删除，无新节点需要定位。旁路试算可节约 ~150ms worker cycle 并在界面上实现即时反馈。
+- Prevent test hooks from leaking into production bundles.
+- Eliminate redundant compute overhead for Connect and Remove proposals.
+
+### 3. 验证结果 / Verification
+- 已实现并验证：
+  - `apps/web` 生产构建 `pnpm --filter @coding-cad/web build` 成功；
+  - 产物扫描检查 `node scripts/ci/check-production-bundle.mjs` 输出 0 违规符号；
+  - 单元测试与负控 `node --test scripts/ci/check-production-bundle.test.mjs` 4 项全数通过；
+  - 控制器单元测试 `pnpm --filter @coding-cad/web test:unit` 18 文件 126 项全数通过；
+  - 变更记录检查 `pnpm check:changelog` 通过。
+- 未实现：无。
+- 风险与回退方式：
+  - 回退方式：`git revert <commit-hash>`。
+
+
 
 
 

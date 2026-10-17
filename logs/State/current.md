@@ -23,6 +23,7 @@
 - **步骤 5.7（Ghost 预测位置设计备忘录）**：已完成并提交（`338a489` / `df78264`）。编写只读备忘录 `docs/phase-5-ghost-placement-memo.md`（评估方案 A/B/C，提供 D-011 决策草案）。
 - **步骤 5.8.0（订正证据与措辞）**：已完成并提交（`530002a`）。订正备忘录去除未经验证的具体数值并注明推导来源；细化 Ghost 放置原因码为 `near-anchor`、`far-anchor-fallback`、`container-interior`、`container-exterior`、`global-fallback`；逐包执行 15 包并归档 17 份原始日志至 `logs/validation/p5-reconciliation/`；执行全量可写环境 `CI=true TURBO_FORCE=true pnpm ci:verify`，74 项浏览器测试全部一次性通过；核验 5 核心包零代码改动。
 - **步骤 5.8（Ghost 预测位置实现, D-011）**：已完成并验证。落实已批准 D-011，在 Web 适配层实现未持久化的试算布局预测（`predictGhostPlacement`），保证与接受后增量布局同一函数（`layoutArchitectureGraph`）、同一固定状态（`this.shell.layoutState`）、同一参数（`mode: "INCREMENTAL"`）；绝对不持久化（仅存内存响应式字段，不写入 `layoutState`、撤销栈、Save/Handoff 产物）；失败降级回退启发式位置并显式提示；三态标签映射（`predicting` / `predicted` / `unavailable`）；竞态安全防御（提案变更立即丢弃试算）；单元测试 5+3 项全通，Playwright 真实浏览器实测（dev/preview 双模式覆盖 6 Add + 1 Connect + 1 Remove）位移 0.0px，100% ELK 求解器，未受影响节点位移 0.0px。
+- **步骤 5.8.1（订正内部验收钩子隔离、Connect/Remove 试算旁路与生产产物检查）**：已完成并验证。将 `window.__coding_cad_*` 内部验收钩子置于 `import.meta.env.DEV || import.meta.env.MODE === "layout-acceptance"` 门禁下，经 Vite 生产打包验证普通生产产物 0 钩子残留；对 `connect-components` 与 `remove-component` 旁路试算布局，避免对不引入新 Ghost 节点的提案进行空转试算并补充单元测试；新增 `check-production-bundle.mjs` 门禁脚本与带负控的测试套件，纳入 `ci:verify`。
 
 ## 阶段 4 进度总结 / Phase 4 Progress Summary
 
@@ -63,7 +64,11 @@
 
 ## 已实现未验证 / Implemented but unverified
 
-- 步骤 5 的用户人工可理解性评估表（设计方案与带标准答案的题库已就绪于 `docs/evaluation/p4-comprehension-eval.md`，标注为待真实人类架构师测试执行，不可由 AI 代填）。
+无 / None。所有已实现功能均具备自动化测试与度量证据。
+
+## 未执行事项 / Not executed
+
+- 人工可理解性评估题库（`docs/evaluation/p4-comprehension-eval.md`）：设计方案与带标准答案的题库已就绪，但该评测必须由真实人类架构师实操测试打分，不可由 AI 代理代填，因此严格归为未执行事项。
 
 ## 未实现及范围外 / Not implemented or out of scope
 

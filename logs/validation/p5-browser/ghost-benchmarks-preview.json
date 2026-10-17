@@ -1,11 +1,11 @@
 {
   "layoutMode": "preview",
-  "timestamp": "2026-10-17T16:32:36.985Z",
+  "timestamp": "2026-10-17T18:20:54.142Z",
   "records": [
     {
       "fixtureName": "Greenfield (Points System)",
       "scenarioType": "add-component",
-      "proposalId": "75ae4a27-8ac3-47cb-a4e1-4287b96493c8",
+      "proposalId": "8abbeee4-11cc-4e5a-b8a7-b6bbf8e179bb",
       "targetId": "audit-svc",
       "targetName": "AuditService",
       "reasonCode": "near-anchor",
@@ -35,27 +35,27 @@
       "withinBudget": true,
       "notice": "接受前若有其他变更，最终位置可能变化 / If other changes occur before acceptance, final position may change",
       "latencyDistribution": {
-        "minMs": 114.8,
-        "medianMs": 119.2,
-        "maxMs": 130.9,
+        "minMs": 120.3,
+        "medianMs": 123.5,
+        "maxMs": 125.7,
         "samples": [
-          114.8,
-          115.1,
-          117.1,
-          117.2,
-          119.1,
-          119.2,
           120.3,
-          122.6,
-          128.2,
-          130.9
+          122.7,
+          122.8,
+          122.9,
+          123.1,
+          123.5,
+          123.7,
+          124.1,
+          124.1,
+          125.7
         ]
       }
     },
     {
       "fixtureName": "Greenfield (Points System)",
       "scenarioType": "add-component",
-      "proposalId": "c01a89a7-1663-4abc-bb60-38be230db97c",
+      "proposalId": "02043dd1-88e3-45a8-89a4-4f845920bc8a",
       "targetId": "payment-gw",
       "targetName": "PaymentGateway",
       "reasonCode": "near-anchor",
@@ -85,27 +85,27 @@
       "withinBudget": true,
       "notice": "接受前若有其他变更，最终位置可能变化 / If other changes occur before acceptance, final position may change",
       "latencyDistribution": {
-        "minMs": 112.5,
-        "medianMs": 121.1,
-        "maxMs": 129.8,
+        "minMs": 121.1,
+        "medianMs": 122.7,
+        "maxMs": 145.9,
         "samples": [
-          112.5,
-          112.8,
-          115.1,
-          120.2,
-          120.8,
           121.1,
-          121.7,
-          123.1,
-          124.1,
-          129.8
+          121.2,
+          121.9,
+          121.9,
+          122.6,
+          122.7,
+          123.3,
+          125.1,
+          128.5,
+          145.9
         ]
       }
     },
     {
       "fixtureName": "Greenfield (Points System)",
       "scenarioType": "add-component",
-      "proposalId": "2a7d364b-88ec-42d7-a09a-f173e52db05b",
+      "proposalId": "462a4eb0-e04d-4c87-94ee-12f02bb3654e",
       "targetId": "redis-cache",
       "targetName": "RedisCache",
       "reasonCode": "container-exterior",
@@ -135,27 +135,27 @@
       "withinBudget": true,
       "notice": "接受前若有其他变更，最终位置可能变化 / If other changes occur before acceptance, final position may change",
       "latencyDistribution": {
-        "minMs": 113.5,
-        "medianMs": 121.5,
-        "maxMs": 124.3,
+        "minMs": 123.7,
+        "medianMs": 130.1,
+        "maxMs": 150.7,
         "samples": [
-          113.5,
-          120.4,
-          120.4,
-          121.2,
-          121.4,
-          121.5,
-          121.9,
-          122.3,
-          122.8,
-          124.3
+          123.7,
+          125.1,
+          127.4,
+          128.2,
+          130,
+          130.1,
+          133.8,
+          144.5,
+          148,
+          150.7
         ]
       }
     },
     {
       "fixtureName": "Coding-CAD (Medium Baseline)",
       "scenarioType": "add-component",
-      "proposalId": "0a648d3b-3c4e-4cc4-acc7-d21b63f3c256",
+      "proposalId": "c98bd59e-20e3-4b40-9080-923d3b7a141d",
       "targetId": "telemetry-svc",
       "targetName": "Telemetry",
       "reasonCode": "far-anchor-fallback",
@@ -185,27 +185,27 @@
       "withinBudget": true,
       "notice": "接受前若有其他变更，最终位置可能变化 / If other changes occur before acceptance, final position may change",
       "latencyDistribution": {
-        "minMs": 168.8,
-        "medianMs": 177.9,
-        "maxMs": 182,
+        "minMs": 185.7,
+        "medianMs": 190,
+        "maxMs": 223.4,
         "samples": [
-          168.8,
-          171.4,
-          174.7,
-          177.2,
-          177.4,
-          177.9,
-          178.7,
-          178.8,
-          180.8,
-          182
+          185.7,
+          185.8,
+          186.7,
+          187.4,
+          188.4,
+          190,
+          193,
+          196.3,
+          207.3,
+          223.4
         ]
       }
     },
     {
       "fixtureName": "Coding-CAD (Medium Baseline)",
       "scenarioType": "add-component",
-      "proposalId": "b4aef79f-5452-4ca5-9da8-8cd789d1519e",
+      "proposalId": "6b46d63d-fb87-4d6e-bac9-d9cd373769f7",
       "targetId": "architecture-doc-gen",
       "targetName": "DocGen",
       "reasonCode": "near-anchor",
@@ -235,27 +235,27 @@
       "withinBudget": true,
       "notice": "接受前若有其他变更，最终位置可能变化 / If other changes occur before acceptance, final position may change",
       "latencyDistribution": {
-        "minMs": 171.5,
-        "medianMs": 174.9,
-        "maxMs": 182.2,
+        "minMs": 183.8,
+        "medianMs": 186.2,
+        "maxMs": 209.2,
         "samples": [
-          171.5,
-          172.1,
-          172.3,
-          174.4,
-          174.7,
-          174.9,
-          175.2,
-          176.3,
-          176.7,
-          182.2
+          183.8,
+          183.9,
+          185.1,
+          185.5,
+          185.7,
+          186.2,
+          188.2,
+          189.8,
+          190,
+          209.2
         ]
       }
     },
     {
       "fixtureName": "Coding-CAD (Medium Baseline)",
       "scenarioType": "add-component",
-      "proposalId": "a627547e-de21-4106-b259-7b58fc20fe66",
+      "proposalId": "9701eadc-52a5-45c4-af5e-c6363f66eb81",
       "targetId": "isolated-mock",
       "targetName": "IsolatedMock",
       "reasonCode": "global-fallback",
@@ -283,27 +283,27 @@
       "withinBudget": true,
       "notice": "接受前若有其他变更，最终位置可能变化 / If other changes occur before acceptance, final position may change",
       "latencyDistribution": {
-        "minMs": 171.5,
-        "medianMs": 174.9,
-        "maxMs": 182.6,
+        "minMs": 177.1,
+        "medianMs": 184.5,
+        "maxMs": 193.5,
         "samples": [
-          171.5,
-          172.5,
-          172.8,
-          174.1,
-          174.7,
-          174.9,
-          175.8,
-          179,
-          182.4,
-          182.6
+          177.1,
+          178.4,
+          182.7,
+          182.8,
+          183.7,
+          184.5,
+          186.7,
+          187.8,
+          188.1,
+          193.5
         ]
       }
     },
     {
       "fixtureName": "Greenfield (Points System)",
       "scenarioType": "connect-components",
-      "proposalId": "99d53488-291a-4612-9396-2bc4c26697a8",
+      "proposalId": "af0ffb52-b66d-4d94-be4f-b54365cc2d99",
       "targetId": "conn-db-events",
       "targetName": "DB-to-Events Outbox Connection",
       "reasonCode": "edge-connection",
@@ -315,27 +315,27 @@
       "unaffectedMax": null,
       "withinBudget": true,
       "latencyDistribution": {
-        "minMs": 112.7,
-        "medianMs": 118.5,
-        "maxMs": 125,
+        "minMs": 118.7,
+        "medianMs": 122.9,
+        "maxMs": 136.5,
         "samples": [
-          112.7,
-          113.3,
-          114.6,
-          117.8,
-          118.3,
-          118.5,
-          119.8,
-          120.3,
-          124.5,
-          125
+          118.7,
+          121.6,
+          121.8,
+          121.9,
+          122,
+          122.9,
+          123.4,
+          128.2,
+          129.9,
+          136.5
         ]
       }
     },
     {
       "fixtureName": "Greenfield (Points System)",
       "scenarioType": "remove-component",
-      "proposalId": "e4145c9a-9c63-44a3-a72e-b96f7b55e5cd",
+      "proposalId": "12ecbd82-ed02-48ac-85d8-35bb36fd7744",
       "targetId": "events",
       "targetName": "Events Component",
       "reasonCode": "pending-deletion",
@@ -347,20 +347,20 @@
       "unaffectedMax": null,
       "withinBudget": true,
       "latencyDistribution": {
-        "minMs": 108.8,
-        "medianMs": 114.4,
-        "maxMs": 120.7,
+        "minMs": 118.7,
+        "medianMs": 120.4,
+        "maxMs": 134.6,
         "samples": [
-          108.8,
-          109.6,
-          110.4,
-          110.5,
-          111.5,
-          114.4,
-          116.6,
+          118.7,
           119,
           119.2,
-          120.7
+          119.3,
+          120.1,
+          120.4,
+          121,
+          122.7,
+          123.5,
+          134.6
         ]
       }
     }

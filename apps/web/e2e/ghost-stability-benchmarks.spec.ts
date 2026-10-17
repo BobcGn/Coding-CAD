@@ -42,6 +42,7 @@ interface BrowserGhostBenchmarkRecord {
 test.describe.configure({ mode: "serial" });
 
 test.describe("Step 5.8 Real Browser Ghost Predictive Placement & Benchmark Suite", () => {
+  test.setTimeout(180000); // Allow sufficient time for 8 scenarios with 10 repeated ELK worker latency runs
   test("measures real browser predictive metrics across Greenfield and Coding-CAD fixtures with zero overlap and ELK solver", async ({ page }, testInfo) => {
     const layoutMode = testInfo.config.metadata.layoutMode ?? "dev";
     const records: BrowserGhostBenchmarkRecord[] = [];
