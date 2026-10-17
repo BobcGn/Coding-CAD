@@ -1,0 +1,6 @@
+dist/
+.turbo/
+coverage/
+*.tsbuildinfo
+.DS_Store
+*.log
