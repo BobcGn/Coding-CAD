@@ -1,0 +1,368 @@
+{
+  "layoutMode": "dev",
+  "timestamp": "2026-10-17T18:19:50.389Z",
+  "records": [
+    {
+      "fixtureName": "Greenfield (Points System)",
+      "scenarioType": "add-component",
+      "proposalId": "2336839d-4514-4451-8176-904a33323883",
+      "targetId": "audit-svc",
+      "targetName": "AuditService",
+      "reasonCode": "near-anchor",
+      "anchorId": "ledger",
+      "heuristicPos": {
+        "x": 512,
+        "y": 236
+      },
+      "predictedPos": {
+        "x": 24,
+        "y": 236
+      },
+      "finalPos": {
+        "x": 24,
+        "y": 236
+      },
+      "diffPredictedFinal": 0,
+      "diffHeuristicFinal": 488,
+      "diffHeuristicPredicted": 488,
+      "distanceToAnchor": 257.7,
+      "preAcceptGhostOverlaps": 0,
+      "postAcceptPeerOverlaps": 0,
+      "postAcceptContainmentFailures": 0,
+      "solverSource": "elk",
+      "unaffectedP95": null,
+      "unaffectedMax": null,
+      "withinBudget": true,
+      "notice": "接受前若有其他变更，最终位置可能变化 / If other changes occur before acceptance, final position may change",
+      "latencyDistribution": {
+        "minMs": 144.9,
+        "medianMs": 148.3,
+        "maxMs": 163.2,
+        "samples": [
+          144.9,
+          146.2,
+          146.9,
+          147.5,
+          147.8,
+          148.3,
+          149.4,
+          150.5,
+          155.6,
+          163.2
+        ]
+      }
+    },
+    {
+      "fixtureName": "Greenfield (Points System)",
+      "scenarioType": "add-component",
+      "proposalId": "919dd8b1-9aa1-43fc-b753-093a201a7f77",
+      "targetId": "payment-gw",
+      "targetName": "PaymentGateway",
+      "reasonCode": "near-anchor",
+      "anchorId": "gateway",
+      "heuristicPos": {
+        "x": 252,
+        "y": 236
+      },
+      "predictedPos": {
+        "x": 24,
+        "y": 236
+      },
+      "finalPos": {
+        "x": 24,
+        "y": 236
+      },
+      "diffPredictedFinal": 0,
+      "diffHeuristicFinal": 228,
+      "diffHeuristicPredicted": 228,
+      "distanceToAnchor": 257.7,
+      "preAcceptGhostOverlaps": 0,
+      "postAcceptPeerOverlaps": 0,
+      "postAcceptContainmentFailures": 0,
+      "solverSource": "elk",
+      "unaffectedP95": null,
+      "unaffectedMax": null,
+      "withinBudget": true,
+      "notice": "接受前若有其他变更，最终位置可能变化 / If other changes occur before acceptance, final position may change",
+      "latencyDistribution": {
+        "minMs": 146.1,
+        "medianMs": 148.5,
+        "maxMs": 151.7,
+        "samples": [
+          146.1,
+          146.9,
+          147.3,
+          147.7,
+          148.3,
+          148.5,
+          148.6,
+          148.9,
+          149.2,
+          151.7
+        ]
+      }
+    },
+    {
+      "fixtureName": "Greenfield (Points System)",
+      "scenarioType": "add-component",
+      "proposalId": "6626caed-164e-46f3-b7c4-9ad2b3f1d41c",
+      "targetId": "redis-cache",
+      "targetName": "RedisCache",
+      "reasonCode": "container-exterior",
+      "anchorId": "group:infrastructure",
+      "heuristicPos": {
+        "x": 801,
+        "y": 24
+      },
+      "predictedPos": {
+        "x": 561,
+        "y": 248
+      },
+      "finalPos": {
+        "x": 561,
+        "y": 248
+      },
+      "diffPredictedFinal": 0,
+      "diffHeuristicFinal": 328.3,
+      "diffHeuristicPredicted": 328.3,
+      "distanceToAnchor": 252,
+      "preAcceptGhostOverlaps": 0,
+      "postAcceptPeerOverlaps": 0,
+      "postAcceptContainmentFailures": 0,
+      "solverSource": "elk",
+      "unaffectedP95": null,
+      "unaffectedMax": null,
+      "withinBudget": true,
+      "notice": "接受前若有其他变更，最终位置可能变化 / If other changes occur before acceptance, final position may change",
+      "latencyDistribution": {
+        "minMs": 146.4,
+        "medianMs": 148.5,
+        "maxMs": 151.3,
+        "samples": [
+          146.4,
+          146.8,
+          147.3,
+          147.4,
+          147.6,
+          148.5,
+          148.6,
+          149.4,
+          150,
+          151.3
+        ]
+      }
+    },
+    {
+      "fixtureName": "Coding-CAD (Medium Baseline)",
+      "scenarioType": "add-component",
+      "proposalId": "4ffe9d9e-ef55-457a-ad17-7c23ae124bf0",
+      "targetId": "telemetry-svc",
+      "targetName": "Telemetry",
+      "reasonCode": "far-anchor-fallback",
+      "anchorId": "server",
+      "heuristicPos": {
+        "x": 1764,
+        "y": 306
+      },
+      "predictedPos": {
+        "x": 24,
+        "y": 153
+      },
+      "finalPos": {
+        "x": 24,
+        "y": 153
+      },
+      "diffPredictedFinal": 0,
+      "diffHeuristicFinal": 1746.7,
+      "diffHeuristicPredicted": 1746.7,
+      "distanceToAnchor": 967.5,
+      "preAcceptGhostOverlaps": 0,
+      "postAcceptPeerOverlaps": 0,
+      "postAcceptContainmentFailures": 0,
+      "solverSource": "elk",
+      "unaffectedP95": null,
+      "unaffectedMax": null,
+      "withinBudget": true,
+      "notice": "接受前若有其他变更，最终位置可能变化 / If other changes occur before acceptance, final position may change",
+      "latencyDistribution": {
+        "minMs": 208,
+        "medianMs": 213.5,
+        "maxMs": 227.9,
+        "samples": [
+          208,
+          209.8,
+          210.3,
+          211.9,
+          213.3,
+          213.5,
+          217.3,
+          217.8,
+          222.8,
+          227.9
+        ]
+      }
+    },
+    {
+      "fixtureName": "Coding-CAD (Medium Baseline)",
+      "scenarioType": "add-component",
+      "proposalId": "bdf7afd9-f47d-4513-a904-ffac6246ee49",
+      "targetId": "architecture-doc-gen",
+      "targetName": "DocGen",
+      "reasonCode": "near-anchor",
+      "anchorId": "architecture-ir",
+      "heuristicPos": {
+        "x": 1812,
+        "y": 208
+      },
+      "predictedPos": {
+        "x": 24,
+        "y": 153
+      },
+      "finalPos": {
+        "x": 24,
+        "y": 153
+      },
+      "diffPredictedFinal": 0,
+      "diffHeuristicFinal": 1788.8,
+      "diffHeuristicPredicted": 1788.8,
+      "distanceToAnchor": 228,
+      "preAcceptGhostOverlaps": 0,
+      "postAcceptPeerOverlaps": 0,
+      "postAcceptContainmentFailures": 0,
+      "solverSource": "elk",
+      "unaffectedP95": null,
+      "unaffectedMax": null,
+      "withinBudget": true,
+      "notice": "接受前若有其他变更，最终位置可能变化 / If other changes occur before acceptance, final position may change",
+      "latencyDistribution": {
+        "minMs": 203.3,
+        "medianMs": 209.7,
+        "maxMs": 226.2,
+        "samples": [
+          203.3,
+          207.3,
+          207.7,
+          208.7,
+          209,
+          209.7,
+          210.4,
+          214.3,
+          219.2,
+          226.2
+        ]
+      }
+    },
+    {
+      "fixtureName": "Coding-CAD (Medium Baseline)",
+      "scenarioType": "add-component",
+      "proposalId": "0ea63a64-1a7e-45f6-aa6b-f3abffea23b8",
+      "targetId": "isolated-mock",
+      "targetName": "IsolatedMock",
+      "reasonCode": "global-fallback",
+      "heuristicPos": {
+        "x": 1812,
+        "y": 35
+      },
+      "predictedPos": {
+        "x": 24,
+        "y": 153
+      },
+      "finalPos": {
+        "x": 24,
+        "y": 153
+      },
+      "diffPredictedFinal": 0,
+      "diffHeuristicFinal": 1791.9,
+      "diffHeuristicPredicted": 1791.9,
+      "preAcceptGhostOverlaps": 0,
+      "postAcceptPeerOverlaps": 0,
+      "postAcceptContainmentFailures": 0,
+      "solverSource": "elk",
+      "unaffectedP95": null,
+      "unaffectedMax": null,
+      "withinBudget": true,
+      "notice": "接受前若有其他变更，最终位置可能变化 / If other changes occur before acceptance, final position may change",
+      "latencyDistribution": {
+        "minMs": 201.1,
+        "medianMs": 204.7,
+        "maxMs": 210.4,
+        "samples": [
+          201.1,
+          201.4,
+          202.8,
+          203.5,
+          204.2,
+          204.7,
+          204.8,
+          205.9,
+          209.8,
+          210.4
+        ]
+      }
+    },
+    {
+      "fixtureName": "Greenfield (Points System)",
+      "scenarioType": "connect-components",
+      "proposalId": "9b9ac221-a05b-4d0a-bba7-b6419b064adf",
+      "targetId": "conn-db-events",
+      "targetName": "DB-to-Events Outbox Connection",
+      "reasonCode": "edge-connection",
+      "preAcceptGhostOverlaps": 0,
+      "postAcceptPeerOverlaps": 0,
+      "postAcceptContainmentFailures": 0,
+      "solverSource": "elk",
+      "unaffectedP95": null,
+      "unaffectedMax": null,
+      "withinBudget": true,
+      "latencyDistribution": {
+        "minMs": 145.1,
+        "medianMs": 147.1,
+        "maxMs": 148.5,
+        "samples": [
+          145.1,
+          145.6,
+          145.6,
+          146.3,
+          146.7,
+          147.1,
+          147.4,
+          147.4,
+          148.3,
+          148.5
+        ]
+      }
+    },
+    {
+      "fixtureName": "Greenfield (Points System)",
+      "scenarioType": "remove-component",
+      "proposalId": "0f215b17-75c3-45bb-8b4c-45f32a4b2f4e",
+      "targetId": "events",
+      "targetName": "Events Component",
+      "reasonCode": "pending-deletion",
+      "preAcceptGhostOverlaps": 0,
+      "postAcceptPeerOverlaps": 0,
+      "postAcceptContainmentFailures": 0,
+      "solverSource": "elk",
+      "unaffectedP95": null,
+      "unaffectedMax": null,
+      "withinBudget": true,
+      "latencyDistribution": {
+        "minMs": 144.1,
+        "medianMs": 146.4,
+        "maxMs": 154.9,
+        "samples": [
+          144.1,
+          145,
+          145.2,
+          145.5,
+          146.2,
+          146.4,
+          146.5,
+          151.7,
+          154.1,
+          154.9
+        ]
+      }
+    }
+  ]
+}

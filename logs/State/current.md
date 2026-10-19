@@ -1,7 +1,29 @@
 # 当前状态 / Current State
 
-更新时间 / Updated at: 2026-10-16
-分支 / Branch: codex/phase-4-brownfield-workspace
+更新时间 / Updated at: 2026-10-17
+分支 / Branch: codex/phase-5-ghost-handoff
+
+## 阶段 5 历史基线与演进说明 / Phase 5 Historical Baseline & Evolution Note
+
+> [!NOTE] 基线边数演进历史数字说明 / Historical Baseline Edge Count Note
+> 阶段 4 退出报告及验收基线中的“15 组件 / 40 边”为 Phase 4 结束时的真实历史数字（当时 `apps/web` 尚未引入 `agent-adapter` 与 `execution-blueprint`）。在阶段 5.1（commit `2797f9c`）中，`apps/web` 为提供 Execution Handoff 产品级预览与指引渲染，在 `apps/web/package.json`（第 18 行与第 25 行）合法引入了 `@coding-cad/agent-adapter` 与 `@coding-cad/execution-blueprint` 两项 workspace 依赖，使真实代码依赖边由 40 增至 42 边。阶段 4 历史报告与文档保持原样不改写，阶段 5 及后续基准以 42 边为准。
+
+## 阶段 5 进度总结 / Phase 5 Progress Summary
+
+阶段 5 (Ghost Architecture, Review Gate, and Execution Handoff) 当前执行状态：**有条件满足 / CONDITIONALLY SATISFIED**（详见 `docs/phase-5-exit-report.md`，待用户处理事项裁定）。
+- **范围外附带改动（Git 忽略规则完善）**：已完成并提交（`7400cd4`）。工作区 `.gitignore` 规则完善，`git ls-files -c -i --exclude-standard` 验证 0 跟踪文件受损，作为范围外附带改动合规披露。
+- **步骤 5.0（设计备忘录）**：已完成并提交（`77e446a`）。产出 `docs/phase-5-design-memo.md`（中英双语 7 节分析 + Q-5.1~Q-5.5 决策清单），初始化 `.github/pr-draft-phase5.md`。
+- **步骤 5.1（Execution Handoff 产品化）**：已完成并提交（`2797f9c` / `3f8d76a`）。实现 Blueprint 预览、3 种 Guide（Generic/Codex/Claude）渲染、来源聚焦画布、快照防过期、复制与导出。
+- **步骤 5.1.1（订正与补齐证据）**：已完成并提交（`f6ea675`）。手工溯源基线改动（40 边增至 42 边）；补齐剪贴板逐字比对与权限拒绝降级测试；完善来源追踪覆盖表；重构规范化快照键算法与不变性测试；全仓测试用例按包分类统计。
+- **步骤 5.2（Proposal 与 Ghost 投影）**：已完成并提交（`cb8be8e` / `baba8c0`）。落实 D-007 方案 B（Web 适配层局部扩展），纯函数几何放置保证与正式节点及容器边界几何零重叠；Svelte Flow 适配层渲染 Ghost 节点、Ghost 连接与待变更/待删除标记；单提案锁定生效；Ghost ID 绝不进入正式架构或持久化状态。
+- **步骤 5.3（Review 接入与生命周期硬化）**：已完成并提交（`9971e4d` / `b94e0fb`）。实现 Accept 推进正式变更并触发增量布局、Reject 即刻清除 Ghost 并保留候选；实现正式架构变化后自动标记未决提案为已过期（Stale）并禁用 Accept；审查状态机具备幂等性与无效候选防御。
+- **步骤 5.4（增量布局与稳定性指标度量）**：已完成并提交（`7120770` / `634c355`）。在 Greenfield 与 Medium Brownfield 上断言增量布局未受影响节点位移严格满足预算（实测均为 0.0px）；度量 Ghost 到正式节点欧几里得位移距离，输出完整经验表格与统计分析。
+- **步骤 5.5（阶段 5 初始验收与文档同步）**：已完成并提交（`d529390` / `71e76d0`）。初始交付物、不变量检查与退出报告初版完成。
+- **步骤 5.6（订正与补证据）**：已完成并提交（`3f05c44` / `966fd4c`）。退出结论变更为有条件满足；补充待用户处理事项；Playwright 真实浏览器实测（dev/preview 双模式覆盖 6 个 Add 场景，零重叠、零容器包含失败、100% ELK 求解器、无关节点 0.0px 位移）；回答 Medium 夹具 (24, 153) 归因与 DocGen 候选顺序；完成公开 API 与范围审计 (`git diff --stat main..HEAD`)；补齐拒绝后内存保留单元测试。
+- **步骤 5.7（Ghost 预测位置设计备忘录）**：已完成并提交（`338a489` / `df78264`）。编写只读备忘录 `docs/phase-5-ghost-placement-memo.md`（评估方案 A/B/C，提供 D-011 决策草案）。
+- **步骤 5.8.0（订正证据与措辞）**：已完成并提交（`530002a`）。订正备忘录去除未经验证的具体数值并注明推导来源；细化 Ghost 放置原因码为 `near-anchor`、`far-anchor-fallback`、`container-interior`、`container-exterior`、`global-fallback`；逐包执行 15 包并归档 17 份原始日志至 `logs/validation/p5-reconciliation/`；执行全量可写环境 `CI=true TURBO_FORCE=true pnpm ci:verify`，74 项浏览器测试全部一次性通过；核验 5 核心包零代码改动。
+- **步骤 5.8（Ghost 预测位置实现, D-011）**：已完成并验证。落实已批准 D-011，在 Web 适配层实现未持久化的试算布局预测（`predictGhostPlacement`），保证与接受后增量布局同一函数（`layoutArchitectureGraph`）、同一固定状态（`this.shell.layoutState`）、同一参数（`mode: "INCREMENTAL"`）；绝对不持久化（仅存内存响应式字段，不写入 `layoutState`、撤销栈、Save/Handoff 产物）；失败降级回退启发式位置并显式提示；三态标签映射（`predicting` / `predicted` / `unavailable`）；竞态安全防御（提案变更立即丢弃试算）；单元测试 5+3 项全通，Playwright 真实浏览器实测（dev/preview 双模式覆盖 6 Add + 1 Connect + 1 Remove）位移 0.0px，100% ELK 求解器，未受影响节点位移 0.0px。
+- **步骤 5.8.1（订正内部验收钩子隔离、Connect/Remove 试算旁路与生产产物检查）**：已完成并提交（`f5fa88a`）。将 `window.__coding_cad_*` 内部验收钩子置于 `import.meta.env.DEV || import.meta.env.MODE === "layout-acceptance"` 门禁下，经 Vite 生产打包验证普通生产产物 0 钩子残留；对 `connect-components` 与 `remove-component` 旁路试算布局，避免对不引入新 Ghost 节点的提案进行空转试算并补充单元测试；新增 `check-production-bundle.mjs` 门禁脚本与带负控的测试套件，纳入 `ci:verify`。
 
 ## 阶段 4 进度总结 / Phase 4 Progress Summary
 
@@ -42,11 +64,16 @@
 
 ## 已实现未验证 / Implemented but unverified
 
-- 步骤 5 的用户人工可理解性评估表（设计方案与带标准答案的题库已就绪于 `docs/evaluation/p4-comprehension-eval.md`，标注为待真实人类架构师测试执行，不可由 AI 代填）。
+无 / None。所有已实现功能均具备自动化测试与度量证据。
+
+## 未执行事项 / Not executed
+
+- 人工可理解性评估题库（`docs/evaluation/p4-comprehension-eval.md`）：设计方案与带标准答案的题库已就绪，但该评测必须由真实人类架构师实操测试打分，不可由 AI 代理代填，因此严格归为未执行事项。
 
 ## 未实现及范围外 / Not implemented or out of scope
 
-- Ghost 节点投影、完整 Review 工作区、Execution Handoff、Terminal（阶段 5+ 范围）；
+- D-004 钉住节点、D-006 布局持久化磁盘格式、Terminal（阶段 6+ 范围）；
+- 启动或管理 Coding Agent、Agent 运行时与调度器（严格非目标）；
 - 完整 AST 语义推理、类型推断、契约字段自动推断、多语言深度解析；
 - 自动修复建议；
 - 新增 package、改动 Architecture IR 公开类型、改动 D-010 worker 边界或更换 solver。

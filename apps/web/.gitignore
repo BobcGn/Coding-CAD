@@ -1,0 +1,20 @@
+# SvelteKit and web app build outputs
+.svelte-kit/
+build/
+dist/
+.vite/
+.turbo/
+coverage/
+*.tsbuildinfo
+
+# Local workspace persistence
+.coding-cad/
+
+# Test artifacts
+playwright-report/
+test-results/
+blob-report/
+
+# OS and logs
+.DS_Store
+*.log

@@ -4,12 +4,14 @@ node_modules/
 
 # Build and cache outputs
 dist/
-.svelte-kit/
 build/
+.svelte-kit/
 .turbo/
 .cache/
+.vite/
 coverage/
 *.tsbuildinfo
+.eslintcache
 
 # Local agent workspace records
 .agents/
@@ -21,15 +23,26 @@ coverage/
 # Environment and secrets
 .env
 .env.*
+!.env.example
+*.local
 
 # Editor and OS files
 .DS_Store
 .idea/
 .vscode/
+*.swp
+*.swo
+*~
 
 # Runtime logs and temporary outputs
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 tmp/
 temp/
 playwright-report/
 test-results/
+blob-report/
+

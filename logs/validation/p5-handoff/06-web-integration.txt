@@ -1,0 +1,17 @@
+
+> @coding-cad/web@0.1.0 test:integration /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/web
+> vitest run --config vitest.integration.config.ts
+
+
+ RUN  v4.1.10 /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/web
+
+ ✓ src/lib/architecture/workspace/workspace-bridge.integration.test.ts (5 tests) 12ms
+ ✓ src/lib/architecture/greenfield/candidate-flow.integration.test.ts (2 tests) 5ms
+ ✓ src/lib/architecture/handoff/execution-handoff.integration.test.ts (4 tests) 4ms
+ ✓ src/lib/architecture/commands/command-application.integration.test.ts (2 tests) 4ms
+
+ Test Files  4 passed (4)
+      Tests  13 passed (13)
+   Start at  05:14:41
+   Duration  189ms (transform 259ms, setup 0ms, import 364ms, tests 25ms, environment 0ms)
+

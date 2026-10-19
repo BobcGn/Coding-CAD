@@ -1,0 +1,153 @@
+
+> coding-cad@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD
+> turbo typecheck
+
+
+   • Packages in scope: @coding-cad/agent-adapter, @coding-cad/architecture-agent, @coding-cad/architecture-dsl, @coding-cad/architecture-ir, @coding-cad/architecture-layout, @coding-cad/architecture-review, @coding-cad/architecture-validator, @coding-cad/cli, @coding-cad/component-registry, @coding-cad/execution-blueprint, @coding-cad/implementation-analyzer, @coding-cad/implementation-validator, @coding-cad/server, @coding-cad/web, @coding-cad/workspace
+   • Running typecheck in 15 packages
+   • Remote caching disabled
+
+@coding-cad/architecture-ir:typecheck: cache miss, executing fbaedb400c5415b6
+@coding-cad/architecture-ir:build: cache hit, replaying logs aaae7100940b6cd1
+@coding-cad/architecture-ir:build: 
+@coding-cad/architecture-ir:build: > @coding-cad/architecture-ir@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-ir
+@coding-cad/architecture-ir:build: > tsc -p tsconfig.json
+@coding-cad/architecture-ir:build: 
+@coding-cad/implementation-analyzer:typecheck: cache miss, executing b860badbef4cefa6
+@coding-cad/architecture-dsl:typecheck: cache miss, executing 81909a378eaf200f
+@coding-cad/component-registry:typecheck: cache miss, executing 3ea23f9c11baab7a
+@coding-cad/architecture-layout:typecheck: cache miss, executing 8cff55b79a1ffd30
+@coding-cad/implementation-analyzer:build: cache hit, replaying logs e45f50b5b412bb36
+@coding-cad/component-registry:build: cache hit, replaying logs 1d4000c380406336
+@coding-cad/implementation-analyzer:build: 
+@coding-cad/implementation-analyzer:build: > @coding-cad/implementation-analyzer@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-analyzer
+@coding-cad/implementation-analyzer:build: > tsc -p tsconfig.json
+@coding-cad/implementation-analyzer:build: 
+@coding-cad/architecture-dsl:build: cache hit, replaying logs 4fa00d41d61b0c1f
+@coding-cad/component-registry:build: 
+@coding-cad/component-registry:build: > @coding-cad/component-registry@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/component-registry
+@coding-cad/component-registry:build: > tsc -p tsconfig.json
+@coding-cad/component-registry:build: 
+@coding-cad/architecture-dsl:build: 
+@coding-cad/architecture-dsl:build: > @coding-cad/architecture-dsl@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-dsl
+@coding-cad/architecture-dsl:build: > tsc -p tsconfig.json
+@coding-cad/architecture-dsl:build: 
+@coding-cad/architecture-validator:typecheck: cache miss, executing 074cf3a0d6f1ce3f
+@coding-cad/architecture-layout:build: cache hit, replaying logs d30f2cc60f9a723c
+@coding-cad/architecture-layout:build: 
+@coding-cad/architecture-layout:build: > @coding-cad/architecture-layout@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-layout
+@coding-cad/architecture-layout:build: > tsc -p tsconfig.json
+@coding-cad/architecture-layout:build: 
+@coding-cad/architecture-validator:build: cache hit, replaying logs f71710033a4a157b
+@coding-cad/architecture-validator:build: 
+@coding-cad/architecture-validator:build: > @coding-cad/architecture-validator@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-validator
+@coding-cad/architecture-validator:build: > tsc -p tsconfig.json
+@coding-cad/architecture-validator:build: 
+@coding-cad/server:typecheck: cache miss, executing 2cce5f07ae1492d0
+@coding-cad/architecture-agent:typecheck: cache miss, executing 073ecf9cb8b3a112
+@coding-cad/execution-blueprint:typecheck: cache miss, executing d60112e6c081bd6b
+@coding-cad/architecture-agent:build: cache hit, replaying logs 0d7b1d8e8cad074f
+@coding-cad/architecture-agent:build: 
+@coding-cad/architecture-agent:build: > @coding-cad/architecture-agent@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-agent
+@coding-cad/architecture-agent:build: > tsc -p tsconfig.json
+@coding-cad/architecture-agent:build: 
+@coding-cad/execution-blueprint:build: cache hit, replaying logs 9792d68f08a99c47
+@coding-cad/execution-blueprint:build: 
+@coding-cad/execution-blueprint:build: > @coding-cad/execution-blueprint@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/execution-blueprint
+@coding-cad/execution-blueprint:build: > tsc -p tsconfig.json
+@coding-cad/execution-blueprint:build: 
+@coding-cad/cli:typecheck: cache miss, executing ac234bbc49c4d507
+@coding-cad/architecture-validator:typecheck: 
+@coding-cad/architecture-validator:typecheck: > @coding-cad/architecture-validator@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-validator
+@coding-cad/architecture-validator:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/architecture-validator:typecheck: 
+@coding-cad/implementation-analyzer:typecheck: 
+@coding-cad/implementation-analyzer:typecheck: > @coding-cad/implementation-analyzer@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-analyzer
+@coding-cad/implementation-analyzer:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/implementation-analyzer:typecheck: 
+@coding-cad/architecture-dsl:typecheck: 
+@coding-cad/architecture-dsl:typecheck: > @coding-cad/architecture-dsl@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-dsl
+@coding-cad/architecture-dsl:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/architecture-dsl:typecheck: 
+@coding-cad/execution-blueprint:typecheck: 
+@coding-cad/execution-blueprint:typecheck: > @coding-cad/execution-blueprint@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/execution-blueprint
+@coding-cad/execution-blueprint:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/execution-blueprint:typecheck: 
+@coding-cad/architecture-layout:typecheck: 
+@coding-cad/architecture-layout:typecheck: > @coding-cad/architecture-layout@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-layout
+@coding-cad/architecture-layout:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/architecture-layout:typecheck: 
+@coding-cad/component-registry:typecheck: 
+@coding-cad/component-registry:typecheck: > @coding-cad/component-registry@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/component-registry
+@coding-cad/component-registry:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/component-registry:typecheck: 
+@coding-cad/architecture-agent:typecheck: 
+@coding-cad/architecture-agent:typecheck: > @coding-cad/architecture-agent@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-agent
+@coding-cad/architecture-agent:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/architecture-agent:typecheck: 
+@coding-cad/cli:typecheck: 
+@coding-cad/cli:typecheck: > @coding-cad/cli@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/cli
+@coding-cad/cli:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/cli:typecheck: 
+@coding-cad/server:typecheck: 
+@coding-cad/server:typecheck: > @coding-cad/server@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/server
+@coding-cad/server:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/server:typecheck: 
+@coding-cad/architecture-ir:typecheck: 
+@coding-cad/architecture-ir:typecheck: > @coding-cad/architecture-ir@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-ir
+@coding-cad/architecture-ir:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/architecture-ir:typecheck: 
+@coding-cad/implementation-validator:build: cache hit, replaying logs 22a043a4b2820e22
+@coding-cad/implementation-validator:build: 
+@coding-cad/implementation-validator:build: > @coding-cad/implementation-validator@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-validator
+@coding-cad/implementation-validator:build: > tsc -p tsconfig.json
+@coding-cad/implementation-validator:build: 
+@coding-cad/workspace:build: cache hit, replaying logs c44a8f7e1b249326
+@coding-cad/workspace:build: 
+@coding-cad/workspace:build: > @coding-cad/workspace@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/workspace
+@coding-cad/workspace:build: > tsc -p tsconfig.json
+@coding-cad/workspace:build: 
+@coding-cad/agent-adapter:build: cache hit, replaying logs 297d683b119b41aa
+@coding-cad/agent-adapter:build: 
+@coding-cad/agent-adapter:build: > @coding-cad/agent-adapter@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/agent-adapter
+@coding-cad/agent-adapter:build: > tsc -p tsconfig.json
+@coding-cad/agent-adapter:build: 
+@coding-cad/agent-adapter:typecheck: cache miss, executing 9722fe0230100f96
+@coding-cad/workspace:typecheck: cache miss, executing 04a015bcdafddac0
+@coding-cad/implementation-validator:typecheck: cache miss, executing 4ddea2894efa7221
+@coding-cad/architecture-review:typecheck: cache miss, executing 9be7455dfc60fbd4
+@coding-cad/architecture-review:build: cache hit, replaying logs 38147cb4a6719479
+@coding-cad/architecture-review:build: 
+@coding-cad/architecture-review:build: > @coding-cad/architecture-review@0.1.0 build /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-review
+@coding-cad/architecture-review:build: > tsc -p tsconfig.json
+@coding-cad/architecture-review:build: 
+@coding-cad/web:typecheck: cache miss, executing 690d819729ae44d1
+@coding-cad/agent-adapter:typecheck: 
+@coding-cad/agent-adapter:typecheck: > @coding-cad/agent-adapter@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/agent-adapter
+@coding-cad/agent-adapter:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/agent-adapter:typecheck: 
+@coding-cad/workspace:typecheck: 
+@coding-cad/workspace:typecheck: > @coding-cad/workspace@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/workspace
+@coding-cad/workspace:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/workspace:typecheck: 
+@coding-cad/implementation-validator:typecheck: 
+@coding-cad/implementation-validator:typecheck: > @coding-cad/implementation-validator@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/implementation-validator
+@coding-cad/implementation-validator:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/implementation-validator:typecheck: 
+@coding-cad/architecture-review:typecheck: 
+@coding-cad/architecture-review:typecheck: > @coding-cad/architecture-review@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/packages/architecture-review
+@coding-cad/architecture-review:typecheck: > tsc -p tsconfig.json --noEmit
+@coding-cad/architecture-review:typecheck: 
+@coding-cad/web:typecheck: 
+@coding-cad/web:typecheck: > @coding-cad/web@0.1.0 typecheck /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/web
+@coding-cad/web:typecheck: > svelte-kit sync && svelte-check --tsconfig ./tsconfig.json
+@coding-cad/web:typecheck: 
+@coding-cad/web:typecheck: Loading svelte-check in workspace: /Users/bobcgn/AAA_Codings/Personal_Projects/Coding-CAD/apps/web
+@coding-cad/web:typecheck: Getting Svelte diagnostics...
+@coding-cad/web:typecheck: 
+@coding-cad/web:typecheck: svelte-check found 0 errors and 0 warnings
+
+ Tasks:    27 successful, 27 total
+Cached:    12 cached, 27 total
+  Time:    3.894s 
+

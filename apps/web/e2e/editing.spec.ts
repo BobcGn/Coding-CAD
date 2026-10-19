@@ -167,3 +167,167 @@ test("save and open failures remain visible and a retry preserves architecture",
   expect(await saveFacts(page)).toEqual(before);
   expect(await reopenFacts(page)).toEqual(before);
 });
+
+test("Add component renders Ghost node with badge, dashed border, zero overlap and stable formal nodes", async ({ page }) => {
+  await generate(page);
+  const pointServiceBefore = await page.locator(".svelte-flow__node").filter({ hasText: "PointService" }).boundingBox();
+  expect(pointServiceBefore).not.toBeNull();
+
+  // Add component from palette
+  await page.locator("button.palette-item").filter({ hasText: "Kafka" }).click();
+
+  // Ghost node is visible with badge and accessible label
+  const ghostNode = page.locator(".svelte-flow__node article[data-ghost='true']");
+  await expect(ghostNode).toBeVisible();
+  await expect(ghostNode.getByTestId("ghost-badge")).toHaveText(/(待审批 \/ Proposed|预测位置 \/ Predicted Position)/);
+  await expect(ghostNode).toHaveAttribute("aria-label", /(待审批 \/ Proposed|预测位置 \/ Predicted Position)/);
+
+  // Formal node position remains stable (no displacement)
+  const pointServiceAfter = await page.locator(".svelte-flow__node").filter({ hasText: "PointService" }).boundingBox();
+  expect(pointServiceAfter?.x).toBeCloseTo(pointServiceBefore!.x, 1);
+  expect(pointServiceAfter?.y).toBeCloseTo(pointServiceBefore!.y, 1);
+
+  // Geometric zero-overlap between Ghost and formal node
+  const ghostBox = await ghostNode.boundingBox();
+  expect(ghostBox).not.toBeNull();
+  const overlaps = (
+    ghostBox!.x < pointServiceAfter!.x + pointServiceAfter!.width &&
+    ghostBox!.x + ghostBox!.width > pointServiceAfter!.x &&
+    ghostBox!.y < pointServiceAfter!.y + pointServiceAfter!.height &&
+    ghostBox!.y + ghostBox!.height > pointServiceAfter!.y
+  );
+  expect(overlaps).toBe(false);
+
+  // Rejecting proposal removes Ghost node immediately
+  await page.getByLabel("Review rationale").fill("Reject ghost addition");
+  await page.getByRole("button", { name: "Reject", exact: true }).click();
+  await expect(page.locator(".svelte-flow__node article[data-ghost='true']")).toHaveCount(0);
+});
+
+test("Remove component marks formal node with [待删除 / Pending Deletion] without mutating formal IR", async ({ page }) => {
+  await generate(page);
+  await page.getByLabel("Component to remove").fill("redis");
+  await page.getByLabel("Confirm cascade removal").check();
+  await page.getByRole("button", { name: "Remove component", exact: true }).click();
+
+  // Marked with pending deletion in view layer
+  const redisNode = page.locator(".svelte-flow__node article[data-ghost-status='pending-deletion']");
+  await expect(redisNode).toBeVisible();
+  await expect(redisNode.getByTestId("ghost-badge")).toHaveText(/待删除 \/ Pending Deletion/);
+
+  // Formal architecture before accept still contains redis
+  const facts = await saveFacts(page);
+  expect(facts.architecture.components.some((c) => c.id === "redis")).toBe(true);
+
+  // Rejecting clears the marker
+  await page.getByLabel("Review rationale").fill("Reject deletion");
+  await page.getByRole("button", { name: "Reject", exact: true }).click();
+  await expect(page.locator(".svelte-flow__node article[data-ghost-status='pending-deletion']")).toHaveCount(0);
+});
+
+test("Inspector edit marks formal node with [待变更 / Pending Change]", async ({ page }) => {
+  await generate(page);
+  const node = page.locator(".svelte-flow__node").filter({ hasText: "PointService" });
+  await node.click();
+  await page.getByLabel("Component type", { exact: true }).selectOption("gateway");
+
+  // Marked with pending change badge
+  const pendingNode = page.locator(".svelte-flow__node article[data-ghost-status='pending-change']");
+  await expect(pendingNode).toBeVisible();
+  await expect(pendingNode.getByTestId("ghost-badge")).toHaveText(/待变更 \/ Pending Change/);
+
+  // Reject clears marker
+  await page.getByLabel("Review rationale").fill("Keep original type");
+  await page.getByRole("button", { name: "Reject", exact: true }).click();
+  await expect(page.locator(".svelte-flow__node article[data-ghost-status='pending-change']")).toHaveCount(0);
+});
+
+test("Create Ghost -> Accept -> formal node appears and Ghost projection disappears", async ({ page }) => {
+  await generate(page);
+  const before = await saveFacts(page);
+  expect(before.architecture.components.some((c) => c.name.toLowerCase().includes("kafka"))).toBe(false);
+
+  // Create Ghost
+  await page.locator("button.palette-item").filter({ hasText: "Kafka" }).click();
+  const ghostNode = page.locator(".svelte-flow__node article[data-ghost='true']");
+  await expect(ghostNode).toBeVisible();
+
+  // Accept proposal
+  await page.getByLabel("Review rationale").fill("Approve adding Kafka component");
+  await page.getByRole("button", { name: "Accept", exact: true }).click();
+  await expect(page.getByText("Candidate accepted.", { exact: true })).toBeVisible();
+
+  // Ghost projection disappears
+  await expect(page.locator(".svelte-flow__node article[data-ghost='true']")).toHaveCount(0);
+
+  // Formal node now exists on canvas
+  const formalKafkaNode = page.locator(".svelte-flow__node").filter({ hasText: "Kafka" });
+  await expect(formalKafkaNode).toBeVisible();
+  await expect(formalKafkaNode.locator("article[data-ghost='true']")).toHaveCount(0);
+
+  // Formal architecture persisted facts now contain Kafka
+  const after = await saveFacts(page);
+  expect(after.architecture.components.some((c) => c.name.toLowerCase().includes("kafka"))).toBe(true);
+});
+
+test("Create Ghost -> Reject -> Ghost disappears immediately and formal architecture unchanged", async ({ page }) => {
+  await generate(page);
+  const before = await saveFacts(page);
+
+  // Create Ghost
+  await page.locator("button.palette-item").filter({ hasText: "Kafka" }).click();
+  await expect(page.locator(".svelte-flow__node article[data-ghost='true']")).toBeVisible();
+
+  // Reject proposal
+  await page.getByLabel("Review rationale").fill("Reject Kafka addition");
+  await page.getByRole("button", { name: "Reject", exact: true }).click();
+
+  // Ghost disappears immediately
+  await expect(page.locator(".svelte-flow__node article[data-ghost='true']")).toHaveCount(0);
+  await expect(page.locator(".svelte-flow__node").filter({ hasText: "Kafka" })).toHaveCount(0);
+
+  // Formal architecture unchanged
+  const after = await saveFacts(page);
+  expect(after).toEqual(before);
+});
+
+test("Stale proposal: formal architecture changes externally -> Accept disabled with stale warning -> Reject clears stale proposal", async ({ page }) => {
+  await generate(page);
+  const before = await saveFacts(page);
+
+  // Create Ghost
+  await page.locator("button.palette-item").filter({ hasText: "Kafka" }).click();
+  await expect(page.locator(".svelte-flow__node article[data-ghost='true']")).toBeVisible();
+
+  // Fill review rationale
+  await page.getByLabel("Review rationale").fill("Try to review while formal architecture changes");
+  await expect(page.getByRole("button", { name: "Accept", exact: true })).toBeEnabled();
+
+  // Simulate external formal architecture update via custom event
+  const updatedProject = structuredClone(before);
+  updatedProject.intent.description = "Updated externally";
+  await page.evaluate((project) => {
+    window.dispatchEvent(new CustomEvent("coding-cad:external-architecture-change", { detail: project }));
+  }, updatedProject);
+
+  // Stale proposal warning appears
+  await expect(page.getByTestId("stale-proposal-warning")).toBeVisible();
+  await expect(page.getByTestId("stale-proposal-warning")).toHaveText(/正式架构已变化，提案已失效，请重新提议。|Formal architecture has changed/);
+
+  // Accept button is DISABLED
+  await expect(page.getByRole("button", { name: "Accept", exact: true })).toBeDisabled();
+
+  // Reject button is ENABLED to clean up
+  await expect(page.getByRole("button", { name: "Reject", exact: true })).toBeEnabled();
+  await page.getByRole("button", { name: "Reject", exact: true }).click();
+
+  // Stale warning and ghost disappear
+  await expect(page.getByTestId("stale-proposal-warning")).toHaveCount(0);
+  await expect(page.locator(".svelte-flow__node article[data-ghost='true']")).toHaveCount(0);
+
+  // Formal architecture remains the updated project
+  const facts = await saveFacts(page);
+  expect(facts.intent.description).toBe("Updated externally");
+  expect(facts.architecture.components.some((c) => c.name.toLowerCase().includes("kafka"))).toBe(false);
+});
+

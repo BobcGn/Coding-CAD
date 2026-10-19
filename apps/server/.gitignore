@@ -1,0 +1,13 @@
+# Server build and cache outputs
+dist/
+build/
+.turbo/
+coverage/
+*.tsbuildinfo
+
+# Local workspace storage
+.coding-cad/
+
+# OS and logs
+.DS_Store
+*.log

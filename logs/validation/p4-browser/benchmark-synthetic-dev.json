@@ -1,8 +1,8 @@
 {
   "fixture": "synthetic-large-repo (120 modules)",
   "mode": "dev",
-  "serverDurationMs": 94.49183299999959,
-  "firstScreenRenderMs": 305.94616700000006,
+  "serverDurationMs": 151.69087500000023,
+  "firstScreenRenderMs": 966.7124590000003,
   "totalNodeCount": 150,
   "visibleNodeCount": 150,
   "hiddenCountAfterCollapse": 120,

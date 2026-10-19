@@ -15,15 +15,18 @@
     "clean": "rm -rf .svelte-kit build coverage playwright-report test-results"
   },
   "dependencies": {
+    "@coding-cad/agent-adapter": "workspace:*",
     "@coding-cad/architecture-agent": "workspace:*",
     "@coding-cad/architecture-ir": "workspace:*",
     "@coding-cad/architecture-layout": "workspace:*",
     "@coding-cad/architecture-review": "workspace:*",
     "@coding-cad/architecture-validator": "workspace:*",
     "@coding-cad/component-registry": "workspace:*",
+    "@coding-cad/execution-blueprint": "workspace:*",
     "@coding-cad/implementation-analyzer": "workspace:*",
     "@coding-cad/implementation-validator": "workspace:*",
     "@coding-cad/workspace": "workspace:*",
+
     "@xyflow/svelte": "^1.6.3",
     "svelte": "^5.56.9"
   },

@@ -1507,3 +1507,345 @@ PR #3首次远端CI在额外security:audit步骤报告7high，本地旧ci:verify
   - 阶段 5+（Ghost 节点、完整 Review、Execution Handoff、Terminal）。
 - 风险与回退方式 / Risks and Rollback:
   - 回退方式：`git revert <commit-hash>`。
+
+## 2026-10-17 - 阶段 5 步骤 5.1：Execution Handoff 产品化 / Phase 5 Step 5.1: Execution Handoff Productization
+
+### 1. 做了什么 / What
+- 架构执行交接核心逻辑（`apps/web/src/lib/architecture/handoff/execution-handoff.ts`）：
+  - 实现基于已批准正式架构生成 Execution Blueprint 与 Generic / Codex / Claude 3 种 Guide 的纯函数流水线；
+  - 实现架构快照指纹键（`createHandoffSnapshotKey`）与过期判定（`isHandoffStale`），正式架构发生变动后即刻将 Handoff 标为过期；
+  - 基于官方 `@coding-cad/implementation-analyzer/codec` 实现反演证据类型化解码与 `inferred` 证据通知检测（`checkHasInferredEvidence`）；
+  - 实现任务与约束来源双向回溯（`TaskProvenance`、`ConstraintProvenance`），将 Blueprint 任务和约束准确关联到正式架构的组件与连接 ID；
+  - 实现一键复制（字面逐字一致）与文件导出功能（`formatHandoffExport`、`getHandoffExportFilename`），并在导出的 Markdown / JSON 头部内嵌来源快照标识与 ISO 生成时间戳；
+  - 严格防御空架构或校验失败的架构，严禁生成空文档冒充成功；当存在未审批候选时，界面明确提示“尚有未批准的候选，Handoff 基于已批准的正式架构”。
+- 界面交互组件（`apps/web/src/lib/cad/handoff/ExecutionHandoffModal.svelte` 与 `apps/web/src/routes/+page.svelte`）：
+  - 提供 Blueprint 与 3 种 Agent Guide 选项卡切换预览；
+  - 在侧边栏新增“Execution Handoff”入口按钮；
+  - 支持点击任务关联的组件 ID 立即定位并在画布上高亮聚焦（`focusComponent`）；
+  - 在检测到架构变更时展示显式警告横幅与“重新生成”按钮。
+- 基线配置与合规测试更新（`apps/web/src/lib/architecture/compliance/baseline-presets.ts`、`packages/implementation-analyzer/fixtures/coding-cad-golden.json`、`packages/implementation-validator/fixtures/coding-cad-expected.json`、`packages/implementation-validator/fixtures/coding-cad-drifted.json`）：
+  - 同步 Coding-CAD 架构基线对 `@coding-cad/execution-blueprint` 与 `@coding-cad/agent-adapter` 的合法依赖关系，维护全仓合规门禁一致性。
+
+- Core Handoff Pipeline (`apps/web/src/lib/architecture/handoff/execution-handoff.ts`):
+  - Pure function pipeline generating Execution Blueprint and 3 Agent Guides (Generic, Codex, Claude) strictly from validated ArchitectureProject.
+  - Snapshot fingerprinting (`createHandoffSnapshotKey`) and staleness detection (`isHandoffStale`).
+  - Typed evidence decoding via `@coding-cad/implementation-analyzer/codec` to identify reverse-engineered architectures containing inferred evidence (`checkHasInferredEvidence`).
+  - Bi-directional task and constraint provenance tracking linking blueprint items back to Architecture IR elements.
+  - Verbatim clipboard copy and standard file export formatting with embedded metadata headers and timestamps.
+  - Strict gating: rejects empty or invalid architectures, displays unapproved candidate notice without polluting handoff.
+- UI Modal & Canvas Focus (`ExecutionHandoffModal.svelte` & `+page.svelte`):
+  - Tabbed viewer for Blueprint JSON and 3 Guides.
+  - Sidebar entry point, interactive provenance links focusing canvas nodes, staleness warning banners with manual regeneration.
+- Baseline Presets & Validator Fixtures:
+  - Updated monorepo golden and expected baselines to incorporate legitimate web dependencies on execution-blueprint and agent-adapter.
+
+### 2. 为什么这么做 / Why
+- 单一事实来源守卫：Handoff 必须纯粹基于已批准的正式 `ArchitectureProject` 生成，杜绝候选提案（Ghost/Candidate）或者未校验草稿污染执行产物。
+- 可追溯性与执行契约：每一项 Blueprint 任务和 Guide 步骤必须精确回溯到架构元素（组件、连接、决策），使架构师与 Coding Agent 之间保持透明的上下文审计链。
+- 零伪造与防误导：架构为空或失效时严禁伪造空文档冒充成功；代码反演架构含 `inferred` 证据时主动提示，确保下游 Coding Agent 理解证据置信度边界。
+- 纯渲染适配：UI 和 Adapter 仅消费 Blueprint 与公共包 API，不引入外部 Agent 运行时或独立调度器，恪守架构分层边界。
+
+- Source of Truth Integrity: Handoff is strictly derived from the validated, accepted ArchitectureProject; unapproved candidates never leak into generated handoff artifacts.
+- Bidirectional Provenance: Every task and constraint links directly to IR element IDs, preserving an auditable chain from architecture decisions to agent implementation.
+- Zero Deception: Prohibits generating empty artifacts on invalid architectures; explicitly flags inferred evidence from reverse engineering.
+- Renderer Boundary: Adapter renders Blueprint into prompts without runtime dependencies or orchestration layers.
+
+### 3. 验证结果 / Verification
+- 已实现并验证：
+  - Web 单元测试：`apps/web/src/lib/architecture/handoff/execution-handoff.test.ts` 7/7 通过；
+  - Web 集成测试：`apps/web/src/lib/architecture/handoff/execution-handoff.integration.test.ts` 4/4 通过；
+  - Web 端全量测试：16 个单元测试文件（89 测试通过），4 个集成测试文件（13 测试通过）；
+  - Playwright E2E 浏览器测试（`apps/web/e2e/handoff.spec.ts`）：
+    - 在 dev 模式与 preview 模式下，全部 3 个端到端测试均通过（包含 Greenfield 流程、三 Guide 切换、画布聚焦、剪贴板复制比对、文件导出校验、过期变动检测、未决候选隔离断言、Brownfield 反演架构 inferred 证据横幅展示）；
+    - 完整 web E2E 套件（29 个测试）在 dev 和 production preview 下 100% 通过，保持 100% ELK 布局求解器守卫（零 fallback）；
+  - 全仓跨包测试：15 个包全部通过构建，30/30 单元与集成测试套件通过；
+  - 严格变更审计：`CI=true TURBO_FORCE=true pnpm ci:verify` 全门禁通过。
+- 未实现：
+  - 不包含 Ghost 节点渲染与交互（留待后续步骤）；
+  - 不包含启动或管理 Coding Agent、Terminal 功能；
+  - 不包含 xjb_coding 导出目标实现（仅在备忘录调研）。
+- 风险与回退方式：
+  - 风险：若浏览器不支持 `navigator.clipboard.writeText`，回退至安全通知提示用户手动选择复制。
+  - 回退方式：`git revert <commit-hash>`。
+
+## 2026-10-17 - 阶段 5 步骤 5.1.1：订正与补齐证据 / Phase 5 Step 5.1.1: Corrections & Evidence Completion
+
+### 1. 做了什么 / What
+- 基线依赖改动手工溯源与文档注解：
+  - 对 `apps/web/package.json` 进行差异审计，确认第 18 行 `@coding-cad/agent-adapter` 与第 25 行 `@coding-cad/execution-blueprint` 系由 commit `2797f9c` 引入，从而在基线中合法引入 `web -> agent-adapter` 与 `web -> execution-blueprint` 两条依赖边；
+  - 确认 `coding-cad-golden.json` 中的 `web -> implementation-validator` 对应 `apps/web/package.json` 第 27 行，系由阶段 4 commit `638a90e` 引入并在 5.1 中补齐；
+  - 在 `logs/State/current.md` 明确注明阶段 4 验收报告中的“15 组件 / 40 边”为历史数字，阶段 5 起代码依赖真实边数为 42 边；阶段 4 历史报告保持不变。
+- 剪贴板复制逐字比对断言与错误降级强化：
+  - 在 `apps/web/src/lib/cad/handoff/ExecutionHandoffModal.svelte` 中增强剪贴板调用判断，当 `navigator.clipboard` 缺失或抛出异常时显式展示“复制失败”，杜绝静默假成功；
+  - 在 `apps/web/e2e/handoff.spec.ts` 中通过 `navigator.clipboard.readText()` 实测断言剪贴板文本与预览展示内容逐字一致；
+  - 在 `apps/web/e2e/handoff.spec.ts` 中新增针对剪贴板写入异常的降级路径自动化测试，验证失败提示正常展示。
+- 来源追踪全覆盖表与验证：
+  - 建立 Blueprint 任务、约束、决策与指引四类条目的来源回溯对照矩阵；
+  - 在 `apps/web/src/lib/architecture/handoff/execution-handoff.test.ts` 补齐测试：断言每个任务的 `relatedComponents` 均存在于当前正式架构，每个约束的 `sourceReference` 均有确定来源并可解析，3 种 Guide 文本均可通过 ID 或标题模式回溯到 Blueprint 任务。
+- 快照键算法规范化与不变性验证：
+  - 重构 `createHandoffSnapshotKey`：对组件、连接、约束、决策按照稳定键进行严格规范排序并提取语义字段，彻底排除布局坐标（x, y, width, height）与临时视图状态；
+  - 补齐单元测试：验证仅拖动画布节点不使快照过期；修改描述、增删组件/连接、修改约束或决策使快照立即过期；Save -> Open（JSON 序列化与反序列化）保持快照键完全一致；对象属性定义顺序对快照键生成完全不敏感。
+- 范围外改动披露与环境校验：
+  - 对步骤 0 的全仓 `.gitignore` 提交披露为“范围外附带改动”，并经 `git ls-files -c -i --exclude-standard` 校验输出为空（0 跟踪文件受损）；
+  - 将此前报告中的“全仓 102 项测试”用词更正为按包分别列出（其中 `apps/web` 为 107 项测试，全工作区 30/30 Turbo 任务全量通过）。
+- D-007 决策正式记录：
+  - 在 `docs/architecture-layout-decisions.md` 中将 D-007 标记为 APPROVED（Option B: Local Extension via Web Adapter），写入硬约束条件。
+
+- Baseline Dependency Provenance and Historical Documentation:
+  - Manually audited diffs in `apps/web/package.json` to confirm lines 18 and 25 introduced dependencies on `@coding-cad/agent-adapter` and `@coding-cad/execution-blueprint` in commit `2797f9c`.
+  - Confirmed line 27 `@coding-cad/implementation-validator` was introduced in Phase 4 commit `638a90e` and synchronized into `coding-cad-golden.json`.
+  - Added an explicit note in `logs/State/current.md` clarifying that "15 components / 40 edges" from Phase 4 is a historical record, and the repo baseline is now 42 edges.
+- Clipboard Verbatim Assertions & Graceful Degradation:
+  - Enhanced `ExecutionHandoffModal.svelte` to explicitly surface failure feedback when `navigator.clipboard` is unavailable or rejects, eliminating false successes.
+  - Asserted verbatim equality between preview text and `navigator.clipboard.readText()` in `apps/web/e2e/handoff.spec.ts`.
+  - Added E2E test covering clipboard rejection/failure degradation.
+- Provenance Coverage Matrix & Unit Verification:
+  - Compiled full provenance crosswalk across all Blueprint tasks, constraints, decisions, and guide paragraphs.
+  - Added unit tests in `execution-handoff.test.ts` ensuring all task component references exist in formal architecture, all constraint references are valid, and all guide paragraphs link back to blueprint tasks.
+- Canonical Snapshot Key Algorithm & Invariant Testing:
+  - Canonicalized `createHandoffSnapshotKey` to sort components, connections, constraints, and decisions, strictly omitting layout coordinates and ephemeral state.
+  - Added tests confirming node dragging does not trigger staleness, semantic edits immediately trigger staleness, Save -> Open is key-invariant, and property insertion order is ignored.
+- Out-of-scope Disclosure & Worktree Auditing:
+  - Explicitly disclosed Step 0 `.gitignore` as an out-of-scope ancillary chore, verified with `git ls-files -c -i --exclude-standard` (zero tracked files affected).
+  - Clarified test count nomenclature from "workspace 102 tests" to a package-by-package breakdown (107 tests in `apps/web`, 30/30 successful Turbo tasks).
+- Formalized D-007 Decision:
+  - Recorded user-approved Option B with hard constraints in `docs/architecture-layout-decisions.md`.
+
+### 2. 为什么这么做 / Why
+- 工程交付严谨性与审计防伪：基线改动必须直接溯源至 `package.json` 代码声明，杜绝从 Analyzer 输出反向抄写导致的循环论证；明确历史边数演进，防止审计混淆。
+- 真实性与测试有效性：剪贴板操作必须真正验证系统剪贴板中的字面内容，不能以 UI 状态提示代指写入成功；必须覆盖剪贴板无权限时的优雅降级。
+- 架构事实与视图状态分离铁律：画布拖拽调整节点布局不应当导致面向执行的 Handoff 蓝图与指引失效；只有真正的架构语义变化（组件、连接、描述、契约、决策）才应触发过期判定。
+- 决策归档完整性：在进入 Ghost 实现前，将用户对 D-007 的正式裁定与硬约束写入决策矩阵。
+
+- Engineering Rigor & Provenance Integrity: Baseline changes must be derived directly from `package.json` source declarations, avoiding circular copying from analyzer outputs; clarifies historical edge progression.
+- Test Validity: Clipboard copy assertions must inspect actual clipboard contents rather than UI feedback banners alone, with full coverage of permission-denied degradation.
+- Separation of Concerns: Canvas layout adjustments must not invalidate semantic execution blueprints; only architectural changes should trigger staleness.
+- Decision Traceability: Commits user-approved D-007 Option B and hard constraints before entering Ghost implementation.
+
+### 3. 验证结果 / Verification
+- 已实现并验证：
+  - Web 单元测试：`apps/web/src/lib/architecture/handoff/execution-handoff.test.ts` 12/12 项通过（新增 5 项快照与溯源测试）；
+  - Web 集成测试：`apps/web/src/lib/architecture/handoff/execution-handoff.integration.test.ts` 4/4 项通过；
+  - Web 全量测试：16 个单元测试文件（94/94 项通过），4 个集成测试文件（13/13 项通过），总计 107 项 Web 自动化测试全数通过；
+  - Playwright E2E 浏览器测试（`apps/web/e2e/handoff.spec.ts`）：
+    - dev 模式 4/4 通过（含逐字剪贴板比对与权限拒绝降级测试）；
+    - preview 模式 4/4 通过；
+  - 全工作区构建与测试：`CI=true TURBO_FORCE=true pnpm test` 全量通过（30/30 Turbo 任务成功，覆盖 15 个包与应用）；
+  - `git ls-files -c -i --exclude-standard`：输出为空（0 跟踪文件受损）；
+  - `docs/architecture-layout-decisions.md`：D-007 更新为 APPROVED（Option B）。
+- 未实现：
+  - Ghost 节点渲染与交互（步骤 5.2 范围）；
+  - Agent 运行时与 Terminal 功能（范围外）。
+- 风险与回退方式：
+  - 风险：若浏览器不支持 `navigator.clipboard`，已通过降级分支展示“复制失败”提示。
+  - 回退方式：`git revert HEAD`。
+
+## 2026-10-17 - 阶段 5 步骤 5.2：Proposal 与 Ghost 投影 / Phase 5 Step 5.2: Proposal & Ghost Projection
+
+### 1. 做了什么 / What
+- Proposal 复用与单提案锁定：
+  - 复用现有 `ArchitectureReview` 状态机的 Proposal 与 CandidateCommand 模型，不新增类型；
+  - 在 `WorkspaceShellController` 中引入单提案锁定，未决提案期间阻止新的编辑命令并给出明确提示；
+  - 增加 `isCommandProposal` 标识，区分全局需求候选与单命令编辑提案。
+- D-007 方案 B（Web 适配层局部扩展）纯函数放置算法：
+  - 新增 `apps/web/src/lib/cad/canvas/adapters/ghost-placement.ts`，实现 `calculateGhostPlacement` 纯函数；
+  - 锚点优先策略：根据连接关系优先在关联正式节点相邻空位放置，保证与所有正式节点及容器边界严格零重叠（Zero Overlap）；
+  - 容器保护策略：若指定容器内部无空位，不改动正式容器布局，放置于容器外侧并附带文字提示；
+  - 纯几何算法保证在 Node.js 和浏览器中具备确定性无碰撞输出。
+- Svelte Flow 适配层 Ghost 投影：
+  - 更新 `apps/web/src/lib/layout/adapters/svelte-flow-adapter.ts`，扩展 `ArchitectureNodeData` 与 `ArchitectureFlowEdge`；
+  - 将 `diff.components.added` 映射为带有 `ghost:${id}` 独立 ID 的 Ghost 节点与 `[待审批 / Proposed]` 状态徽章；
+  - 将 `diff.connections.added` 映射为紫色虚线 Ghost 连接；
+  - 将 `diff.components.changed` 映射为带有 `[待变更 / Pending Change]` 黄色徽章的正式节点标记；
+  - 将 `diff.components.removed` 映射为带有 `[待删除 / Pending Deletion]` 红色徽章与删除线样式的正式节点标记；
+  - 将 `diff.connections.removed` 映射为红色虚线 `[待删除 / Pending Deletion]` 连接；
+  - 所有 Ghost 与标记均具有明确文本徽章与 `aria-label`，符合无障碍标准，绝不单纯依赖颜色区分。
+- 画布与节点视图渲染：
+  - 更新 `ArchitectureNode.svelte`：实现紫/黄/红高对比度虚线边框、半透明背景、状态徽章条、容器提示与删除线样式；
+  - 更新 `ArchitectureCanvas.svelte` 与 `+page.svelte`：在命令提案未决时传递 `ghostProposal`，并在 Inspector 聚焦时自动解析底层组件 ID。
+- 自动化测试与不变量断言：
+  - 新增 `ghost-placement.test.ts`（5/5 通过）：验证碰撞检测、相邻空位、容器内部及溢出外置逻辑；
+  - 扩展 `svelte-flow-adapter.test.ts`（8/8 通过）：验证 Ghost 节点/连接独立 ID、待变更/待删除标记、几何零重叠、无关正式节点不发生位移、非未决状态不投影 Ghost；
+  - 扩展 `workspace-shell-controller.test.ts`（20/20 通过）：验证存在 Ghost 时正式架构引用与内容不变、Ghost ID 绝不进入 `saveProject` 载荷、命令提案不重新触发全图重布局；
+  - 扩展 `apps/web/e2e/editing.spec.ts`（11/11 全数通过）：验证添加组件渲染 Ghost 节点且与正式节点零重叠、删除组件标记为待删除且不修改正式 IR、编辑属性标记为待变更、拒绝提案即刻清除 Ghost 投影。
+
+- Proposal Reuse & Single Proposal Lock:
+  - Reused existing `ArchitectureReview` state machine and CandidateCommand models without introducing new types.
+  - Enforced single-proposal lock in `WorkspaceShellController`, preventing concurrent edits during pending proposals.
+  - Added `isCommandProposal` flag to distinguish single-command editing proposals from full requirement candidates.
+- D-007 Option B (Local Extension via Web Adapter) Pure Placement Algorithm:
+  - Created `apps/web/src/lib/cad/canvas/adapters/ghost-placement.ts` with `calculateGhostPlacement` pure function.
+  - Anchor-based placement: places ghost adjacent to connected formal nodes with zero overlap with formal nodes and containers.
+  - Container preservation: places outside container with notice if inside space is insufficient, preserving formal container layout.
+- Svelte Flow Adapter Ghost Projection:
+  - Updated `apps/web/src/lib/layout/adapters/svelte-flow-adapter.ts` with ghost types and data mappings.
+  - Maps added components to `ghost:${id}` nodes with `[待审批 / Proposed]` badges and purple dashed edges.
+  - Maps modified components to `[待变更 / Pending Change]` badges and removed components to `[待删除 / Pending Deletion]` with strikethrough.
+  - All ghost elements and markers include textual badges and accessible `aria-label` attributes.
+- Canvas & Node View Rendering:
+  - Updated `ArchitectureNode.svelte` with dashed borders, badge bars, notices, and strikethrough styles.
+  - Updated `ArchitectureCanvas.svelte` and `+page.svelte` to pass `ghostProposal` and resolve component IDs on inspection.
+- Automated Invariant Tests:
+  - Added `ghost-placement.test.ts` (5/5 passed) for geometric collision-free validation.
+  - Added ghost test suite in `svelte-flow-adapter.test.ts` (8/8 passed) verifying independent IDs, zero overlap, and stable formal nodes.
+  - Added invariant tests in `workspace-shell-controller.test.ts` (20/20 passed) ensuring formal IR immutability, zero ghost leak in saveProject, and stable formal layout.
+  - Added Playwright E2E tests in `apps/web/e2e/editing.spec.ts` (11/11 passed) verifying browser rendering, zero overlap, and reject clearance.
+
+### 2. 为什么这么做 / Why
+- D-007 方案 B 硬约束合规：满足用户确认的零重叠、局部放置、不改动 `architecture-layout` 公开 API、不改动 D-010 Worker 边界四项硬条件。
+- 架构事实唯一来源铁律：Ghost 拥有独立身份，其 ID 绝不进入正式 `ArchitectureProject`、持久化 `LayoutState`、Save 产物或 Handoff 蓝图；Save 后 Open 不残留 Ghost 或未决提案。
+- 审批语义完全复用：沿用既有通过检验的 Review 门禁（`local-user`、必填理由），不额外增加越权审批状态。
+- 无障碍与可访问性：所有 Ghost 与标记均包含清晰的文字徽章与 ARIA 名称，不依赖单一颜色传达语义。
+
+- D-007 Option B Hard Constraints: Satisfies zero overlap, local placement, zero `architecture-layout` public API changes, and zero D-010 worker boundary changes.
+- Architecture Source of Truth Invariant: Ghost elements possess independent identity (`ghost:...`) and never leak into formal `ArchitectureProject`, persisted `LayoutState`, Save artifacts, or Handoff blueprints.
+- Approval Semantics Reuse: Reuses the established Review gate (`local-user`, required rationale) without ad-hoc approval states.
+- Accessibility: All ghost artifacts and markers feature explicit text badges and accessible ARIA labels.
+
+### 3. 验证结果 / Verification
+- 已实现并验证：
+  - Web 单元测试：`apps/web` 17 个测试文件，106/106 项通过；
+  - Web 集成测试：`apps/web` 4 个测试文件，13/13 项通过；
+  - Web 浏览器 E2E 测试：`apps/web/e2e/editing.spec.ts` 11/11 项通过；
+  - TypeScript 类型检查：`pnpm --filter @coding-cad/web typecheck` 0 错误 0 警告；
+  - 全工作区构建与测试：`CI=true TURBO_FORCE=true pnpm test` 全量通过（30/30 Turbo 任务成功，覆盖 15 个包与应用）。
+- 未实现：
+  - 步骤 5.3 审核接入强化与过期提案自动失效（步骤 5.3 范围）；
+  - 步骤 5.4 增量布局稳定性位移量化指标测量（步骤 5.4 范围）。
+- 风险与回退方式：
+  - 风险：若极密集图在特定容器内无空间，Ghost 置于容器外侧并附带 notice 提示，不破坏正式容器边界。
+  - 回退方式：`git revert <commit-hash>`。
+
+## 2026-10-17 - 阶段 5 步骤 5.3：Review 接入与生命周期硬化 / Phase 5 Step 5.3: Review Integration & Lifecycle Hardening
+
+### 1. 做了什么 / What
+- 审批动作与 Ghost 关联 (Review Actions & Ghost Association):
+  - Accept：正式 `ArchitectureProject` 更新，Ghost 投影消失，触发增量布局（Stability pass）；
+  - Reject：Ghost 投影立即消失，正式架构保持不变，候选按已批准语义保留在内存中（“拒绝保留候选”）。
+- 过期提案处置机制 (Stale Proposal Handling):
+  - 当正式架构发生变化（通过外部重新加载、外部事件通知或 `updateAcceptedArchitecture` 等），若存在未决提案，标记该提案为“已过期 (Stale)”（`isProposalStale: true`）；
+  - 已过期的提案禁用 Accept，界面与控制器均给出明确警告提示“正式架构已变化，提案已失效，请重新提议。 / Formal architecture has changed; the proposal is stale and must be re-proposed.”；
+  - Reject 操作对已过期提案仍然可用，用于清理失效提案并恢复工作区可编辑状态。
+- 审查状态机防御与单提案锁定 (Review Gate Defense & Single-Proposal Lock):
+  - 严格单提案锁定：未决提案（或已过期未清理提案）存在时，新增命令被拒绝并给出明确错误；
+  - 审查幂等性：重复点击 Accept 或 Reject 操作具备幂等性，不抛出未捕获异常；
+  - 无效提案防御：校验失败的候选提案严格阻断 Accept，但允许执行 Reject 以清理提案；
+  - 审批理由必填：沿用现有 Review 门禁要求，空理由阻断提交。
+- 前端视图与无障碍同步 (Frontend View & Accessibility):
+  - `ui-settings.ts` 新增中英双语词条 `staleProposalWarning`；
+  - `+page.svelte` Review 面板展示过期警告，并根据 `isProposalStale` 状态禁用 Accept 按钮；
+  - 增加 `window` 事件监听与控制器测试挂钩，支持外部架构变更的实时响应与双向同步。
+- 自动化测试与验证 (Automated Tests & Verification):
+  - `review-gate.test.ts` 扩展 6 项单元测试（总计 11/11 通过），全面覆盖 Ghost 采纳、Ghost 拒绝、过期提案阻断与清理、单提案锁定防御、幂等性与无效候选拒绝；
+  - `workspace-shell-controller.test.ts`（20/20 通过）保持全量通过；
+  - `editing.spec.ts` 扩展 3 项 Playwright E2E 测试（总计 14/14 通过），覆盖“创建 Ghost → Accept → 正式节点出现且 Ghost 消失”、“创建 Ghost → Reject → Ghost 消失且正式节点不变”、“过期提案无法 Accept 并可 Reject 清理”。
+
+- Review Actions & Ghost Association:
+  - Accept: formal `ArchitectureProject` updates, Ghost projection clears, and incremental layout (Stability pass) runs on accepted project.
+  - Reject: Ghost projection clears immediately, formal architecture remains unchanged, and candidate is preserved in memory per approved semantics ("拒绝保留候选").
+- Stale Proposal Handling:
+  - When formal architecture changes (via external reload, bridge updates, or `updateAcceptedArchitecture`), pending proposals are marked stale (`isProposalStale: true`).
+  - Stale proposals disable Accept in both UI and controller with a clear bilingual notice ("Formal architecture has changed; the proposal is stale and must be re-proposed.").
+  - Reject remains enabled on stale proposals to allow cleanup and return the workspace to an editable state.
+- Review Gate Defense & Single-Proposal Lock:
+  - Enforced strict single-proposal lock: subsequent editing commands are blocked while a proposal is pending or stale.
+  - Review idempotency: repeated Accept or Reject calls are idempotent without throwing.
+  - Invalid candidate rejection: candidates with validation errors block Accept but permit Reject.
+  - Nonempty rationale requirement: reuses the approved Review gate semantics.
+- Frontend View & Accessibility:
+  - Added bilingual `staleProposalWarning` dictionary key to `ui-settings.ts`.
+  - Added warning banner in `+page.svelte` Review panel and wired Accept button disable logic.
+  - Added window event listener and controller test hook for external architecture changes.
+- Automated Verification:
+  - Extended `review-gate.test.ts` with 6 unit tests (11/11 passed).
+  - Extended `editing.spec.ts` with 3 Playwright E2E browser tests (14/14 passed).
+
+### 2. 为什么这么做 / Why
+- 架构事实唯一性：在正式架构发生外部演变后，基准版本已偏离，强行接受旧提案会引发事实冲突；自动标记为“已过期”并禁用 Accept，彻底杜绝静默冲突与错误变基。
+- 遵循既有审批门禁契约：不新增任何审批状态类型或特殊角色，完全复用已批准的 `ArchitectureReview` 状态机与 `local-user` 门禁。
+- 闭环生命周期体验：提供 Reject 作为清理失效提案的显式途径，用户拒绝后即可继续进行新的设计与提议，符合自然心智模型。
+
+- Source of Truth Invariant: After formal architecture evolves externally, the baseline diverges; auto-marking proposals as stale and blocking Accept prevents silent merge conflicts and corrupt state.
+- Preserves Approved Review Contracts: Avoids introducing ad-hoc approval types, fully adhering to `ArchitectureReview` and `local-user` constraints.
+- Closed Lifecycle UX: Provides Reject as an explicit path to clean up stale proposals, resetting the lock so users can proceed with new edits.
+
+### 3. 验证结果 / Verification
+- 已实现并验证：
+  - Web 单元测试：`apps/web` 17 个测试文件，112/112 项通过；
+  - Web 集成测试：`apps/web` 4 个测试文件，13/13 项通过；
+  - Web 浏览器 E2E 测试：`apps/web/e2e/editing.spec.ts` 14/14 项通过（包含 Ghost 接受、Ghost 拒绝与过期提案阻断）；
+  - TypeScript 类型检查：`pnpm --filter @coding-cad/web typecheck` 0 错误 0 警告；
+  - 全工作区构建与测试：`CI=true TURBO_FORCE=true pnpm test` 全量通过（30/30 Turbo 任务成功）。
+- 未实现：
+  - 步骤 5.4 增量布局稳定性位移量化指标测量（步骤 5.4 范围）。
+- 风险与回退方式：
+  - 风险：若存在未决提案期间外部导入损坏的架构，`updateAcceptedArchitecture` 会进行结构校验并返回错误状态，不污染正式图。
+  - 回退方式：`git revert <commit-hash>`。
+
+## 2026-10-17 - 阶段 5 步骤 5.4：增量布局与稳定性指标度量 / Phase 5 Step 5.4: Incremental Layout & Stability Metrics
+
+### 1. 做了什么 / What
+- 增量布局位移追踪与暴露 (Incremental Movement Tracking & Exposure):
+  - 在 `GreenfieldShellState` 中增加 `movement?: MovementReport` 字段；
+  - 在 `WorkspaceShellController.layoutCandidate` 中捕获 `layoutArchitectureGraph(..., { mode: "INCREMENTAL", previousState })` 返回的 `movement` 报告并持久更新到 shell 状态；
+  - 在 `ShellController` 契约中暴露 `movement(): MovementReport | undefined` 查询方法。
+- 自动化稳定性测试套件 (`apps/web/src/lib/architecture/greenfield/incremental-stability.test.ts`):
+  - **Greenfield 稳定性断言**：在 points-system fixture 上添加组件并采纳，断言未受影响节点位移严格满足预算（`unaffectedP95 <= 48px`, `unaffectedMax <= 144px`, `withinBudget: true`，实测均为 0.0px）；
+  - **Medium Brownfield 稳定性断言**：在 `CODING_CAD_EXPECTED_BASELINE`（15 组件，42 边）上添加组件并采纳，断言未受影响节点位移同样严格满足预算（实测均为 0.0px）；
+  - **Ghost → 正式节点位移经验度量**：对 Greenfield 和 Medium Brownfield 分别运行多组 Ghost 放置与正式 incremental layout 实验，精确度量 Ghost 位置与正式节点最终位置的欧几里得距离（Displacement: Mean, Median, Max），输出完整的量化对比表格。
+
+- Incremental Movement Tracking & Exposure:
+  - Added `movement?: MovementReport` to `GreenfieldShellState`.
+  - Captured `movement` in `WorkspaceShellController.layoutCandidate` from incremental layout outcome and updated shell state.
+  - Exposed `movement(): MovementReport | undefined` in `ShellController` interface.
+- Automated Stability & Displacement Suite (`apps/web/src/lib/architecture/greenfield/incremental-stability.test.ts`):
+  - Greenfield Stability Assertion: Adding a component on points-system fixture verified `unaffectedP95 <= 48px`, `unaffectedMax <= 144px`, `withinBudget: true` (measured 0.0px).
+  - Medium Brownfield Stability Assertion: Adding a component on `CODING_CAD_EXPECTED_BASELINE` (15 components, 42 edges) verified unaffected movement is 0.0px within budget.
+  - Ghost-to-Formal Displacement Empirical Measurement: Measured euclidean distance from local Ghost placement to ELK formal layout coordinates across Greenfield and Medium fixtures, computing Mean, Median, and Max metrics.
+
+### 2. 为什么这么做 / Why
+- 遵守“稳定重于最优”与“局部变更局部移动”设计原则：
+  - 增量布局必须确保用户在审批提案前后，无关正式节点位置保持稳定，保护用户的心理认知地图（Mental Map）；
+  - 断言 `unaffectedP95 <= 48px` 与 `unaffectedMax <= 144px` 提供了机械化防退化保障。
+- 科学解释 Ghost 放置与正式布局的位移本质：
+  - D-007 方案 B（Web 适配层局部扩展）的 Ghost 放置采用纯局部启发式几何放置（紧邻关联正式节点或在图边缘空位，以零碰撞与零干扰为核心目标，不调用求解器）；
+  - 正式采纳后，ELK 求解器执行全局拓扑分层与边路由优化，将新节点纳入图的有向层次结构中；
+  - 局部启发式与全局求解器的差异导致 Ghost 到正式节点存在位移（Greenfield 均值 294.9px，Medium 均值 1255.3px），但在此过程中，所有既有正式节点的位移均为 0.0px，完全符合设计预期与架构原则。
+
+- Adherence to "Stable over Optimal" and "Local Change, Local Movement":
+  - Incremental layout must guarantee that positions of unaffected formal nodes remain stable before and after approval, preserving the user's mental map.
+  - Mechanically asserting `unaffectedP95 <= 48px` and `unaffectedMax <= 144px` prevents spatial regressions.
+- Explaining the Ghost vs. Formal Placement Displacement:
+  - In D-007 Option B (Web adapter local extension), Ghost placement is an offline local geometric heuristic prioritizing zero collision and zero disturbance of existing nodes without calling the ELK solver.
+  - Upon acceptance, ELK performs global hierarchical layering and edge routing.
+  - The displacement between Ghost and formal positions is expected (Greenfield mean 294.9px, Medium mean 1255.3px), while unaffected formal nodes remain perfectly stationary (0.0px displacement).
+
+### 3. 验证结果 / Verification
+- 已实现并验证：
+  - 实测经验度量数据表 (Empirical Measurement Data)：
+
+| 测试夹具 (Fixture) | 组件 (Component) | Ghost 初始坐标 | 正式最终坐标 | 位移距离 (Displacement) | 未受影响 p95 | 未受影响 Max | 符合预算 (Within Budget) |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Greenfield (Points System) | Kafka | (801.0, 24.0) | (561.0, 248.0) | 328.3 px | 0.0 px | 0.0 px | YES (<= 48px / <= 144px) |
+| Greenfield (Points System) | RedisReplica | (801.0, 24.0) | (561.0, 248.0) | 328.3 px | 0.0 px | 0.0 px | YES (<= 48px / <= 144px) |
+| Greenfield (Points System) | NotificationService | (252.0, 236.0) | (24.0, 236.0) | 228.0 px | 0.0 px | 0.0 px | YES (<= 48px / <= 144px) |
+| Medium (Coding-CAD Baseline) | DocGen | (1812.0, 208.0) | (24.0, 153.0) | 1788.8 px | 0.0 px | 0.0 px | YES (<= 48px / <= 144px) |
+| Medium (Coding-CAD Baseline) | Telemetry | (1764.0, 306.0) | (24.0, 153.0) | 1746.7 px | 0.0 px | 0.0 px | YES (<= 48px / <= 144px) |
+| Medium (Coding-CAD Baseline) | ArtifactViewer | (252.0, 120.0) | (24.0, 153.0) | 230.4 px | 0.0 px | 0.0 px | YES (<= 48px / <= 144px) |
+
+  - 汇总统计 (Summary Statistics)：
+    - Greenfield：均值 Mean = 294.9px, 中位数 Median = 328.3px, 最大值 Max = 328.3px；
+    - Medium Brownfield：均值 Mean = 1255.3px, 中位数 Median = 1746.7px, 最大值 Max = 1788.8px；
+  - 稳定性预算判定：全部 6 组实验中 `unaffectedP95 = 0.0px`、`unaffectedMax = 0.0px`，100% 满足稳定性预算；
+  - Web 单元测试：`apps/web` 18 个测试文件，115/115 项通过；
+  - Web 集成测试：`apps/web` 4 个测试文件，13/13 项通过；
+  - Web 浏览器 E2E 测试：36/36 项全数通过；
+  - TypeScript 类型检查：`pnpm lint` 0 错误 0 警告；
+  - 全工作区构建与测试：`CI=true TURBO_FORCE=true pnpm test` 全量通过（30/30 Turbo 任务成功）。
+- 未实现：
+  - 步骤 5.5 阶段 5 综合验收与退出报告（下一步执行）。
+- 风险与回退方式：
+  - 回退方式：`git revert <commit-hash>`。
+
+
+

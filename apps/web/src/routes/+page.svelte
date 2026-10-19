@@ -32,8 +32,15 @@
     CODING_CAD_EXPECTED_BASELINE,
     CODING_CAD_DRIFTED_BASELINE
   } from "$lib/architecture/compliance/baseline-presets.js";
+  import ExecutionHandoffModal from "$lib/cad/handoff/ExecutionHandoffModal.svelte";
+  import {
+    generateExecutionHandoff,
+    isHandoffStale,
+    type HandoffViewModel
+  } from "$lib/architecture/handoff/execution-handoff.js";
 
   let controller = $state<WorkspaceShellController>();
+
   let shell = $state<GreenfieldShellState>();
   let projection = $state<ReturnType<WorkspaceShellController["projection"]>>();
   let layout = $state<ReturnType<WorkspaceShellController["layout"]>>();
@@ -51,6 +58,8 @@
   let connectionProtocol = $state("REST");
   let expectedModalOpen = $state(false);
   let expectedCustomJson = $state("");
+  let handoffModalOpen = $state(false);
+  let handoffModel = $state<HandoffViewModel>();
   const pendingReview = $derived(shell?.proposal?.status === "draft" || shell?.proposal?.status === "in-review");
   const removalConnections = $derived(shell?.accepted.architecture.connections.filter(
     (edge) => edge.from === removeComponentId || edge.to === removeComponentId
@@ -74,6 +83,9 @@
     errorMessage = shell.status === "error" ? shell.message : "";
     noticeMessage = shell.status === "error" ? "" : shell.message;
     busy = shell.status === "generating" || shell.status === "layout";
+    if (handoffModel && shell?.accepted && isHandoffStale(shell.accepted, handoffModel.snapshotKey)) {
+      handoffModel = { ...handoffModel, status: "stale" };
+    }
     updateInspector();
   }
 
@@ -90,7 +102,8 @@
     // The Canvas may show a candidate (pending) or the accepted architecture;
     // inspect whichever projection is currently rendered.
     const source = state.candidate ?? state.accepted;
-    const component = source.architecture.components.find((entry) => entry.id === nodeIds[0]);
+    const targetId = nodeIds[0].replace(/^ghost:/, "");
+    const component = source.architecture.components.find((entry) => entry.id === targetId);
     if (component === undefined) {
       inspector = undefined;
       return;
@@ -296,6 +309,27 @@
     syncFromController();
   }
 
+  function handleOpenHandoff(): void {
+    if (controller === undefined || !shell?.accepted) return;
+    if (!handoffModel) {
+      handoffModel = generateExecutionHandoff(shell.accepted, {
+        hasPendingCandidate: pendingReview || shell.candidate !== undefined,
+        validationResult: shell.validation
+      });
+    } else if (isHandoffStale(shell.accepted, handoffModel.snapshotKey)) {
+      handoffModel = { ...handoffModel, status: "stale" };
+    }
+    handoffModalOpen = true;
+  }
+
+  function handleRegenerateHandoff(): void {
+    if (controller === undefined || !shell?.accepted) return;
+    handoffModel = generateExecutionHandoff(shell.accepted, {
+      hasPendingCandidate: pendingReview || shell.candidate !== undefined,
+      validationResult: shell.validation
+    });
+  }
+
   // --- Personal settings (language / theme) ---
   function t(key: Parameters<typeof uiText>[1]): string {
     return uiText(settings.locale, key);
@@ -331,15 +365,52 @@
   }
 
   onMount(() => {
-    const next = new WorkspaceShellController(pointsSystemFixture);
+    const next = new WorkspaceShellController(pointsSystemFixture, {
+      onStateChange: () => syncFromController()
+    });
     controller = next;
     if (import.meta.env.DEV || import.meta.env.MODE === "layout-acceptance") {
       void import("$lib/layout/testing/layout-acceptance.js").then(({ installLayoutAcceptance }) => installLayoutAcceptance(next));
+      const pageWindow = window as unknown as Record<string, unknown>;
+      pageWindow.__coding_cad_controller__ = next;
+      pageWindow.__coding_cad_sync__ = syncFromController;
+      pageWindow.__coding_cad_execute_command__ = async (cmd: ArchitectureCommand) => {
+        await next.executeCommand(cmd);
+        syncFromController();
+      };
+      pageWindow.__coding_cad_wait_for_prediction__ = async () => {
+        await next.waitForPrediction();
+        syncFromController();
+      };
+      pageWindow.__coding_cad_accept__ = async (rationale: string) => {
+        await next.acceptCandidate(rationale);
+        syncFromController();
+      };
+      pageWindow.__coding_cad_reject__ = (rationale: string) => {
+        next.rejectCandidate(rationale);
+        syncFromController();
+      };
+      pageWindow.__coding_cad_set_architecture__ = async (project: ArchitectureProject) => {
+        await next.updateAcceptedArchitecture(project);
+        syncFromController();
+      };
     }
+    const handleExternal = async (e: Event) => {
+      const customEvent = e as CustomEvent<ArchitectureProject>;
+      if (customEvent.detail && next) {
+        await next.updateAcceptedArchitecture(customEvent.detail);
+        syncFromController();
+      }
+    };
+    window.addEventListener("coding-cad:external-architecture-change", handleExternal);
     syncFromController();
     applyCurrentTheme();
     globalThis.matchMedia?.("(prefers-color-scheme: dark)")
       .addEventListener("change", handleSystemThemeChange);
+
+    return () => {
+      window.removeEventListener("coding-cad:external-architecture-change", handleExternal);
+    };
   });
 </script>
 
@@ -375,6 +446,9 @@
           </button>
           <button type="button" class="sidebar-action" data-testid="sidebar-load-expected" onclick={() => { expectedModalOpen = true; }} disabled={busy}>
             {settings.locale === "zh" ? "加载期望架构基线" : "Load Expected Baseline"}
+          </button>
+          <button type="button" class="sidebar-action" data-testid="sidebar-execution-handoff" onclick={handleOpenHandoff} disabled={busy || !shell?.accepted}>
+            {settings.locale === "zh" ? "执行交接 (Handoff)" : "Execution Handoff"}
           </button>
           <button type="button" class="sidebar-action" onclick={handleAutoLayout} disabled={busy || !layout}>
             {t("autoLayout")}
@@ -525,6 +599,15 @@
       </div>
     {/if}
 
+    {#if handoffModalOpen && handoffModel}
+      <ExecutionHandoffModal
+        model={handoffModel}
+        onClose={() => { handoffModalOpen = false; }}
+        onRegenerate={handleRegenerateHandoff}
+        onFocusTarget={handleFocusTarget}
+      />
+    {/if}
+
     <div class="content">
       <section class="requirement">
         <label for="requirement">{t("requirement")}</label>
@@ -615,8 +698,10 @@
         <ArchitectureCanvas
           projection={projection}
           layout={layout}
-          viewState={(shell.candidate ? shell.candidateLayoutState : shell.layoutState) ?? shell.layoutState!}
+          viewState={(shell.candidate && !shell.isCommandProposal ? shell.candidateLayoutState : shell.layoutState) ?? shell.layoutState!}
           selectedNodeIds={selectedNodeIds}
+          ghostProposal={shell?.isCommandProposal && pendingReview ? shell.proposal : undefined}
+          ghostPrediction={shell?.isCommandProposal && pendingReview ? shell.ghostPrediction : undefined}
           onViewStateChange={(next) => controller?.updateLayoutState(next)}
           onSelectionChange={(nodeIds) => {
             selectedNodeIds = [...nodeIds];
@@ -909,11 +994,26 @@
             <label for="review-rationale">Review rationale</label>
             <textarea id="review-rationale" bind:value={reviewRationale} rows="2" disabled={busy}></textarea>
             <div class="actions">
-              <button type="button" onclick={handleAccept} disabled={busy || shell.validation?.valid !== true || !reviewRationale.trim() || shell.proposal?.status === "rejected"}>
+              <button
+                type="button"
+                data-testid="accept-proposal-button"
+                onclick={handleAccept}
+                disabled={busy || shell.isProposalStale || shell.validation?.valid !== true || !reviewRationale.trim() || shell.proposal?.status === "rejected" || shell.proposal?.status === "approved"}
+              >
                 Accept
               </button>
-              <button type="button" onclick={handleReject} disabled={busy || !reviewRationale.trim() || shell.proposal?.status === "rejected"}>Reject</button>
+              <button
+                type="button"
+                data-testid="reject-proposal-button"
+                onclick={handleReject}
+                disabled={busy || !reviewRationale.trim() || shell.proposal?.status === "rejected" || shell.proposal?.status === "approved"}
+              >
+                Reject
+              </button>
             </div>
+            {#if shell.isProposalStale}
+              <p class="warn" data-testid="stale-proposal-warning">{t("staleProposalWarning")}</p>
+            {/if}
             {#if shell.validation?.valid === false}
               <p class="warn">Approval is blocked while the candidate has validation errors.</p>
             {/if}

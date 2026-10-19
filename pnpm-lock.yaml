@@ -43,6 +43,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@coding-cad/agent-adapter':
+        specifier: workspace:*
+        version: link:../../packages/agent-adapter
       '@coding-cad/architecture-agent':
         specifier: workspace:*
         version: link:../../packages/architecture-agent
@@ -61,6 +64,9 @@ importers:
       '@coding-cad/component-registry':
         specifier: workspace:*
         version: link:../../packages/component-registry
+      '@coding-cad/execution-blueprint':
+        specifier: workspace:*
+        version: link:../../packages/execution-blueprint
       '@coding-cad/implementation-analyzer':
         specifier: workspace:*
         version: link:../../packages/implementation-analyzer

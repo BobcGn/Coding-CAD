@@ -688,15 +688,15 @@ Greenfield E2E 和所有验收标准通过；Workspace/IR/View State 边界评�
 
 ### Decision Gates / 决策门禁
 
-- D-007：Ghost presentation，当前需在 Phase 5 前确认。
+- D-007（Ghost presentation，已批准方案 B）与 D-011（Ghost predictive placement，已批准方案 B）。
 - 任何新的 Proposal lifecycle/approval semantics 需要用户 Decision。
 
-- D-007: Ghost presentation, to be confirmed before Phase 5.
+- D-007 (Ghost presentation, approved Option B) and D-011 (Ghost predictive placement, approved Option B).
 - Any new Proposal lifecycle or approval semantics requires a user Decision.
 
 ### Exit Condition / 退出条件
 
-完整流程 E2E 与 Review/IR/Ghost 不变量通过；没有 Agent runtime；Phase report 完成。 / The full-flow E2E and Review/IR/Ghost invariants pass; no Agent runtime exists; the Phase report is complete.
+完整流程 E2E 与 Review/IR/Ghost 不变量通过；没有 Agent runtime；Phase report 完成。当前状态：有条件满足（分支 `codex/phase-5-ghost-handoff`，详见 `docs/phase-5-exit-report.md`，待用户处理事项裁定）。 / The full-flow E2E and Review/IR/Ghost invariants pass; no Agent runtime exists; the Phase report is complete. Current status: Conditionally Satisfied (branch `codex/phase-5-ghost-handoff`, see `docs/phase-5-exit-report.md`, pending user action items approval).
 
 ## Phase 6 — Layout Quality / Performance / E2E / 布局质量、性能与 E2E
 
